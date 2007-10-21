@@ -1,0 +1,3 @@
+[submodule "MITgcm"]
+	path = MITgcm
+	url = https://github.com/MITgcm/MITgcm
