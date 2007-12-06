@@ -5,10 +5,8 @@ o Directories
 
 o To check out
 
-[cnh@localhost]$ mkdir foo
-[cnh@localhost]$ cd    foo
-[cnh@localhost]$ cvs co -d MITgcm
-[cnh@localhost]$ cd  pkg
+[cnh@localhost]$ cvs co -d foo MITgcm
+[cnh@localhost]$ cd  foo/pkg
 [cnh@localhost]$ cvs co -d darwin MITgcm_contrib/darwin/pkg/darwin
 [cnh@localhost]$ cd ../verfication
 [cnh@localhost]$ cvs co -d darwin_verification MITgcm_contrib/darwin/verification
