@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.1 2007/12/10 14:59:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.2 2007/12/10 21:35:47 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -70,8 +70,8 @@ c seed randomization
          RandNo = rand(Iseed)
 #endif
 c
-       WRITE(msgbuf,'(A,I,F)')
-     &   ' QQ random', Iseed, RandNo
+       WRITE(msgbuf,'(A,I10,A,F20.16)')
+     &   ' QQ random', Iseed, ' ', RandNo
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid)
 
