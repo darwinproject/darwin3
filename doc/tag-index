@@ -1,0 +1,9 @@
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.1 2007/12/10 15:07:38 jahn Exp $
+$Name:  $
+
+    Notes on tags used in darwin
+    ============================
+
+cp59i
+o initial checkin.  Works with MITgcm checkpoint59i
+ 
