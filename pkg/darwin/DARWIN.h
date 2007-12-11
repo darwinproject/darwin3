@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.1 2007/12/10 14:59:47 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.2 2007/12/11 21:32:46 jahn Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -74,9 +74,9 @@ c           have been tried
      &          val_R_SiP_diatom, val_R_NP_diaz, val_RFeP_diaz,
      &          val_R_NP, val_RFeP, 
      &          ksatNH4fac, ksatNO2fac, val_ksatsi,
-     &          nsource,ngroups,
      &          ngrowfac, ilight,
-     &          phymin, PAR0, diaz_growfac
+     &          phymin, PAR0, diaz_growfac,
+     &          nsource,ngroups
     
          real*8 mu(npmax)
          real*8 ksatPO4(npmax)
