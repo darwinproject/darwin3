@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_mutants.F,v 1.1 2007/12/10 14:59:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_mutants.F,v 1.2 2007/12/11 21:36:36 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -28,6 +28,10 @@ C  myThid               :: thread number
         INTEGER myThid
 CEOP
 
+C     === Functions ===
+      _RL DARWIN_RANDOM
+      EXTERNAL DARWIN_RANDOM
+
 
 c local variables
         _RL RandNo
@@ -41,7 +45,6 @@ c local variables
         _RL standin
         INTEGER np
         INTEGER nz
-        INTEGER Irand
         INTEGER signvar
 
 c Mutation --------------------------------------------------------
@@ -88,8 +91,7 @@ c make Pro small, randomize others [jbmodif]
       if(np.le.npro)physize(np) = 0.0d0
         if(np.gt.npro)then
 
-        Irand = 0
-        RandNo = rand(Irand)
+        RandNo = darwin_random(myThid)
         if(RandNo .gt. 0.000d0)then
           physize(np) = 1.0d0
         else
@@ -100,8 +102,7 @@ c
 c phyto either diatoms (diatom=1.0) and use silica or not (diatom=0.0)
 c if they are large
         if (physize(np).eq.1.0d0) then
-          Irand = 0
-          RandNo = rand(Irand)
+          RandNo = darwin_random(myThid)
           if(RandNo .gt. 0.500d0)then
             diatom(np) = 1.0d0
           else
@@ -118,8 +119,7 @@ c TEST ...........................................
 
 
 c phyto either diazotrophs (diazotroph=1.0) or not (diazotroph=0.0)
-        Irand = 0
-        RandNo = rand(Irand)
+        RandNo = darwin_random(myThid)
         if(RandNo .gt. 0.500d0)then
           diazotroph(np) = 1.0d0
         else
@@ -134,8 +134,7 @@ c TEST ...........................................
 
 
 c growth rates
-        Irand = 0
-        RandNo = rand(Irand)
+        RandNo = darwin_random(myThid)
 c big/small phyto growth rates..
         if(physize(np) .eq. 1.0d0)then
           growthdays = Biggrow +Randno*Biggrowrange
@@ -150,8 +149,7 @@ c now convert to a growth rate
         mu(np) = 1.0d0/(growthdays*pday)
 
 c mortality and export fraction rates
-        Irand = 0
-        RandNo = rand(Irand)
+        RandNo = darwin_random(myThid)
 c big/small phyto mortality rates..
         if(physize(np) .eq. 1.0d0)then
           mortdays = Bigmort +Randno*Bigmortrange
@@ -172,8 +170,7 @@ c if using threeNmut=1, all have nsource=3 [jbmodif]
             nsource(np)=3
         else 
          if(diazotroph(np) .ne. 1.0)then
-           Irand = 0
-           RandNo = rand(Irand)
+           RandNo = darwin_random(myThid)
            if (physize(np).eq.1.0d0) then   
              nsource(np) = 3
            else
@@ -201,8 +198,7 @@ c.......................................................
           phytoTempExp2(np) = tempcoeff2_small
         endif
 
-        Irand = 0
-        RandNo = rand(Irand)
+        RandNo = darwin_random(myThid)
 cswd    phytoTempOptimum(np) = 30.0d0 - RandNo*28.0d0 
         phytoTempOptimum(np) = tempmax - RandNo*temprange
         phytoDecayPower(np) = tempdecay
@@ -239,8 +235,7 @@ c set sinking rates according to allometry
         end if 
 c half-saturation coeffs 
 
-        Irand = 0
-        RandNo = rand(Irand)
+        RandNo = darwin_random(myThid)
         if(physize(np) .eq. 1.0)then
            ksatPO4(np) = BigPsat + RandNo*BigPsatrange
         else
@@ -270,28 +265,23 @@ c     kinhib  {0.0 - 3.0}
 c     0.5 =Av High Light Adapted, 2.0=Av Low Light Adapted
 c High Light Groups for Large size:
               if(physize(np) .eq. 1.0d0)then
-                 Irand = 0
-                 RandNo = rand(Irand)
+                 RandNo = darwin_random(myThid)
                  call invnormal(standin,RandNo,Bigksatpar,Bigksatparstd)
                  ksatPAR(np) = abs(standin)
 
-                 Irand = 0
-                 RandNo = rand(Irand)
+                 RandNo = darwin_random(myThid)
                  CALL invnormal(standin,RandNo,Bigkinhib,Bigkinhibstd)
                  kinhib(np) = abs(standin)
               else
 c QQ remove someday
-                 Irand = 0
-                 RandNo = rand(Irand)
+                 RandNo = darwin_random(myThid)
 c Low Light Groups for Small size:
-                 Irand = 0
-                 RandNo = rand(Irand)
+                 RandNo = darwin_random(myThid)
                  CALL invnormal(standin,RandNo,smallksatpar,
      &                                               smallksatparstd)
                  ksatPAR(np) = abs(standin)
 
-                 Irand = 0
-                 RandNo = rand(Irand)
+                 RandNo = darwin_random(myThid)
                  CALL invnormal(standin,RandNo,smallkinhib,
      &                                                smallkinhibstd)
                  kinhib(np) = abs(standin)

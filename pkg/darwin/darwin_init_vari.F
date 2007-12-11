@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.2 2007/12/10 21:35:47 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.3 2007/12/11 21:36:36 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -28,12 +28,13 @@ c
 #include "GCHEM.h"
 #include "DARWIN_IO.h"
 
-        real*4 RAND
-        EXTERNAL RAND
-
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
+
+C     === Functions ===
+      _RL DARWIN_RANDOM
+      EXTERNAL DARWIN_RANDOM
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -43,12 +44,8 @@ C     msgBuf    - Informational/error meesage buffer
 
         INTEGER bi, bj, k
  
-        _RL RandNo
         INTEGER np
         INTEGER nz
-        INTEGER nrand
-        INTEGER Iseed
-        INTEGER IRand
 CEOP
 
 c test....................
@@ -59,21 +56,7 @@ c test....................
 c set up ecosystem coefficients
 c
 c seed randomization
-#ifdef OLDSEED
-         Iseed = gchem_int1
-         do nrand = 1,Iseed
-           Irand = 0
-           RandNo = rand(Irand)
-         end do
-#else
-         Iseed = -gchem_int1
-         RandNo = rand(Iseed)
-#endif
-c
-       WRITE(msgbuf,'(A,I10,A,F20.16)')
-     &   ' QQ random', Iseed, ' ', RandNo
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT , myThid)
+        CALL DARWIN_RANDOM_INIT(gchem_int1, myThid)
 
 c initialize total number of functional groups tried
          ngroups = 0
