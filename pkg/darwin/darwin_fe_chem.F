@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.1 2007/12/10 14:59:47 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.2 2007/12/12 21:19:01 jahn Exp $
 C $Name:  $
 
 c#include "DIC_OPTIONS.h"
@@ -61,15 +61,16 @@ C in surface layer
        DO j=jmin,jmax
         DO i=imin,imax
          DO k=1,nR
-          IF(hFacC(i,j,k,bi,bj) .gt. 0.0)THEN
+          IF(hFacC(i,j,k,bi,bj) .gt. 0.0 _d 0)THEN
 
 C   Ligand,FeL,Fe calculation
             
               lig=(-ligand_stab*fe (i,j,k,bi,bj)+
-     &              ligand_stab*ligand_tot-1
+     &              ligand_stab*ligand_tot-1. _d 0
      &             +((ligand_stab*fe (i,j,k,bi,bj)
-     &                -ligand_stab*ligand_tot+1)**2+4
-     &                *ligand_stab*ligand_tot)**0.5)/(2*ligand_stab)
+     &                -ligand_stab*ligand_tot+1. _d 0)**2+4. _d 0
+     &               *ligand_stab*ligand_tot)**0.5 _d 0)
+     &            /(2. _d 0*ligand_stab)
  
               FeL = ligand_tot-lig
               freefe(i,j,k,bi,bj) = fe (i,j,k,bi,bj)-FeL

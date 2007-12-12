@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.2 2007/12/11 21:32:46 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.3 2007/12/12 21:19:01 jahn Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -78,80 +78,80 @@ c           have been tried
      &          phymin, PAR0, diaz_growfac,
      &          nsource,ngroups
     
-         real*8 mu(npmax)
-         real*8 ksatPO4(npmax)
-         real*8 ksatNO3(npmax)
-         real*8 ksatNO2(npmax)
-         real*8 ksatNH4(npmax)
-         real*8 ksatSi(npmax)
-         real*8 ksatFeT(npmax)
-         real*8 ksatPAR(npmax)
-         real*8 mortzoo(nzmax)
-         real*8 wsink(npmax)
-         real*8 R_NP(npmax)
-         real*8 R_FeP(npmax)
-         real*8 R_SiP(npmax)
-         real*8 physize(npmax)
-         real*8 diatom(npmax)
-         real*8 diazotroph(npmax)
-         real*8 zoosize(nzmax)
-         real*8 ExportFracZ(nzmax)
-         real*8 Kpremin_P
-         real*8 Kpremin_N
-         real*8 Kpremin_Fe
-         real*8 Kpremin_Si
-         real*8 phytoTempCoeff(npmax)
-         real*8 phytoTempExp1(npmax)
-         real*8 phytoTempExp2(npmax)     
-         real*8 phytoTempOptimum(npmax)
-         real*8 phytoDecayPower(npmax)
-         real*8 zooTempCoeff(nzmax)
-         real*8 zooTempExp(nzmax) 
-         real*8 zooTempOptimum(nzmax)
-         real*8 diatomgraz, olargegraz
-         real*8 kinhib(npmax)
-         real*8 mortphy(npmax)
-         real*8 ExportFracP(npmax)
-         real*8 Smallgrow, Biggrow
-         real*8 Smallmort, Bigmort
-         real*8 Smallgrowrange, Biggrowrange
-         real*8 Smallmortrange, Bigmortrange
-         real*8 Smallexport, Bigexport
-         real*8 smallksatpar, smallksatparstd
-         real*8 smallkinhib, smallkinhibstd
-         real*8 tempcoeff1, tempcoeff2_big
-         real*8 tempcoeff2_small, tempcoeff3
-         real*8 tempmax, temprange, tempnorm,tempdecay
-         real*8 Bigksatpar, Bigksatparstd
-         real*8 Bigkinhib, Bigkinhibstd
-         real*8 SmallPsat, BigPsat, ProcPsat
-         real*8 SmallPsatrange, BigPsatrange, ProcPsatrange
-         real*8 prochlPsat
-         real*8 ksatNH4fac, ksatNO2fac
-         real*8 sig1,sig2,sig3
-         real*8 val_ksatsi
+         _RL mu(npmax)
+         _RL ksatPO4(npmax)
+         _RL ksatNO3(npmax)
+         _RL ksatNO2(npmax)
+         _RL ksatNH4(npmax)
+         _RL ksatSi(npmax)
+         _RL ksatFeT(npmax)
+         _RL ksatPAR(npmax)
+         _RL mortzoo(nzmax)
+         _RL wsink(npmax)
+         _RL R_NP(npmax)
+         _RL R_FeP(npmax)
+         _RL R_SiP(npmax)
+         _RL physize(npmax)
+         _RL diatom(npmax)
+         _RL diazotroph(npmax)
+         _RL zoosize(nzmax)
+         _RL ExportFracZ(nzmax)
+         _RL Kpremin_P
+         _RL Kpremin_N
+         _RL Kpremin_Fe
+         _RL Kpremin_Si
+         _RL phytoTempCoeff(npmax)
+         _RL phytoTempExp1(npmax)
+         _RL phytoTempExp2(npmax)     
+         _RL phytoTempOptimum(npmax)
+         _RL phytoDecayPower(npmax)
+         _RL zooTempCoeff(nzmax)
+         _RL zooTempExp(nzmax) 
+         _RL zooTempOptimum(nzmax)
+         _RL diatomgraz, olargegraz
+         _RL kinhib(npmax)
+         _RL mortphy(npmax)
+         _RL ExportFracP(npmax)
+         _RL Smallgrow, Biggrow
+         _RL Smallmort, Bigmort
+         _RL Smallgrowrange, Biggrowrange
+         _RL Smallmortrange, Bigmortrange
+         _RL Smallexport, Bigexport
+         _RL smallksatpar, smallksatparstd
+         _RL smallkinhib, smallkinhibstd
+         _RL tempcoeff1, tempcoeff2_big
+         _RL tempcoeff2_small, tempcoeff3
+         _RL tempmax, temprange, tempnorm,tempdecay
+         _RL Bigksatpar, Bigksatparstd
+         _RL Bigkinhib, Bigkinhibstd
+         _RL SmallPsat, BigPsat, ProcPsat
+         _RL SmallPsatrange, BigPsatrange, ProcPsatrange
+         _RL prochlPsat
+         _RL ksatNH4fac, ksatNO2fac
+         _RL sig1,sig2,sig3
+         _RL val_ksatsi
 #ifdef OLD_GRAZE
-         real*8 graze(npmax,nzmax)
-         real*8 kgrazesat
-         real*8 GrazeEffsmall, GrazeEffbig, GrazeFast, GrazeSlow
+         _RL graze(npmax,nzmax)
+         _RL kgrazesat
+         _RL GrazeEffsmall, GrazeEffbig, GrazeFast, GrazeSlow
 #else
-         real*8 grazemax(nzmax)
-         real*8 palat(npmax,nzmax)
-         real*8 asseff(npmax,nzmax)
-         real*8 kgrazesat
-         real*8 GrazeEfflow, GrazeEffmod, GrazeEffhi
-         real*8 GrazeFast, GrazeSlow
-         real*8 palathi, palatlo
-         real*8 phygrazmin
-         real*8 ExportFracGraz(nzmax)
-         real*8 ExGrazfracbig, ExGrazfracsmall
+         _RL grazemax(nzmax)
+         _RL palat(npmax,nzmax)
+         _RL asseff(npmax,nzmax)
+         _RL kgrazesat
+         _RL GrazeEfflow, GrazeEffmod, GrazeEffhi
+         _RL GrazeFast, GrazeSlow
+         _RL palathi, palatlo
+         _RL phygrazmin
+         _RL ExportFracGraz(nzmax)
+         _RL ExGrazfracbig, ExGrazfracsmall
 #endif
-         real*8 ZoomortSmall, ZoomortBig, ZooexfacSmall, ZooexfacBig
-         real*8 val_R_SiP_diatom, val_R_NP_diaz, val_RFeP_diaz,
+         _RL ZoomortSmall, ZoomortBig, ZooexfacSmall, ZooexfacBig
+         _RL val_R_SiP_diatom, val_R_NP_diaz, val_RFeP_diaz,
      &          val_R_NP, val_RFeP
-         real*8 ngrowfac,ilight
-         real*8 phymin
-         real*8 PAR0
+         _RL ngrowfac,ilight
+         _RL phymin
+         _RL PAR0
          INTEGER nsource(npmax)
          INTEGER ngroups
 
@@ -159,18 +159,18 @@ c           have been tried
          COMMON/darwin_detritus/wp_sink,wn_sink,wfe_sink,wsi_sink,
      &          Kdop,Kdon,KdoFe,SmallSink,BigSink,
      &          Knita, Knitb
-         real*8 wp_sink
-         real*8 wn_sink
-         real*8 wfe_sink
-         real*8 wsi_sink
-         real*8 Kdop
-         real*8 Kdon
-         real*8 KdoFe
-         real*8 SmallSink
-         real*8 BigSink
-         real*8 Knita
-         real*8 Knitb
-         real*8 diaz_growfac
+         _RL wp_sink
+         _RL wn_sink
+         _RL wfe_sink
+         _RL wsi_sink
+         _RL Kdop
+         _RL Kdon
+         _RL KdoFe
+         _RL SmallSink
+         _RL BigSink
+         _RL Knita
+         _RL Knitb
+         _RL diaz_growfac
 
 c    scav           - chemical scavenging rate for iron
 c    ligand_tot     - total organic ligand (assumed constant)
@@ -178,24 +178,24 @@ c    ligand_stab    - ligand stability
 c    freefemax      - maximum free iron
          COMMON/darwin_ironparam/ alpfe, scav, ligand_tot, ligand_stab,
      &       freefemax
-         real*8 alpfe, scav, ligand_tot, ligand_stab
-         real*8 freefemax
+         _RL alpfe, scav, ligand_tot, ligand_stab
+         _RL freefemax
 
 c    k0, kc         - light coefficients
          COMMON/darwin_lightparam/ k0, kc, parfrac, parconv
-         real*8 k0, kc, parfrac, parconv
+         _RL k0, kc, parfrac, parconv
 
 c    chlpmax        - chl:p max ratio
 c    chlpmin        - chl:p min ratio
 c    istar          - photoadaptation light limit
          COMMON/darwin_chlparam/ chlpmax, chlpmin, istar
-         real*8 chlpmax, chlpmin, istar
+         _RL chlpmax, chlpmin, istar
 
          COMMON/darwin_diags_param/
      &          diver_thresh0, diver_thresh1,
      &          diver_thresh2, diver_thresh3,
      &          diver_thresh4
 
-         real*8 diver_thresh0, diver_thresh1
-         real*8 diver_thresh2, diver_thresh3
-         real*8 diver_thresh4
+         _RL diver_thresh0, diver_thresh1
+         _RL diver_thresh2, diver_thresh3
+         _RL diver_thresh4

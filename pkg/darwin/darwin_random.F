@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.2 2007/12/12 18:54:50 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.3 2007/12/12 21:19:01 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -64,7 +64,7 @@ CEOP
       END IF
 
 #ifdef PORT_RAND
-      Dseed = seed
+      Dseed = float(seed)
       RandNo = port_rand(Dseed)
 C need to call again to get a non-zero random number
       Dseed = -1.D0
@@ -138,7 +138,7 @@ CEOP
       END IF
 
 #ifdef PORT_RAND
-      Dseed = -1
+      Dseed = -1.d0
       darwin_random = port_rand(Dseed)
 #else
       Iseed = 0
@@ -195,7 +195,7 @@ CEOP
       END IF
 
 #ifdef PORT_RAND
-      Dseed = -1
+      Dseed = -1.d0
       darwin_random_normal = port_rand_norm(Dseed)
 #else
       Iseed = 0

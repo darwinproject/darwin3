@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.1 2007/12/10 14:59:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.2 2007/12/12 21:19:01 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -278,8 +278,8 @@ c wild and mutants types
          numtax=1
 #endif
 
-         oneyr = 86400.0d0*360.0d0 
-         threeyr = oneyr*3.d0
+         oneyr = 86400.0 _d 0*360.0 _d 0 
+         threeyr = oneyr*3. _d 0
 
 c end mutation variables [jbmodif]
 c -m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-
@@ -297,41 +297,41 @@ c energetic disadvantage of using NO2/No3: off=0, on=1
          
 
 c set sum totals to zero
-         totphy_pop = 0.d0
-         totphy_dop = 0.d0
-         totphy_don = 0.d0
-         totphy_pon = 0.d0
-         totphy_dofe = 0.d0
-         totphy_pofe = 0.d0
-         totphy_posi = 0.d0
+         totphy_pop = 0. _d 0
+         totphy_dop = 0. _d 0
+         totphy_don = 0. _d 0
+         totphy_pon = 0. _d 0
+         totphy_dofe = 0. _d 0
+         totphy_pofe = 0. _d 0
+         totphy_posi = 0. _d 0
 
-         totzoo_dop = 0.d0
-         totzoo_pop = 0.d0
-         totzoo_don = 0.d0
-         totzoo_pon = 0.d0
-         totzoo_dofe = 0.d0
-         totzoo_pofe = 0.d0
-         totzoo_posi = 0.d0
+         totzoo_dop = 0. _d 0
+         totzoo_pop = 0. _d 0
+         totzoo_don = 0. _d 0
+         totzoo_pon = 0. _d 0
+         totzoo_dofe = 0. _d 0
+         totzoo_pofe = 0. _d 0
+         totzoo_posi = 0. _d 0
 
-         consumpPO4 = 0.0d0
-         consumpNO3 = 0.0d0
-         consumpNO2 = 0.0d0
-         consumpNH4 = 0.0d0
-         consumpFeT = 0.0d0
-         consumpSi  = 0.0d0
+         consumpPO4 = 0.0 _d 0
+         consumpNO3 = 0.0 _d 0
+         consumpNO2 = 0.0 _d 0
+         consumpNH4 = 0.0 _d 0
+         consumpFeT = 0.0 _d 0
+         consumpSi  = 0.0 _d 0
 
 c zeros for diagnostics
-        PP=0.d0
-        Nfix=0.d0
+        PP=0. _d 0
+        Nfix=0. _d 0
 
 c set up phtyoplankton array to be used for grazing and mortality
 c set up other variable used more than once to zero
          do np = 1, npmax
            dummy = phyto(np)-phymin
-           phytomin(np)=max(dummy,0.d0)
-           NH4limit(np)=0.d0
-           NO2limit(np)=0.d0
-           NO3limit(np)=0.d0
+           phytomin(np)=max(dummy,0. _d 0)
+           NH4limit(np)=0. _d 0
+           NO2limit(np)=0. _d 0
+           NO3limit(np)=0. _d 0
          enddo
 
 
@@ -341,16 +341,16 @@ c as zeros too
        if(runtim .gt. threeyr) then
        if(numtax .gt. 1)then
         do np=1,npro
-          if(mod(np,numtax).eq. 1.d0)then
+          if(mod(np,numtax).eq. 1. _d 0)then
              nsisone   = np
              nsistwo   = np+1
              nsisthree = np+2
              nsisfour  = np+3
 
-             if (phyto(nsisone).le.0.d0) then
-                if (numtax.gt.1) phyto(nsistwo)=0.d0
-                if (numtax.gt.2) phyto(nsisthree)=0.d0
-                if (numtax.gt.3) phyto(nsisfour)=0.d0
+             if (phyto(nsisone).le.0. _d 0) then
+                if (numtax.gt.1) phyto(nsistwo)=0. _d 0
+                if (numtax.gt.2) phyto(nsisthree)=0. _d 0
+                if (numtax.gt.3) phyto(nsisfour)=0. _d 0
              endif
            endif
         enddo
@@ -365,7 +365,7 @@ c grazing rates
           do nz = 1,nzmax  
 c              zooTempFunction(nz) = zooTempCoeff(nz)*EXP(
 c    &             zooTempExp(nz)*(Tlocal - zooTempOptimum(nz)))
-            zooTempFunction(nz) = 1.0d0
+            zooTempFunction(nz) = 1.0 _d 0
           end do   
 Ccccccccccccccccccccccccccccccccccc ccccccccccccccccccccccccccccccc
 
@@ -374,15 +374,15 @@ c ******************** GROWTH OF PHYTO ****************************
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c Determine phytoplantkon light limitation: will affect growth rate
           do np = 1, npmax
-           if (PARlocal.gt.1.d0) then
-             kpar=ksatPAR(np)/10;
-             kinh=kinhib(np)/1000;
-             ilimit(np)=(1.0d0 - EXP(-PARlocal*kpar))
+           if (PARlocal.gt.1. _d 0) then
+             kpar=ksatPAR(np)/10. _d 0;
+             kinh=kinhib(np)/1000. _d 0;
+             ilimit(np)=(1.0 _d 0 - EXP(-PARlocal*kpar))
      &                  *(EXP(-PARlocal*kinh)) / 
      &       ( kpar/(kpar+kinh)*EXP(kinh/kpar*LOG(kinh/(kpar+kinh))) )
-             ilimit(np)=min(ilimit(np),1.d0)
+             ilimit(np)=min(ilimit(np),1. _d 0)
            else
-             ilimit(np)=0.d0
+             ilimit(np)=0. _d 0
            endif
           enddo
           if (debug.eq.1) print*,'ilimit',ilimit, PARlocal
@@ -390,18 +390,18 @@ c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c Determine temperature Dependent Growth function for Phyto
           do np=1, npmax
 c steph's version
-               phytoTempFunction(np) = (
-     &                        (phytoTempExp1(np)**Tlocal)*
-     &                        exp(- phytoTempExp2(np)*
-     &                        (abs(Tlocal - phytoTempOptimum(np)))**
-     &                                           phytoDecayPower(np))) -
-     &                        tempnorm
-               phytoTempFunction(np) = phytoTempCoeff(np)*
-     &                    max(phytoTempFunction(np), 1.d-10)
-               phytoTempFunction(np) = min(phytoTempFunction(np),1.d0)
+             phytoTempFunction(np) = (
+     &                      (phytoTempExp1(np)**Tlocal)*
+     &                      exp(- phytoTempExp2(np)*
+     &                      (abs(Tlocal - phytoTempOptimum(np)))**
+     &                                         phytoDecayPower(np))) -
+     &                      tempnorm
+             phytoTempFunction(np) = phytoTempCoeff(np)*
+     &                  max(phytoTempFunction(np), 1. _d -10)
+             phytoTempFunction(np) = min(phytoTempFunction(np),1. _d 0)
 
 c no temp limitation
-c             phytoTempFunction(np) = 1.0d0
+c             phytoTempFunction(np) = 1.0 _d 0
           enddo
           if (debug.eq.1) print*,'phytoTempFunction',
      &                          phytoTempFunction, Tlocal
@@ -410,19 +410,19 @@ c Determine phytoplankton nutrient limitation as mimimum of
 c P,N,Si,Fe. However N can be utilized in several forms, so
 c also determine which is used
           do np=1, npmax
-            limit(np) = 1.0d0
+            limit(np) = 1.0 _d 0
 c P limitation
-            if (ksatPO4(np).gt.0.d0) then
+            if (ksatPO4(np).gt.0. _d 0) then
               dummy = PO4local/(PO4local+ksatPO4(np))
               if (dummy .lt. limit(np)) limit(np) = dummy
             endif
 c Fe limitation
-            if (ksatFeT(np).gt.0.d0) then
+            if (ksatFeT(np).gt.0. _d 0) then
               dummy = FeTlocal/(FeTlocal+ksatFeT(np))
               if (dummy .lt. limit(np))limit(np) = dummy
             endif
 c Si limiation
-            if (R_SiP(np) .ne. 0.0.and.ksatSi(np).gt.0.d0) then
+            if (R_SiP(np) .ne. 0. _d 0.and.ksatSi(np).gt.0. _d 0) then
               dummy = Silocal/(Silocal+ksatSi(np))
               if (dummy .lt. limit(np))limit(np) = dummy
             endif
@@ -431,22 +431,22 @@ c N limitation [jbmodif]
 c nsource: genetic preference for {1:NH4&NO2 2:NH4 3:ALL Sources}
 c Nsourcelimit marker for which nsource will be consumed {1:NO3 2:NO2 3:NH4}
 c (Note: very different to way 1-D model does this)
-            if(diazotroph(np) .ne. 1.0)then
+            if(diazotroph(np) .ne. 1.0 _d 0)then
 
 c NH4, all nsource
-               if (ksatNH4(np).gt.0.d0) then
+               if (ksatNH4(np).gt.0. _d 0) then
                    NH4limit(np) = NH4local/(NH4local+ksatNH4(np))
                endif
 
 #ifdef OLD_NSCHEME
-               if (ksatNO2(np).gt.0.d0) then
+               if (ksatNO2(np).gt.0. _d 0) then
 c NO2, if nsource is 1 or 3
                    NO2limit(np) = NO2local/(NO2local+ksatNO2(np))*
      &                    EXP(-sig1*NH4local)
                    NO2limcheck = NO2local/(NO2local+ksatNO2(np))
                endif
 c NO3, if nsource is 3
-               if (ksatNO3(np).gt.0.d0) then
+               if (ksatNO3(np).gt.0. _d 0) then
                    NO3limit(np) = NO3local/(NO3local+ksatNO3(np))*
      &                    EXP(-sig2*NH4local - sig3*NO2local)
                    NO3limcheck = NO3local/(NO3local+ksatNO3(np))
@@ -454,7 +454,7 @@ c NO3, if nsource is 3
 #else
 c [jbmodif]
 c NO2, if nsource is 1 or 3
-               if (ksatNO2(np).gt.0.d0 .and. nsource(np).ne.2) then
+               if (ksatNO2(np).gt.0. _d 0 .and. nsource(np).ne.2) then
                  if (N2only.eq.1 .and. nsource(np).eq.1) then
                   NO2limit(np) = NO2local/(NO2local+ksatNO2(np))
      &                    *EXP(-sig1*NH4local)
@@ -466,7 +466,7 @@ c NO2, if nsource is 1 or 3
                  endif
                endif
 c NO3, if nsource is 3
-               if (ksatNO3(np).gt.0.d0 .and. nsource(np).eq.3) then
+               if (ksatNO3(np).gt.0. _d 0 .and. nsource(np).eq.3) then
                   NO3limit(np)=NO3local/(NO3local+NO2local+ksatNO3(np))
      &                    *EXP(-sig1*NH4local)
                   NO3limcheck=NO3local/(NO3local+NO2local+ksatNO3(np))
@@ -475,14 +475,14 @@ c NO3, if nsource is 3
 #endif
 
                if (nsource(np).eq.2) then
-                  NO2limit(np) = 0.d0
-                  NO3limit(np) = 0.d0
-                  NO2limcheck  = 0.d0
-                  NO3limcheck  = 0.d0
+                  NO2limit(np) = 0. _d 0
+                  NO3limit(np) = 0. _d 0
+                  NO2limcheck  = 0. _d 0
+                  NO3limcheck  = 0. _d 0
                endif
                if (nsource(np).eq.1) then
-                 NO3limit(np) = 0.d0
-                 NO3limcheck  = 0.d0
+                 NO3limit(np) = 0. _d 0
+                 NO3limcheck  = 0. _d 0
                endif
                if (nsource(np).eq.3) then
 c don't do anything
@@ -495,7 +495,7 @@ c check that limit doesn't decrease at high NH4 levels
                check_nlim=.FALSE.
                if (check_nlim) then
                   Ndummy1=NO3limcheck+NO2limcheck
-                  if (Ndummy.gt.0.and.Ndummy.lt.Ndummy1) then
+                  if (Ndummy.gt.0. _d 0.and.Ndummy.lt.Ndummy1) then
 c                   print*,'QQ N limit WARNING',Ndummy, Ndummy1,
 c    &                             NO3local,NO2local,NH4local
                     Ndiff=Ndummy1-NH4limit(np)
@@ -507,54 +507,54 @@ c    &                             NO3local,NO2local,NH4local
                   endif
                endif
 
-               if (Ndummy.gt.1.d0) then
+               if (Ndummy.gt.1. _d 0) then
                  NO3limit(np) = NO3limit(np)/Ndummy
                  NO2limit(np) = NO2limit(np)/Ndummy
                  NH4limit(np) = NH4limit(np)/Ndummy 
                endif
                Nlimit(np)=NO3limit(np)+NO2limit(np)+NH4limit(np)
-               if (Nlimit(np).gt.1.01d0) then
+               if (Nlimit(np).gt.1.01 _d 0) then
                 print*,'QQ Nlimit', Nlimit(np), NO3limit(np), 
      &                              NO2limit(np), NH4limit(np)
                endif
-               if (Nlimit(np).le.0.d0) then
+               if (Nlimit(np).le.0. _d 0) then
 c                if (np.eq.1) then
 c                 print*,'QQ Nlimit', Nlimit(np), NO3limit(np),
 c    &                              NO2limit(np), NH4limit(np)
 c                 print*,'QQ limit',limit(np), np
 c                endif
-                 Nlimit(np)=0.d0   !1d-10
+                 Nlimit(np)=0. _d 0   !1 _d -10
                endif
 
 #ifdef OLD_NSCHEME
 c lower growth for higher NO3 consumption at higher light
-               if (Nlimit(np).le.0.d0) then
-                 ngrow(np)=1.d0
+               if (Nlimit(np).le.0. _d 0) then
+                 ngrow(np)=1. _d 0
                else
                 if (parlocal.gt.ilight) then
-                  ngrow(np)=ngrowfac+(1.d0-ngrowfac)*
+                  ngrow(np)=ngrowfac+(1. _d 0-ngrowfac)*
      &                      (NH4limit(np)+NO2limit(np))/Nlimit(np)
                 else
-                  ngrow(np)=1.d0
+                  ngrow(np)=1. _d 0
                 endif
-                ngrow(np)=min(ngrow(np),1.d0)
+                ngrow(np)=min(ngrow(np),1. _d 0)
                endif
 #else
 c disadvantage of oxidized inorganic N
 c for now, ignore - a first attempt is included below
-              ngrow(np) = 1.0d0
+              ngrow(np) = 1.0 _d 0
 
 cc lower growth for higher NO3 consumption at higher light
 c one possible way of counting cost of reducing NOX
                if (NOreducost .eq. 1)then 
-                if (Nlimit(np).le.0.d0) then
-                  ngrow(np)=1.d0
+                if (Nlimit(np).le.0. _d 0) then
+                  ngrow(np)=1. _d 0
                 else
-                 ngrow(np)= (10.d0*4.d0 +2.d0)   /
-     &                     (10.d0*4.d0 +2.d0*NH4limit(np)/Nlimit(np)
-     &                           +8.d0*NO2limit(np)/Nlimit(np)
-     &                           +10.d0*NO3limit(np)/Nlimit(np))
-                 ngrow(np)=min(ngrow(np),1.d0)
+                 ngrow(np)= (10. _d 0*4. _d 0 +2. _d 0)   /
+     &              (10. _d 0*4. _d 0 +2. _d 0*NH4limit(np)/Nlimit(np)
+     &                           +8. _d 0*NO2limit(np)/Nlimit(np)
+     &                           +10. _d 0*NO3limit(np)/Nlimit(np))
+                 ngrow(np)=min(ngrow(np),1. _d 0)
                 endif
                endif
 c
@@ -566,18 +566,18 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 #endif
 
 c Now Check Against General Nutrient Limiting Tendency
-               if (ksatNH4(np).gt.0.d0.or.ksatNO2(np).gt.0.d0
-     &              .or.ksatNO3(np).gt.0.d0) then
+               if (ksatNH4(np).gt.0. _d 0.or.ksatNO2(np).gt.0. _d 0
+     &              .or.ksatNO3(np).gt.0. _d 0) then
                  if(Nlimit(np) .lt. limit(np)) limit(np) = Nlimit(np)
                endif
              else
-                ngrow(np)=1.d0
-                Nlimit(np)=1.d0
-                NO3limit(np)=0.d0
-                NO2limit(np)=0.d0
-                NH4limit(np)=0.d0
+                ngrow(np)=1. _d 0
+                Nlimit(np)=1. _d 0
+                NO3limit(np)=0. _d 0
+                NO2limit(np)=0. _d 0
+                NH4limit(np)=0. _d 0
              endif   ! diaz
-             limit(np)=min(limit(np),1.d0)
+             limit(np)=min(limit(np),1. _d 0)
            enddo    !np
           if (debug.eq.1) print*,'nut limit',
      &                          limit, PO4local, FeTlocal, Silocal
@@ -602,7 +602,7 @@ c ******************* END GROWTH PHYTO *******************************
 c------------------------------------------------------------------------
 c GRAZING sum contributions of all zooplankton
            do np=1,npmax
-              grazing_phyto(np) = 0.0d0
+              grazing_phyto(np) = 0.0 _d 0
               do nz = 1, nzmax
                    grazing_phyto(np) = grazing_phyto(np)
      &               + graze(np,nz)*zooP(nz)*zooTempFunction(nz)
@@ -614,13 +614,13 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c------------------------------------------------------------------------
 c sum all palatability*phyto and find phyto specific grazing rate
           do nz=1,nzmax
-           allphyto(nz)=0.d0
+           allphyto(nz)=0. _d 0
            do np=1,npmax
             allphyto(nz)=allphyto(nz)+palat(np,nz)*phyto(np)
            enddo
-           if (allphyto(nz).le.0.d0) allphyto(nz)=phygrazmin
+           if (allphyto(nz).le.0. _d 0) allphyto(nz)=phygrazmin
            do np=1,npmax
-            tmpz=max(0.d0,(allphyto(nz)-phygrazmin) )
+            tmpz=max(0. _d 0,(allphyto(nz)-phygrazmin) )
             grazphy(np,nz)=grazemax(nz)*
      &           (palat(np,nz)*phyto(np)/allphyto(nz))*
      &           ( tmpz/
@@ -631,7 +631,7 @@ c sum all palatability*phyto and find phyto specific grazing rate
 c         if (debug.eq.2) print*,'grazephy',grazphy
 c sum over zoo for impact on phyto
           do np=1,npmax
-           sumgrazphy(np)=0.d0
+           sumgrazphy(np)=0. _d 0
            do nz=1,nzmax
              sumgrazphy(np)=sumgrazphy(np)+
      &           grazphy(np,nz)*zooP(nz)
@@ -640,35 +640,35 @@ c sum over zoo for impact on phyto
           if (debug.eq.2) print*,'sumgrazephy',sumgrazphy
 c sum over phy for impact on zoo, and all remainder to go to POM
           do nz=1,nzmax
-           sumgrazzoo(nz)=0.d0
-           sumgrazzooN(nz)=0.d0
-           sumgrazzooFe(nz)=0.d0
-           sumgrazzooSi(nz)=0.d0
-           sumgrazloss(nz)=0.d0
-           sumgrazlossN(nz)=0.d0
-           sumgrazlossFe(nz)=0.d0
-           sumgrazlossSi(nz)=0.d0
+           sumgrazzoo(nz)=0. _d 0
+           sumgrazzooN(nz)=0. _d 0
+           sumgrazzooFe(nz)=0. _d 0
+           sumgrazzooSi(nz)=0. _d 0
+           sumgrazloss(nz)=0. _d 0
+           sumgrazlossN(nz)=0. _d 0
+           sumgrazlossFe(nz)=0. _d 0
+           sumgrazlossSi(nz)=0. _d 0
            do np=1,npmax
               sumgrazzoo(nz)=sumgrazzoo(nz)+
      &             asseff(np,nz)*grazphy(np,nz)*zooP(nz)
               sumgrazloss(nz)=sumgrazloss(nz)+
-     &             (1.d0-asseff(np,nz))*grazphy(np,nz)*zooP(nz)
+     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*zooP(nz)
               sumgrazzooN(nz)=sumgrazzooN(nz)+
      &             asseff(np,nz)*grazphy(np,nz)*zooP(nz)*R_NP(np)
               sumgrazlossN(nz)=sumgrazlossN(nz)+
-     &             (1.d0-asseff(np,nz))*grazphy(np,nz)*
+     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
      &                                      zooP(nz)*R_NP(np)
               sumgrazzooFe(nz)=sumgrazzooFe(nz)+
      &             asseff(np,nz)*grazphy(np,nz)*
      &                                      zooP(nz)*R_FeP(np)
               sumgrazlossFe(nz)=sumgrazlossFe(nz)+
-     &             (1.d0-asseff(np,nz))*grazphy(np,nz)*
+     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
      &                                      zooP(nz)*R_FeP(np)
               sumgrazzooSi(nz)=sumgrazzooSi(nz)+
      &             asseff(np,nz)*grazphy(np,nz)*
      &                                     zooP(nz)*R_SiP(np)
               sumgrazlossSi(nz)=sumgrazlossSi(nz)+
-     &             (1.d0-asseff(np,nz))*grazphy(np,nz)*
+     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
      &                                     zooP(nz)*R_SiP(np)
            enddo
           enddo
@@ -689,15 +689,15 @@ c accumulate particulate and dissolved detritus
                totphy_pop=totphy_pop+
      &                ExportFracP(np)*mortphy(np)*phytomin(np)
                totphy_dop=totphy_dop+
-     &                (1.d0-ExportFracP(np))*mortphy(np)*phytomin(np)
+     &                (1. _d 0-ExportFracP(np))*mortphy(np)*phytomin(np)
                totphy_pon=totphy_pon+ R_NP(np)*
      &                ExportFracP(np)*mortphy(np)*phytomin(np)
                totphy_don=totphy_don+ R_NP(np)*
-     &               (1.d0-ExportFracP(np))*mortphy(np)*phytomin(np)
+     &               (1. _d 0-ExportFracP(np))*mortphy(np)*phytomin(np)
                totphy_pofe=totphy_pofe+ R_FeP(np)*
      &                ExportFracP(np)*mortphy(np)*phytomin(np)
                totphy_dofe=totphy_dofe+ R_FeP(np)*
-     &               (1.d0-ExportFracP(np))*mortphy(np)*phytomin(np)
+     &               (1. _d 0-ExportFracP(np))*mortphy(np)*phytomin(np)
                totphy_posi=totphy_posi+ R_SiP(np)*
      &                mortphy(np)*phytomin(np)
             enddo 
@@ -718,10 +718,10 @@ c ****************** ZOO GRAZING RATE ****************************
 c determine zooplankton grazing rates 
             do nz = 1, nzmax
 c grazing: sum contribution from all phytoplankton
-              grazingP(nz) = 0.0d0
-              grazingN(nz) = 0.0d0
-              grazingFe(nz) = 0.0d0
-              grazingSi(nz) = 0.0d0
+              grazingP(nz) = 0.0 _d 0
+              grazingN(nz) = 0.0 _d 0
+              grazingFe(nz) = 0.0 _d 0
+              grazingSi(nz) = 0.0 _d 0
               do np = 1, npmax
                facpz = (phytomin(np)/(phytomin(np) + kgrazesat))
      &                  *zooTempFunction(nz)
@@ -747,15 +747,15 @@ c accumulate particulate and dissolved detritus
                totzoo_pop=totzoo_pop+
      &                     ExportFracZ(nz)*mortzoo(nz)*zooP(nz)
                totzoo_dop=totzoo_dop+
-     &                    (1.d0-ExportFracZ(nz))*mortzoo(nz)*zooP(nz)
+     &                    (1. _d 0-ExportFracZ(nz))*mortzoo(nz)*zooP(nz)
                totzoo_pon=totzoo_pon+ 
      &                     ExportFracZ(nz)*mortzoo(nz)*zooN(nz)
                totzoo_don=totzoo_don+
-     &                    (1.d0-ExportFracZ(nz))*mortzoo(nz)*zooN(nz)
+     &                    (1. _d 0-ExportFracZ(nz))*mortzoo(nz)*zooN(nz)
                totzoo_pofe=totzoo_pofe+
      &                     ExportFracZ(nz)*mortzoo(nz)*zooFe(nz)
                totzoo_dofe=totzoo_dofe+
-     &                    (1.d0-ExportFracZ(nz))*mortzoo(nz)*zooFe(nz)
+     &                    (1. _d 0-ExportFracZ(nz))*mortzoo(nz)*zooFe(nz)
                totzoo_posi=totzoo_posi+ 
      &                     mortzoo(nz)*zooSi(nz)
             enddo
@@ -765,15 +765,15 @@ c accumulate particulate and dissolved detritus
                totzoo_pop=totzoo_pop+
      &                    +ExportFracGraz(nz)*sumgrazloss(nz)
                totzoo_dop=totzoo_dop+
-     &                 +(1.d0-ExportFracGraz(nz))*sumgrazloss(nz)
+     &                 +(1. _d 0-ExportFracGraz(nz))*sumgrazloss(nz)
                totzoo_pon=totzoo_pon+
      &                    +ExportFracGraz(nz)*sumgrazlossN(nz)
                totzoo_don=totzoo_don+
-     &                 +(1.d0-ExportFracGraz(nz))*sumgrazlossN(nz)
+     &                 +(1. _d 0-ExportFracGraz(nz))*sumgrazlossN(nz)
                totzoo_pofe=totzoo_pofe+
      &                    +ExportFracGraz(nz)*sumgrazlossFe(nz)
                totzoo_dofe=totzoo_dofe+
-     &                 +(1.d0-ExportFracGraz(nz))*sumgrazlossFe(nz)
+     &                 +(1. _d 0-ExportFracGraz(nz))*sumgrazlossFe(nz)
                totzoo_posi=totzoo_posi+
      &                     +sumgrazlossSi(nz)
             enddo
@@ -801,8 +801,8 @@ c     &              ,PspecificPO4(np)
                consumpFeT = consumpFeT + PspecificPO4(np)*R_FeP(np)
                consumpSi  = consumpSi  + PspecificPO4(np)*R_SiP(np)
 c New Way of doing Nitrogen Consumption .......................
-               if(diazotroph(np) .ne. 1.0)then
-                if (Nlimit(np).le.0.d0) then
+               if(diazotroph(np) .ne. 1.0 _d 0)then
+                if (Nlimit(np).le.0. _d 0) then
                  consumpNO3 = consumpNO3
                  consumpNO2 = consumpNO2
                  consumpNH4 = consumpNH4
@@ -834,7 +834,7 @@ c New Way of doing Nitrogen Consumption .......................
 c ****************** END NUTRIENT UPTAKE ****************************
 
 c sinking phytoplankton and POM
-             if(bottom .eq. 1.0)then
+             if(bottom .eq. 1.0 _d 0)then
               psinkP  = (wp_sink*POPuplocal)/(dzlocal)
               psinkN  = (wn_sink*PONuplocal)/(dzlocal)
               psinkFe = (wfe_sink*POFeuplocal)/(dzlocal)
@@ -867,10 +867,12 @@ c remineralization of sinking particulate
 
 c chemistry
 c NH4 -> NO2 -> NO3 by bacterial action
-            NO2prod =  knita*( 1.d0-min(PARlocal/PAR0,1.d0) )*NH4local
-            NO3prod =  knitb*( 1.d0-min(PARlocal/PAR0,1.d0) )*NO2local 
-c           NO2prod =  knita*NH4local
-c           NO3prod =  knitb*NO2local
+            NO2prod = knita*( 1. _d 0-min(PARlocal/PAR0,1. _d 0) )
+     &                *NH4local
+            NO3prod = knitb*( 1. _d 0-min(PARlocal/PAR0,1. _d 0) )
+     &                *NO2local 
+c           NO2prod = knita*NH4local
+c           NO3prod = knitb*NO2local
 
 c -------------------------------------------------------------------
 c calculate tendency terms (and some diagnostics)
@@ -903,16 +905,16 @@ c phytoplankton
               tmp1=tmpgrow*phyto(np)-tmpr
               tmp2=tmpgrow*phyto(np)*(exp(-sig1*nh4local)+NH4limit(np))
      &                 -tmpr 
-              if (tmp1.ne.0.d0) then 
+              if (tmp1.ne.0. _d 0) then 
                 Rstarlocal(np)=ksatPO4(np)*tmpr/tmp1
               else
-                Rstarlocal(np)=-9999.d0
+                Rstarlocal(np)=-9999. _d 0
               endif
-              if (tmp2.ne.0.d0) then 
+              if (tmp2.ne.0. _d 0) then 
                 RNstarlocal(np)=ksatNO3(np)*
      &                 (tmpr-tmpgrow*NH4limit(np)*phyto(np))/tmp2
               else
-                RNstarlocal(np)=-9999.d0
+                RNstarlocal(np)=-9999. _d 0
               endif
 #endif
             enddo
@@ -992,11 +994,11 @@ c  Mutation - apply mutation to tendencies [jbmodif]
 #ifdef ALLOW_MUTANTS
 c apply to all sisters when first sister is encountered
        if(runtim .gt. threeyr) then
-       mutfor=1e-8
-       mutback=1e-12
+       mutfor=1 _d -8
+       mutback=1 _d -12
        if(numtax .gt. 1)then
         do np=1,npro
-          if(mod(np,numtax).eq. 1.d0)then
+          if(mod(np,numtax).eq. 1. _d 0)then
              nsisone   = np
              nsistwo   = np+1 
              nsisthree = np+2             
@@ -1005,10 +1007,10 @@ c apply to all sisters when first sister is encountered
              grow1 = PspecificPO4(nsisone)
              grow2 = PspecificPO4(nsistwo)
 
-             if(numtax.eq.2)grow3 = 0.0d0
-             if(numtax.eq.2)grow4 = 0.0d0
+             if(numtax.eq.2)grow3 = 0.0 _d 0
+             if(numtax.eq.2)grow4 = 0.0 _d 0
 
-             if(numtax.eq.3)grow4 = 0.0d0
+             if(numtax.eq.3)grow4 = 0.0 _d 0
              if(numtax.ge.3)grow3 = PspecificPO4(nsisthree)
              
              if(numtax.eq.4)grow4 = PspecificPO4(nsisfour)
@@ -1016,35 +1018,35 @@ c apply to all sisters when first sister is encountered
 
 
                 dphytodt(nsisone)  = dphytodt(nsisone)
-     &                - grow1 *1.4427d0*mutfor
-     &                - grow1 *1.4427d0*mutfor
-     &                - grow1 *1.4427d0*mutfor
-     &                + grow2 *1.4427d0*mutback
-     &                + grow3 *1.4427d0*mutback
-     &                + grow4 *1.4427d0*mutback
+     &                - grow1 *1.4427 _d 0*mutfor
+     &                - grow1 *1.4427 _d 0*mutfor
+     &                - grow1 *1.4427 _d 0*mutfor
+     &                + grow2 *1.4427 _d 0*mutback
+     &                + grow3 *1.4427 _d 0*mutback
+     &                + grow4 *1.4427 _d 0*mutback
 
                 dphytodt(nsistwo)  = dphytodt(nsistwo)
-     &                - grow2 *1.4427d0*mutback
-     &                + grow1 *1.4427d0*mutfor
+     &                - grow2 *1.4427 _d 0*mutback
+     &                + grow1 *1.4427 _d 0*mutfor
 
                 if(numtax .ge. 3)then
                   dphytodt(nsisthree)  = dphytodt(nsisthree)
-     &                - grow3 *1.4427d0*mutback
-     &                + grow1 *1.4427d0*mutfor
+     &                - grow3 *1.4427 _d 0*mutback
+     &                + grow1 *1.4427 _d 0*mutfor
                 endif
         
                 if(numtax .eq. 4)then
                   dphytodt(nsisfour)  = dphytodt(nsisfour)
-     &                - grow4 *1.4427d0*mutback
-     &                + grow1 *1.4427d0*mutfor
+     &                - grow4 *1.4427 _d 0*mutback
+     &                + grow1 *1.4427 _d 0*mutfor
 c QQQQQQQQQQ FIX FOR NIT RUNS ONLY!!!
-                  if (phyto(nsisfour).eq.0.d0) then
-                    if (phyto(nsistwo).eq.0.d0) then
+                  if (phyto(nsisfour).eq.0. _d 0) then
+                    if (phyto(nsistwo).eq.0. _d 0) then
                      if (dphytodt(nsistwo).gt.dphytodt(nsisfour)) then
                          dphytodt(nsisfour)=dphytodt(nsistwo)
                      endif
                     endif
-                    if (phyto(nsisthree).eq.0.d0) then
+                    if (phyto(nsisthree).eq.0. _d 0) then
                      if (dphytodt(nsisthree).gt.dphytodt(nsisfour)) then
                          dphytodt(nsisfour)=dphytodt(nsisthree)
                      endif
@@ -1055,23 +1057,23 @@ c QQQQQQQQQQQQQ
 
 c QQQQQQQQQQQQTEST
          if (debug.eq.11) then
-         if (PARlocal.gt.1.d0) then
+         if (PARlocal.gt.1. _d 0) then
           if (dphytodt(nsistwo).gt.dphytodt(nsisfour).and.
-     &                             dphytodt(nsisfour).gt.0.d0) then
+     &                             dphytodt(nsisfour).gt.0. _d 0) then
                 print*,'QQQQ nsistwo>nsisfour',nsistwo,nsisfour, 
      &               dphytodt(nsistwo),  dphytodt(nsisfour),
      &               phyto(nsistwo), phyto(nsisfour),  
      &               phyto(nsisone)
           endif
           if (dphytodt(nsisthree).gt.dphytodt(nsisfour).and.
-     &                             dphytodt(nsisfour).gt.0.d0) then
+     &                             dphytodt(nsisfour).gt.0. _d 0) then
                  print*,'QQQQ nsisthree>nsisfour',nsisthree,nsisfour,
      &                dphytodt(nsisthree), dphytodt(nsisfour),
      &               phyto(nsisthree), phyto(nsisfour),  
      &               phyto(nsisone)
           endif
           if (dphytodt(nsisfour).gt.dphytodt(nsisone).and.
-     &                            dphytodt(nsisone).gt.0.d0) then
+     &                            dphytodt(nsisone).gt.0. _d 0) then
                  print*,' BIG QQQQ nsisfour>nsisone',nsisone,nsisfour,
      &                dphytodt(nsisfour), dphytodt(nsisone),
      &               phyto(nsisfour), phyto(nsisone)

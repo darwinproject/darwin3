@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.4 2007/12/12 18:44:28 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.5 2007/12/12 21:19:01 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -85,8 +85,8 @@ c %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 c    for zooplankton
 c assume zoo(1) = small, zoo(2) = big
 c then grazing efficiency according to size
-         zoosize(1) = 0.0d0
-         zoosize(2) = 1.0d0
+         zoosize(1) = 0.0 _d 0
+         zoosize(2) = 1.0 _d 0
 
 c grazing rates according to "allometry"
 c big grazers preferentially eat big phyto etc...
@@ -207,7 +207,7 @@ c         CALL TIMEAVE_RESET(SURave,   1,  bi, bj, myThid)
      &                        SQUEEZE_RIGHT , mythid)
 
           do k=1,Nr
-            DAR_TimeAve(bi,bj,k)=0.d0
+            DAR_TimeAve(bi,bj,k)=0. _d 0
           enddo
          ENDDO
         ENDDO

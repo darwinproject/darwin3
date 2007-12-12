@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/invnormal.F,v 1.2 2007/12/11 21:33:24 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/invnormal.F,v 1.3 2007/12/12 21:19:01 jahn Exp $
 C $Name:  $
 
 c Inverse normal distribution 
@@ -61,7 +61,7 @@ c  Define break-points.
 
 c  Rational approximation for lower region.
 
-         if ((0 .lt. p) .and. (p .lt. plow))then
+         if ((0.d0 .lt. p) .and. (p .lt. plow))then
             q = sqrt(-2.0d0*log(p))
             x = (((((c(1)*q+c(2))*q+c(3))*q+c(4))*q+c(5))*q+c(6)) /
      &      ((((d(1)*q+d(2))*q+d(3))*q+d(4))*q+1.d0)
@@ -78,8 +78,8 @@ c  Rational approximation for central region.
 
 c  Rational approximation for upper region.
 
-         if ((phigh .lt. p).and.(p .lt. 1))then
-            q = sqrt(-2.0d0*log(1-p))
+         if ((phigh .lt. p).and.(p .lt. 1.d0))then
+            q = sqrt(-2.0d0*log(1.d0-p))
             x = -(((((c(1)*q+c(2))*q+c(3))*q+c(4))*q+c(5))*q+c(6)) /
      &      ((((d(1)*q+d(2))*q+d(3))*q+d(4))*q+1.d0)
          endif 

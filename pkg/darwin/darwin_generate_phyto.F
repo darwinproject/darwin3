@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.4 2007/12/12 18:54:50 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.5 2007/12/12 21:19:01 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,10 +51,10 @@ C     msgBuf    - Informational/error meesage buffer
         INTEGER signvar
 CEOP
 c
-        standin=0.d0
+        standin=0. _d 0
 
 c length of day (seconds)
-        pday = 86400.0d0
+        pday = 86400.0 _d 0
 
 c each time generate another functional group add one to ngroups
         ngroups = ngroups + 1
@@ -63,26 +63,26 @@ c RANDOM NUMBERS
 c phyto either "small" (physize(np)=0.0) or "big" (physize(np)=1.0)
 c at this point independent of whether diatom or not
         RandNo = darwin_random(myThid)
-        if(RandNo .gt. 0.500d0)then
-          physize(np) = 1.0d0
+        if(RandNo .gt. 0.500 _d 0)then
+          physize(np) = 1.0 _d 0
         else
-          physize(np) = 0.0d0
+          physize(np) = 0.0 _d 0
         end if
 c
 c phyto either diatoms (diatom=1.0) and use silica or not (diatom=0.0)
 c if they are large
-        if (physize(np).eq.1.0d0) then
+        if (physize(np).eq.1.0 _d 0) then
           RandNo = darwin_random(myThid)
-          if(RandNo .gt. 0.500d0)then
-            diatom(np) = 1.0d0
+          if(RandNo .gt. 0.500 _d 0)then
+            diatom(np) = 1.0 _d 0
           else
-            diatom(np) = 0.0d0
+            diatom(np) = 0.0 _d 0
           end if
         else
-           diatom(np) = 0.0d0
+           diatom(np) = 0.0 _d 0
         endif
 c TEST ...........................................
-c       diatom(np) = 0.0d0
+c       diatom(np) = 0.0 _d 0
 c       write(msgBuf,'(A,I4,A)')
 c    &     'generate Phyto: np = ',np,' FIXED - no DIAZO'
 c       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -93,14 +93,14 @@ c TEST ...........................................
 
 c phyto either diazotrophs (diazotroph=1.0) or not (diazotroph=0.0)
         RandNo = darwin_random(myThid)
-        if(RandNo .gt. 0.6700d0)then
-          diazotroph(np) = 1.0d0
+        if(RandNo .gt. 0.6700 _d 0)then
+          diazotroph(np) = 1.0 _d 0
         else
-          diazotroph(np) = 0.0d0
+          diazotroph(np) = 0.0 _d 0
         end if
 c TEST ...........................................
 #ifndef ALLOW_DIAZ
-        diazotroph(np) = 0.0d0
+        diazotroph(np) = 0.0 _d 0
         write(msgBuf,'(A,I4,A)')
      &     'generate Phyto: np = ',np,' FIXED - no DIAZO'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -112,26 +112,26 @@ c TEST ...........................................
 c growth rates
         RandNo = darwin_random(myThid)
 c big/small phyto growth rates..
-        if(physize(np) .eq. 1.0d0)then
+        if(physize(np) .eq. 1.0 _d 0)then
           growthdays = Biggrow +Randno*Biggrowrange
         else
           growthdays = Smallgrow +RandNo*Smallgrowrange
         end if
 c but diazotrophs always slower due to energetics
-        if(diazotroph(np) .eq. 1.0) then
+        if(diazotroph(np) .eq. 1.0 _d 0) then
             growthdays = growthdays * diaz_growfac
         endif 
 c now convert to a growth rate
-        if (growthdays.gt.0.d0) then
-         mu(np) = 1.0d0/(growthdays*pday)
+        if (growthdays.gt.0. _d 0) then
+         mu(np) = 1.0 _d 0/(growthdays*pday)
         else
-         mu(np) = 0.d0
+         mu(np) = 0. _d 0
         endif
 
 c mortality and export fraction rates
         RandNo = darwin_random(myThid)
 c big/small phyto mortality rates..
-        if(physize(np) .eq. 1.0d0)then
+        if(physize(np) .eq. 1.0 _d 0)then
           mortdays = Bigmort +Randno*Bigmortrange
           ExportFracP(np)=Bigexport
         else
@@ -139,23 +139,23 @@ c big/small phyto mortality rates..
           ExportFracP(np)=Smallexport
         end if
 c now convert to a mortality rate
-        if (mortdays.gt.0.d0) then
-          mortphy(np) = 1.0d0/(mortdays*pday)
+        if (mortdays.gt.0. _d 0) then
+          mortphy(np) = 1.0 _d 0/(mortdays*pday)
         else
-          mortphy(np) = 0.d0
+          mortphy(np) = 0. _d 0
         endif
 
 
 
 c nutrient source 
-         if(diazotroph(np) .ne. 1.0)then
+         if(diazotroph(np) .ne. 1.0 _d 0)then
            RandNo = darwin_random(myThid)
-           if (physize(np).eq.1.0d0) then   
+           if (physize(np).eq.1.0 _d 0) then   
              nsource(np) = 3
            else
-            if(RandNo .gt. 0.670d0)then
+            if(RandNo .gt. 0.670 _d 0)then
               nsource(np) = 1
-            elseif(RandNo .lt. 0.33d0)then
+            elseif(RandNo .lt. 0.33 _d 0)then
               nsource(np) = 2
             else
               nsource(np) = 3
@@ -170,14 +170,14 @@ c generate phyto Temperature Function parameters
 c.......................................................
         phytoTempCoeff(np) = tempcoeff1
         phytoTempExp1(np) = tempcoeff3
-        if(physize(np) .eq. 1.0d0)then
+        if(physize(np) .eq. 1.0 _d 0)then
           phytoTempExp2(np) = tempcoeff2_big
         else
           phytoTempExp2(np) = tempcoeff2_small
         endif
 
         RandNo = darwin_random(myThid)
-cswd    phytoTempOptimum(np) = 30.0d0 - RandNo*28.0d0 
+cswd    phytoTempOptimum(np) = 30.0 _d 0 - RandNo*28.0 _d 0 
         phytoTempOptimum(np) = tempmax - RandNo*temprange
         phytoDecayPower(np) = tempdecay
         
@@ -197,13 +197,13 @@ c ...............................................
 c stoichiometric ratios for each functional group of phyto 
 c relative to phosphorus  - the base currency nutrient
 c set Si:P
-        if(diatom(np) .eq. 1.0)then
+        if(diatom(np) .eq. 1.0 _d 0)then
           R_SiP(np) =  val_R_SiP_diatom
         else
-          R_SiP(np) = 0.0d0
+          R_SiP(np) = 0.0 _d 0
         end if
 c set N:P and iron requirement according to diazotroph status
-        if(diazotroph(np) .eq. 1.0)then
+        if(diazotroph(np) .eq. 1.0 _d 0)then
           R_NP(np) = val_R_NP_diaz
           R_FeP(np) =  val_RFeP_diaz
         else
@@ -211,7 +211,7 @@ c set N:P and iron requirement according to diazotroph status
           R_FeP(np) = val_RFeP
         end if
 c set sinking rates according to allometry
-        if(physize(np) .eq. 1.0)then
+        if(physize(np) .eq. 1.0 _d 0)then
            wsink(np) = BigSink
         else 
            wsink(np) = SmallSink
@@ -219,7 +219,7 @@ c set sinking rates according to allometry
 c half-saturation coeffs 
 
         RandNo = darwin_random(myThid)
-        if(physize(np) .eq. 1.0)then
+        if(physize(np) .eq. 1.0 _d 0)then
            ksatPO4(np) = BigPsat + RandNo*BigPsatrange
         else
 c          ksatPO4(np) = SmallPsat + RandNo*SmallPsatrange
@@ -245,7 +245,7 @@ c     0.35=Av High Light Adapted, 0.8=Av Low Light Adapted
 c     kinhib  {0.0 - 3.0}
 c     0.5 =Av High Light Adapted, 2.0=Av Low Light Adapted
 c High Light Groups for Large size:
-              if(physize(np) .eq. 1.0d0)then
+              if(physize(np) .eq. 1.0 _d 0)then
                  RandNo = darwin_random_normal(myThid)
                  ksatPAR(np) = abs(Bigksatpar+Bigksatparstd*RandNo)
 
@@ -273,8 +273,8 @@ c Low Light Groups for Small size:
 #ifndef OLD_GRAZE
 c    for zooplankton
 c assume zoo(1) = small, zoo(2) = big
-         zoosize(1) = 0.0d0
-         zoosize(2) = 1.0d0
+         zoosize(1) = 0.0 _d 0
+         zoosize(2) = 1.0 _d 0
          grazemax(1) = GrazeFast
          grazemax(2) = GrazeFast
          ExportFracZ(1)=ZooexfacSmall
@@ -292,14 +292,14 @@ c big grazers preferentially eat big phyto etc...
               asseff(np,nz)=GrazeEffmod
            else
               palat(np,nz)=palatlo
-              if (physize(np).eq.0.d0) then
+              if (physize(np).eq.0. _d 0) then
                 asseff(np,nz)=GrazeEffhi
               else
                 asseff(np,nz)=GrazeEfflow
               endif
            endif
 c diatoms even less palatible
-           if (diatom(np).eq.1) then
+           if (diatom(np).eq.1. _d 0) then
                palat(np,nz)= palat(np,nz)*diatomgraz
            endif
           enddo

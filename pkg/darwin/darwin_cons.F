@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.1 2007/12/10 14:59:47 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.2 2007/12/12 21:19:01 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,11 +45,11 @@ C============== Local variables ============================================
 
       _BEGIN_MASTER(myThid)
 c
-         tmptotP=0.d0
-         tmptotN=0.d0
-         tmptotFe=0.d0
-         tmptotSi=0.d0
-         voltot=0.d0
+         tmptotP=0. _d 0
+         tmptotN=0. _d 0
+         tmptotFe=0. _d 0
+         tmptotSi=0. _d 0
+         voltot=0. _d 0
 
         DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
