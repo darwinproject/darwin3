@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.2 2007/12/11 20:01:15 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.3 2007/12/12 18:44:28 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,6 +29,8 @@ C     === Global variables ===
 
         INTEGER myThid
 C============== Local variables ============================================
+C     msgBuf    - Informational/error meesage buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL pday
       INTEGER i,j,k,bi,bj
       INTEGER tmp
@@ -38,8 +40,18 @@ C     /--------------------------------------------------------------\
 C     |  initialise common block biochemical parameters               |
 C     \--------------------------------------------------------------/
 
-      CALL PRINT_MESSAGE('QQ loading parameters', standardMessageUnit,
-     &                    SQUEEZE_RIGHT , mythid)
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// Darwin loading parameters'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
 
 c c define 1 day in seconds
          pday = 86400.0d0

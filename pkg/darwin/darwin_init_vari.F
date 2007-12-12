@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.3 2007/12/11 21:36:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.4 2007/12/12 18:44:28 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -47,6 +47,18 @@ C     msgBuf    - Informational/error meesage buffer
         INTEGER np
         INTEGER nz
 CEOP
+
+        WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)') '// Darwin init variables >>> START <<<'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
 
 c test....................
 c       write(6,*)'testing in npzd2fe_init_vari '
@@ -190,7 +202,7 @@ c set arrays to zero if first timestep
 #endif
 c         CALL TIMEAVE_RESET(SURave,   1,  bi, bj, myThid)
           WRITE(msgbuf,'(A)')
-     &      ' QQ start timeave'
+     &      'QQ start timeave'
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , mythid)
 
@@ -206,6 +218,18 @@ c
 c test....................
 c       write(6,*)'finishing darwin_init_vari '
 c test....................
+        WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)') '// Darwin init variables >>> END <<<'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+
 
          RETURN 
          END 

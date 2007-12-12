@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.2 2007/12/11 21:36:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.3 2007/12/12 18:44:28 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -18,20 +18,23 @@ c ==========================================================
         SUBROUTINE DARWIN_GENERATE_PHYTO(myThid, np)
 
         implicit none
+#include "EEPARAMS.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
         INTEGER myThid
-CEOP
 
 C     === Functions ===
       _RL DARWIN_RANDOM
       EXTERNAL DARWIN_RANDOM
 
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     msgBuf    - Informational/error meesage buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-c local variables
         _RL RandNo
         _RL growthdays
         _RL mortdays
@@ -44,6 +47,7 @@ c local variables
         INTEGER np
         INTEGER nz
         INTEGER signvar
+CEOP
 c
         standin=0.d0
 
@@ -77,7 +81,10 @@ c if they are large
         endif
 c TEST ...........................................
 c       diatom(np) = 0.0d0
-c       write(6,*)'FIXED - no DIATOM '
+c       write(msgBuf,'(A,I4,A)')
+c    &     'generate Phyto: np = ',np,' FIXED - no DIAZO'
+c       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+c    &                      SQUEEZE_RIGHT , mythid)
 c TEST ...........................................
 
 
@@ -92,7 +99,10 @@ c phyto either diazotrophs (diazotroph=1.0) or not (diazotroph=0.0)
 c TEST ...........................................
 #ifndef ALLOW_DIAZ
         diazotroph(np) = 0.0d0
-        write(6,*)'FIXED - no DIAZO '
+        write(msgBuf,'(A,I4,A)')
+     &     'generate Phyto: np = ',np,' FIXED - no DIAZO'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , mythid)
 #endif
 c TEST ...........................................
 
@@ -169,12 +179,17 @@ cswd    phytoTempOptimum(np) = 30.0d0 - RandNo*28.0d0
         phytoTempOptimum(np) = tempmax - RandNo*temprange
         phytoDecayPower(np) = tempdecay
         
-        write(6,*)'generate Phyto: np = ',np,' Topt =',
-     &    phytoTempOptimum(np)
-
+        write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+     &     'generate Phyto: np = ',np,' Topt       =',
+     &     phytoTempOptimum(np)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , mythid)
 
 c ...............................................
-        write(6,*)'generate phyto: np = ',np,' growthdays = ',growthdays
+        write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+     &     'generate Phyto: np = ',np,' growthdays =', growthdays
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , mythid)
 c ...............................................
 
 c stoichiometric ratios for each functional group of phyto 
@@ -250,8 +265,14 @@ c Low Light Groups for Small size:
      &                                                smallkinhibstd)
                  kinhib(np) = abs(standin)
               endif
-         write(6,*)'generate Phyto: np = ',np,' ksatPAR, kinhib =',
-     &          ksatPAR(np), kinhib(np)
+         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+     &     'generate Phyto: np = ',np,' ksatPAR    =', ksatPAR(np)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , mythid)
+         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+     &     'generate Phyto: np = ',np,' kinhib     =', kinhib(np)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , mythid)
 
 #ifndef OLD_GRAZE
 c    for zooplankton
