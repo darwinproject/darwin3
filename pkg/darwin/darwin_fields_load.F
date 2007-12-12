@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.1 2007/12/10 14:59:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.2 2007/12/12 21:18:47 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -60,6 +60,7 @@ C     == Local variables ==
 #endif
        INTEGER bi,bj,i,j,k,intime0,intime1
       _RL aWght,bWght,rdt
+      _RL tmp1Wght, tmp2Wght
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 c
 c
@@ -84,16 +85,18 @@ cQQQ need to check timing
 C Now calculate whether it is time to update the forcing arrays
        rdt=1. _d 0 / deltaTclock
        nForcingPeriods=
-     &  int(externForcingCycle/externForcingPeriod+0.5)
-       Imytm=int(myTime*rdt+0.5)
-       Ifprd=int(externForcingPeriod*rdt+0.5)
-       Ifcyc=int(externForcingCycle*rdt+0.5)
-       Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
+     &  int(externForcingCycle/externForcingPeriod+0.5 _d 0)
+       Imytm=int(myTime*rdt+0.5 _d 0)
+       Ifprd=int(externForcingPeriod*rdt+0.5 _d 0)
+       Ifcyc=int(externForcingCycle*rdt+0.5 _d 0)
+       Iftm=mod( Imytm+Ifcyc-Ifprd/2,Ifcyc)
 
        intime0=int(Iftm/Ifprd)
        intime1=mod(intime0+1,nForcingPeriods)
-       aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
-       bWght=1.-aWght
+       tmp1Wght = FLOAT( Iftm-Ifprd*intime0 )
+       tmp2Wght = FLOAT( Ifprd )
+       aWght =  tmp1Wght / tmp2Wght
+       bWght = 1. _d 0 - aWght
 
        intime0=intime0+1
        intime1=intime1+1
@@ -174,7 +177,7 @@ cQQ need to include ice moel here, if used
             fice(i,j,bi,bj)   = bWght*fice0(i,j,bi,bj)
      &                         +aWght*fice1(i,j,bi,bj)
            ELSE
-            fice(i,j,bi,bj)  = 0.d0
+            fice(i,j,bi,bj)  = 0. _d 0
            ENDIF
 #endif
 #endif
@@ -184,15 +187,15 @@ cQQ need to include ice moel here, if used
 c convert to mmol/m2/s
             inputFe(i,j,bi,bj)   = 1000.d0*inputFe(i,j,bi,bj)
            ELSE
-            inputFe(i,j,bi,bj)  = 0.d0
+            inputFe(i,j,bi,bj)  = 0. _d 0
            ENDIF
 c light (load as Ein/m2/d; convert to uEin/m2/s)
            IF ( Filename1 .NE. ' '  ) THEN
             sur_par(i,j,bi,bj)   = bWght*sur_par0(i,j,bi,bj)
      &                         +aWght*sur_par1(i,j,bi,bj)
-            sur_par(i,j,bi,bj)   = sur_par(i,j,bi,bj)*1.d6/86400.d0
+            sur_par(i,j,bi,bj) = sur_par(i,j,bi,bj)*1. _d 6/86400. _d 0
            ELSE
-            sur_par(i,j,bi,bj)  =  200.d0*maskC(i,j,1,bi,bj)
+            sur_par(i,j,bi,bj)  =  200. _d 0*maskC(i,j,1,bi,bj)
            ENDIF
 #ifdef NUT_SUPPLY
 c artificial wvel for nutrient supply in 1-d and 2-d models
