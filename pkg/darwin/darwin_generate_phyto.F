@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.3 2007/12/12 18:44:28 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.4 2007/12/12 18:54:50 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,6 +29,8 @@ C  myThid               :: thread number
 C     === Functions ===
       _RL DARWIN_RANDOM
       EXTERNAL DARWIN_RANDOM
+      _RL DARWIN_RANDOM_NORMAL
+      EXTERNAL DARWIN_RANDOM_NORMAL
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -244,26 +246,20 @@ c     kinhib  {0.0 - 3.0}
 c     0.5 =Av High Light Adapted, 2.0=Av Low Light Adapted
 c High Light Groups for Large size:
               if(physize(np) .eq. 1.0d0)then
-                 RandNo = darwin_random(myThid)
-                 call invnormal(standin,RandNo,Bigksatpar,Bigksatparstd)
-                 ksatPAR(np) = abs(standin)
+                 RandNo = darwin_random_normal(myThid)
+                 ksatPAR(np) = abs(Bigksatpar+Bigksatparstd*RandNo)
 
-                 RandNo = darwin_random(myThid)
-                 CALL invnormal(standin,RandNo,Bigkinhib,Bigkinhibstd)
-                 kinhib(np) = abs(standin)
+                 RandNo = darwin_random_normal(myThid)
+                 kinhib(np) = abs(Bigkinhib+Bigkinhibstd*RandNo)
               else
 c QQ remove someday
                  RandNo = darwin_random(myThid)
 c Low Light Groups for Small size:
-                 RandNo = darwin_random(myThid)
-                 CALL invnormal(standin,RandNo,smallksatpar,
-     &                                               smallksatparstd)
-                 ksatPAR(np) = abs(standin)
+                 RandNo = darwin_random_normal(myThid)
+                 ksatPAR(np) = abs(smallksatpar+smallksatparstd*RandNo)
 
-                 RandNo = darwin_random(myThid)
-                 CALL invnormal(standin,RandNo,smallkinhib,
-     &                                                smallkinhibstd)
-                 kinhib(np) = abs(standin)
+                 RandNo = darwin_random_normal(myThid)
+                 kinhib(np) = abs(smallkinhib+smallkinhibstd*RandNo)
               endif
          write(msgBuf,'(A,I4,A,1P1G24.15E3)')
      &     'generate Phyto: np = ',np,' ksatPAR    =', ksatPAR(np)

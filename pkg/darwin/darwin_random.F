@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.1 2007/12/11 21:36:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.2 2007/12/12 18:54:50 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -143,6 +143,65 @@ CEOP
 #else
       Iseed = 0
       darwin_random = rand(Iseed)
+#endif
+
+      RETURN 
+      END 
+
+c ==========================================================
+c FUNCTION DARWIN_RANDOM_NORMAL()
+c returns a normally distributed random number with mean 0 and stddev 1
+c ==========================================================
+c 
+      FUNCTION DARWIN_RANDOM_NORMAL(myThid)
+
+      IMPLICIT NONE
+
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C  DARWIN_RANDOM_NORMAL :: normally distributed random number
+C  myThid               :: thread number
+      _RL DARWIN_RANDOM_NORMAL
+      INTEGER myThid
+
+C     !FUNCTIONS:
+C     == Functions ==
+#ifdef PORT_RAND
+      real*8 port_rand_norm
+      external port_rand_norm
+#endif
+#ifdef IFORT
+      real*4 RAND
+      EXTERNAL RAND
+#endif
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+#ifdef PORT_RAND
+      real*8 Dseed
+#else
+      INTEGER Iseed
+      real*8 uniform
+      real*8 normal
+#endif
+CEOP
+
+      IF (myThid .GT. 1) THEN
+        CALL PRINT_ERROR('DARWIN_RANDOM: threading no supported',
+     &      myThid)
+        STOP 'ABNORMAL END: S/R DARWIN_RANDOM'
+      END IF
+
+#ifdef PORT_RAND
+      Dseed = -1
+      darwin_random_normal = port_rand_norm(Dseed)
+#else
+      Iseed = 0
+      uniform = rand(Iseed)
+      CALL invnormal(normal, uniform, 0.d0, 1.d0)
+      darwin_random_normal = normal
 #endif
 
       RETURN 
