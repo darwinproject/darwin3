@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.4 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.5 2007/12/13 23:00:41 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -187,7 +187,8 @@ c set zoo exportfrac
        ZooexfacBig = 0.7 _d 0
 c minimum phyto (below which grazing and mortality doesn't happen)
 c      phymin = 1 _d -10
-       phymin = 1 _d -50
+c      phymin = 1 _d -50
+       phymin = 1 _d -20
 c DOM remin rates
          Kdop = 1.0 _d 0/(100.0 _d 0*pday)
          Kdon = 1.0 _d 0/(100.0 _d 0*pday)
