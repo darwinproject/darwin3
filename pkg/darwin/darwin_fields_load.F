@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.2 2007/12/12 21:18:47 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.3 2008/01/11 15:48:56 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -64,7 +64,7 @@ C     == Local variables ==
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 c
 c
-      IF ( periodicExternalForcing ) THEN
+      IF ( gchem_ForcingPeriod .NE. 0. _d 0 ) THEN
 
 C First call requires that we initialize everything to zero for safety
 cQQQ need to check timing
@@ -85,10 +85,10 @@ cQQQ need to check timing
 C Now calculate whether it is time to update the forcing arrays
        rdt=1. _d 0 / deltaTclock
        nForcingPeriods=
-     &  int(externForcingCycle/externForcingPeriod+0.5 _d 0)
+     &  int(gchem_ForcingCycle/gchem_ForcingPeriod+0.5 _d 0)
        Imytm=int(myTime*rdt+0.5 _d 0)
-       Ifprd=int(externForcingPeriod*rdt+0.5 _d 0)
-       Ifcyc=int(externForcingCycle*rdt+0.5 _d 0)
+       Ifprd=int(gchem_ForcingPeriod*rdt+0.5 _d 0)
+       Ifcyc=int(gchem_ForcingCycle*rdt+0.5 _d 0)
        Iftm=mod( Imytm+Ifcyc-Ifprd/2,Ifcyc)
 
        intime0=int(Iftm/Ifprd)
@@ -115,7 +115,7 @@ c   but seems okay for remaining timesteps
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
         WRITE(*,*)
-     &    'S/R EXTERNAL_FIELDS_LOAD: Reading ice data',
+     &    'S/R DARWIN_FIELDS_LOAD: Reading forcing data',
      &                 myTime,myIter
 
        IF ( IceFile .NE. ' '  ) THEN

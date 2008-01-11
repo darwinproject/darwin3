@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.1 2007/12/10 15:07:38 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.2 2008/01/11 15:49:55 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o load forcing fields if gchem_ForcingPeriod.NE.0 (instead of periodicExternalForcing)
+
+cp59i_noironwithexf
+o add darwin global verification experiment
+o change default phymin to 1e-20
+o change floating point constants to _d
+o portable random number generator
 
 cp59i
 o initial checkin.  Works with MITgcm checkpoint59i
