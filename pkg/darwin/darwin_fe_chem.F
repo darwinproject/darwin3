@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.2 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.3 2008/01/14 21:33:08 jahn Exp $
 C $Name:  $
 
 c#include "DIC_OPTIONS.h"
@@ -34,8 +34,8 @@ C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     myThid - Instance number for this innvocation of CALC_GT
-      _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER myIter,myThid
 CEndOfInterface
@@ -65,18 +65,18 @@ C in surface layer
 
 C   Ligand,FeL,Fe calculation
             
-              lig=(-ligand_stab*fe (i,j,k,bi,bj)+
+              lig=(-ligand_stab*fe (i,j,k)+
      &              ligand_stab*ligand_tot-1. _d 0
-     &             +((ligand_stab*fe (i,j,k,bi,bj)
+     &             +((ligand_stab*fe (i,j,k)
      &                -ligand_stab*ligand_tot+1. _d 0)**2+4. _d 0
      &               *ligand_stab*ligand_tot)**0.5 _d 0)
      &            /(2. _d 0*ligand_stab)
  
               FeL = ligand_tot-lig
-              freefe(i,j,k,bi,bj) = fe (i,j,k,bi,bj)-FeL
+              freefe(i,j,k) = fe (i,j,k)-FeL
 #ifdef MINFE
-              freefe(i,j,k,bi,bj) = min(freefe(i,j,k,bi,bj),freefemax)
-              fe(i,j,k,bi,bj) = FeL+freefe(i,j,k,bi,bj)
+              freefe(i,j,k) = min(freefe(i,j,k),freefemax)
+              fe(i,j,k) = FeL+freefe(i,j,k)
 #endif
           END IF  
          ENDDO
