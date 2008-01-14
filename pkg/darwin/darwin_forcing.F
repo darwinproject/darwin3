@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.2 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.3 2008/01/14 21:32:40 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,105 +52,105 @@ C==============================================================
 
 C     === Global variables ===
 c tracers
-      _RL  PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  FeT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Si(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  DOFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Zoo1P(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Zoo1N(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Zoo1Fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Zoo1Si(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Zoo2P(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Zoo2N(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Zoo2Fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Zoo2Si(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy5(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy6(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy7(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy8(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy9(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy10(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy11(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy12(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy14(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy15(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy16(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy17(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy18(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy19(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy20(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy22(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy24(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy25(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy26(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy27(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy28(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy29(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy30(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy31(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy32(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy33(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy34(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy35(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy36(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy37(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy38(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy39(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy40(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy41(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy42(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy43(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy44(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy45(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy46(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy47(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy48(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy49(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy50(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy51(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy52(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy53(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy54(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy55(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy56(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy57(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy58(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy59(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy60(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy61(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy62(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy63(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy64(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy65(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy66(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy67(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy68(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy69(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy70(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy71(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy72(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy73(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy74(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy75(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy76(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy77(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  Phy78(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  POP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  PON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  POFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  PSi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  NH4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
-      _RL  NO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
+      _RL  PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  FeT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Si(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  DOFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Zoo1P(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Zoo1N(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Zoo1Fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Zoo1Si(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Zoo2P(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Zoo2N(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Zoo2Fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Zoo2Si(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy5(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy6(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy7(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy8(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy9(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy10(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy11(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy12(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy14(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy15(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy16(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy17(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy18(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy19(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy20(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy22(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy24(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy25(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy26(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy27(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy28(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy29(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy30(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy31(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy32(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy33(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy34(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy35(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy36(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy37(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy38(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy39(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy40(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy41(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy42(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy43(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy44(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy45(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy46(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy47(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy48(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy49(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy50(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy51(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy52(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy53(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy54(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy55(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy56(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy57(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy58(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy59(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy60(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy61(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy62(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy63(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy64(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy65(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy66(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy67(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy68(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy69(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy70(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy71(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy72(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy73(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy74(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy75(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy76(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy77(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Phy78(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  POP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  POFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PSi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  NH4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  NO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
        INTEGER myIter
        _RL myTime
        INTEGER myThid
@@ -165,7 +165,7 @@ c plankton arrays
       _RL  Phy(npmax)
       _RL  Phyup(npmax)
 c iron partitioning
-      _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 c some working variables
       _RL  sumpy
       _RL  sumpyup
@@ -261,7 +261,7 @@ c
        DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         do k=1,Nr
-           freefe(i,j,k,bi,bj)=0. _d 0
+           freefe(i,j,k)=0. _d 0
            PAR(i,j,k) = 0. _d 0
 #ifdef DAR_DIAG_DIVER
            Diver1(i,j,k)=0. _d 0
@@ -360,105 +360,105 @@ c for each layer ...
 
 c make sure we only deal with positive definite numbers
 c brute force...
-             po4l = max(PO4(i,j,k,bi,bj),0. _d 0)
-             no3l = max(NO3(i,j,k,bi,bj),0. _d 0)
-             fetl = max(FeT(i,j,k,bi,bj),0. _d 0)
-             sil  = max(Si(i,j,k,bi,bj),0. _d 0)
-             dopl = max(DOP(i,j,k,bi,bj),0. _d 0)
-             donl = max(DON(i,j,k,bi,bj),0. _d 0)
-             doFel   = max(DOFe(i,j,k,bi,bj),0. _d 0)
-             zoop(1)  = max(Zoo1P(i,j,k,bi,bj),0. _d 0)
-             zoon(1)  = max(Zoo1N(i,j,k,bi,bj),0. _d 0)
-             zooFe(1) = max(Zoo1Fe(i,j,k,bi,bj),0. _d 0)
-             zooSi(1)  = max(Zoo1Si(i,j,k,bi,bj),0. _d 0)
-             zoop(2)  = max(Zoo2P(i,j,k,bi,bj),0. _d 0)
-             zoon(2)  = max(Zoo2N(i,j,k,bi,bj),0. _d 0)
-             zooFe(2) = max(Zoo2Fe(i,j,k,bi,bj),0. _d 0)
-             zooSi(2)  = max(Zoo2Si(i,j,k,bi,bj),0. _d 0)
-             Phy(1) = max(Phy1(i,j,k,bi,bj),0. _d 0)
-             Phy(2)  = max(Phy2(i,j,k,bi,bj),0. _d 0)
-             Phy(3)  = max(Phy3(i,j,k,bi,bj),0. _d 0)
-             Phy(4)  = max(Phy4(i,j,k,bi,bj),0. _d 0)
-             Phy(5)  = max(Phy5(i,j,k,bi,bj),0. _d 0)
-             Phy(6)  = max(Phy6(i,j,k,bi,bj),0. _d 0)
-             Phy(7)  = max(Phy7(i,j,k,bi,bj),0. _d 0)
-             Phy(8)  = max(Phy8(i,j,k,bi,bj),0. _d 0)
-             Phy(9)  = max(Phy9(i,j,k,bi,bj),0. _d 0)
-             Phy(10)  = max(Phy10(i,j,k,bi,bj),0. _d 0)
-             Phy(11)  = max(Phy11(i,j,k,bi,bj),0. _d 0)
-             Phy(12)  = max(Phy12(i,j,k,bi,bj),0. _d 0)
-             Phy(13)  = max(Phy13(i,j,k,bi,bj),0. _d 0)
-             Phy(14)  = max(Phy14(i,j,k,bi,bj),0. _d 0)
-             Phy(15)  = max(Phy15(i,j,k,bi,bj),0. _d 0)
-             Phy(16)  = max(Phy16(i,j,k,bi,bj),0. _d 0)
-             Phy(17)  = max(Phy17(i,j,k,bi,bj),0. _d 0)
-             Phy(18)  = max(Phy18(i,j,k,bi,bj),0. _d 0)
-             Phy(19)  = max(Phy19(i,j,k,bi,bj),0. _d 0)
-             Phy(20)  = max(Phy20(i,j,k,bi,bj),0. _d 0)
-             Phy(21)  = max(Phy21(i,j,k,bi,bj),0. _d 0)
-             Phy(22)  = max(Phy22(i,j,k,bi,bj),0. _d 0)
-             Phy(23)  = max(Phy23(i,j,k,bi,bj),0. _d 0)
-             Phy(24)  = max(Phy24(i,j,k,bi,bj),0. _d 0)
-             Phy(25)  = max(Phy25(i,j,k,bi,bj),0. _d 0)
-             Phy(26)  = max(Phy26(i,j,k,bi,bj),0. _d 0)
-             Phy(27)  = max(Phy27(i,j,k,bi,bj),0. _d 0)
-             Phy(28)  = max(Phy28(i,j,k,bi,bj),0. _d 0)
-             Phy(29)  = max(Phy29(i,j,k,bi,bj),0. _d 0)
-             Phy(30)  = max(Phy30(i,j,k,bi,bj),0. _d 0)
-             Phy(31)  = max(Phy31(i,j,k,bi,bj),0. _d 0)
-             Phy(32)  = max(Phy32(i,j,k,bi,bj),0. _d 0)
-             Phy(33)  = max(Phy33(i,j,k,bi,bj),0. _d 0)
-             Phy(34)  = max(Phy34(i,j,k,bi,bj),0. _d 0)
-             Phy(35)  = max(Phy35(i,j,k,bi,bj),0. _d 0)
-             Phy(36)  = max(Phy36(i,j,k,bi,bj),0. _d 0)
-             Phy(37)  = max(Phy37(i,j,k,bi,bj),0. _d 0)
-             Phy(38)  = max(Phy38(i,j,k,bi,bj),0. _d 0)
-             Phy(39)  = max(Phy39(i,j,k,bi,bj),0. _d 0)
-             Phy(40)  = max(Phy40(i,j,k,bi,bj),0. _d 0)
-             Phy(41)  = max(Phy41(i,j,k,bi,bj),0. _d 0)
-             Phy(42)  = max(Phy42(i,j,k,bi,bj),0. _d 0)
-             Phy(43)  = max(Phy43(i,j,k,bi,bj),0. _d 0)
-             Phy(44)  = max(Phy44(i,j,k,bi,bj),0. _d 0)
-             Phy(45)  = max(Phy45(i,j,k,bi,bj),0. _d 0)
-             Phy(46)  = max(Phy46(i,j,k,bi,bj),0. _d 0)
-             Phy(47)  = max(Phy47(i,j,k,bi,bj),0. _d 0)
-             Phy(48)  = max(Phy48(i,j,k,bi,bj),0. _d 0)
-             Phy(49)  = max(Phy49(i,j,k,bi,bj),0. _d 0)
-             Phy(50)  = max(Phy50(i,j,k,bi,bj),0. _d 0)
-             Phy(51)  = max(Phy51(i,j,k,bi,bj),0. _d 0)
-             Phy(52)  = max(Phy52(i,j,k,bi,bj),0. _d 0)
-             Phy(53)  = max(Phy53(i,j,k,bi,bj),0. _d 0)
-             Phy(54)  = max(Phy54(i,j,k,bi,bj),0. _d 0)
-             Phy(55)  = max(Phy55(i,j,k,bi,bj),0. _d 0)
-             Phy(56)  = max(Phy56(i,j,k,bi,bj),0. _d 0)
-             Phy(57)  = max(Phy57(i,j,k,bi,bj),0. _d 0)
-             Phy(58)  = max(Phy58(i,j,k,bi,bj),0. _d 0)
-             Phy(59)  = max(Phy59(i,j,k,bi,bj),0. _d 0)
-             Phy(60)  = max(Phy60(i,j,k,bi,bj),0. _d 0)
-             Phy(61)  = max(Phy61(i,j,k,bi,bj),0. _d 0)
-             Phy(62)  = max(Phy62(i,j,k,bi,bj),0. _d 0)
-             Phy(63)  = max(Phy63(i,j,k,bi,bj),0. _d 0)
-             Phy(64)  = max(Phy64(i,j,k,bi,bj),0. _d 0)
-             Phy(65)  = max(Phy65(i,j,k,bi,bj),0. _d 0)
-             Phy(66)  = max(Phy66(i,j,k,bi,bj),0. _d 0)
-             Phy(67)  = max(Phy67(i,j,k,bi,bj),0. _d 0)
-             Phy(68)  = max(Phy68(i,j,k,bi,bj),0. _d 0)
-             Phy(69)  = max(Phy69(i,j,k,bi,bj),0. _d 0)
-             Phy(70)  = max(Phy70(i,j,k,bi,bj),0. _d 0)
-             Phy(71)  = max(Phy71(i,j,k,bi,bj),0. _d 0)
-             Phy(72)  = max(Phy72(i,j,k,bi,bj),0. _d 0)
-             Phy(73)  = max(Phy73(i,j,k,bi,bj),0. _d 0)
-             Phy(74)  = max(Phy74(i,j,k,bi,bj),0. _d 0)
-             Phy(75)  = max(Phy75(i,j,k,bi,bj),0. _d 0)
-             Phy(76)  = max(Phy76(i,j,k,bi,bj),0. _d 0)
-             Phy(77)  = max(Phy77(i,j,k,bi,bj),0. _d 0)
-             Phy(78)  = max(Phy78(i,j,k,bi,bj),0. _d 0)
-             POPl = max(POP(i,j,k,bi,bj),0. _d 0)
-             PONl = max(PON(i,j,k,bi,bj),0. _d 0)
-             POFel = max(POFe(i,j,k,bi,bj),0. _d 0)
-             PSil = max(Psi(i,j,k,bi,bj),0. _d 0)
-             NH4l = max(NH4(i,j,k,bi,bj),0. _d 0)
-             NO2l = max(NO2(i,j,k,bi,bj),0. _d 0)
+             po4l = max(PO4(i,j,k),0. _d 0)
+             no3l = max(NO3(i,j,k),0. _d 0)
+             fetl = max(FeT(i,j,k),0. _d 0)
+             sil  = max(Si(i,j,k),0. _d 0)
+             dopl = max(DOP(i,j,k),0. _d 0)
+             donl = max(DON(i,j,k),0. _d 0)
+             doFel   = max(DOFe(i,j,k),0. _d 0)
+             zoop(1)  = max(Zoo1P(i,j,k),0. _d 0)
+             zoon(1)  = max(Zoo1N(i,j,k),0. _d 0)
+             zooFe(1) = max(Zoo1Fe(i,j,k),0. _d 0)
+             zooSi(1)  = max(Zoo1Si(i,j,k),0. _d 0)
+             zoop(2)  = max(Zoo2P(i,j,k),0. _d 0)
+             zoon(2)  = max(Zoo2N(i,j,k),0. _d 0)
+             zooFe(2) = max(Zoo2Fe(i,j,k),0. _d 0)
+             zooSi(2)  = max(Zoo2Si(i,j,k),0. _d 0)
+             Phy(1) = max(Phy1(i,j,k),0. _d 0)
+             Phy(2)  = max(Phy2(i,j,k),0. _d 0)
+             Phy(3)  = max(Phy3(i,j,k),0. _d 0)
+             Phy(4)  = max(Phy4(i,j,k),0. _d 0)
+             Phy(5)  = max(Phy5(i,j,k),0. _d 0)
+             Phy(6)  = max(Phy6(i,j,k),0. _d 0)
+             Phy(7)  = max(Phy7(i,j,k),0. _d 0)
+             Phy(8)  = max(Phy8(i,j,k),0. _d 0)
+             Phy(9)  = max(Phy9(i,j,k),0. _d 0)
+             Phy(10)  = max(Phy10(i,j,k),0. _d 0)
+             Phy(11)  = max(Phy11(i,j,k),0. _d 0)
+             Phy(12)  = max(Phy12(i,j,k),0. _d 0)
+             Phy(13)  = max(Phy13(i,j,k),0. _d 0)
+             Phy(14)  = max(Phy14(i,j,k),0. _d 0)
+             Phy(15)  = max(Phy15(i,j,k),0. _d 0)
+             Phy(16)  = max(Phy16(i,j,k),0. _d 0)
+             Phy(17)  = max(Phy17(i,j,k),0. _d 0)
+             Phy(18)  = max(Phy18(i,j,k),0. _d 0)
+             Phy(19)  = max(Phy19(i,j,k),0. _d 0)
+             Phy(20)  = max(Phy20(i,j,k),0. _d 0)
+             Phy(21)  = max(Phy21(i,j,k),0. _d 0)
+             Phy(22)  = max(Phy22(i,j,k),0. _d 0)
+             Phy(23)  = max(Phy23(i,j,k),0. _d 0)
+             Phy(24)  = max(Phy24(i,j,k),0. _d 0)
+             Phy(25)  = max(Phy25(i,j,k),0. _d 0)
+             Phy(26)  = max(Phy26(i,j,k),0. _d 0)
+             Phy(27)  = max(Phy27(i,j,k),0. _d 0)
+             Phy(28)  = max(Phy28(i,j,k),0. _d 0)
+             Phy(29)  = max(Phy29(i,j,k),0. _d 0)
+             Phy(30)  = max(Phy30(i,j,k),0. _d 0)
+             Phy(31)  = max(Phy31(i,j,k),0. _d 0)
+             Phy(32)  = max(Phy32(i,j,k),0. _d 0)
+             Phy(33)  = max(Phy33(i,j,k),0. _d 0)
+             Phy(34)  = max(Phy34(i,j,k),0. _d 0)
+             Phy(35)  = max(Phy35(i,j,k),0. _d 0)
+             Phy(36)  = max(Phy36(i,j,k),0. _d 0)
+             Phy(37)  = max(Phy37(i,j,k),0. _d 0)
+             Phy(38)  = max(Phy38(i,j,k),0. _d 0)
+             Phy(39)  = max(Phy39(i,j,k),0. _d 0)
+             Phy(40)  = max(Phy40(i,j,k),0. _d 0)
+             Phy(41)  = max(Phy41(i,j,k),0. _d 0)
+             Phy(42)  = max(Phy42(i,j,k),0. _d 0)
+             Phy(43)  = max(Phy43(i,j,k),0. _d 0)
+             Phy(44)  = max(Phy44(i,j,k),0. _d 0)
+             Phy(45)  = max(Phy45(i,j,k),0. _d 0)
+             Phy(46)  = max(Phy46(i,j,k),0. _d 0)
+             Phy(47)  = max(Phy47(i,j,k),0. _d 0)
+             Phy(48)  = max(Phy48(i,j,k),0. _d 0)
+             Phy(49)  = max(Phy49(i,j,k),0. _d 0)
+             Phy(50)  = max(Phy50(i,j,k),0. _d 0)
+             Phy(51)  = max(Phy51(i,j,k),0. _d 0)
+             Phy(52)  = max(Phy52(i,j,k),0. _d 0)
+             Phy(53)  = max(Phy53(i,j,k),0. _d 0)
+             Phy(54)  = max(Phy54(i,j,k),0. _d 0)
+             Phy(55)  = max(Phy55(i,j,k),0. _d 0)
+             Phy(56)  = max(Phy56(i,j,k),0. _d 0)
+             Phy(57)  = max(Phy57(i,j,k),0. _d 0)
+             Phy(58)  = max(Phy58(i,j,k),0. _d 0)
+             Phy(59)  = max(Phy59(i,j,k),0. _d 0)
+             Phy(60)  = max(Phy60(i,j,k),0. _d 0)
+             Phy(61)  = max(Phy61(i,j,k),0. _d 0)
+             Phy(62)  = max(Phy62(i,j,k),0. _d 0)
+             Phy(63)  = max(Phy63(i,j,k),0. _d 0)
+             Phy(64)  = max(Phy64(i,j,k),0. _d 0)
+             Phy(65)  = max(Phy65(i,j,k),0. _d 0)
+             Phy(66)  = max(Phy66(i,j,k),0. _d 0)
+             Phy(67)  = max(Phy67(i,j,k),0. _d 0)
+             Phy(68)  = max(Phy68(i,j,k),0. _d 0)
+             Phy(69)  = max(Phy69(i,j,k),0. _d 0)
+             Phy(70)  = max(Phy70(i,j,k),0. _d 0)
+             Phy(71)  = max(Phy71(i,j,k),0. _d 0)
+             Phy(72)  = max(Phy72(i,j,k),0. _d 0)
+             Phy(73)  = max(Phy73(i,j,k),0. _d 0)
+             Phy(74)  = max(Phy74(i,j,k),0. _d 0)
+             Phy(75)  = max(Phy75(i,j,k),0. _d 0)
+             Phy(76)  = max(Phy76(i,j,k),0. _d 0)
+             Phy(77)  = max(Phy77(i,j,k),0. _d 0)
+             Phy(78)  = max(Phy78(i,j,k),0. _d 0)
+             POPl = max(POP(i,j,k),0. _d 0)
+             PONl = max(PON(i,j,k),0. _d 0)
+             POFel = max(POFe(i,j,k),0. _d 0)
+             PSil = max(Psi(i,j,k),0. _d 0)
+             NH4l = max(NH4(i,j,k),0. _d 0)
+             NO2l = max(NO2(i,j,k),0. _d 0)
 
 #ifdef DAR_DIAG_DIVER
             Diver1(i,j,k)=0. _d 0
@@ -539,7 +539,7 @@ c for explicit sinking of particulate matter and phytoplankton
              Tlocal = theta(i,j,k,bi,bj)
              Slocal = salt(i,j,k,bi,bj)
 
-             freefu = max(freefe(i,j,k,bi,bj),0. _d 0)
+             freefu = max(freefe(i,j,k),0. _d 0)
              if (k.eq.1) then
                inputFel = inputFe(i,j,bi,bj)
              else
@@ -659,203 +659,203 @@ c only works for two layer model
 c
 c now update main tracer arrays
              dtplankton = dTtracerLev(k)/float(nsubtime)
-             PO4(i,j,k,bi,bj) = PO4(i,j,k,bi,bj)+
+             PO4(i,j,k) = PO4(i,j,k)+
      &                                dtplankton*dpo4l
-             NO3(i,j,k,bi,bj) = NO3(i,j,k,bi,bj) +
+             NO3(i,j,k) = NO3(i,j,k) +
      &                                dtplankton*dno3l
-             FeT(i,j,k,bi,bj) = FeT(i,j,k,bi,bj) +
+             FeT(i,j,k) = FeT(i,j,k) +
      &                                dtplankton*dfetl
-             Si(i,j,k,bi,bj) = Si(i,j,k,bi,bj) +
+             Si(i,j,k) = Si(i,j,k) +
      &                                dtplankton*dsil
-             DOP(i,j,k,bi,bj) = DOP(i,j,k,bi,bj) +
+             DOP(i,j,k) = DOP(i,j,k) +
      &                                dtplankton*ddopl
-             DON(i,j,k,bi,bj) = DON(i,j,k,bi,bj) +
+             DON(i,j,k) = DON(i,j,k) +
      &                                dtplankton*ddonl
-             DOFe(i,j,k,bi,bj) = DOFe(i,j,k,bi,bj) +
+             DOFe(i,j,k) = DOFe(i,j,k) +
      &                                dtplankton*ddoFel
-             Zoo1P(i,j,k,bi,bj) = Zoo1P(i,j,k,bi,bj) +
+             Zoo1P(i,j,k) = Zoo1P(i,j,k) +
      &                                dtplankton*dzoop(1)
-             Zoo1N(i,j,k,bi,bj) = Zoo1N(i,j,k,bi,bj) +
+             Zoo1N(i,j,k) = Zoo1N(i,j,k) +
      &                                dtplankton*dzoon(1)
-             Zoo1Fe(i,j,k,bi,bj) = Zoo1Fe(i,j,k,bi,bj) +
+             Zoo1Fe(i,j,k) = Zoo1Fe(i,j,k) +
      &                                dtplankton*dzooFe(1)
-             Zoo1Si(i,j,k,bi,bj) = Zoo1Si(i,j,k,bi,bj) +
+             Zoo1Si(i,j,k) = Zoo1Si(i,j,k) +
      &                                dtplankton*dzooSi(1)
-             Zoo2P(i,j,k,bi,bj) = Zoo2P(i,j,k,bi,bj) +
+             Zoo2P(i,j,k) = Zoo2P(i,j,k) +
      &                                dtplankton*dzoop(2)
-             Zoo2N(i,j,k,bi,bj) = Zoo2N(i,j,k,bi,bj) +
+             Zoo2N(i,j,k) = Zoo2N(i,j,k) +
      &                                dtplankton*dzoon(2)
-             Zoo2Fe(i,j,k,bi,bj) = Zoo2Fe(i,j,k,bi,bj) +
+             Zoo2Fe(i,j,k) = Zoo2Fe(i,j,k) +
      &                                dtplankton*dzooFe(2)
-             Zoo2Si(i,j,k,bi,bj) = Zoo2Si(i,j,k,bi,bj) +
+             Zoo2Si(i,j,k) = Zoo2Si(i,j,k) +
      &                                dtplankton*dzooSi(2)
-             Phy1(i,j,k,bi,bj) = Phy1(i,j,k,bi,bj) +
+             Phy1(i,j,k) = Phy1(i,j,k) +
      &                                dtplankton*dPhy(1)
-             Phy2(i,j,k,bi,bj) = Phy2(i,j,k,bi,bj) +
+             Phy2(i,j,k) = Phy2(i,j,k) +
      &                                dtplankton*dPhy(2)
-             Phy3(i,j,k,bi,bj) = Phy3(i,j,k,bi,bj) +
+             Phy3(i,j,k) = Phy3(i,j,k) +
      &                                dtplankton*dPhy(3)
-             Phy4(i,j,k,bi,bj) = Phy4(i,j,k,bi,bj) +
+             Phy4(i,j,k) = Phy4(i,j,k) +
      &                                dtplankton*dPhy(4)
-             Phy5(i,j,k,bi,bj) = Phy5(i,j,k,bi,bj) +
+             Phy5(i,j,k) = Phy5(i,j,k) +
      &                                dtplankton*dPhy(5)
-             Phy6(i,j,k,bi,bj) = Phy6(i,j,k,bi,bj) +
+             Phy6(i,j,k) = Phy6(i,j,k) +
      &                                dtplankton*dPhy(6)
-             Phy7(i,j,k,bi,bj) = Phy7(i,j,k,bi,bj) +
+             Phy7(i,j,k) = Phy7(i,j,k) +
      &                                dtplankton*dPhy(7)
-             Phy8(i,j,k,bi,bj) = Phy8(i,j,k,bi,bj) +
+             Phy8(i,j,k) = Phy8(i,j,k) +
      &                                dtplankton*dPhy(8)
-             Phy9(i,j,k,bi,bj) = Phy9(i,j,k,bi,bj) +
+             Phy9(i,j,k) = Phy9(i,j,k) +
      &                                dtplankton*dPhy(9)
-             Phy10(i,j,k,bi,bj) = Phy10(i,j,k,bi,bj) +
+             Phy10(i,j,k) = Phy10(i,j,k) +
      &                                dtplankton*dPhy(10)
-             Phy11(i,j,k,bi,bj) = Phy11(i,j,k,bi,bj) +
+             Phy11(i,j,k) = Phy11(i,j,k) +
      &                                dtplankton*dPhy(11)
-             Phy12(i,j,k,bi,bj) = Phy12(i,j,k,bi,bj) +
+             Phy12(i,j,k) = Phy12(i,j,k) +
      &                                dtplankton*dPhy(12)
-             Phy13(i,j,k,bi,bj) = Phy13(i,j,k,bi,bj) +
+             Phy13(i,j,k) = Phy13(i,j,k) +
      &                                dtplankton*dPhy(13)
-             Phy14(i,j,k,bi,bj) = Phy14(i,j,k,bi,bj) +
+             Phy14(i,j,k) = Phy14(i,j,k) +
      &                                dtplankton*dPhy(14)
-             Phy15(i,j,k,bi,bj) = Phy15(i,j,k,bi,bj) +
+             Phy15(i,j,k) = Phy15(i,j,k) +
      &                                dtplankton*dPhy(15)
-             Phy16(i,j,k,bi,bj) = Phy16(i,j,k,bi,bj) +
+             Phy16(i,j,k) = Phy16(i,j,k) +
      &                                dtplankton*dPhy(16)
-             Phy17(i,j,k,bi,bj) = Phy17(i,j,k,bi,bj) +
+             Phy17(i,j,k) = Phy17(i,j,k) +
      &                                dtplankton*dPhy(17)
-             Phy18(i,j,k,bi,bj) = Phy18(i,j,k,bi,bj) +
+             Phy18(i,j,k) = Phy18(i,j,k) +
      &                                dtplankton*dPhy(18)
-             Phy19(i,j,k,bi,bj) = Phy19(i,j,k,bi,bj) +
+             Phy19(i,j,k) = Phy19(i,j,k) +
      &                                dtplankton*dPhy(19)
-             Phy20(i,j,k,bi,bj) = Phy20(i,j,k,bi,bj) +
+             Phy20(i,j,k) = Phy20(i,j,k) +
      &                                dtplankton*dPhy(20)
-             Phy21(i,j,k,bi,bj) = Phy21(i,j,k,bi,bj) +
+             Phy21(i,j,k) = Phy21(i,j,k) +
      &                                dtplankton*dPhy(21)
-             Phy22(i,j,k,bi,bj) = Phy22(i,j,k,bi,bj) +
+             Phy22(i,j,k) = Phy22(i,j,k) +
      &                                dtplankton*dPhy(22)
-             Phy23(i,j,k,bi,bj) = Phy23(i,j,k,bi,bj) +
+             Phy23(i,j,k) = Phy23(i,j,k) +
      &                                dtplankton*dPhy(23)
-             Phy24(i,j,k,bi,bj) = Phy24(i,j,k,bi,bj) +
+             Phy24(i,j,k) = Phy24(i,j,k) +
      &                                dtplankton*dPhy(24)
-             Phy25(i,j,k,bi,bj) = Phy25(i,j,k,bi,bj) +
+             Phy25(i,j,k) = Phy25(i,j,k) +
      &                                dtplankton*dPhy(25)
-             Phy26(i,j,k,bi,bj) = Phy26(i,j,k,bi,bj) +
+             Phy26(i,j,k) = Phy26(i,j,k) +
      &                                dtplankton*dPhy(26)
-             Phy27(i,j,k,bi,bj) = Phy27(i,j,k,bi,bj) +
+             Phy27(i,j,k) = Phy27(i,j,k) +
      &                                dtplankton*dPhy(27)
-             Phy28(i,j,k,bi,bj) = Phy28(i,j,k,bi,bj) +
+             Phy28(i,j,k) = Phy28(i,j,k) +
      &                                dtplankton*dPhy(28)
-             Phy29(i,j,k,bi,bj) = Phy29(i,j,k,bi,bj) +
+             Phy29(i,j,k) = Phy29(i,j,k) +
      &                                dtplankton*dPhy(29)
-             Phy30(i,j,k,bi,bj) = Phy30(i,j,k,bi,bj) +
+             Phy30(i,j,k) = Phy30(i,j,k) +
      &                                dtplankton*dPhy(30)
-             Phy31(i,j,k,bi,bj) = Phy31(i,j,k,bi,bj) +
+             Phy31(i,j,k) = Phy31(i,j,k) +
      &                                dtplankton*dPhy(31)
-             Phy32(i,j,k,bi,bj) = Phy32(i,j,k,bi,bj) +
+             Phy32(i,j,k) = Phy32(i,j,k) +
      &                                dtplankton*dPhy(32)
-             Phy33(i,j,k,bi,bj) = Phy33(i,j,k,bi,bj) +
+             Phy33(i,j,k) = Phy33(i,j,k) +
      &                                dtplankton*dPhy(33)
-             Phy34(i,j,k,bi,bj) = Phy34(i,j,k,bi,bj) +
+             Phy34(i,j,k) = Phy34(i,j,k) +
      &                                dtplankton*dPhy(34)
-             Phy35(i,j,k,bi,bj) = Phy35(i,j,k,bi,bj) +
+             Phy35(i,j,k) = Phy35(i,j,k) +
      &                                dtplankton*dPhy(35)
-             Phy36(i,j,k,bi,bj) = Phy36(i,j,k,bi,bj) +
+             Phy36(i,j,k) = Phy36(i,j,k) +
      &                                dtplankton*dPhy(36)
-             Phy37(i,j,k,bi,bj) = Phy37(i,j,k,bi,bj) +
+             Phy37(i,j,k) = Phy37(i,j,k) +
      &                                dtplankton*dPhy(37)
-             Phy38(i,j,k,bi,bj) = Phy38(i,j,k,bi,bj) +
+             Phy38(i,j,k) = Phy38(i,j,k) +
      &                                dtplankton*dPhy(38)
-             Phy39(i,j,k,bi,bj) = Phy39(i,j,k,bi,bj) +
+             Phy39(i,j,k) = Phy39(i,j,k) +
      &                                dtplankton*dPhy(39)
-             Phy40(i,j,k,bi,bj) = Phy40(i,j,k,bi,bj) +
+             Phy40(i,j,k) = Phy40(i,j,k) +
      &                                dtplankton*dPhy(40)
-             Phy41(i,j,k,bi,bj) = Phy41(i,j,k,bi,bj) +
+             Phy41(i,j,k) = Phy41(i,j,k) +
      &                                dtplankton*dPhy(41)
-             Phy42(i,j,k,bi,bj) = Phy42(i,j,k,bi,bj) +
+             Phy42(i,j,k) = Phy42(i,j,k) +
      &                                dtplankton*dPhy(42)
-             Phy43(i,j,k,bi,bj) = Phy43(i,j,k,bi,bj) +
+             Phy43(i,j,k) = Phy43(i,j,k) +
      &                                dtplankton*dPhy(43)
-             Phy44(i,j,k,bi,bj) = Phy44(i,j,k,bi,bj) +
+             Phy44(i,j,k) = Phy44(i,j,k) +
      &                                dtplankton*dPhy(44)
-             Phy45(i,j,k,bi,bj) = Phy45(i,j,k,bi,bj) +
+             Phy45(i,j,k) = Phy45(i,j,k) +
      &                                dtplankton*dPhy(45)
-             Phy46(i,j,k,bi,bj) = Phy46(i,j,k,bi,bj) +
+             Phy46(i,j,k) = Phy46(i,j,k) +
      &                                dtplankton*dPhy(46)
-             Phy47(i,j,k,bi,bj) = Phy47(i,j,k,bi,bj) +
+             Phy47(i,j,k) = Phy47(i,j,k) +
      &                                dtplankton*dPhy(47)
-             Phy48(i,j,k,bi,bj) = Phy48(i,j,k,bi,bj) +
+             Phy48(i,j,k) = Phy48(i,j,k) +
      &                                dtplankton*dPhy(48)
-             Phy49(i,j,k,bi,bj) = Phy49(i,j,k,bi,bj) +
+             Phy49(i,j,k) = Phy49(i,j,k) +
      &                                dtplankton*dPhy(49)
-             Phy50(i,j,k,bi,bj) = Phy50(i,j,k,bi,bj) +
+             Phy50(i,j,k) = Phy50(i,j,k) +
      &                                dtplankton*dPhy(50)
-             Phy51(i,j,k,bi,bj) = Phy51(i,j,k,bi,bj) +
+             Phy51(i,j,k) = Phy51(i,j,k) +
      &                                dtplankton*dPhy(51)
-             Phy52(i,j,k,bi,bj) = Phy52(i,j,k,bi,bj) +
+             Phy52(i,j,k) = Phy52(i,j,k) +
      &                                dtplankton*dPhy(52)
-             Phy53(i,j,k,bi,bj) = Phy53(i,j,k,bi,bj) +
+             Phy53(i,j,k) = Phy53(i,j,k) +
      &                                dtplankton*dPhy(53)
-             Phy54(i,j,k,bi,bj) = Phy54(i,j,k,bi,bj) +
+             Phy54(i,j,k) = Phy54(i,j,k) +
      &                                dtplankton*dPhy(54)
-             Phy55(i,j,k,bi,bj) = Phy55(i,j,k,bi,bj) +
+             Phy55(i,j,k) = Phy55(i,j,k) +
      &                                dtplankton*dPhy(55)
-             Phy56(i,j,k,bi,bj) = Phy56(i,j,k,bi,bj) +
+             Phy56(i,j,k) = Phy56(i,j,k) +
      &                                dtplankton*dPhy(56)
-             Phy57(i,j,k,bi,bj) = Phy57(i,j,k,bi,bj) +
+             Phy57(i,j,k) = Phy57(i,j,k) +
      &                                dtplankton*dPhy(57)
-             Phy58(i,j,k,bi,bj) = Phy58(i,j,k,bi,bj) +
+             Phy58(i,j,k) = Phy58(i,j,k) +
      &                                dtplankton*dPhy(58)
-             Phy59(i,j,k,bi,bj) = Phy59(i,j,k,bi,bj) +
+             Phy59(i,j,k) = Phy59(i,j,k) +
      &                                dtplankton*dPhy(59)
-             Phy60(i,j,k,bi,bj) = Phy60(i,j,k,bi,bj) +
+             Phy60(i,j,k) = Phy60(i,j,k) +
      &                                dtplankton*dPhy(60)
-             Phy61(i,j,k,bi,bj) = Phy61(i,j,k,bi,bj) +
+             Phy61(i,j,k) = Phy61(i,j,k) +
      &                                dtplankton*dPhy(61)
-             Phy62(i,j,k,bi,bj) = Phy62(i,j,k,bi,bj) +
+             Phy62(i,j,k) = Phy62(i,j,k) +
      &                                dtplankton*dPhy(62)
-             Phy63(i,j,k,bi,bj) = Phy63(i,j,k,bi,bj) +
+             Phy63(i,j,k) = Phy63(i,j,k) +
      &                                dtplankton*dPhy(63)
-             Phy64(i,j,k,bi,bj) = Phy64(i,j,k,bi,bj) +
+             Phy64(i,j,k) = Phy64(i,j,k) +
      &                                dtplankton*dPhy(64)
-             Phy65(i,j,k,bi,bj) = Phy65(i,j,k,bi,bj) +
+             Phy65(i,j,k) = Phy65(i,j,k) +
      &                                dtplankton*dPhy(65)
-             Phy66(i,j,k,bi,bj) = Phy66(i,j,k,bi,bj) +
+             Phy66(i,j,k) = Phy66(i,j,k) +
      &                                dtplankton*dPhy(66)
-             Phy67(i,j,k,bi,bj) = Phy67(i,j,k,bi,bj) +
+             Phy67(i,j,k) = Phy67(i,j,k) +
      &                                dtplankton*dPhy(67)
-             Phy68(i,j,k,bi,bj) = Phy68(i,j,k,bi,bj) +
+             Phy68(i,j,k) = Phy68(i,j,k) +
      &                                dtplankton*dPhy(68)
-             Phy69(i,j,k,bi,bj) = Phy69(i,j,k,bi,bj) +
+             Phy69(i,j,k) = Phy69(i,j,k) +
      &                                dtplankton*dPhy(69)
-             Phy70(i,j,k,bi,bj) = Phy70(i,j,k,bi,bj) +
+             Phy70(i,j,k) = Phy70(i,j,k) +
      &                                dtplankton*dPhy(70)
-             Phy71(i,j,k,bi,bj) = Phy71(i,j,k,bi,bj) +
+             Phy71(i,j,k) = Phy71(i,j,k) +
      &                                dtplankton*dPhy(71)
-             Phy72(i,j,k,bi,bj) = Phy72(i,j,k,bi,bj) +
+             Phy72(i,j,k) = Phy72(i,j,k) +
      &                                dtplankton*dPhy(72)
-             Phy73(i,j,k,bi,bj) = Phy73(i,j,k,bi,bj) +
+             Phy73(i,j,k) = Phy73(i,j,k) +
      &                                dtplankton*dPhy(73)
-             Phy74(i,j,k,bi,bj) = Phy74(i,j,k,bi,bj) +
+             Phy74(i,j,k) = Phy74(i,j,k) +
      &                                dtplankton*dPhy(74)
-             Phy75(i,j,k,bi,bj) = Phy75(i,j,k,bi,bj) +
+             Phy75(i,j,k) = Phy75(i,j,k) +
      &                                dtplankton*dPhy(75)
-             Phy76(i,j,k,bi,bj) = Phy76(i,j,k,bi,bj) +
+             Phy76(i,j,k) = Phy76(i,j,k) +
      &                                dtplankton*dPhy(76)
-             Phy77(i,j,k,bi,bj) = Phy77(i,j,k,bi,bj) +
+             Phy77(i,j,k) = Phy77(i,j,k) +
      &                                dtplankton*dPhy(77)
-             Phy78(i,j,k,bi,bj) = Phy78(i,j,k,bi,bj) +
+             Phy78(i,j,k) = Phy78(i,j,k) +
      &                                dtplankton*dPhy(78)
-             POP(i,j,k,bi,bj) = POP(i,j,k,bi,bj) +
+             POP(i,j,k) = POP(i,j,k) +
      &                                dtplankton*dPOPl
-             PON(i,j,k,bi,bj) = PON(i,j,k,bi,bj) +
+             PON(i,j,k) = PON(i,j,k) +
      &                                dtplankton*dPONl
-             POFe(i,j,k,bi,bj) = POFe(i,j,k,bi,bj) +
+             POFe(i,j,k) = POFe(i,j,k) +
      &                                dtplankton*dPOFel  
-             Psi(i,j,k,bi,bj) = Psi(i,j,k,bi,bj) +
+             Psi(i,j,k) = Psi(i,j,k) +
      &                                dtplankton*dPSil
-             NH4(i,j,k,bi,bj) = NH4(i,j,k,bi,bj) +
+             NH4(i,j,k) = NH4(i,j,k) +
      &                                dtplankton*dNH4l   
-             NO2(i,j,k,bi,bj) = NO2(i,j,k,bi,bj) +
+             NO2(i,j,k) = NO2(i,j,k) +
      &                                dtplankton*dNO2l
 
 
@@ -864,154 +864,154 @@ cQQQQTEST
             if (debug.eq.11) then
             if (k.lt.8) then
             if (dPhy(2).gt.dPhy(4).and.dPhy(4).gt.0. _d 0) then
-              print*,'QQQ dphy2 > dphy4',i,j,k,Phy2(i,j,k,bi,bj),
-     &             Phy4(i,j,k,bi,bj), dPhy(2), dPhy(4)
+              print*,'QQQ dphy2 > dphy4',i,j,k,Phy2(i,j,k),
+     &             Phy4(i,j,k), dPhy(2), dPhy(4)
             endif
-            if (Phy2(i,j,k,bi,bj).gt.Phy4(i,j,k,bi,bj).and.
-     &                           Phy4(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy02 > phy04',i,j,k,Phy2(i,j,k,bi,bj),
-     &             Phy4(i,j,k,bi,bj), dPhy(2), dPhy(4)
+            if (Phy2(i,j,k).gt.Phy4(i,j,k).and.
+     &                           Phy4(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy02 > phy04',i,j,k,Phy2(i,j,k),
+     &             Phy4(i,j,k), dPhy(2), dPhy(4)
             endif
 cc
             if (dPhy(6).gt.dPhy(8).and.dPhy(8).gt.0. _d 0) then
-              print*,'QQQ dphy6 > dphy8',i,j,k,Phy6(i,j,k,bi,bj),
-     &             Phy8(i,j,k,bi,bj), dPhy(6), dPhy(8)
+              print*,'QQQ dphy6 > dphy8',i,j,k,Phy6(i,j,k),
+     &             Phy8(i,j,k), dPhy(6), dPhy(8)
             endif
-            if (Phy6(i,j,k,bi,bj).gt.Phy8(i,j,k,bi,bj).and.
-     &                           Phy8(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy06 > phy08',i,j,k,Phy6(i,j,k,bi,bj),
-     &             Phy8(i,j,k,bi,bj), dPhy(6), dPhy(8)
+            if (Phy6(i,j,k).gt.Phy8(i,j,k).and.
+     &                           Phy8(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy06 > phy08',i,j,k,Phy6(i,j,k),
+     &             Phy8(i,j,k), dPhy(6), dPhy(8)
             endif
 cc
             if (dPhy(10).gt.dPhy(12).and.dPhy(12).gt.0. _d 0.and.
-     &                           Phy12(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQQ dphy10 > dphy12',i,j,k,Phy10(i,j,k,bi,bj),
-     &             Phy12(i,j,k,bi,bj), dPhy(10), dPhy(12)
+     &                           Phy12(i,j,k).gt.0. _d 0) then
+              print*,'QQQ dphy10 > dphy12',i,j,k,Phy10(i,j,k),
+     &             Phy12(i,j,k), dPhy(10), dPhy(12)
             endif
-            if (Phy10(i,j,k,bi,bj).gt.Phy12(i,j,k,bi,bj).and.
-     &                           Phy12(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy10 > phy12',i,j,k,Phy10(i,j,k,bi,bj),
-     &             Phy12(i,j,k,bi,bj), dPhy(10), dPhy(12)
+            if (Phy10(i,j,k).gt.Phy12(i,j,k).and.
+     &                           Phy12(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy10 > phy12',i,j,k,Phy10(i,j,k),
+     &             Phy12(i,j,k), dPhy(10), dPhy(12)
             endif
 cc
             if (dPhy(14).gt.dPhy(16).and.dPhy(16).gt.0. _d 0) then
-              print*,'QQQ dphy14 > dphy16',i,j,k,Phy14(i,j,k,bi,bj),
-     &             Phy16(i,j,k,bi,bj), dPhy(14), dPhy(16)
+              print*,'QQQ dphy14 > dphy16',i,j,k,Phy14(i,j,k),
+     &             Phy16(i,j,k), dPhy(14), dPhy(16)
             endif
-            if (Phy14(i,j,k,bi,bj).gt.Phy16(i,j,k,bi,bj).and.
-     &                           Phy16(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy14 > phy16',i,j,k,Phy14(i,j,k,bi,bj),
-     &             Phy16(i,j,k,bi,bj), dPhy(14), dPhy(16)
+            if (Phy14(i,j,k).gt.Phy16(i,j,k).and.
+     &                           Phy16(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy14 > phy16',i,j,k,Phy14(i,j,k),
+     &             Phy16(i,j,k), dPhy(14), dPhy(16)
             endif
 cc
             if (dPhy(18).gt.dPhy(20).and.dPhy(20).gt.0. _d 0) then
-              print*,'QQQ dphy18 > dphy20',i,j,k,Phy18(i,j,k,bi,bj),
-     &             Phy18(i,j,k,bi,bj), dPhy(18), dPhy(20)
+              print*,'QQQ dphy18 > dphy20',i,j,k,Phy18(i,j,k),
+     &             Phy18(i,j,k), dPhy(18), dPhy(20)
             endif
-            if (Phy18(i,j,k,bi,bj).gt.Phy20(i,j,k,bi,bj).and.
-     &                           Phy20(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy18 > phy20',i,j,k,Phy18(i,j,k,bi,bj),
-     &             Phy20(i,j,k,bi,bj), dPhy(18), dPhy(20)
+            if (Phy18(i,j,k).gt.Phy20(i,j,k).and.
+     &                           Phy20(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy18 > phy20',i,j,k,Phy18(i,j,k),
+     &             Phy20(i,j,k), dPhy(18), dPhy(20)
             endif
 cc
             if (dPhy(22).gt.dPhy(24).and.dPhy(24).gt.0. _d 0) then
-              print*,'QQQ dphy22 > dphy24',i,j,k,Phy22(i,j,k,bi,bj),
-     &             Phy24(i,j,k,bi,bj), dPhy(22), dPhy(24)
+              print*,'QQQ dphy22 > dphy24',i,j,k,Phy22(i,j,k),
+     &             Phy24(i,j,k), dPhy(22), dPhy(24)
             endif
-            if (Phy22(i,j,k,bi,bj).gt.Phy24(i,j,k,bi,bj).and.
-     &                           Phy24(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy22 > phy24',i,j,k,Phy22(i,j,k,bi,bj),
-     &             Phy24(i,j,k,bi,bj), dPhy(22), dPhy(24)
+            if (Phy22(i,j,k).gt.Phy24(i,j,k).and.
+     &                           Phy24(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy22 > phy24',i,j,k,Phy22(i,j,k),
+     &             Phy24(i,j,k), dPhy(22), dPhy(24)
             endif
 cc
             if (dPhy(26).gt.dPhy(28).and.dPhy(28).gt.0. _d 0) then
-              print*,'QQQ dphy26 > dphy28',i,j,k,Phy26(i,j,k,bi,bj),
-     &             Phy28(i,j,k,bi,bj), dPhy(26), dPhy(28)
+              print*,'QQQ dphy26 > dphy28',i,j,k,Phy26(i,j,k),
+     &             Phy28(i,j,k), dPhy(26), dPhy(28)
             endif
-            if (Phy26(i,j,k,bi,bj).gt.Phy28(i,j,k,bi,bj).and.
-     &                           Phy28(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy26 > phy28',i,j,k,Phy26(i,j,k,bi,bj),
-     &             Phy28(i,j,k,bi,bj), dPhy(26), dPhy(28)
+            if (Phy26(i,j,k).gt.Phy28(i,j,k).and.
+     &                           Phy28(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy26 > phy28',i,j,k,Phy26(i,j,k),
+     &             Phy28(i,j,k), dPhy(26), dPhy(28)
             endif
 cc
             if (dPhy(30).gt.dPhy(32).and.dPhy(32).gt.0. _d 0) then
-              print*,'QQQ dphy30 > dphy32',i,j,k,Phy30(i,j,k,bi,bj),
-     &             Phy32(i,j,k,bi,bj), dPhy(30), dPhy(32)
+              print*,'QQQ dphy30 > dphy32',i,j,k,Phy30(i,j,k),
+     &             Phy32(i,j,k), dPhy(30), dPhy(32)
             endif
-            if (Phy30(i,j,k,bi,bj).gt.Phy32(i,j,k,bi,bj).and.
-     &                           Phy32(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy30 > phy32',i,j,k,Phy30(i,j,k,bi,bj),
-     &             Phy32(i,j,k,bi,bj), dPhy(30), dPhy(32)
+            if (Phy30(i,j,k).gt.Phy32(i,j,k).and.
+     &                           Phy32(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy30 > phy32',i,j,k,Phy30(i,j,k),
+     &             Phy32(i,j,k), dPhy(30), dPhy(32)
             endif
 cc
             if (dPhy(34).gt.dPhy(36).and.dPhy(36).gt.0. _d 0) then
-              print*,'QQQ dphy34 > dphy36',i,j,k,Phy34(i,j,k,bi,bj),
-     &             Phy36(i,j,k,bi,bj), dPhy(34), dPhy(36)
+              print*,'QQQ dphy34 > dphy36',i,j,k,Phy34(i,j,k),
+     &             Phy36(i,j,k), dPhy(34), dPhy(36)
             endif
-            if (Phy34(i,j,k,bi,bj).gt.Phy36(i,j,k,bi,bj).and.
-     &                           Phy36(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy34 > phy36',i,j,k,Phy34(i,j,k,bi,bj),
-     &             Phy36(i,j,k,bi,bj), dPhy(34), dPhy(36)
+            if (Phy34(i,j,k).gt.Phy36(i,j,k).and.
+     &                           Phy36(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy34 > phy36',i,j,k,Phy34(i,j,k),
+     &             Phy36(i,j,k), dPhy(34), dPhy(36)
             endif
 cc
             if (dPhy(38).gt.dPhy(40).and.dPhy(40).gt.0. _d 0) then
-              print*,'QQQ dphy38 > dphy40',i,j,k,Phy38(i,j,k,bi,bj),
-     &             Phy40(i,j,k,bi,bj), dPhy(38), dPhy(40)
+              print*,'QQQ dphy38 > dphy40',i,j,k,Phy38(i,j,k),
+     &             Phy40(i,j,k), dPhy(38), dPhy(40)
             endif
-            if (Phy38(i,j,k,bi,bj).gt.Phy40(i,j,k,bi,bj).and.
-     &                           Phy40(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy38 > phy40',i,j,k,Phy38(i,j,k,bi,bj),
-     &             Phy40(i,j,k,bi,bj), dPhy(38), dPhy(40)
+            if (Phy38(i,j,k).gt.Phy40(i,j,k).and.
+     &                           Phy40(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy38 > phy40',i,j,k,Phy38(i,j,k),
+     &             Phy40(i,j,k), dPhy(38), dPhy(40)
             endif
 cc
             if (dPhy(42).gt.dPhy(44).and.dPhy(44).gt.0. _d 0) then
-              print*,'QQQ dphy42 > dphy44',i,j,k,Phy42(i,j,k,bi,bj),
-     &             Phy44(i,j,k,bi,bj), dPhy(42), dPhy(44)
+              print*,'QQQ dphy42 > dphy44',i,j,k,Phy42(i,j,k),
+     &             Phy44(i,j,k), dPhy(42), dPhy(44)
             endif
-            if (Phy42(i,j,k,bi,bj).gt.Phy44(i,j,k,bi,bj).and.
-     &                           Phy44(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy42 > phy44',i,j,k,Phy42(i,j,k,bi,bj),
-     &             Phy44(i,j,k,bi,bj), dPhy(42), dPhy(44)
+            if (Phy42(i,j,k).gt.Phy44(i,j,k).and.
+     &                           Phy44(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy42 > phy44',i,j,k,Phy42(i,j,k),
+     &             Phy44(i,j,k), dPhy(42), dPhy(44)
             endif
 cc
             if (dPhy(46).gt.dPhy(48).and.dPhy(48).gt.0. _d 0) then
-              print*,'QQQ dphy46 > dphy48',i,j,k,Phy46(i,j,k,bi,bj),
-     &             Phy48(i,j,k,bi,bj), dPhy(46), dPhy(48)
+              print*,'QQQ dphy46 > dphy48',i,j,k,Phy46(i,j,k),
+     &             Phy48(i,j,k), dPhy(46), dPhy(48)
             endif
-            if (Phy46(i,j,k,bi,bj).gt.Phy48(i,j,k,bi,bj).and.
-     &                           Phy48(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy46 > phy48',i,j,k,Phy46(i,j,k,bi,bj),
-     &             Phy48(i,j,k,bi,bj), dPhy(46), dPhy(48)
+            if (Phy46(i,j,k).gt.Phy48(i,j,k).and.
+     &                           Phy48(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy46 > phy48',i,j,k,Phy46(i,j,k),
+     &             Phy48(i,j,k), dPhy(46), dPhy(48)
             endif
 cc
             if (dPhy(50).gt.dPhy(52).and.dPhy(52).gt.0. _d 0) then
-              print*,'QQQ dphy50 > dphy52',i,j,k,Phy50(i,j,k,bi,bj),
-     &             Phy52(i,j,k,bi,bj), dPhy(50), dPhy(52)
+              print*,'QQQ dphy50 > dphy52',i,j,k,Phy50(i,j,k),
+     &             Phy52(i,j,k), dPhy(50), dPhy(52)
             endif
-            if (Phy50(i,j,k,bi,bj).gt.Phy52(i,j,k,bi,bj).and.
-     &                           Phy52(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy50 > phy52',i,j,k,Phy50(i,j,k,bi,bj),
-     &             Phy52(i,j,k,bi,bj), dPhy(50), dPhy(52)
+            if (Phy50(i,j,k).gt.Phy52(i,j,k).and.
+     &                           Phy52(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy50 > phy52',i,j,k,Phy50(i,j,k),
+     &             Phy52(i,j,k), dPhy(50), dPhy(52)
             endif
 cc
             if (dPhy(54).gt.dPhy(56).and.dPhy(56).gt.0. _d 0) then
-              print*,'QQQ dphy54 > dphy56',i,j,k,Phy54(i,j,k,bi,bj),
-     &             Phy56(i,j,k,bi,bj), dPhy(54), dPhy(56)
+              print*,'QQQ dphy54 > dphy56',i,j,k,Phy54(i,j,k),
+     &             Phy56(i,j,k), dPhy(54), dPhy(56)
             endif
-            if (Phy54(i,j,k,bi,bj).gt.Phy56(i,j,k,bi,bj).and.
-     &                           Phy56(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy54 > phy56',i,j,k,Phy54(i,j,k,bi,bj),
-     &             Phy56(i,j,k,bi,bj), dPhy(54), dPhy(56)
+            if (Phy54(i,j,k).gt.Phy56(i,j,k).and.
+     &                           Phy56(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy54 > phy56',i,j,k,Phy54(i,j,k),
+     &             Phy56(i,j,k), dPhy(54), dPhy(56)
             endif
 cc
             if (dPhy(58).gt.dPhy(60).and.dPhy(60).gt.0. _d 0) then
-              print*,'QQQ dphy58 > dphy60',i,j,k,Phy58(i,j,k,bi,bj),
-     &             Phy60(i,j,k,bi,bj), dPhy(58), dPhy(60)
+              print*,'QQQ dphy58 > dphy60',i,j,k,Phy58(i,j,k),
+     &             Phy60(i,j,k), dPhy(58), dPhy(60)
             endif
-            if (Phy58(i,j,k,bi,bj).gt.Phy60(i,j,k,bi,bj).and.
-     &                           Phy60(i,j,k,bi,bj).gt.0. _d 0) then
-              print*,'QQ phy58 > phy60',i,j,k,Phy58(i,j,k,bi,bj),
-     &             Phy60(i,j,k,bi,bj), dPhy(58), dPhy(60)
+            if (Phy58(i,j,k).gt.Phy60(i,j,k).and.
+     &                           Phy60(i,j,k).gt.0. _d 0) then
+              print*,'QQ phy58 > phy60',i,j,k,Phy58(i,j,k),
+     &             Phy60(i,j,k), dPhy(58), dPhy(60)
             endif
             endif  ! k
             endif

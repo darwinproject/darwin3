@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.2 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.3 2008/01/14 21:32:40 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,7 +29,7 @@ C==============================================================
 
 C     === Global variables ===
 c tracers
-      _RL  Nut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx, nSy)
+      _RL  Nut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
        INTEGER myIter
        _RL myTime
        INTEGER myThid
@@ -57,29 +57,29 @@ c
         do k=1,Nr-1
          if (HFacC(i,j,k,bi,bj).gt.0. _d 0.and.
      &                          HFacC(i,j,k+1,bi,bj).gt.0. _d 0) then
-c         nuttmp=( drF(k+1)*Nut(i,j,k,bi,bj) + 
-c    &              drF(k)*Nut(i,j,k+1,bi,bj) )/( drF(k)+drF(k+1) )
+c         nuttmp=( drF(k+1)*Nut(i,j,k) + 
+c    &              drF(k)*Nut(i,j,k+1) )/( drF(k)+drF(k+1) )
 #ifdef CONS_SUPP
 c note only works for 2 layer
           if (nut_wvel(i,j,k+1,bi,bj).gt.0. _d 0) then
-            tmp= nut_wvel(i,j,k+1,bi,bj)*Nut(i,j,k+1,bi,bj)
+            tmp= nut_wvel(i,j,k+1,bi,bj)*Nut(i,j,k+1)
           else
-            tmp= nut_wvel(i,j,k+1,bi,bj)*0. _d 0 !Nut(i,j,k,bi,bj)
+            tmp= nut_wvel(i,j,k+1,bi,bj)*0. _d 0 !Nut(i,j,k)
           endif
           dnut(i,j,k)=dnut(i,j,k)+ tmp/ drF(k)
           dnut(i,j,k+1)=0. _d 0
 #else
           if (nut_wvel(i,j,k+1,bi,bj).gt.0. _d 0) then
-            tmp= nut_wvel(i,j,k+1,bi,bj)*Nut(i,j,k+1,bi,bj)
+            tmp= nut_wvel(i,j,k+1,bi,bj)*Nut(i,j,k+1)
           else
-            tmp= nut_wvel(i,j,k+1,bi,bj)*Nut(i,j,k,bi,bj)
+            tmp= nut_wvel(i,j,k+1,bi,bj)*Nut(i,j,k)
           endif
           dnut(i,j,k)=dnut(i,j,k)+ tmp/ drF(k)
           dnut(i,j,k+1)=dnut(i,j,k+1)- tmp/ drF(k+1)
 #endif
          endif
 c       if (i.eq.1) print*,'dnut',j,dnut(i,j,k),nut_wvel(i,j,k,bi,bj),
-c    &                      Nut(i,j,k,bi,bj)
+c    &                      Nut(i,j,k)
         enddo
        ENDDO
        ENDDO
@@ -87,7 +87,7 @@ c
        DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         do k=1,Nr
-             Nut(i,j,k,bi,bj) = Nut(i,j,k,bi,bj)+
+             Nut(i,j,k) = Nut(i,j,k)+
      &                          dTtracerLev(k)*dnut(i,j,k)
         enddo
 c end layer loop
