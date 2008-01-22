@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.5 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.6 2008/01/22 20:30:46 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -177,6 +177,23 @@ c write out initial phyto characteristics
          close(16)
  110     format(3f4.0,f6.2,4f4.0,f5.1,4f7.3,2e11.2,2f9.4,f6.1,2i5)
  111     format(3f4.0,f6.2,4f4.0,f5.1,4f7.3,2f6.1,2f9.4,f6.1,2i5)
+
+         CALL LEF_ZERO( fice,myThid )
+         CALL LEF_ZERO( inputFe,myThid )
+         CALL LEF_ZERO( sur_par,myThid )
+#ifdef NUT_SUPPLY
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             DO k=1,nR
+               nut_wvel(i,j,k,bi,bj) = 0. _d 0
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+#endif
 
 c
 #ifdef ALLOW_TIMEAVE
