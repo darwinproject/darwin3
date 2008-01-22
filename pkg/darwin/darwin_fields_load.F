@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.3 2008/01/11 15:48:56 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.4 2008/01/22 20:30:25 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -76,8 +76,18 @@ cQQQ need to check timing
          CALL LEF_ZERO( sur_par0,myThid )
          CALL LEF_ZERO( sur_par1,myThid )
 #ifdef NUT_SUPPLY
-         CALL LEF_ZERO( nut_wvel0,myThid )
-         CALL LEF_ZERO( nut_wvel1,myThid )
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             DO k=1,nR
+               nut_wvel0(i,j,k,bi,bj) = 0. _d 0
+               nut_wvel1(i,j,k,bi,bj) = 0. _d 0
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
 #endif
        ENDIF
 
