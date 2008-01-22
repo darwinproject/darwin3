@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.6 2008/01/22 20:30:46 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.7 2008/01/22 21:36:44 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,7 +40,7 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf    - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
+      INTEGER IniUnit1, IniUnit2
 
         INTEGER bi, bj, k
  
@@ -121,14 +121,17 @@ c small zooplankton (zoosize = 0.) lower export fraction
 #endif
 
 c write out initial phyto characteristics
-         open(15,file='plankton-ini-char.dat',status='unknown')
-         open(16,file='plankton_ini_char_nohead.dat',status='unknown')
+         CALL MDSFINDUNIT( IniUnit1, mythid )
+         open(IniUnit1,file='plankton-ini-char.dat',status='unknown')
+         CALL MDSFINDUNIT( IniUnit2, mythid )
+         open(IniUnit2,file='plankton_ini_char_nohead.dat',
+     &        status='unknown')
 #ifdef OLD_GRAZE
-         write(15,*)'diat diaz size   mu  mort   Rnp  Rfep   Rsip wsink 
-     &  KsP  KsN   KsFe    KsSi     g1      g2     Kpar  Kinh  Topt nsrc 
-     & np'
+         write(IniUnit1,*)'diat diaz size   mu  mort   Rnp  Rfep   Rsip
+     & wsink  KsP  KsN   KsFe    KsSi     g1      g2     Kpar  Kinh
+     &  Topt nsrc np'
          do np = 1, npmax
-           write(15,110)diatom(np),diazotroph(np),physize(np),
+           write(IniUnit1,110)diatom(np),diazotroph(np),physize(np),
      &                   1.0/(mu(np)*86400.), 1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),
@@ -137,7 +140,7 @@ c write out initial phyto characteristics
      &                   graze(np,1),graze(np,2),
      &                   KsatPAR(np),Kinhib(np),
      &                   phytoTempOptimum(np),nsource(np),np
-            write(16,110)diatom(np),diazotroph(np),physize(np),
+            write(IniUnit2,110)diatom(np),diazotroph(np),physize(np),
      &                   1.0/(mu(np)*86400.),1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),
@@ -148,10 +151,11 @@ c write out initial phyto characteristics
      &                   phytoTempOptimum(np),nsource(np),np
          end do
 #else
-         write(15,*)'diat diaz size mu mort Rnp Rfep Rsip wsink KsP KsN
-     &   KsFe   KsSi    palat1 palat2  Kpar  Kinh  Topt  nsrc np'
+         write(IniUnit1,*)'diat diaz size mu mort Rnp Rfep Rsip wsink
+     & KsP KsN   KsFe   KsSi    palat1 palat2  Kpar  Kinh  Topt  nsrc
+     & np'
          do np = 1, npmax
-           write(15,111)diatom(np),diazotroph(np),physize(np),
+           write(IniUnit1,111)diatom(np),diazotroph(np),physize(np),
      &                   1.0/(mu(np)*86400.), 1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),
@@ -160,7 +164,7 @@ c write out initial phyto characteristics
      &                   palat(np,1),palat(np,2),
      &                   KsatPAR(np),Kinhib(np),
      &                   phytoTempOptimum(np),nsource(np),np
-            write(16,111)diatom(np),diazotroph(np),physize(np),
+            write(IniUnit2,111)diatom(np),diazotroph(np),physize(np),
      &                   1.0/(mu(np)*86400.),1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),
@@ -173,8 +177,8 @@ c write out initial phyto characteristics
 #endif
 
 
-         close(15)
-         close(16)
+         close(IniUnit2)
+         close(IniUnit1)
  110     format(3f4.0,f6.2,4f4.0,f5.1,4f7.3,2e11.2,2f9.4,f6.1,2i5)
  111     format(3f4.0,f6.2,4f4.0,f5.1,4f7.3,2f6.1,2f9.4,f6.1,2i5)
 
