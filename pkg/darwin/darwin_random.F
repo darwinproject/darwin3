@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.3 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.4 2008/01/24 18:46:56 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,6 +32,8 @@ C     == Functions ==
       real*8 port_rand
       external port_rand
 #endif
+Coj   these are needed for the Intel compiler, define the macro IFORT
+Coj   in your optfile if you want to use it
 #ifdef IFORT
       real*4 RAND
       EXTERNAL RAND
