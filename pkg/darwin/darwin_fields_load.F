@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.4 2008/01/22 20:30:25 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.5 2008/02/08 15:34:14 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,6 +43,8 @@ C     == Routine arguments ==
       _RL myTime
       INTEGER myThid
 C     == Local variables ==
+C     msgBuf    - Informational/error meesage buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       COMMON/ darwin_load / 
      &    fice0, fice1, featmos0, featmos1, sur_par0, sur_par1
 #ifdef NUT_SUPPLY
@@ -124,9 +126,11 @@ c   but seems okay for remaining timesteps
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
-        WRITE(*,*)
+        WRITE(msgBuf,'(A,1P1E20.12,X,I10)')
      &    'S/R DARWIN_FIELDS_LOAD: Reading forcing data',
      &                 myTime,myIter
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
 
        IF ( IceFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( IceFile,fice0,intime0,
