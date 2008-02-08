@@ -1,8 +1,15 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.4 2008/01/24 18:46:56 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.5 2008/02/08 15:34:31 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
+
+#ifdef PORTRAND
+#ifdef OLDSEED
+      These lines are here intentionally to cause a compile-time error:
+      If you really want to use PORTRAND with OLDSEED, comment them out.
+#endif
+#endif
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_DARWIN
