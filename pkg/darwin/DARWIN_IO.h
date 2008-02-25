@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.1 2007/12/10 14:59:47 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.2 2008/02/25 21:09:57 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -46,7 +46,9 @@ c    npzd_timeave  - time for averaging
 #ifdef DAR_DIAG_DIVER
      &      Diver1ave, Diver2ave, Diver3ave, Diver4ave,
 #endif
-     &      dar_timeave
+     &      dar_timeave,
+     &      DAR_cons_unit1, DAR_cons_unit2,
+     &      DAR_cons_unit3, DAR_cons_unit4
 c  
        _RL  PPave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
        _RL  Nfixave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
@@ -64,3 +66,7 @@ c
        _RL  Diver4ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
 #endif
        _RL  DAR_timeave(nSx,nSy,nR)
+       INTEGER DAR_cons_unit1
+       INTEGER DAR_cons_unit2
+       INTEGER DAR_cons_unit3
+       INTEGER DAR_cons_unit4

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.2 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.3 2008/02/25 21:09:57 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -118,10 +118,10 @@ c------------------------------------------------------------
         print*,'tmptotFe',tmptotFe
         print*,'tmptotSi',tmptotSi
 
-        write(20,*), myIter, tmptotP, tmptotP/voltot
-        write(21,*), myIter, tmptotN, tmptotN/voltot
-        write(22,*), myIter, tmptotFe, tmptotFe/voltot
-        write(23,*), myIter, tmptotSi, tmptotSi/voltot
+        write(DAR_cons_unit1,*), myIter, tmptotP, tmptotP/voltot
+        write(DAR_cons_unit2,*), myIter, tmptotN, tmptotN/voltot
+        write(DAR_cons_unit3,*), myIter, tmptotFe, tmptotFe/voltot
+        write(DAR_cons_unit4,*), myIter, tmptotSi, tmptotSi/voltot
 
       _END_MASTER(myThid)
 

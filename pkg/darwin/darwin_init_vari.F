@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.7 2008/01/22 21:36:44 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.8 2008/02/25 21:09:57 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -234,7 +234,17 @@ c         CALL TIMEAVE_RESET(SURave,   1,  bi, bj, myThid)
         ENDDO
 #endif /* ALLOW_TIMEAVE */
 
-c
+#ifdef CHECK_CONS
+coj find unused units for darwin_cons output
+        CALL MDSFINDUNIT( DAR_cons_unit1, mythid )
+        open(DAR_cons_unit1,file='darwin_cons_P.txt',status='unknown')
+        CALL MDSFINDUNIT( DAR_cons_unit2, mythid )
+        open(DAR_cons_unit2,file='darwin_cons_N.txt',status='unknown')
+        CALL MDSFINDUNIT( DAR_cons_unit3, mythid )
+        open(DAR_cons_unit3,file='darwin_cons_Fe.txt',status='unknown')
+        CALL MDSFINDUNIT( DAR_cons_unit4, mythid )
+        open(DAR_cons_unit4,file='darwin_cons_Si.txt',status='unknown')
+#endif
 
 c test....................
 c       write(6,*)'finishing darwin_init_vari '
