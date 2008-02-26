@@ -9,5 +9,6 @@ o To check out
 [cnh@localhost]$ cd  foo/pkg
 [cnh@localhost]$ cvs co -d darwin MITgcm_contrib/darwin/pkg/darwin
 [cnh@localhost]$ cd ../verification
-[cnh@localhost]$ cvs co -d darwin_verification MITgcm_contrib/darwin/verification
+[cnh@localhost]$ cvs co -d darwin_global_128x64x15 MITgcm_contrib/darwin/verification/darwin_global_128x64x15
+[cnh@localhost]$ cvs co -d darwin_baltic_76x72x24 MITgcm_contrib/darwin/verification/darwin_baltic_76x72x24
 
