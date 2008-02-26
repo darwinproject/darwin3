@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.1 2007/12/10 14:59:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.2 2008/02/26 17:13:32 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -18,8 +18,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+c#include "PTRACERS_SIZE.h"
+c#include "PTRACERS_PARAMS.h"
+c#include "PTRACERS_FIELDS.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
 

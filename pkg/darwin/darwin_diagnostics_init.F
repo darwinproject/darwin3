@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.1 2007/12/10 14:59:47 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.2 2008/02/26 17:13:31 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,7 +22,8 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "PTRACERS.h"
+c#include "PTRACERS_PARAMS.h"
+c#include "PTRACERS_FIELDS.h"
 #include "DARWIN_IO.h"
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"

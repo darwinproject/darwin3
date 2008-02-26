@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.3 2008/02/25 21:09:57 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.4 2008/02/26 17:13:31 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,7 +20,8 @@ C==============================================================
 #include "GRID.h"
 #include "DARWIN_IO.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"

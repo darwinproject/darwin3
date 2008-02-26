@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_forcing_sep.F,v 1.1 2008/01/11 21:28:02 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_forcing_sep.F,v 1.2 2008/02/26 17:13:11 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -11,8 +11,8 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION:
 C     calls subroutine that will update passive tracers values
 C     with a separate timestep. Since GCHEM_FORCING_SEP is now
-C     called before DO_FIELDS_BLOCKING_EXCHANGES, the passive 
-C     tracer values in the halo regions are not up to date and 
+C     called before DO_FIELDS_BLOCKING_EXCHANGES, the passive
+C     tracer values in the halo regions are not up to date and
 C     must not be used.
 
 C !USES: ===============================================================
@@ -23,7 +23,8 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+c#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #ifdef ALLOW_DIC
 #include "DIC_BIOTIC.h"
 #include "DIC_ABIOTIC.h"
@@ -52,9 +53,9 @@ ccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
 #ifdef ALLOW_OLD_VIRTUALFLUX
 c find global surface averages
-       gsm_s = 0.
-       gsm_dic = 0.
-       gsm_alk = 0.
+       gsm_s = 0. _d 0
+       gsm_dic = 0. _d 0
+       gsm_alk = 0. _d 0
        call tracer_meanarea(myThid,salt, 1,gsm_s)
        call tracer_meanarea(myThid,
      &               ptracer(1-Olx,1-Oly,1,1,1,1), 1, gsm_dic)
@@ -267,6 +268,10 @@ ccccccccccccccc
 c
         ENDDO
        ENDDO
+
+#ifdef ALLOW_DIC
+       CALL DIC_ATMOS( 1, myTime, myIter, myThid )
+#endif
 
 #endif /* GCHEM_SEPARATE_FORCING */
 #endif /* ALLOW_GCHEM */
