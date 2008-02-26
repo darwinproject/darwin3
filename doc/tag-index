@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.2 2008/01/11 15:49:55 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.3 2008/02/26 17:09:03 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt59i_20080226
 o load forcing fields if gchem_ForcingPeriod.NE.0 (instead of periodicExternalForcing)
 
 cp59i_noironwithexf
