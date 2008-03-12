@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.4 2008/02/26 17:13:31 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.5 2008/03/12 14:41:08 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -184,7 +184,7 @@ c light variables
       _RL  Diver4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
       _RL  tmpphy(npmax)
-      _RL  totphy, totbio, maxphy
+      _RL  totphy, biotot, maxphy, phymax
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
