@@ -1,12 +1,15 @@
 o Directories
 
-  pkg/ darwin package(s) code
-  verification/ standard reference/test experiment(s)
+  pkg/darwin    darwin package code
+  pkg/gchem     modified gchem package
+  verification/ standard reference/test experiments
 
 o To check out
 
-[cnh@localhost]$ cvs co -d foo MITgcm
-[cnh@localhost]$ cd  foo/pkg
+[cnh@localhost]$ cvs co -d foo -r checkpoint59n MITgcm
+[cnh@localhost]$ cd foo/pkg
+[cnh@localhost]$ mv gchem gchem_main
+[cnh@localhost]$ cvs co -d gchem MITgcm_contrib/darwin/pkg/gchem
 [cnh@localhost]$ cvs co -d darwin MITgcm_contrib/darwin/pkg/darwin
 [cnh@localhost]$ cd ../verification
 [cnh@localhost]$ cvs co -d darwin_global_128x64x15 MITgcm_contrib/darwin/verification/darwin_global_128x64x15
