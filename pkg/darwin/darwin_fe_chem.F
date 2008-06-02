@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.4 2008/02/26 17:13:31 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.5 2008/06/02 16:17:51 jahn Exp $
 C $Name:  $
 
 c#include "DIC_OPTIONS.h"
@@ -24,9 +24,6 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "PTRACERS_SIZE.h"
-c#include "PTRACERS_PARAMS.h"
-c#include "PTRACERS_FIELDS.h"
 #include "DARWIN_IO.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"

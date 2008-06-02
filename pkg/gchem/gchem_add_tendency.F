@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_add_tendency.F,v 1.2 2008/02/26 17:13:11 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_add_tendency.F,v 1.3 2008/06/02 16:18:06 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -26,7 +26,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
-c#include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #include "GCHEM_FIELDS.h"
 
