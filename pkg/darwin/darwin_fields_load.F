@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.6 2008/02/26 17:13:31 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.7 2008/06/02 20:32:25 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -13,10 +13,10 @@ CStartOfInterFace
      I           myIter,myTime,myThid)
 
 C     /==========================================================\
-C     | SUBROUTINE DARWIN_FIELDS_LOAD                           |
+C     | SUBROUTINE DARWIN_FIELDS_LOAD                            |
 C     | o Read in fields needed for ice fraction and             |
-C     | iron aeolian flux terms                                  |
-C        adapted from NPZD2Fe - Stephanie Dutkiewicz 2005
+C     | iron aeolian flux terms, PAR and nut_wvel                |
+C     | adapted from NPZD2Fe - Stephanie Dutkiewicz 2005         |
 C     |==========================================================|
       IMPLICIT NONE
 
@@ -25,13 +25,8 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "PTRACERS_SIZE.h"
-c#include "PTRACERS_PARAMS.h"
-c#include "PTRACERS_FIELDS.h"
 #include "DARWIN_IO.h"
-#include "GCHEM.h"
-#include "GCHEM_OPTIONS.h"
-c
+c#include "GCHEM.h"
 #ifdef ALLOW_SEAICE
 #include "SEAICE.h"
 #endif
@@ -67,7 +62,7 @@ C     msgBuf    - Informational/error meesage buffer
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 c
 c
-      IF ( gchem_ForcingPeriod .NE. 0. _d 0 ) THEN
+      IF ( darwin_ForcingPeriod .NE. 0. _d 0 ) THEN
 
 C First call requires that we initialize everything to zero for safety
 cQQQ need to check timing
@@ -98,10 +93,10 @@ cQQQ need to check timing
 C Now calculate whether it is time to update the forcing arrays
        rdt=1. _d 0 / deltaTclock
        nForcingPeriods=
-     &  int(gchem_ForcingCycle/gchem_ForcingPeriod+0.5 _d 0)
+     &  int(darwin_ForcingCycle/darwin_ForcingPeriod+0.5 _d 0)
        Imytm=int(myTime*rdt+0.5 _d 0)
-       Ifprd=int(gchem_ForcingPeriod*rdt+0.5 _d 0)
-       Ifcyc=int(gchem_ForcingCycle*rdt+0.5 _d 0)
+       Ifprd=int(darwin_ForcingPeriod*rdt+0.5 _d 0)
+       Ifcyc=int(darwin_ForcingCycle*rdt+0.5 _d 0)
        Iftm=mod( Imytm+Ifcyc-Ifprd/2,Ifcyc)
 
        intime0=int(Iftm/Ifprd)
@@ -133,29 +128,29 @@ C      data for the period ahead and the period behind myTime.
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
 
-       IF ( IceFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( IceFile,fice0,intime0,
+       IF ( darwin_iceFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( darwin_iceFile,fice0,intime0,
      &        myIter,myThid ) 
-         CALL READ_REC_XY_RS( IceFile,fice1,intime1,
+         CALL READ_REC_XY_RS( darwin_IceFile,fice1,intime1,
      &        myIter,myThid )
        ENDIF
-       IF ( IronFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( IronFile,featmos0,intime0, 
+       IF ( darwin_ironFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( darwin_ironFile,featmos0,intime0, 
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( IronFile,featmos1,intime1,
+         CALL READ_REC_XY_RS( darwin_ironFile,featmos1,intime1,
      &        myIter,myThid )
        ENDIF
-       IF ( Filename1 .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( Filename1,sur_par0,intime0,
+       IF ( darwin_PARFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( darwin_PARFile,sur_par0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( Filename1,sur_par1,intime1,
+         CALL READ_REC_XY_RS( darwin_PARFile,sur_par1,intime1,
      &        myIter,myThid )
        ENDIF
 #ifdef NUT_SUPPLY
-       IF ( Filename2 .NE. ' '  ) THEN
-         CALL READ_REC_XYZ_RS( Filename2,nut_wvel0,intime0,
+       IF ( darwin_nutWVelFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( darwin_nutWVelFile,nut_wvel0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XYZ_RS( Filename2,nut_wvel1,intime1,
+         CALL READ_REC_XYZ_RS( darwin_nutWVelFile,nut_wvel1,intime1,
      &        myIter,myThid )
        ENDIF
 #endif
@@ -188,7 +183,7 @@ cQQ need to include ice moel here, if used
 #ifdef ALLOW_SEAICE
              FIce(i,j,bi,bj) = AREA(i,j,1,bi,bj)
 #else
-           IF ( IceFile .NE. ' '  ) THEN
+           IF ( darwin_iceFile .NE. ' '  ) THEN
             fice(i,j,bi,bj)   = bWght*fice0(i,j,bi,bj)
      &                         +aWght*fice1(i,j,bi,bj)
            ELSE
@@ -196,7 +191,7 @@ cQQ need to include ice moel here, if used
            ENDIF
 #endif
 #endif
-           IF ( IronFile .NE. ' '  ) THEN
+           IF ( darwin_ironFile .NE. ' '  ) THEN
             inputFe(i,j,bi,bj)   = bWght*featmos0(i,j,bi,bj)
      &                            +aWght*featmos1(i,j,bi,bj)
 c convert to mmol/m2/s
@@ -205,7 +200,7 @@ c convert to mmol/m2/s
             inputFe(i,j,bi,bj)  = 0. _d 0
            ENDIF
 c light (load as Ein/m2/d; convert to uEin/m2/s)
-           IF ( Filename1 .NE. ' '  ) THEN
+           IF ( darwin_PARFile .NE. ' '  ) THEN
             sur_par(i,j,bi,bj)   = bWght*sur_par0(i,j,bi,bj)
      &                         +aWght*sur_par1(i,j,bi,bj)
             sur_par(i,j,bi,bj) = sur_par(i,j,bi,bj)*1. _d 6/86400. _d 0
@@ -214,7 +209,7 @@ c light (load as Ein/m2/d; convert to uEin/m2/s)
            ENDIF
 #ifdef NUT_SUPPLY
 c artificial wvel for nutrient supply in 1-d and 2-d models
-            IF ( Filename2 .NE. ' '  ) THEN
+            IF ( darwin_nutWVelFile .NE. ' '  ) THEN
              DO k=1,nR
                nut_wvel(i,j,k,bi,bj) = bWght*nut_wvel0(i,j,k,bi,bj)
      &                         +aWght*nut_wvel1(i,j,k,bi,bj)

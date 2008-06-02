@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.8 2008/02/25 21:09:57 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.9 2008/06/02 20:32:25 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,7 +25,7 @@ c
 #include "PARAMS.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
-#include "GCHEM.h"
+c#include "GCHEM.h"
 #include "DARWIN_IO.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -68,7 +68,7 @@ c test....................
 c set up ecosystem coefficients
 c
 c seed randomization
-        CALL DARWIN_RANDOM_INIT(gchem_int1, myThid)
+        CALL DARWIN_RANDOM_INIT(darwin_seed, myThid)
 
 c initialize total number of functional groups tried
          ngroups = 0

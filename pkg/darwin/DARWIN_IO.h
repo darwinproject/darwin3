@@ -1,16 +1,40 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.2 2008/02/25 21:09:57 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.3 2008/06/02 20:32:25 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
-c#include "DARWIN_SIZE.h"
-c#include "DARWIN.h"
 
 c DARWIN_IO.h
 c --------------------------------------------------------------------
-c  Description:  input and daignostic output for DARWIN pkg
+c  Description:  input and diagnostic output for DARWIN pkg
 c          Stephanie Dutkiewicz: Spring 2006
 c NOTE: additional diagnostics still needed
 c --------------------------------------------------------------------      
+
+C--   COMMON /DARWIN_FILENAMES/
+C  darwin_iceFile       :: file name of seaice fraction
+C  darwin_ironFile      :: file name of aeolian iron flux
+C  darwin_PARFile       :: file name of Photosynthetically Active Radiation at surface
+C  darwin_nutWVelFile   :: file name of nutrient wvel
+C  darwin_forcingPeriod :: perioDARWIN forcing parameter specific for DARWIN (seconds)
+C  darwin_forcingCycle  :: perioDARWIN forcing parameter specific for DARWIN (seconds)
+C  darwin_seed          :: seed for the random number generator
+
+      COMMON /DARWIN_FILENAMES/
+     &        darwin_iceFile,
+     &        darwin_ironFile,
+     &        darwin_PARFile,
+     &        darwin_nutWVelFile,
+     &        darwin_forcingPeriod, darwin_forcingCycle,
+     &        darwin_seed
+
+      CHARACTER*(MAX_LEN_FNAM) darwin_iceFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_ironFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_PARFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_NutWVelFile
+      _RL     darwin_forcingPeriod
+      _RL     darwin_forcingCycle
+      INTEGER darwin_seed
+
 c INPUT:
 c    fice           - ice fraction
 c    inputFe        - aeolian input of iron
@@ -70,3 +94,4 @@ c
        INTEGER DAR_cons_unit2
        INTEGER DAR_cons_unit3
        INTEGER DAR_cons_unit4
+
