@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM_OPTIONS.h,v 1.1 2008/01/11 21:28:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM_OPTIONS.h,v 1.2 2008/06/02 20:32:49 jahn Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -13,7 +13,7 @@ C    !ROUTINE: GCHEM_OPTIONS.h
 C    !INTERFACE:
 
 C    !DESCRIPTION:
-c options for biogeochemistry package
+C options for biogeochemistry package
 CEOP
 
 #define GCHEM_SEPARATE_FORCING

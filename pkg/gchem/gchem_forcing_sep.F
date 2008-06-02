@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_forcing_sep.F,v 1.2 2008/02/26 17:13:11 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_forcing_sep.F,v 1.3 2008/06/02 20:32:49 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
+#ifdef ALLOW_DIC
+#include "DIC_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GCHEM_FORCING_SEP
@@ -23,11 +26,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
-c#include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #ifdef ALLOW_DIC
-#include "DIC_BIOTIC.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 #endif /* ALLOW_DIC */
 
 C !INPUT PARAMETERS: ===================================================
@@ -56,20 +57,12 @@ c find global surface averages
        gsm_s = 0. _d 0
        gsm_dic = 0. _d 0
        gsm_alk = 0. _d 0
-       call tracer_meanarea(myThid,salt, 1,gsm_s)
-       call tracer_meanarea(myThid,
-     &               ptracer(1-Olx,1-Oly,1,1,1,1), 1, gsm_dic)
+       call tracer_meanarea(salt, 1,gsm_s,myThid)
+       call tracer_meanarea(
+     &             ptracer(1-Olx,1-Oly,1,1,1,1), 1, gsm_dic, myThid )
        print*,'mean surface dic', gsm_dic,gsm_s
-       call tracer_meanarea(myThid,
-     &               ptracer(1-Olx,1-Oly,1,1,1,2), 1, gsm_alk)
-
-#endif /* ALLOW_OLD_VIRTUALFLUX */
-#endif
-
-#ifdef ALLOW_NPZDCAR
-#ifdef ALLOW_OLD_VIRTUALFLUX
-c find global surface averages
-       call NPZDCAR_AREAMEANS(myTime,myIter, myThid )
+       call tracer_meanarea(
+     &             ptracer(1-Olx,1-Oly,1,1,1,2), 1, gsm_alk, myThid )
 #endif /* ALLOW_OLD_VIRTUALFLUX */
 #endif
 ccccccccccccccccccccccccccccccccccccccccccc
@@ -89,7 +82,7 @@ C$taf loop = parallel
         iMax=sNx
 c
 ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
-c
+
 #ifdef ALLOW_DIC
 #ifdef ALLOW_FE
           call DIC_BIOTIC_Forcing( Ptracer(1-Olx,1-Oly,1,bi,bj,1),
@@ -265,7 +258,6 @@ ccccccccccccccc
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
 #endif
-c
         ENDDO
        ENDDO
 

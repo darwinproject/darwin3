@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_init_vari.F,v 1.1 2008/01/11 21:28:02 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_init_vari.F,v 1.2 2008/06/02 20:32:49 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -15,6 +15,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GCHEM.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "GRID.h"
 # include "DYNVARS.h"
@@ -31,27 +32,23 @@ ccccccccccccccccccccccccccc
 c initialize parameters   c
 ccccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
+      IF ( useDIC ) THEN
           print*,'QQ load dic parameters, initial vari' 
-#ifdef ALLOW_AUTODIFF_TAMC
-c these two needed to be recalled for adjoint
-          call DIC_BIOTIC_PARAM(myThid)
-          call DIC_ABIOTIC_PARAM(myThid)
-#endif /* ALLOW_AUTODIFF_TAMC */
-c -- 
           CALL DIC_INI_FORCING(myThid)
-          call DIC_SURFFORCING_INIT(myThid)
-          call DIC_BIOTIC_INIT(myThid )
+          CALL DIC_SURFFORCING_INIT(myThid)
+          CALL DIC_BIOTIC_INIT(myThid )
+      ENDIF
 #endif /* ALLOW_DIC */
 
 #ifdef ALLOW_DARWIN
+      IF ( useDARWIN ) THEN
          call DARWIN_INIT_VARI(myThid )
+      ENDIF
 #endif
-
 #ifdef ALLOW_NPZDCAR
          call NPZDCAR_INIT_VARI(myThid )
          call DIC_SURFFORCING_INIT(myThid)
 #endif
-
 #endif /* ALLOW_GCHEM */
 
       RETURN

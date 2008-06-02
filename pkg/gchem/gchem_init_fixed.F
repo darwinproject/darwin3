@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_init_fixed.F,v 1.1 2008/01/11 21:28:02 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_init_fixed.F,v 1.2 2008/06/02 20:32:49 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -13,10 +13,9 @@ C experiment
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GCHEM.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -28,27 +27,32 @@ CEOP
 C     !LOCAL VARIABLES:
 
 C jmc: simpler to put MASTER thread directive within individual S/R :
-C      that leave the choice, for each S/R, to do either single (master) 
+C      that leave the choice, for each S/R, to do either single (master)
 C      thread tasks or Multi-threaded tasks.
 c        _BEGIN_MASTER( mythid )
 ccccccccccccccccccccccccccc
 c initialize parameters   c
 ccccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
-          print*,'QQ load dic parameters, initial fixed' 
-          call DIC_ABIOTIC_PARAM( myThid )
-          call DIC_BIOTIC_PARAM( myThid )
+      IF ( useDIC ) THEN
+          print*,'QQ load dic parameters, initial fixed'
+          CALL DIC_INIT_FIXED( myThid )
+      ENDIF
 #endif /* ALLOW_DIC */
 #ifdef ALLOW_CFC
+      IF ( useCFC ) THEN
           print*,'QQ start cfc params'
-          call CFC_PARAM( myThid )
+          CALL CFC_PARAM( myThid )
           print*,'QQ read cfc atmos data'
-          call CFC_ATMOS( myThid )
+          CALL CFC_ATMOS( myThid )
+      ENDIF
 #endif /* ALLOW_CFC */
 c         _END_MASTER( mythid )
 
 #ifdef ALLOW_DARWIN
+      IF ( useDARWIN ) THEN
          call DARWIN_INIT_FIXED(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_NPZDCAR

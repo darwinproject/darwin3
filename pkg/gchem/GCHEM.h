@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM.h,v 1.1 2008/01/11 21:28:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM.h,v 1.2 2008/06/02 20:32:49 jahn Exp $
 C $Name:  $
 
 #ifdef ALLOW_GCHEM
@@ -6,36 +6,48 @@ C $Name:  $
 CBOP
 C    !ROUTINE: GCHEM.h
 C    !INTERFACE:
- 
+
 C    !DESCRIPTION:
 C Contains tracer parameters and input files for chemical tracers.
 C These can be read in from data.gchem
 C
-C  nsubtime   : : number of chemistry timesteps per deltaTtracer
-C                 (default 1) 
-C  WindFile   : : file name of wind speeds that may be needed for
-C                 biogeochemical experiments
-C  AtmospFile : : file name of atmospheric pressure that may be needed for
-C                 biogeochemical experiments
-C  IceFile    : : file name of seaice fraction that may be needed for
-C                 biogeochemical experiments
-C  IronFile   : : file name of aeolian iron flux that may be needed for
-C                 biogeochemical experiments
-C  SilicaFile : : file name of surface silica that may be needed for
-C                 biogeochemical experiments
-C  Filename*  : : various spare filenames 
-C  gchem_int* : : place holder to read in a integer number, set at run time
-C  gchem_rl*  : : place holder to read in a real number, set at run time
-c  gchem_ForcingPeriod : : periodic forcing parameter specific for gchem (seconds)
-c  gchem_ForcingCycle  : : periodic forcing parameter specific for gchem (seconds)
+C--   COMMON /GCHEM_PARM_L/ Logical valued parameters used by GCHEM pkg.
+C     useDIC    :: flag to turn on/off DIC pkg
+C     useCFC    :: flag to turn on/off CFC pkg
+C     useDARWIN :: flag to turn on/off darwin pkg
+C
+C--   COMMON /GCHEM_PARAMS/
+C  nsubtime    :: number of chemistry timesteps per deltaTtracer
+C                 (default 1)
+C  Filename*   :: various spare filenames
+C  gchem_int*  :: place holder to read in a integer number, set at run time
+C  gchem_rl*   :: place holder to read in a real number, set at run time
+C  gchem_ForcingPeriod :: periodic forcing parameter specific for gchem (seconds)
+C  gchem_ForcingCycle  :: periodic forcing parameter specific for gchem (seconds)
 
-C  
+CEOP
+
+      COMMON /GCHEM_PARM_L/
+     &              useDIC,
+     &              useCFC,
+     &              useDARWIN
+
+      LOGICAL useDIC, useCFC, useDARWIN
+
+      COMMON /GCHEM_PARAMS/
+     &                   Filename1,
+     &                   Filename2,
+     &                   Filename3,
+     &                   Filename4,
+     &                   Filename5,
+     &                   nsubtime,
+     &           gchem_int1, gchem_int2, gchem_int3,
+     &           gchem_int4, gchem_int5,
+     &           gchem_rl1, gchem_rl2, gchem_rl3,
+     &           gchem_rl4, gchem_rl5,
+     &           gchem_ForcingPeriod, gchem_ForcingCycle
+
       INTEGER nsubtime
-      CHARACTER*(MAX_LEN_FNAM) WindFile
-      CHARACTER*(MAX_LEN_FNAM) AtmospFile
-      CHARACTER*(MAX_LEN_FNAM) IceFile
-      CHARACTER*(MAX_LEN_FNAM) IronFile
-      CHARACTER*(MAX_LEN_FNAM) SilicaFile
       CHARACTER*(MAX_LEN_FNAM) Filename1
       CHARACTER*(MAX_LEN_FNAM) Filename2
       CHARACTER*(MAX_LEN_FNAM) Filename3
@@ -53,25 +65,5 @@ C
       _RL     gchem_rl5
       _RL     gchem_ForcingPeriod
       _RL     gchem_ForcingCycle
-
-
-      COMMON /GCHEM_PARAMS/
-     &                   WindFile,
-     &                   AtmospFile,
-     &                   IceFile,
-     &                   IronFile,
-     &                   SilicaFile,
-     &                   Filename1,
-     &                   Filename2,
-     &                   Filename3,
-     &                   Filename4,
-     &                   Filename5,
-     &                   nsubtime,
-     &           gchem_int1, gchem_int2, gchem_int3,
-     &           gchem_int4, gchem_int5,
-     &           gchem_rl1, gchem_rl2, gchem_rl3,
-     &           gchem_rl4, gchem_rl5,
-     &           gchem_ForcingPeriod, gchem_ForcingCycle
-CEOP
 
 #endif /* ALLOW_GCHEM */

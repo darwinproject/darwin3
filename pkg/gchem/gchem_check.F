@@ -1,5 +1,6 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_check.F,v 1.1 2008/01/11 21:28:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_check.F,v 1.2 2008/06/02 20:32:49 jahn Exp $
 C $Name:  $
+
 #include "GCHEM_OPTIONS.h"
 
       SUBROUTINE GCHEM_CHECK( myThid )
@@ -14,6 +15,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GCHEM.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance
@@ -36,6 +38,27 @@ C     GCHEM needs passive tracer package
          WRITE(msgBuf,'(A)') 'usePTRACERS has to be .TRUE. for GCHEM'
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+      ENDIF
+
+C     GCHEM cannot (yet!) run cfc and dic together
+      IF ( useDIC .AND. useCFC ) THEN
+         WRITE(msgBuf,'(A)') 'useDIC and useCFC cannot both be .TRUE.'
+         CALL PRINT_ERROR( msgBuf , myThid )
+         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+      ENDIF
+
+C     GCHEM cannot (yet!) run darwin and dic together
+      IF ( useDARWIN .AND. useDIC ) THEN
+        WRITE(msgBuf,'(A)') 'useDARWIN and useDIC cannot both be .TRUE.'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+      ENDIF
+
+C     GCHEM cannot (yet!) run darwin and cfc together
+      IF ( useDARWIN .AND. useCFC ) THEN
+        WRITE(msgBuf,'(A)') 'useDARWIN and useCFC cannot both be .TRUE.'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R GCHEM_CHECK'
       ENDIF
 
       _END_MASTER(myThid)

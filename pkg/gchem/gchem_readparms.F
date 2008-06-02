@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_readparms.F,v 1.2 2008/02/26 17:13:11 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_readparms.F,v 1.3 2008/06/02 20:32:49 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -40,33 +40,36 @@ C  msgBuf		:: message buffer
 c     PARAMETER ( UNSET_I      = 123456789  )
 CEOP
 
+C- Sub-package on/off flags: not fully implemented, requires
+C  to test the flag before any corresponding pkg S/R call
+
       NAMELIST /GCHEM_PARM01/
-     &                   tIter0,
-     &                   WindFile,
-     &                   IceFile,
-     &                   AtmospFile,
-     &                   IronFile,
-     &                   SilicaFile,
+     &                   nsubtime,
+     &                   useDIC,
+     &                   useCFC,
+     &                   useDARWIN,
      &                   Filename1,
      &                   Filename2,
      &                   Filename3,
      &                   Filename4,
      &                   Filename5,
-     &                   nsubtime,
      &           gchem_int1, gchem_int2, gchem_int3,
      &           gchem_int4, gchem_int5,
      &           gchem_rl1, gchem_rl2, gchem_rl3,
      &           gchem_rl4, gchem_rl5,
-     &           gchem_ForcingPeriod, gchem_ForcingCycle
+     &           gchem_ForcingPeriod, gchem_ForcingCycle,
+     &           tIter0
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _BEGIN_MASTER(myThid)
 
 C Set defaults values for parameters in GCHEM.h
+       useDIC = .FALSE.
+       useCFC = .FALSE.
+       useDARWIN = .FALSE.
        tIter0 = UNSET_I
        nsubtime=1
-       windFile=' '
-       atmospFile=' ' 
-       IceFile=' '
-       IronFile=' '
-       SilicaFile=' '
        Filename1=' '
        Filename2=' '
        Filename3=' '
@@ -86,7 +89,6 @@ c default periodic forcing to same as for physics
        gchem_ForcingPeriod=externForcingPeriod
        gchem_ForcingCycle=externForcingCycle
 C Open and read the data.gchem file
-      _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT , 1)
@@ -121,6 +123,24 @@ c      nRetired = nRetired+1
 
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
+
+#ifdef ALLOW_DIC
+      IF ( useDIC ) THEN
+        CALL DIC_READPARMS(myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_CFC
+      IF ( useCFC ) THEN
+        CALL CFC_READPARMS(myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_DARWIN
+      IF ( useDARWIN ) THEN
+        CALL DARWIN_READPARMS(myThid)
+      ENDIF
+#endif
 
 #endif /* ALLOW_GCHEM */
 
