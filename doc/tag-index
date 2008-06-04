@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.7 2008/06/02 20:36:03 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.8 2008/06/04 20:09:33 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt59p_20080604
 o upgrade to checkpoint59p of MITgcm
   (introduces data.darwin)
 
