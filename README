@@ -6,7 +6,7 @@ o Directories
 
 o To check out
 
-[cnh@localhost]$ cvs co -d foo -r checkpoint59p MITgcm
+[cnh@localhost]$ cvs co -d foo -r checkpoint59r MITgcm
 [cnh@localhost]$ cd foo/pkg
 [cnh@localhost]$ mv gchem gchem_main
 [cnh@localhost]$ cvs co -d gchem MITgcm_contrib/darwin/pkg/gchem
