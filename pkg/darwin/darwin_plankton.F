@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.2 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.3 2008/06/09 22:45:50 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -456,13 +456,16 @@ c [jbmodif]
 c NO2, if nsource is 1 or 3
                if (ksatNO2(np).gt.0. _d 0 .and. nsource(np).ne.2) then
                  if (N2only.eq.1 .and. nsource(np).eq.1) then
+c                if (nsource(np).eq.1) then
                   NO2limit(np) = NO2local/(NO2local+ksatNO2(np))
      &                    *EXP(-sig1*NH4local)
                   NO2limcheck = NO2local/(NO2local+ksatNO2(np))
                  else
-                  NO2limit(np)=NO2local/(NO3local+NO2local+ksatNO3(np))
+                  if (ksatNO3(np).gt.0. _d 0) then
+                   NO2limit(np)=NO2local/(NO3local+NO2local+ksatNO3(np))
      &                    *EXP(-sig1*NH4local)
-                  NO2limcheck=NO2local/(NO3local+NO2local+ksatNO3(np))
+                   NO2limcheck=NO2local/(NO3local+NO2local+ksatNO3(np))
+                  endif
                  endif
                endif
 c NO3, if nsource is 3
@@ -501,7 +504,7 @@ c    &                             NO3local,NO2local,NH4local
                     Ndiff=Ndummy1-NH4limit(np)
                     NO2limit(np)=Ndiff * 
      &                     NO2limit(np)/(NO2limit(np)+NO3limit(np))
-                    NO2limit(np)=Ndiff *
+                    NO3limit(np)=Ndiff *
      &                     NO3limit(np)/(NO2limit(np)+NO3limit(np))
                     Ndummy = NO3limit(np)+NO2limit(np)+NH4limit(np)
                   endif
