@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.9 2008/06/02 20:32:25 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.10 2008/06/10 22:57:05 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -121,6 +121,7 @@ c small zooplankton (zoosize = 0.) lower export fraction
 #endif
 
 c write out initial phyto characteristics
+#ifndef GEIDER
          CALL MDSFINDUNIT( IniUnit1, mythid )
          open(IniUnit1,file='plankton-ini-char.dat',status='unknown')
          CALL MDSFINDUNIT( IniUnit2, mythid )
@@ -175,7 +176,38 @@ c write out initial phyto characteristics
      &                   phytoTempOptimum(np),nsource(np),np
          end do
 #endif
+#endif
 
+#ifdef GEIDER
+         CALL MDSFINDUNIT( IniUnit1, mythid )
+         open(IniUnit1,file='gplankton-ini-char.dat',status='unknown')
+         CALL MDSFINDUNIT( IniUnit2, mythid )
+         open(IniUnit2,file='gplankton_ini_char_nohead.dat',
+     &        status='unknown')
+         write(IniUnit1,*)'diat diaz size pcmax mort Rnp Rfep Rsip wsink
+     & KsP KsN   KsFe   KsSi    palat1 palat2 a(-6) chl2c  Topt  nsrc
+     & np'
+         do np = 1, npmax
+           write(IniUnit1,111)diatom(np),diazotroph(np),physize(np),
+     &                 1.0/(pcmax(np)*86400.), 1.0/(mortphy(np)*86400.),
+     &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
+     &                   wsink(np),
+     &                   KsatPO4(np),KsatNO3(np),KsatFeT(np)*1000.
+     &                  ,KsatSi(np),
+     &                   palat(np,1),palat(np,2),
+     &                   alphachl(np),chl2cmax(np)*1e6,
+     &                   phytoTempOptimum(np),nsource(np),np
+            write(IniUnit2,111)diatom(np),diazotroph(np),physize(np),
+     &                 1.0/(pcmax(np)*86400.), 1.0/(mortphy(np)*86400.),
+     &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
+     &                   wsink(np),
+     &                   KsatPO4(np),KsatNO3(np),KsatFeT(np)*1000.
+     &                  ,KsatSi(np),
+     &                   palat(np,1),palat(np,2),
+     &                   alphachl(np),chl2cmax(np)*1e6,
+     &                   phytoTempOptimum(np),nsource(np),np
+         end do
+#endif
 
          close(IniUnit2)
          close(IniUnit1)
@@ -206,6 +238,7 @@ c set arrays to zero if first timestep
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_RESET(PARave,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(PPave,   Nr,  bi, bj, myThid)
+          CALL TIMEAVE_RESET(Chlave,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(Nfixave,   Nr,  bi, bj, myThid)
 #ifdef DAR_DIAG_RSTAR
           do np=1,npmax

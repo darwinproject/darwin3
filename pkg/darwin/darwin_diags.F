@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.3 2008/06/02 16:17:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.4 2008/06/10 22:57:05 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -66,6 +66,8 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(PPave, DAR_timeave, nR ,
      &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(Chlave, DAR_timeave, nR ,
+     &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(Nfixave, DAR_timeave, nR ,
      &                 bi,bj,myThid)
 #ifdef DAR_DIAG_RSTAR
@@ -102,6 +104,8 @@ c    &                 bi,bj,myThid)
          CALL WRITE_FLD_XYZ_RL('DAR_PARtave.',suff,PARave,         
      &        myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('DAR_PPtave.',suff,PPave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XYZ_RL('DAR_Chltave.',suff,Chlave,
      &        myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('DAR_Nfixtave.',suff,Nfixave,
      &        myIter,myThid)
@@ -147,6 +151,8 @@ c    &        myIter,myThid)
          CALL MNC_CW_RL_W(
      &        pf,'dar_tave',0,0,'dar_PP_ave',PPave,myThid)
          CALL MNC_CW_RL_W(
+     &        pf,'dar_tave',0,0,'dar_Chl_ave',Chlave,myThid)
+         CALL MNC_CW_RL_W(
      &        pf,'dar_tave',0,0,'dar_Nfix_ave',Nfixave,myThid)
 #ifdef DAR_DIAG_RSTAR
          do np=1,npmax
@@ -191,6 +197,7 @@ C      Reset averages to zero
         DO bi = myBxLo(myThid), myBxHi(myThid)
          CALL TIMEAVE_RESET(PARave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(PPave,Nr,bi,bj,myThid)
+         CALL TIMEAVE_RESET(Chlave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(Nfixave,Nr,bi,bj,myThid)
 #ifdef DAR_DIAG_RSTAR
          do np=1,npmax

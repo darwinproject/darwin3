@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.3 2008/06/09 22:45:50 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.4 2008/06/10 22:57:05 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,7 +32,7 @@ c - add additional r* diagnostic for (no3+no2) - Stephanie, Winter 2007
 c ====================================================================
          SUBROUTINE DARWIN_PLANKTON(
      &                       phyto, zooP, zooN, zooFe, zooSi, PP, 
-     &                       Nfix,
+     &                       Chl, Nfix,
      &                       PO4local, NO3local, FeTlocal, Silocal,
      &                       NO2local, NH4local, 
      &                       DOPlocal, DONlocal, DOFelocal,
@@ -74,6 +74,7 @@ c zoo   = zooplankton
          _RL zooSi(nzmax)
          _RL PP
          _RL Nfix
+         _RL Chl
          _RL PO4local
          _RL NO3local
          _RL FeTlocal
@@ -191,6 +192,13 @@ c  variables for zooplankton grazing rates
          _RL sumgrazlossSi(nzmax)
 #endif
 
+#ifdef GEIDER
+        _RL pcarbon(npmax)
+        _RL pcm(npmax)
+        _RL chl2c(npmax)
+        _RL phychl(npmax)
+#endif
+
 c variables for nutrient uptake
          _RL consumpPO4
          _RL consumpNO3
@@ -294,6 +302,14 @@ c ??
 c energetic disadvantage of using NO2/No3: off=0, on=1
          NOreducost =0
 #endif
+
+#ifdef GEIDER
+         do np=1,npmax
+           pcarbon(np) = 0. _d 0
+           pcm(np)=0. _d 0
+           chl2c(np)=0. _d 0
+         enddo
+#endif
          
 
 c set sum totals to zero
@@ -323,6 +339,7 @@ c set sum totals to zero
 c zeros for diagnostics
         PP=0. _d 0
         Nfix=0. _d 0
+        Chl=0. _d 0
 
 c set up phtyoplankton array to be used for grazing and mortality
 c set up other variable used more than once to zero
@@ -372,7 +389,9 @@ Ccccccccccccccccccccccccccccccccccc ccccccccccccccccccccccccccccccc
 
 c ******************** GROWTH OF PHYTO ****************************
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+#ifndef GEIDER
 c Determine phytoplantkon light limitation: will affect growth rate
+c using Platt-like equations with inhibition
           do np = 1, npmax
            if (PARlocal.gt.1. _d 0) then
              kpar=ksatPAR(np)/10. _d 0;
@@ -386,6 +405,7 @@ c Determine phytoplantkon light limitation: will affect growth rate
            endif
           enddo
           if (debug.eq.1) print*,'ilimit',ilimit, PARlocal
+#endif
 c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c Determine temperature Dependent Growth function for Phyto
           do np=1, npmax
@@ -595,6 +615,33 @@ c Now Check Against General Nutrient Limiting Tendency
           if (debug.eq.1) print*,'ngrow',
      &                  ngrow
 
+#ifdef GEIDER
+          do np = 1, npmax
+             pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
+             chl2c(np)=chl2cmax(np)/
+     &            (1+(chl2cmax(np)*alphachl(np)*PARlocal)/
+     &               (2*pcm(np)))
+             chl2c(np)=min(chl2c(np),chl2cmax(np))
+             phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
+           if (PARlocal.gt.1. _d -1) then
+             pcarbon(np)=pcm(np)*( 1 -
+     &        exp((-alphachl(np)*PARlocal*chl2c(np))/(pcm(np))) )
+             if (pcarbon(np).lt. 0. _d 0) 
+     &               print*,'QQ ERROR pc=',pcarbon(np)
+             if (pcm(np).gt.0. _d 0) then
+               ilimit(np)=pcarbon(np)/pcm(np)
+             else
+               ilimit(np)= 0. _d 0
+             endif
+           else
+             ilimit(np)=0. _d 0
+             pcarbon(np)=0. _d 0
+           endif
+          enddo
+          if (debug.eq.14) print*,'ilimit',ilimit, PARlocal
+          if (debug.eq.14) print*,'chl:c',chl2c
+          if (debug.eq.14) print*,'chl',phychl
+#endif
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -795,8 +842,14 @@ c determine nutrient uptake
 c consumption - sum of phytoplankton contributions
             do np = 1, npmax
 c phospate uptake by each phytoplankton
+#ifndef GEIDER
                grow(np)=ngrow(np)*mu(np)*limit(np)*ilimit(np)*
      &                            phytoTempFunction(np)
+#endif
+#ifdef GEIDER
+               grow(np)=ngrow(np)*pcarbon(np)
+               if (debug.eq.1) print*,'grow', grow(np)
+#endif
                PspecificPO4(np) = grow(np)*phyto(np)
 c        write(6,*)'np =',np, ' PspecificPO4 ='
 c     &              ,PspecificPO4(np)
@@ -892,6 +945,9 @@ c phytoplankton
      &                        - mortphy(np)*phytomin(np)
      &                        + psinkphy(np)
               PP = PP + PspecificPO4(np)
+#ifdef GEIDER
+              Chl=Chl + phychl(np)
+#endif
 #ifdef OLD_GRAZE
               tmpr=grazing_phyto(np)*
      &              (phytomin(np)/(phytomin(np) + kgrazesat)) 
@@ -903,8 +959,13 @@ c phytoplankton
      &                        - psinkphy(np)
 #endif
 #ifdef DAR_DIAG_RSTAR
+#ifndef GEIDER
               tmpgrow=ngrow(np)*mu(np)*ilimit(np)*
      &              phytoTempFunction(np)
+#endif
+#ifdef GEIDER
+              tmpgrow=grow(np)/limit(np)
+#endif
               tmp1=tmpgrow*phyto(np)-tmpr
               tmp2=tmpgrow*phyto(np)*(exp(-sig1*nh4local)+NH4limit(np))
      &                 -tmpr 

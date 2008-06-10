@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.5 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.6 2008/06/10 22:57:05 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -210,6 +210,8 @@ c set N:P and iron requirement according to diazotroph status
           R_NP(np) = val_R_NP
           R_FeP(np) = val_RFeP
         end if
+c set C:P ratio
+          R_PC(np) = val_R_PC
 c set sinking rates according to allometry
         if(physize(np) .eq. 1.0 _d 0)then
            wsink(np) = BigSink
@@ -239,6 +241,7 @@ c Made ksatNH4 smaller since it is the preferred source
         ksatFeT(np) = ksatPO4(np)*R_FeP(np)
         ksatSi(np)  = val_ksatsi
 
+#ifndef GEIDER
 cNEW Light parameters:
 c     ksatPAR {0.1 - 1.3}
 c     0.35=Av High Light Adapted, 0.8=Av Low Light Adapted
@@ -269,6 +272,56 @@ c Low Light Groups for Small size:
      &     'generate Phyto: np = ',np,' kinhib     =', kinhib(np)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , mythid)
+#endif
+
+#ifdef GEIDER
+        RandNo = darwin_random(myThid)
+c big/small phyto growth rates..
+        if(physize(np) .eq. 1.0 _d 0)then
+          growthdays = Biggrow +Randno*Biggrowrange
+        else
+          growthdays = Smallgrow +RandNo*Smallgrowrange
+        end if
+c but diazotrophs always slower due to energetics
+        if(diazotroph(np) .eq. 1.0 _d 0) then
+            growthdays = growthdays * diaz_growfac
+        endif
+c now convert to a growth rate
+        if (growthdays.gt.0. _d 0) then
+         pcmax(np) = 1.0 _d 0/(growthdays*pday)
+        else
+         pcmax(np) = 0. _d 0
+        endif
+c
+        RandNo = darwin_random(myThid)
+c big/small phyto PI slope (chl specific)
+        if(physize(np) .eq. 1.0 _d 0)then
+          alphachl(np) = Bigalphachl +Randno*Bigalphachlrange
+        else
+          alphachl(np) = Smallalphachl +RandNo*Smallalphachlrange
+        end if
+
+        RandNo = darwin_random(myThid)
+c big/small phyto C:Chl max
+        if(physize(np) .eq. 1.0 _d 0)then
+          chl2cmax(np) = Bigchl2cmax +Randno*Bigchl2cmaxrange
+        else
+          chl2cmax(np) = Smallchl2cmax +RandNo*Smallchl2cmaxrange
+        end if
+
+         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+     &     'generate Phyto: np = ',np,' pcmax    =', pcmax(np)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , mythid)
+         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+     &     'generate Phyto: np = ',np,' alphachl    =', alphachl(np)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , mythid)
+         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+     &     'generate Phyto: np = ',np,' chl2cmax     =', chl2cmax(np)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , mythid)
+#endif
 
 #ifndef OLD_GRAZE
 c    for zooplankton

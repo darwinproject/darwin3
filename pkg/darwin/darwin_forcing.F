@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.6 2008/06/02 16:17:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.7 2008/06/10 22:57:05 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -226,6 +226,7 @@ c some local variables
        _RL bottom
        _RL PP
        _RL Nfix
+       _RL Chl
        _RL Rstarl(npmax)
        _RL RNstarl(npmax)
 
@@ -591,7 +592,8 @@ c set other arguments to zero
 c           if (i.eq.20.and.j.eq.20.and.k.eq.1) debug=8
 c           if (i.eq.10.and.j.eq.10.and.k.eq.1) debug=100
 c           if (i.eq.1.and.j.eq.10.and.k.eq.1) debug=10
-
+c           if (i.eq.1.and.j.eq.1.and.k.eq.10) debug=14
+ 
             if (debug.eq.7) print*,'PO4, DOP, POP, ZooP',
      &                       PO4l,  DOPl, POPl, zooP
             if (debug.eq.7) print*,'NO3, NO2, NH4, DON, PON, ZooN', 
@@ -613,7 +615,7 @@ c           endif
 
              CALL DARWIN_PLANKTON(
      &                     Phy, zooP, zooN, zooFe, zooSi, PP,
-     &                     Nfix,
+     &                     Chl,Nfix,
      &                     PO4l, NO3l, FeTl, Sil,
      &                     NO2l, NH4l,
      &                     DOPl, DONl, DOFel,
@@ -1044,6 +1046,10 @@ c    &                       /float(nsubtime)
 c            Zoograzave(i,j,k,bi,bj)=Zoograzave(i,j,k,bi,bj)+
 c    &                      (gampn1*graz1*zo +gampn2*graz2*zo)*
 c    &                       deltaTclock/float(nsubtime)
+#ifdef GEIDER
+             Chlave(i,j,k,bi,bj)=Chlave(i,j,k,bi,bj)+
+     &                           Chl*dtplankton
+#endif
              PARave(i,j,k,bi,bj)=PARave(i,j,k,bi,bj)+
      &                           PARl*dtplankton
              PPave(i,j,k,bi,bj)=PPave(i,j,k,bi,bj)+

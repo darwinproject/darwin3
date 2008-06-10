@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.7 2008/06/02 16:17:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.8 2008/06/10 22:57:05 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -79,12 +79,14 @@ c i.e. Knitb ...    NO2 -> NO3
 c critical light level (muEin/m2/s) after which oxidation starts
        PAR0 = 10. _d 0
 c
+#ifndef GEIDER
 c set growth days ...small or big organism?
        Smallgrow = .7 _d 0
        Biggrow   = .4 _d 0
        Smallgrowrange = 0. _d 0
        Biggrowrange = 0. _d 0
        diaz_growfac = 2. _d 0
+#endif
 c set mort days ...small or big organism?
        Smallmort = 10. _d 0
        Bigmort   = 10. _d 0
@@ -97,6 +99,7 @@ c set sinking rates (m/s)... small or big organism?
        SmallSink = 0.0 _d 0/pday
        BigSink =  0.5 _d 0/pday   !0.5 _d 0/pday
 c set parameters for light function for phyto growth
+#ifndef GEIDER
        smallksatpar =    0.12 _d 0 ! 0.8 _d 0
        smallksatparstd = 0.20 _d 0  ! 0.3 _d 0
        smallkinhib =     6.0 _d 0   ! 2.0 _d 0
@@ -105,6 +108,26 @@ c set parameters for light function for phyto growth
        Bigksatparstd =   0.06 _d 0  ! 0.1 _d 0
        Bigkinhib =       1.0 _d 0   ! 0.5 _d 0
        Bigkinhibstd =    0.05 _d 0   ! 0.1 _d 0
+#endif
+#ifdef  GEIDER
+c for Pcm -- should be growth rates, but using old variables
+c note these are in terms of days - converted to 1/s later
+       Smallgrow = .7 _d 0
+       Biggrow   = .4 _d 0
+       Smallgrowrange = 0. _d 0
+       Biggrowrange = 0. _d 0
+       diaz_growfac = 2. _d 0
+c
+       smallalphachl =  1. _d -6     !mmol C (uEin/m-2)-2 (mg Chl)-1 
+       smallalphachlrange = 1. _d -6 !mmol C (uEin/m-2)-2 (mg Chl)-1
+       smallchl2cmax = 0.2 _d 0      !mg Chl (mmol C)
+       smallchl2cmaxrange = 0.3 _d 0  !mg Chl (mmol C)
+       Bigalphachl = 6. _d -7        !mmol C (uEin/m-2)-2 (mg Chl)-1
+       Bigalphachlrange = 4. _d -7   !mmol C (uEin/m-2)-2 (mg Chl)-1
+       Bigchl2cmax = 0.5 _d 0         !mg Chl (mmol C)
+       Bigchl2cmaxrange = 0.3 _d 0    !mg Chl (mmol C)
+#endif
+c
 c set temperature function
        tempcoeff1 = 1. _d 0/3. _d 0
        tempcoeff2_small = 0.001 _d 0
@@ -140,6 +163,7 @@ c set nutrient ratios for phyto
        val_RFeP_diaz=7.5 _d -3
        val_R_NP=16.0 _d 0
        val_RFeP=1.0 _d -3
+       val_R_PC=120 _d 0
 #ifdef OLD_GRAZE
 c grazing hlaf saturation
        kgrazesat = 0.1 _d 0

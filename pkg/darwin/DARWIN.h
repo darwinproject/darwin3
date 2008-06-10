@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.3 2007/12/12 21:19:01 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.4 2008/06/10 22:57:05 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -33,7 +33,7 @@ c           have been tried
 
          COMMON/darwin_ecoparam/mu,ksatPO4,ksatNO3,ksatNO2,ksatNH4,
      &          ksatSi,ksatFeT,ksatPAR,
-     &          mortzoo,wsink,R_NP,R_FeP,R_SiP,physize,
+     &          mortzoo,wsink,R_NP,R_FeP,R_SiP,R_PC,physize,
      &          diatom,diazotroph,zoosize,ExportFracZ,
      &          Kpremin_P, Kpremin_N, Kpremin_Fe, Kpremin_Si,
      &          sig1,sig2,sig3,
@@ -72,7 +72,7 @@ c           have been tried
 #endif
      &          ZoomortSmall, ZoomortBig, ZooexfacSmall, ZooexfacBig,
      &          val_R_SiP_diatom, val_R_NP_diaz, val_RFeP_diaz,
-     &          val_R_NP, val_RFeP, 
+     &          val_R_NP, val_RFeP, val_R_PC,
      &          ksatNH4fac, ksatNO2fac, val_ksatsi,
      &          ngrowfac, ilight,
      &          phymin, PAR0, diaz_growfac,
@@ -91,6 +91,7 @@ c           have been tried
          _RL R_NP(npmax)
          _RL R_FeP(npmax)
          _RL R_SiP(npmax)
+         _RL R_PC(npmax)
          _RL physize(npmax)
          _RL diatom(npmax)
          _RL diazotroph(npmax)
@@ -148,7 +149,7 @@ c           have been tried
 #endif
          _RL ZoomortSmall, ZoomortBig, ZooexfacSmall, ZooexfacBig
          _RL val_R_SiP_diatom, val_R_NP_diaz, val_RFeP_diaz,
-     &          val_R_NP, val_RFeP
+     &          val_R_NP, val_RFeP, val_R_PC
          _RL ngrowfac,ilight
          _RL phymin
          _RL PAR0
@@ -199,3 +200,20 @@ c    istar          - photoadaptation light limit
          _RL diver_thresh0, diver_thresh1
          _RL diver_thresh2, diver_thresh3
          _RL diver_thresh4
+
+#ifdef GEIDER
+        COMMON/geider_vars/
+     &         pcmax, alphachl, chl2cmax,
+     &         Bigalphachl, Bigalphachlrange,
+     &         Smallalphachl, Smallalphachlrange,
+     &         Bigchl2cmax, Bigchl2cmaxrange,
+     &         Smallchl2cmax, Smallchl2cmaxrange
+c        _RL phychl(npmax)
+         _RL pcmax(npmax)
+         _RL alphachl(npmax)
+         _RL chl2cmax(npmax)
+         _RL Bigalphachl, Bigalphachlrange,
+     &         Smallalphachl, Smallalphachlrange,
+     &         Bigchl2cmax, Bigchl2cmaxrange,
+     &         Smallchl2cmax, Smallchl2cmaxrange
+#endif

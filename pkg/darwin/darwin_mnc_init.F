@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.3 2008/06/02 16:17:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.4 2008/06/10 22:57:05 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -50,6 +50,13 @@ C     Functions
       CALL MNC_CW_ADD_VATTR_TEXT(
      &     'dar_PP_ave','units','--', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('dar_PP_ave','description',
+     &     '', myThid)
+
+      CALL MNC_CW_ADD_VNAME(
+     &     'dar_Chl_ave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT(
+     &     'dar_Chl_ave','units','--', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('dar_Chl_ave','description',
      &     '', myThid)
 
       CALL MNC_CW_ADD_VNAME(
