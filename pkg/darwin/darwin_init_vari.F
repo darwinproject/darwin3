@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.10 2008/06/10 22:57:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.11 2008/06/11 21:20:22 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -195,7 +195,7 @@ c write out initial phyto characteristics
      &                   KsatPO4(np),KsatNO3(np),KsatFeT(np)*1000.
      &                  ,KsatSi(np),
      &                   palat(np,1),palat(np,2),
-     &                   alphachl(np),chl2cmax(np)*1e6,
+     &                   alphachl(np)*1e6,chl2cmax(np),
      &                   phytoTempOptimum(np),nsource(np),np
             write(IniUnit2,111)diatom(np),diazotroph(np),physize(np),
      &                 1.0/(pcmax(np)*86400.), 1.0/(mortphy(np)*86400.),
@@ -204,7 +204,7 @@ c write out initial phyto characteristics
      &                   KsatPO4(np),KsatNO3(np),KsatFeT(np)*1000.
      &                  ,KsatSi(np),
      &                   palat(np,1),palat(np,2),
-     &                   alphachl(np),chl2cmax(np)*1e6,
+     &                   alphachl(np)*1e6,chl2cmax(np),
      &                   phytoTempOptimum(np),nsource(np),np
          end do
 #endif
