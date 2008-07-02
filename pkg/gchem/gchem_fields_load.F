@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_fields_load.F,v 1.1 2008/01/11 21:28:02 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_fields_load.F,v 1.2 2008/07/02 23:13:53 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -14,6 +14,8 @@ C !DESCRIPTION:
 C  calls routines which read in fields needed for any tracer experiment
 C !USES: ===============================================================
       IMPLICIT NONE
+#include "EEPARAMS.h"
+#include "GCHEM.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myTime               :: current time
@@ -41,7 +43,9 @@ cccccccccccccccccccccccccc
 #endif
 
 #ifdef ALLOW_DARWIN
+      IF ( useDARWIN ) THEN
        call DARWIN_FIELDS_LOAD(myIter,myTime,myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_NPZDCAR

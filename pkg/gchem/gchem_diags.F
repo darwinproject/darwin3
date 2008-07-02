@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_diags.F,v 1.1 2008/01/11 21:28:02 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_diags.F,v 1.2 2008/07/02 23:13:53 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -18,6 +18,7 @@ C !USES: ===============================================================
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GCHEM.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -39,7 +40,9 @@ cccccccccccccccccccccc
 
 #ifdef ALLOW_DARWIN
 #ifdef ALLOW_TIMEAVE
+      IF ( useDARWIN ) THEN
        call darwin_diags( myTime, myIter, myThid )
+      ENDIF
 #endif
 #endif
 

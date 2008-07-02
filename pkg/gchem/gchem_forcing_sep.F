@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_forcing_sep.F,v 1.4 2008/07/02 19:07:26 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_forcing_sep.F,v 1.5 2008/07/02 23:13:53 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -27,6 +27,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_FIELDS.h"
+#include "GCHEM.h"
 #ifdef ALLOW_DIC
 #include "DIC_VARS.h"
 #endif /* ALLOW_DIC */
@@ -114,6 +115,7 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 #endif
 cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
 #ifdef ALLOW_DARWIN
+        IF ( useDARWIN ) THEN
 #ifdef NUT_SUPPLY
 c articficial supply of nutrients
           call DARWIN_Nut_Supply( Ptracer(1-Olx,1-Oly,1,bi,bj,1),
@@ -137,6 +139,7 @@ C array because of last (iPtr) index
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
           call DARWIN_cons(myIter,myTime,myThid)
+        ENDIF
 #endif
 
 #ifdef ALLOW_NPZDCAR
