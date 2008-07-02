@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.1 2008/06/02 20:32:25 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.2 2008/07/02 19:07:37 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -18,6 +18,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GCHEM.h"
+#include "DARWIN_SIZE.h"
 #include "DARWIN_IO.h"
 
 C !INPUT PARAMETERS: ===================================================

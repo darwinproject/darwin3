@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_check.F,v 1.2 2008/06/02 20:32:49 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_check.F,v 1.3 2008/07/02 19:07:25 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -59,6 +59,11 @@ C     GCHEM cannot (yet!) run darwin and cfc together
         WRITE(msgBuf,'(A)') 'useDARWIN and useCFC cannot both be .TRUE.'
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+      ENDIF
+
+C     run checks specific to darwin
+      IF ( useDARWIN ) THEN
+        CALL DARWIN_CHECK( myThid )
       ENDIF
 
       _END_MASTER(myThid)

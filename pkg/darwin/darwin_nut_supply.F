@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.5 2008/06/02 16:17:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.6 2008/07/02 19:07:37 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -19,10 +19,10 @@ C==============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DARWIN_IO.h"
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+#include "DARWIN_IO.h"
 #include "DYNVARS.h"
 
 C     === Global variables ===

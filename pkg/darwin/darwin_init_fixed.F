@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.8 2008/06/10 22:57:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.9 2008/07/02 19:07:37 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,17 +20,17 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "DARWIN_IO.h"
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+#include "DARWIN_IO.h"
 
         INTEGER myThid
 C============== Local variables ============================================
 C     msgBuf    - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL pday
-      INTEGER i,j,k,bi,bj
+      INTEGER i,j,k,bi,bj,nz
       INTEGER tmp
       INTEGER prec
       CHARACTER*(MAX_LEN_MBUF) fn
@@ -228,6 +228,21 @@ c sinking rate for particulate matter (m/s)
          wn_sink = wp_sink
          wfe_sink = wp_sink
          wsi_sink = wp_sink
+
+C make sure we have reserved enough space in Ptracers
+      IF ( nCompZooMax .LT. 4 ) THEN
+        WRITE(msgBuf,'(A,A,I3)')
+     &    'DARWIN_INIT_FIXED: ERROR: 4 zooplankton components, but ',
+     &    'nCompZooMax = ', nCompZooMax
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
+      ENDIF
+      DO nz = 1,nzmax
+        iZooP (nz)  = iZoo +                   (nz-1)*strideTypeZoo
+        iZooN (nz)  = iZoo + 1*strideCompZoo + (nz-1)*strideTypeZoo
+        iZooFe(nz)  = iZoo + 2*strideCompZoo + (nz-1)*strideTypeZoo
+        iZooSi(nz)  = iZoo + 3*strideCompZoo + (nz-1)*strideTypeZoo
+      ENDDO
 
 #ifdef DAR_DIAG_DIVER
 c only look at grid point with a minimum biomass

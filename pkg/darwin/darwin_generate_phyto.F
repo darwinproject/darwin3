@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.6 2008/06/10 22:57:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.7 2008/07/02 19:07:37 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -336,6 +336,15 @@ c assume zoo(1) = small, zoo(2) = big
          mortzoo(2) = ZoomortBig
          ExportFracGraz(1)=ExGrazFracbig
          ExportFracGraz(2)=ExGrazFracsmall
+         IF ( nzmax.GT.2 ) THEN
+           WRITE(msgBuf,'(2A,I5)') 'DARWIN_GENERATE_PHYTO: ',
+     &       'nzmax = ', nzmax
+           CALL PRINT_ERROR( msgBuf , 1)
+           WRITE(msgBuf,'(2A)') 'DARWIN_GENERATE_PHYTO: ',
+     &       'please provide size info for nz > 2'
+           CALL PRINT_ERROR( msgBuf , 1)
+           STOP 'ABNORMAL END: S/R DARWIN_GENERATE_PHYTO'
+         ENDIF
 c
           do nz=1,nzmax
 c palatibity according to "allometry"

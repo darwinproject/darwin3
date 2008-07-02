@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.4 2008/06/10 22:57:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.5 2008/07/02 19:07:37 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,27 +31,28 @@ c - fix bug in diazotroph code  - Stephanie, Fall 2007
 c - add additional r* diagnostic for (no3+no2) - Stephanie, Winter 2007
 c ====================================================================
          SUBROUTINE DARWIN_PLANKTON(
-     &                       phyto, zooP, zooN, zooFe, zooSi, PP, 
-     &                       Chl, Nfix,
-     &                       PO4local, NO3local, FeTlocal, Silocal,
-     &                       NO2local, NH4local, 
-     &                       DOPlocal, DONlocal, DOFelocal,
-     &                       POPlocal, PONlocal, POFelocal, PSilocal,
-     &                       phytoup, popuplocal, ponuplocal, 
-     &                       pofeuplocal, psiuplocal,
-     &                       PARlocal,Tlocal, Slocal,
-     &                       freefelocal, inputFelocal,
-     &                       bottom, dzlocal,
-     &                       Rstarlocal, RNstarlocal,
-     &                       dphytodt, dzooPdt, dzooNdt, dzooFedt,
-     &                       dzooSidt,
-     &                       dPO4dt, dNO3dt, dFeTdt, dSidt,
-     &                       dNH4dt, dNO2dt,
-     &                       dDOPdt, dDONdt, dDOFedt, 
-     &                       dPOPdt, dPONdt, dPOFedt, dPSidt,
-     &                       debug,
-     &                       runtim,
-     &                       MyThid) 
+     U                       phyto,
+     I                       zooP, zooN, zooFe, zooSi,
+     O                       PP, Chl, Nfix,
+     I                       PO4local, NO3local, FeTlocal, Silocal,
+     I                       NO2local, NH4local, 
+     I                       DOPlocal, DONlocal, DOFelocal,
+     I                       POPlocal, PONlocal, POFelocal, PSilocal,
+     I                       phytoup, popuplocal, ponuplocal, 
+     I                       pofeuplocal, psiuplocal,
+     I                       PARlocal,Tlocal, Slocal,
+     I                       freefelocal, inputFelocal,
+     I                       bottom, dzlocal,
+     O                       Rstarlocal, RNstarlocal,
+     O                       dphytodt, dzooPdt, dzooNdt, dzooFedt,
+     O                       dzooSidt,
+     O                       dPO4dt, dNO3dt, dFeTdt, dSidt,
+     O                       dNH4dt, dNO2dt,
+     O                       dDOPdt, dDONdt, dDOFedt, 
+     O                       dPOPdt, dPONdt, dPOFedt, dPSidt,
+     I                       debug,
+     I                       runtim,
+     I                       MyThid) 
                   
 
          implicit none

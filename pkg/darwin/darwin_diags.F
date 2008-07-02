@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.4 2008/06/10 22:57:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.5 2008/07/02 19:07:36 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -16,11 +16,11 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DARWIN_IO.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+#include "DARWIN_IO.h"
 
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )

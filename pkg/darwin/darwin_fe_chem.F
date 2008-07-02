@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.5 2008/06/02 16:17:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.6 2008/07/02 19:07:36 jahn Exp $
 C $Name:  $
 
 c#include "DIC_OPTIONS.h"
@@ -7,7 +7,8 @@ c#include "DIC_OPTIONS.h"
 CStartOfInterFace
       SUBROUTINE DARWIN_Fe_CHEM(
      I           bi,bj,iMin,iMax,jMin,jMax,
-     I           fe, freefe,
+     U           fe,
+     O           freefe,
      I           myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE Fe_chem                                       |
@@ -24,9 +25,9 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+#include "DARWIN_IO.h"
 
 C     == Routine arguments ==                
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation

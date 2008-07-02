@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.4 2008/06/10 22:57:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.5 2008/07/02 19:07:37 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -69,7 +69,7 @@ C     Functions
 
 #ifdef DAR_DIAG_RSTAR
       do np=1,npmax
-          ii=PTRACERS_numInUse-npmax+np
+          ii=iPhy+np-1
           DO jj = 1,MAX_LEN_FNAM
              name(jj:jj) = ' '
           ENDDO
@@ -80,7 +80,7 @@ C     Functions
           CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
       enddo
       do np=1,npmax
-          ii=PTRACERS_numInUse-npmax+np
+          ii=iPhy+np-1
           DO jj = 1,MAX_LEN_FNAM
              name(jj:jj) = ' '
           ENDDO

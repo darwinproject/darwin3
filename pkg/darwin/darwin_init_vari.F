@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.11 2008/06/11 21:20:22 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.12 2008/07/02 19:07:37 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -87,6 +87,15 @@ c assume zoo(1) = small, zoo(2) = big
 c then grazing efficiency according to size
          zoosize(1) = 0.0 _d 0
          zoosize(2) = 1.0 _d 0
+         IF ( nzmax.GT.2 ) THEN
+           WRITE(msgBuf,'(2A,I5)') 'DARWIN_INIT_VARIA: ',
+     &       'nzmax = ', nzmax
+           CALL PRINT_ERROR( msgBuf , 1)
+           WRITE(msgBuf,'(2A)') 'DARWIN_INIT_VARIA: ',
+     &       'please provide size info for nz > 2'
+           CALL PRINT_ERROR( msgBuf , 1)
+           STOP 'ABNORMAL END: S/R DARWIN_INIT_VARIA'
+         ENDIF
 
 c grazing rates according to "allometry"
 c big grazers preferentially eat big phyto etc...

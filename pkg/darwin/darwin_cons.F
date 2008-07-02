@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.4 2008/02/26 17:13:31 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.5 2008/07/02 19:07:36 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -18,13 +18,13 @@ C==============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DARWIN_IO.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+#include "DARWIN_IO.h"
 #include "DYNVARS.h"
 
 C     === Global variables ===
@@ -62,44 +62,48 @@ c-----------------------------------------------------------------
            vol=rA(i,j,bi,bj)*drF(k)
            voltot=voltot+vol
 c Phosphorus budget
-           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,1)*vol    !PO4
-           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,5)*vol    !DOP
-           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,16)*vol   !POP
-           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,8)*vol    !ZOO1P
-           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,12)*vol   !ZOO2P
+           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iPO4)*vol    !PO4
+           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iDOP)*vol    !DOP
+           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iPOP)*vol   !POP
+           do nz=1,nzmax
+             tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iZooP(nz))*vol    !ZOO1P
+           enddo
            do np=1,npmax
-              npnum=21+np
+              npnum=iPhy+np-1
               tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,npnum)*vol  !Phy 
            enddo
 c Nitrogen budget
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,2)*vol    !NO3
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,20)*vol   !NH4
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,21)*vol   !NO2
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,6)*vol    !DON
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,17)*vol   !PON
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,9)*vol    !ZOO1N
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,13)*vol   !ZOO2N
+           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iNO3)*vol    !NO3
+           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iNH4)*vol   !NH4
+           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iNO2)*vol   !NO2
+           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iDON)*vol    !DON
+           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iPON)*vol   !PON
+           do nz=1,nzmax
+             tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iZooN(nz))*vol    !ZOO1N
+           enddo
            do np=1,npmax
-              npnum=21+np
+              npnum=iPhy+np-1
               tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,npnum)*R_NP(np)*vol  !Phy
            enddo
 c Iron budget
-           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,3)*vol    !Fet
-           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,7)*vol    !DOFe
-           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,18)*vol   !POFe
-           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,10)*vol   !ZOO1Fe
-           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,14)*vol   !ZOO2Fe
+           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iFeT)*vol    !Fet
+           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iDOFe)*vol    !DOFe
+           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iPOFe)*vol   !POFe
+           do nz=1,nzmax
+             tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iZooFe(nz))*vol    !ZOO1Fe
+           enddo
            do np=1,npmax
-              npnum=21+np
+              npnum=iPhy+np-1
               tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,npnum)*R_FeP(np)*vol  !Phy
            enddo
 c Silica budget
-           tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,4)*vol    !Si
-           tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,19)*vol   !POSi
-           tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,11)*vol   !ZOO1Si
-           tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,15)*vol   !ZOO2Si
+           tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iSi)*vol    !Si
+           tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iPOSi)*vol   !POSi
+           do nz=1,nzmax
+             tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iZooSi(nz))*vol    !ZOO1Si
+           enddo
            do np=1,npmax
-              npnum=21+np
+              npnum=iPhy+np-1
               tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,npnum)*R_SiP(np)*vol  !Phy
            enddo
 c------------------------------------------------------------
