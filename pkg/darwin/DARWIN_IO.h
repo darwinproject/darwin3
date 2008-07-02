@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.4 2008/07/02 19:07:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.5 2008/07/02 22:08:07 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -95,3 +95,8 @@ c
        INTEGER DAR_cons_unit3
        INTEGER DAR_cons_unit4
 
+#ifdef GEIDER
+      COMMON /DARWIN_CHL/
+     &      Chl_phy          
+         _RL Chl_phy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy,npmax)
+#endif

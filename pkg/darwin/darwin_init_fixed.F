@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.9 2008/07/02 19:07:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.10 2008/07/02 22:08:07 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,7 +56,11 @@ c c define 1 day in seconds
 
 c attenuation coefficients
       k0=        4. _d -2                   !atten coefficient water(m^-1)
+#ifdef GEIDER
+      kc=        4. _d -2                   !atten coefficient chl ((mmol chl/m3)-1)
+#else
       kc=        4. _d -2*16. _d 0*1. _d 0        !atten coefficient phy((uM m)-1)
+#endif
 c par parameters
       parfrac=  0.4 _d 0                    !fraction Qsw that is PAR
       parconv= 1. _d 0/0.2174 _d 0             !conversion from W/m2 to uEin/m2/s

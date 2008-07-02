@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.8 2008/07/02 19:07:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.9 2008/07/02 22:08:07 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,6 +67,10 @@ c light variables
 
       _RL  tmpphy(npmax)
       _RL  totphy, biotot, maxphy, phymax
+#endif
+
+#ifdef GEIDER
+      _RL phychl(npmax)
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -260,6 +264,9 @@ c brute force...
              ENDDO
              DO np = 1,npmax
                Phy(np) = max(Ptr(i,j,k,bi,bj,iPhy+np-1),0. _d 0)
+#ifdef GEIDER
+               phychl(np) = max(Chl_phy(i,j,k,bi,bj,np), 0. _d 0)
+#endif
              ENDDO
              popl  = max(Ptr(i,j,k,bi,bj,iPOP  ),0. _d 0)
              ponl  = max(Ptr(i,j,k,bi,bj,iPON  ),0. _d 0)
@@ -321,7 +328,11 @@ c find local light
              sumpyup = sumpy
              sumpy = 0. _d 0
              do np=1,npmax
+#ifdef GEIDER
+                sumpy = sumpy + phychl(np)
+#else
                 sumpy = sumpy + Phy(np)
+#endif             
              enddo
              atten= atten + (k0 + kc*sumpy)*5. _d -1*drF(k)
              if (k.gt.1)then
@@ -440,6 +451,9 @@ c           endif
      O                       dNH4l, dNO2l,
      O                       dDOPl, dDONl, dDOFel, 
      O                       dPOPl, dPONl, dPOFel, dPSil,
+#ifdef GEIDER
+     O                       phychl,
+#endif
      I                       debug,
      I                       runtim,
      I                       MyThid) 
@@ -510,6 +524,9 @@ c now update main tracer arrays
           DO np = 1,npmax
            Ptr(i,j,k,bi,bj,iPhy+np-1) = Ptr(i,j,k,bi,bj,iPhy+np-1) +
      &                                       dtplankton*dPhy(np)
+#ifdef GEIDER
+           Chl_phy(i,j,k,bi,bj,np)=phychl(np)
+#endif
           ENDDO
 
 #ifdef ALLOW_MUTANTS

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.5 2008/07/02 19:07:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.6 2008/07/02 22:08:07 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,6 +50,9 @@ c ====================================================================
      O                       dNH4dt, dNO2dt,
      O                       dDOPdt, dDONdt, dDOFedt, 
      O                       dPOPdt, dPONdt, dPOFedt, dPSidt,
+#ifdef GEIDER
+     O                       phychl,
+#endif
      I                       debug,
      I                       runtim,
      I                       MyThid) 
@@ -122,6 +125,9 @@ c zoo   = zooplankton
          _RL dPONdt
          _RL dPOFedt
          _RL dPSidt
+#ifdef GEIDER
+         _RL phychl(npmax)
+#endif
          _RL runtim
 
 c LOCAL VARIABLES
@@ -197,7 +203,6 @@ c  variables for zooplankton grazing rates
         _RL pcarbon(npmax)
         _RL pcm(npmax)
         _RL chl2c(npmax)
-        _RL phychl(npmax)
 #endif
 
 c variables for nutrient uptake
