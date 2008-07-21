@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.13 2008/07/02 19:07:53 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.14 2008/07/21 17:45:17 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
@@ -22,7 +22,15 @@ o upgrade to checkpoint59q of MITgcm
 
 ctrb_darwin_ckpt59p_20080604
 o upgrade to checkpoint59p of MITgcm
-  - introduces data.darwin
+  - introduces data.darwin; the following parameters have been moved
+    from data.gchem to data.darwin:
+      iceFile -> darwin_iceFile
+      IronFile -> darwin_ironFile
+      Filename1 -> darwin_PARFile
+      Filename2 -> darwin_nutWVelFile
+      gchem_int1 -> darwin_seed
+      gchem_ForcingPeriod -> darwinForcingPeriod
+      gchem_ForcingCycle -> gchem_ForcingCycle
 
 ctrb_darwin_ckpt59o_20080602
 o upgrade to checkpoint59o of MITgcm
