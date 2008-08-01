@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.9 2008/07/02 22:08:07 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.10 2008/08/01 21:35:16 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,6 +31,12 @@ C==============================================================
 #include "FFIELDS.h"
 #endif
 
+c ANNA include wavebands_params.h
+#ifdef WAVEBANDS
+#include "WAVEBANDS_PARAMS.h"
+#endif
+
+
 C     === Global variables ===
 c tracers
        _RL Ptr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,nDarwin)
@@ -58,6 +64,17 @@ c light variables
       _RL  atten,lite
       _RL  newtime     ! for sub-timestepping
       _RL  runtim      ! time from tracer initialization
+
+
+c ANNA define variables for wavebands 
+#ifdef WAVEBANDS
+       integer ilam
+       _RL sfPAR(tlam)
+       _RL PARwl(tlam)
+       _RL PARwupl(tlam)
+#endif
+c ANNA endif
+
 
 #ifdef DAR_DIAG_DIVER
       _RL  Diver1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -144,7 +161,8 @@ c local tendencies
       INTEGER debug
       CHARACTER*8 diagname
 
-
+c
+c
 c
       DO j=1-OLy,sNy+OLy
       DO i=1-OLx,sNx+OLx
@@ -243,6 +261,17 @@ c taken into account
            atten=0. _d 0
            sumpy = 0.0 _d 0
 
+c ANNA split surface PAR into wavebands
+#ifdef WAVEBANDS
+         do ilam = 1,tlam
+          sfPAR(ilam) = sf(ilam)*lite
+          PARwupl(ilam) = sfPAR(ilam)
+          PARwl(ilam) = 0. _d 0
+         enddo
+#endif         
+c ANNA endif
+
+
 c for each layer ...   
         do k= 1, NR   
          if (HFacC(i,j,k,bi,bj).gt.0. _d 0) then
@@ -334,12 +363,15 @@ c find local light
                 sumpy = sumpy + Phy(np)
 #endif             
              enddo
+c ANNA attenuation for WAVEBANDS is done in darwin_plankton.F, not here
+#ifndef WAVEBANDS
              atten= atten + (k0 + kc*sumpy)*5. _d -1*drF(k)
              if (k.gt.1)then
                atten = atten + (k0+kc*sumpyup)*5. _d -1*drF(k-1)
              endif
              PAR(i,j,k) = lite*exp(-atten)
-
+#endif
+c ANNA endif
 
 c for explicit sinking of particulate matter and phytoplankton
              if (k.eq.1) then
@@ -352,9 +384,11 @@ c for explicit sinking of particulate matter and phytoplankton
                 enddo
              endif
 
-
+c ANNA only define PARl here if not WAVEBANDS
+#ifndef WAVEBANDS
              PARl = PAR(i,j,k)
-             
+#endif
+
              Tlocal = theta(i,j,k,bi,bj)
              Slocal = salt(i,j,k,bi,bj)
 
@@ -431,6 +465,8 @@ c    &          .or.NH4l.eq.0. _d 0) then
 c            print*,'QQ N zeros',i,j,k,NO3l,NO2l,NH4l
 c           endif
 
+
+c ANNA pass extra variables if WAVEBANDS
              CALL DARWIN_PLANKTON(
      U                       Phy,
      I                       zooP, zooN, zooFe, zooSi,
@@ -453,10 +489,21 @@ c           endif
      O                       dPOPl, dPONl, dPOFel, dPSil,
 #ifdef GEIDER
      O                       phychl,
+#ifdef WAVEBANDS
+     O                       PARwl,PARwupl,
+     O                       drF(k),
+#endif
 #endif
      I                       debug,
      I                       runtim,
      I                       MyThid) 
+
+c ANNA assign PARl here for WAVEBANDS
+#ifdef WAVEBANDS
+              PAR(i,j,k) = PARl
+#endif
+
+
 c
 c            if (i.eq.1.and.k.eq.1.and.j.eq.5) then
 c              print*,i,j,k

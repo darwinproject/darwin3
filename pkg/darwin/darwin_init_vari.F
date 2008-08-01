@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.12 2008/07/02 19:07:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.13 2008/08/01 21:35:16 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -28,6 +28,12 @@ c
 c#include "GCHEM.h"
 #include "DARWIN_IO.h"
 
+c ANNA define params for WAVEBANDS
+#ifdef WAVEBANDS
+#include "WAVEBANDS_PARAMS.h"
+#endif
+
+
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
@@ -46,6 +52,11 @@ C     msgBuf    - Informational/error meesage buffer
  
         INTEGER np
         INTEGER nz
+c ANNA need nl for wavebands
+#ifdef WAVEBANDS
+        INTEGER nl
+#endif
+
 CEOP
 
         WRITE(msgBuf,'(A)')
@@ -129,6 +140,34 @@ c small zooplankton (zoosize = 0.) lower export fraction
          end do
 #endif
 
+
+c ANNA call WAVEBANDS_INIT_VARI to assign variable parameters      
+#ifdef WAVEBANDS
+            call WAVEBANDS_INIT_VARI(MyThid)
+#endif
+
+c ANNA get alphachl from mQyield / aphy_chl
+c ANNA must do this after params are assigned, but before written out
+c ANNA use aphy_chl_ps for growth. To turn off, simply set same coefs as aphy_chl in input files.
+#ifdef GEIDER
+#ifndef WAVEBANDS
+         do np = 1,npmax
+          alphachl(np) = mQyield(np) * aphy_chl_ave 
+         end do
+#else
+         do np = 1,npmax
+c ANNA for wavebands only, re-set mQyield to be constant for all np's
+c ANNA i.e. let alpha vary only with aphy_chl_ps
+c ANNA value is mean of vals for big and small.
+         mQyield(np) = 4.0 _d -5
+          do nl = 1,tlam
+           alphachl_nl(np,nl) = mQyield(np) * aphy_chl_ps(np,nl)
+          end do
+         end do
+#endif
+#endif
+c ANNA endif
+
 c write out initial phyto characteristics
 #ifndef GEIDER
          CALL MDSFINDUNIT( IniUnit1, mythid )
@@ -188,13 +227,14 @@ c write out initial phyto characteristics
 #endif
 
 #ifdef GEIDER
+c ANNA outputs mQyield as 10^(4) mmol C (uEin)-1  
          CALL MDSFINDUNIT( IniUnit1, mythid )
          open(IniUnit1,file='gplankton-ini-char.dat',status='unknown')
          CALL MDSFINDUNIT( IniUnit2, mythid )
          open(IniUnit2,file='gplankton_ini_char_nohead.dat',
      &        status='unknown')
          write(IniUnit1,*)'diat diaz size pcmax mort Rnp Rfep Rsip wsink
-     & KsP KsN   KsFe   KsSi    palat1 palat2 a(-6) chl2c  Topt  nsrc
+     & KsP KsN   KsFe   KsSi    palat1 palat2 mQY(-4) chl2c  Topt  nsrc
      & np'
          do np = 1, npmax
            write(IniUnit1,111)diatom(np),diazotroph(np),physize(np),
@@ -204,7 +244,7 @@ c write out initial phyto characteristics
      &                   KsatPO4(np),KsatNO3(np),KsatFeT(np)*1000.
      &                  ,KsatSi(np),
      &                   palat(np,1),palat(np,2),
-     &                   alphachl(np)*1e6,chl2cmax(np),
+     &                   mQyield(np)*1e4,chl2cmax(np),
      &                   phytoTempOptimum(np),nsource(np),np
             write(IniUnit2,111)diatom(np),diazotroph(np),physize(np),
      &                 1.0/(pcmax(np)*86400.), 1.0/(mortphy(np)*86400.),
@@ -213,7 +253,7 @@ c write out initial phyto characteristics
      &                   KsatPO4(np),KsatNO3(np),KsatFeT(np)*1000.
      &                  ,KsatSi(np),
      &                   palat(np,1),palat(np,2),
-     &                   alphachl(np)*1e6,chl2cmax(np),
+     &                   mQyield(np)*1e4,chl2cmax(np),
      &                   phytoTempOptimum(np),nsource(np),np
          end do
 #endif

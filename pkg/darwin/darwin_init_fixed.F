@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.10 2008/07/02 22:08:07 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.11 2008/08/01 21:35:16 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,16 +51,28 @@ C     \--------------------------------------------------------------/
      &                    SQUEEZE_RIGHT, myThid )
 
 
+c ANNA set fixed params for WAVEBANDS
+#ifdef WAVEBANDS
+        call wavebands_init_fixed(myThid)
+#endif 
+
 c c define 1 day in seconds
          pday = 86400.0 _d 0
 
+
 c attenuation coefficients
+c ANNA only if not wavebands
+#ifndef WAVEBANDS
       k0=        4. _d -2                   !atten coefficient water(m^-1)
 #ifdef GEIDER
       kc=        4. _d -2                   !atten coefficient chl ((mmol chl/m3)-1)
 #else
       kc=        4. _d -2*16. _d 0*1. _d 0        !atten coefficient phy((uM m)-1)
 #endif
+#endif
+c ANNA endif
+
+
 c par parameters
       parfrac=  0.4 _d 0                    !fraction Qsw that is PAR
       parconv= 1. _d 0/0.2174 _d 0             !conversion from W/m2 to uEin/m2/s
@@ -122,14 +134,25 @@ c note these are in terms of days - converted to 1/s later
        Biggrowrange = 0. _d 0
        diaz_growfac = 2. _d 0
 c
-       smallalphachl =  1. _d -6     !mmol C (uEin/m-2)-2 (mg Chl)-1 
-       smallalphachlrange = 1. _d -6 !mmol C (uEin/m-2)-2 (mg Chl)-1
        smallchl2cmax = 0.2 _d 0      !mg Chl (mmol C)
        smallchl2cmaxrange = 0.3 _d 0  !mg Chl (mmol C)
-       Bigalphachl = 6. _d -7        !mmol C (uEin/m-2)-2 (mg Chl)-1
-       Bigalphachlrange = 4. _d -7   !mmol C (uEin/m-2)-2 (mg Chl)-1
        Bigchl2cmax = 0.5 _d 0         !mg Chl (mmol C)
        Bigchl2cmaxrange = 0.3 _d 0    !mg Chl (mmol C)
+
+c ANNA_Q units for alpha are same as expected: mmol C (mg chla)-1 (uEin)-1 (m)2
+c       smallalphachl =  1. _d -6     !mmol C (uEin/m-2)-1 (mg Chl)-1 
+c       smallalphachlrange = 1. _d -6 !mmol C (uEin/m-2)-1 (mg Chl)-1
+c       Bigalphachl = 6. _d -7        !mmol C (uEin/m-2)-1 (mg Chl)-1
+c       Bigalphachlrange = 4. _d -7   !mmol C (uEin/m-2)-1 (mg Chl)-1
+c ANNA mQyield vals are from alphachl / aphy_chl which for now is 0.02
+c ANNA ranges for mQyield are same as alphachl but reduced by factor 100
+       smallmQyield = 5. _d -5        !mmol C (uEin)-1
+       smallmQyieldrange = 1. _d -4   !mmol C (uEin)-1
+       BigmQyield = 3. _d -5          !mmol C (uEin)-1
+       BigmQyieldrange = 4. _d -5     !mmol C (uEin)-1
+
+c ANNA value of aphy_chl_ave = 0.02 - its the mean of all spectras used as input data
+       aphy_chl_ave = 0.02 _d 0      !m2 (mg chla)-1 (ie. x chla gives absorption m-1)
 #endif
 c
 c set temperature function

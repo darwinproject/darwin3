@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.6 2008/07/02 22:08:07 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.7 2008/08/01 21:35:16 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,7 +29,14 @@ c - add mutation code (#define ALLOW_MUTANTS) - Jason Bragg, Spring/Summer 2007
 c - new nitrogen limiting scheme (#undef OLD_NSCHEME) - Jason Bragg, Summer 2007
 c - fix bug in diazotroph code  - Stephanie, Fall 2007
 c - add additional r* diagnostic for (no3+no2) - Stephanie, Winter 2007
+c - add diversity diagnostics - Stephanie, Winter 2007
+c - add geider chl:c ratio and growth rate dependence,
+c   though has no photo-inhibtion at this point - Stephanie, Spring 2008
+c - add waveband dependence of light attenuation and absorption,
+c   NOTE: need to have geider turned on too  - Anna Hickman, Summer 2008
 c ====================================================================
+
+c ANNA pass extra variables if WAVEBANDS
          SUBROUTINE DARWIN_PLANKTON(
      U                       phyto,
      I                       zooP, zooN, zooFe, zooSi,
@@ -52,6 +59,10 @@ c ====================================================================
      O                       dPOPdt, dPONdt, dPOFedt, dPSidt,
 #ifdef GEIDER
      O                       phychl,
+#ifdef WAVEBANDS
+     O                       PARwlocal,PARwuplocal,
+     O                       dz,
+#endif
 #endif
      I                       debug,
      I                       runtim,
@@ -61,6 +72,12 @@ c ====================================================================
          implicit none
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+
+c ANNA set wavebands params
+#ifdef WAVEBANDS
+#include "WAVEBANDS_PARAMS.h"
+#endif
+
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -129,6 +146,20 @@ c zoo   = zooplankton
          _RL phychl(npmax)
 #endif
          _RL runtim
+
+c ANNA Global variables for WAVEBANDS
+c ANNA these variables are passed in/out of darwin_forcing.F
+#ifdef WAVEBANDS
+         _RL PARwuplocal(tlam)    !PAR at top(in) of local gridcell at each wavelength 
+                                  !reset to bottom of local gridcell on way out
+         _RL PARwlocal(tlam)      !PAR at midpoint of previous(in) and local(out) gridcell
+         _RL dz                   !layer thickness 
+#endif
+c ANNA endif
+
+
+
+
 
 c LOCAL VARIABLES
 c -------------------------------------------------------------
@@ -257,6 +288,31 @@ c variables for conversions from phyto and zoo to DOM and POM
          _RL tmpr,tmpz, tmpgrow, tmp1, tmp2
 
          integer ITEST
+
+c ANNA local variables for WAVEBANDS
+#ifdef WAVEBANDS 
+         integer i,ilam
+         integer nl
+
+c ANNA for interpolation
+         _RL cu_area
+         _RL waves_diff
+         _RL light_diff
+         _RL alphaI_diff
+         _RL squ_part
+         _RL tri_part
+         _RL seg_area
+
+c ANNA inportant but local variables that can be fogotten
+         _RL PARwdn(tlam)         !light at bottom of local gridcell
+         _RL attenwl(tlam)        !attenuation (m-1)
+         _RL sumaphy_nl(tlam)     !total phyto absorption at each wavelength
+         _RL alpha_I_local_nl(tlam) !temporary variable
+         _RL alpha_I_local(npmax)   !value of alpha * PARlocal for use in Geider growth
+#endif
+c ANNA endif
+
+
 c.................................................................
 
 #ifdef ALLOW_MUTANTS
@@ -393,9 +449,54 @@ c    &             zooTempExp(nz)*(Tlocal - zooTempOptimum(nz)))
 Ccccccccccccccccccccccccccccccccccc ccccccccccccccccccccccccccccccc
 
 
+c..........................................................
+c ANNA do light attenuation for wavebands 
+c.......................................................... 
+#ifdef WAVEBANDS
+          do nl = 1,tlam     
+           sumaphy_nl(nl) = 0.d0      
+            do np = 1,npmax   
+c get total attenuation (absorption) by phyto at each wavelength
+            sumaphy_nl(nl) = sumaphy_nl(nl) +
+     &                         (phychl(np)*aphy_chl(np,nl))
+            enddo
+           attenwl(nl) = (aw(nl)+sumaphy_nl(nl)+acdom(nl))*(dz) 
+           PARwdn(nl) = PARwuplocal(nl)*exp(-attenwl(nl))
+          enddo
+
+c find for the midpoint of the gridcell (gridcell mean)
+          do nl = 1,tlam
+           PARwlocal(nl)=exp((log(PARwuplocal(nl))+log(PARwdn(nl)))*0.5)
+          enddo
+
+c re-assign PARwlocalup
+          do nl=1,tlam
+           PARwuplocal(nl) = PARwdn(nl)
+          enddo
+
+c sum wavebands for total PAR        
+          cu_area = 0.d0;
+          do nl = 1,(tlam-1) 
+           waves_diff = pwaves(nl+1)-pwaves(nl)
+           light_diff = PARwlocal(nl+1)-PARwlocal(nl)
+           squ_part = waves_diff * PARwlocal(nl+1)
+           tri_part = waves_diff * light_diff * 5.D-1
+           seg_area = squ_part - tri_part
+           cu_area = cu_area + seg_area
+          enddo
+
+c update the total PAR at the mid point of the gridcell (PARlocal)
+          PARlocal = cu_area
+
+#endif
+c ANNA endif
+
+
 c ******************** GROWTH OF PHYTO ****************************
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 #ifndef GEIDER
+c ANNA also if not wavebands
+#ifndef WAVEBANDS
 c Determine phytoplantkon light limitation: will affect growth rate
 c using Platt-like equations with inhibition
           do np = 1, npmax
@@ -412,6 +513,9 @@ c using Platt-like equations with inhibition
           enddo
           if (debug.eq.1) print*,'ilimit',ilimit, PARlocal
 #endif
+#endif
+c ANNA endif
+
 c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c Determine temperature Dependent Growth function for Phyto
           do np=1, npmax
@@ -621,7 +725,10 @@ c Now Check Against General Nutrient Limiting Tendency
           if (debug.eq.1) print*,'ngrow',
      &                  ngrow
 
+
 #ifdef GEIDER
+c ANNA if not wavebands uses alphachl derived from mQyield * aphy_chl_ave
+#ifndef WAVEBANDS
           do np = 1, npmax
              pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
              chl2c(np)=chl2cmax(np)/
@@ -647,7 +754,60 @@ c Now Check Against General Nutrient Limiting Tendency
           if (debug.eq.14) print*,'ilimit',ilimit, PARlocal
           if (debug.eq.14) print*,'chl:c',chl2c
           if (debug.eq.14) print*,'chl',phychl
+#else
+c ANNA if wavebands then uses spectral alphachl derived from spectral alpha * I
+c so first get value for alphachl_nl * PARwlocal
+c value will depend on matchup between spectra of alphachl_nl (ie. aphy_chl) and PARwlocal
+          do np = 1,npmax
+           do nl = 1,tlam
+            alpha_I_local_nl(nl) = alphachl_nl(np,nl) * PARwlocal(nl)
+           end do
+          
+c interpolate for sum of alphachl_nl * PARwlocal
+           cu_area = 0.d0
+           do nl = 1,(tlam-1) 
+            waves_diff = pwaves(nl+1)-pwaves(nl)
+            alphaI_diff = alpha_I_local_nl(nl+1)-alpha_I_local_nl(nl)
+            squ_part = waves_diff * alpha_I_local_nl(nl+1)
+            tri_part = waves_diff * alphaI_diff * 5.D-1
+            seg_area = squ_part - tri_part
+            cu_area = cu_area + seg_area
+           end do
+
+c           alpha_I_local(np) = cu_area / (pwaves(tlam) - pwaves(1))
+           alpha_I_local(np) = cu_area 
+          end do
+
+c Geider growth (and chl2c) now depends on this (sinlge) value of alpha_chl * I
+          do np = 1, npmax
+             pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
+             chl2c(np)=chl2cmax(np)/
+     &            (1+(chl2cmax(np)*alpha_I_local(np))/
+     &               (2*pcm(np)))
+             chl2c(np)=min(chl2c(np),chl2cmax(np))
+             phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
+           if (PARlocal.gt.1. _d -1) then
+             pcarbon(np)=pcm(np)*( 1 -
+     &        exp((-alpha_I_local(np)*chl2c(np))/(pcm(np))) )
+             if (pcarbon(np).lt. 0. _d 0) 
+     &               print*,'QQ ERROR pc=',pcarbon(np)
+             if (pcm(np).gt.0. _d 0) then
+               ilimit(np)=pcarbon(np)/pcm(np)
+             else
+               ilimit(np)= 0. _d 0
+             endif
+           else
+             ilimit(np)=0. _d 0
+             pcarbon(np)=0. _d 0
+           endif
+          enddo
+          if (debug.eq.14) print*,'ilimit',ilimit, PARlocal
+          if (debug.eq.14) print*,'chl:c',chl2c
+          if (debug.eq.14) print*,'chl',phychl
 #endif
+c ANNA endif
+#endif
+
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

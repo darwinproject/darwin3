@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.7 2008/07/02 19:07:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.8 2008/08/01 21:35:16 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -14,6 +14,7 @@ c generate parameters for "functional group" of phyto (index np)
 c using a "Monte Carlo" approach
 c         Mick Follows, Scott Grant Fall/Winter 2005
 c         Stephanie Dutkiewicz Spring/Summer 2005
+c         Anna Hickman Summer 2008
 c ==========================================================
         SUBROUTINE DARWIN_GENERATE_PHYTO(myThid, np)
 
@@ -21,6 +22,14 @@ c ==========================================================
 #include "EEPARAMS.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+
+
+c ANNA define WAVEBANDS variables
+#ifdef WAVEBANDS
+#include "WAVEBANDS_PARAMS.h"
+#endif
+
+
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -63,7 +72,7 @@ c RANDOM NUMBERS
 c phyto either "small" (physize(np)=0.0) or "big" (physize(np)=1.0)
 c at this point independent of whether diatom or not
         RandNo = darwin_random(myThid)
-        if(RandNo .gt. 0.500 _d 0)then
+        if(RandNo .gt. 0.7500 _d 0)then
           physize(np) = 1.0 _d 0
         else
           physize(np) = 0.0 _d 0
@@ -153,17 +162,91 @@ c nutrient source
            if (physize(np).eq.1.0 _d 0) then   
              nsource(np) = 3
            else
-            if(RandNo .gt. 0.670 _d 0)then
-              nsource(np) = 1
-            elseif(RandNo .lt. 0.33 _d 0)then
-              nsource(np) = 2
-            else
-              nsource(np) = 3
-            endif 
-           endif
-         else
+             if(RandNo .gt. 0.670 _d 0)then
+               nsource(np) = 1
+             elseif(RandNo .lt. 0.33 _d 0)then
+               nsource(np) = 2
+             else
+               nsource(np) = 3
+             endif
+c ANNA shift bias away from pros. Now equal chance of being HL, LL, Syn, Euk.
+c ANNA i.e. now 50% chance of being Pro (nsource 1 or 2, with 50% change of each being HL)
+c ANNA i.e. and 50% chance of being non-Pro (nsource 3, with 50% chance of non-pro being Syn)
+c           if(RandNo .gt. 0.50 _d 0)then
+c             nsource(np) = 3
+c           elseif(RandNo .lt. 0.25 _d 0)then
+c             nsource(np) = 2
+c           else
+c             nsource(np) = 1
+c           endif 
+          endif
+        else
               nsource(np) = 0
-         end if 
+        end if 
+
+c.....................................................
+c ANNA make selections for WAVEBANDS 
+c.....................................................
+#ifdef WAVEBANDS
+c for now, choice of four absorption spectra types
+c pros get either 'HL' or 'LL'
+c small others get 'syn' or 'euk'
+c large get 'euk'
+c each 'type', once assigned, gets given actual values in wavebands_init_vari.F
+
+c ANNA_Q could use tricho abs and scattering spectra (Subramanian et al. 1999)
+c ANNA_Q think diaz is turned off for now
+c Diaz will be 0 if not defined, and will have nsource = 0. 
+         if (nsource(np).eq.0) then   !if diazotroph
+          if (physize(np).eq.1.0d0) then !if BIG
+          ap_type(np) = 1                !euk (assume diatom association)
+          else                           !or
+          ap_type(np) = 2                !syn (for now - tricho has billins)
+          end if
+         end if        
+
+         RandNo = darwin_random(myThid)
+         if (nsource(np).eq.3) then !if all three sources (NO3)
+          if (physize(np).eq.1.0d0) then !if BIG 
+          ap_type(np) = 1                !euk
+          else                           !if SMALL
+           if (RandNo.gt.0.500d0) then
+           ap_type(np) = 1               !euk
+           else                          !or
+           ap_type(np) = 2               !Syn       
+           end if
+          end if
+         endif
+ 
+         RandNo = darwin_random(myThid)
+         if (nsource(np).eq.2) then !if NH4 only
+          if (RandNo.gt.0.500d0) then
+          ap_type(np) = 3               !Pro HL   
+          else                          !or
+          ap_type(np) = 4               !Pro LL                 
+          end if
+         end if
+
+         RandNo = darwin_random(myThid)
+         if (nsource(np).eq.1) then !if NH4 & NO2
+          if (RandNo.gt.0.500d0) then
+          ap_type(np) = 3               !Pro HL   
+          else                          !or
+          ap_type(np) = 4               !Pro LL                 
+          end if
+         end if
+
+#else if
+c ANNA number of RandNo's carreid out MUST MATCH regardless of wavebands or not.
+C ANNA the number of RandNo statements here MUST MATCH the number done above
+
+         RandNo = darwin_random(myThid)
+         RandNo = darwin_random(myThid)
+         RandNo = darwin_random(myThid)
+
+#endif
+c ANNA endif
+
 
 c..........................................................
 c generate phyto Temperature Function parameters  
@@ -294,11 +377,20 @@ c now convert to a growth rate
         endif
 c
         RandNo = darwin_random(myThid)
+
 c big/small phyto PI slope (chl specific)
+c        if(physize(np) .eq. 1.0 _d 0)then
+c          alphachl(np) = Bigalphachl +Randno*Bigalphachlrange
+c        else
+c          alphachl(np) = Smallalphachl +RandNo*Smallalphachlrange
+c        end if
+
+c ANNA gieder via mQyield instead of alpha
+c big/small phyto Maximum Quantum Yield
         if(physize(np) .eq. 1.0 _d 0)then
-          alphachl(np) = Bigalphachl +Randno*Bigalphachlrange
+          mQyield(np) = BigmQyield +Randno*BigmQyieldrange
         else
-          alphachl(np) = Smallalphachl +RandNo*Smallalphachlrange
+          mQyield(np) = SmallmQyield +RandNo*SmallmQyieldrange
         end if
 
         RandNo = darwin_random(myThid)
@@ -313,8 +405,12 @@ c big/small phyto C:Chl max
      &     'generate Phyto: np = ',np,' pcmax    =', pcmax(np)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , mythid)
+c         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+c     &     'generate Phyto: np = ',np,' alphachl    =', alphachl(np)
+c ANNA CHANGED TO MQYIELD from ALPHACHL
+c ANNA STEPH msgBuf changed for mQyield?
          write(msgBuf,'(A,I4,A,1P1G24.15E3)')
-     &     'generate Phyto: np = ',np,' alphachl    =', alphachl(np)
+     &     'generate Phyto: np = ',np,' mQyield    =', mQyield(np)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , mythid)
          write(msgBuf,'(A,I4,A,1P1G24.15E3)')
