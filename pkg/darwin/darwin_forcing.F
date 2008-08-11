@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.10 2008/08/01 21:35:16 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.11 2008/08/11 14:48:39 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -155,6 +155,8 @@ c local tendencies
        _RL dNO2l
 
        _RL tot_Nfix
+
+       _RL tmp
 
       INTEGER i,j,k,it, ktmp
       INTEGER np, nz, np2, npsave
@@ -527,6 +529,38 @@ c only works for two layer model
               dno3l=0. _d 0
               dfetl=0. _d 0
               dsil=0. _d 0
+            endif
+#endif
+#ifdef RELAX_NUTS
+            if (darwin_relaxscale.gt.0. _d 0) then
+             IF ( darwin_PO4_RelaxFile .NE. ' '  ) THEN
+              tmp=(Ptr(i,j,k,bi,bj,iPO4 )-po4_obs(i,j,k,bi,bj))
+              if (tmp.lt.0. _d 0) then
+                dpo4l=dpo4l-(tmp/
+     &                      darwin_relaxscale)
+              endif
+             ENDIF
+             IF ( darwin_NO3_RelaxFile .NE. ' '  ) THEN
+              tmp=(Ptr(i,j,k,bi,bj,iNO3 )-no3_obs(i,j,k,bi,bj))
+              if (tmp.lt.0. _d 0) then
+                dno3l=dno3l-(tmp/
+     &                      darwin_relaxscale)
+              endif
+             ENDIF
+             IF ( darwin_Fet_RelaxFile .NE. ' '  ) THEN
+              tmp=(Ptr(i,j,k,bi,bj,iFeT )-fet_obs(i,j,k,bi,bj))
+              if (tmp.lt.0. _d 0) then
+                dfetl=dfetl-(tmp/
+     &                      darwin_relaxscale)
+              endif
+             ENDIF
+             IF ( darwin_Si_RelaxFile .NE. ' '  ) THEN
+              tmp=( Ptr(i,j,k,bi,bj,iSi  )-si_obs(i,j,k,bi,bj))
+              if (tmp.lt.0. _d 0) then
+                dsil=dsil-(tmp/
+     &                    darwin_relaxscale)
+              endif
+             ENDIF
             endif
 #endif
 c

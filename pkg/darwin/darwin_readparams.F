@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.2 2008/07/02 19:07:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.3 2008/08/11 14:48:39 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -42,6 +42,9 @@ CEOP
      &           darwin_ironFile,
      &           darwin_PARFile,
      &           darwin_nutWVelFile,
+     &           darwin_PO4_relaxFile, darwin_NO3_relaxFile, 
+     &           darwin_FeT_relaxFile, darwin_Si_relaxFile,
+     &           darwin_relaxscale,
      &           darwin_seed,
      &           darwin_ForcingPeriod, darwin_ForcingCycle
 
@@ -50,6 +53,11 @@ C Set defaults values for parameters in DARWIN_IO.h
       darwin_ironFile=' '
       darwin_PARFile=' '
       darwin_nutWVelFile=' '
+      darwin_PO4_relaxFile=' '
+      darwin_NO3_relaxFile=' '
+      darwin_FeT_relaxFile=' '
+      darwin_Si_relaxFile=' '
+      darwin_relaxscale=0. _d 0
       darwin_seed=0
 c default periodic forcing to same as for GCHEM
       darwin_forcingPeriod=gchem_ForcingPeriod

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.5 2008/07/02 22:08:07 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.6 2008/08/11 14:48:39 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -24,6 +24,9 @@ C  darwin_seed          :: seed for the random number generator
      &        darwin_ironFile,
      &        darwin_PARFile,
      &        darwin_nutWVelFile,
+     &        darwin_PO4_relaxFile, darwin_NO3_relaxFile,
+     &        darwin_FeT_relaxFile, darwin_Si_relaxFile,
+     &        darwin_relaxscale,
      &        darwin_forcingPeriod, darwin_forcingCycle,
      &        darwin_seed
 
@@ -31,6 +34,11 @@ C  darwin_seed          :: seed for the random number generator
       CHARACTER*(MAX_LEN_FNAM) darwin_ironFile
       CHARACTER*(MAX_LEN_FNAM) darwin_PARFile
       CHARACTER*(MAX_LEN_FNAM) darwin_NutWVelFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_PO4_relaxFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_NO3_relaxFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_FeT_relaxFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_Si_relaxFile
+      _RL darwin_relaxscale
       _RL     darwin_forcingPeriod
       _RL     darwin_forcingCycle
       INTEGER darwin_seed
@@ -44,6 +52,9 @@ c    sur_par        - surface PAR
 #ifdef NUT_SUPPLY
      &      ,nut_wvel
 #endif
+#ifdef RELAX_NUTS
+     &      ,po4_obs, no3_obs, fet_obs, si_obs
+#endif
 c
        _RL   fice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx, nSy)
        _RL   inputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx, nSy)
@@ -51,6 +62,13 @@ c
 #ifdef NUT_SUPPLY
        _RL   nut_wvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
 #endif
+#ifdef RELAX_NUTS
+       _RL   po4_obs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+       _RL   no3_obs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+       _RL   fet_obs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+       _RL   si_obs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+#endif
+
 
 c
 c OUPUT DIAGNOSTICS

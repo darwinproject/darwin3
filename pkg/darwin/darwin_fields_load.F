@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.8 2008/07/02 19:07:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.9 2008/08/11 14:48:39 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -47,6 +47,10 @@ C     msgBuf    - Informational/error meesage buffer
 #ifdef NUT_SUPPLY
      &    ,  nut_wvel0, nut_wvel1
 #endif
+#ifdef RELAX_NUTS
+     &    , po4_obs0, po4_obs1, no3_obs0, no3_obs1
+     &    , fet_obs0, fet_obs1, si_obs0, si_obs1
+#endif
       _RS fice0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fice1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS featmos0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -56,6 +60,16 @@ C     msgBuf    - Informational/error meesage buffer
 #ifdef NUT_SUPPLY
       _RS nut_wvel0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RS nut_wvel1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+#endif
+#ifdef RELAX_NUTS
+      _RS po4_obs0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS po4_obs1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS no3_obs0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS no3_obs1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS fet_obs0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS fet_obs1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS si_obs0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS si_obs1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
 #endif
        INTEGER bi,bj,i,j,k,intime0,intime1
       _RL aWght,bWght,rdt
@@ -88,6 +102,27 @@ cQQQ need to check timing
           ENDDO
          ENDDO
 #endif
+#ifdef NUT_SUPPLY
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             DO k=1,nR
+               po4_obs0(i,j,k,bi,bj) = 0. _d 0
+               po4_obs1(i,j,k,bi,bj) = 0. _d 0
+               no3_obs0(i,j,k,bi,bj) = 0. _d 0
+               no3_obs1(i,j,k,bi,bj) = 0. _d 0
+               fet_obs0(i,j,k,bi,bj) = 0. _d 0
+               fet_obs1(i,j,k,bi,bj) = 0. _d 0
+               si_obs0(i,j,k,bi,bj) = 0. _d 0
+               si_obs1(i,j,k,bi,bj) = 0. _d 0
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+#endif
+
        ENDIF
 
 
@@ -155,6 +190,32 @@ C      data for the period ahead and the period behind myTime.
      &        myIter,myThid )
        ENDIF
 #endif
+#ifdef RELAX_NUTS
+       IF ( darwin_PO4_RelaxFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( darwin_PO4_RelaxFile,po4_obs0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XYZ_RS( darwin_PO4_RelaxFile,po4_obs1,intime1,
+     &        myIter,myThid )
+       ENDIF
+       IF ( darwin_NO3_RelaxFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( darwin_NO3_RelaxFile,no3_obs0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XYZ_RS( darwin_NO3_RelaxFile,no3_obs1,intime1,
+     &        myIter,myThid )
+       ENDIF
+       IF ( darwin_Fet_RelaxFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( darwin_Fet_RelaxFile,fet_obs0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XYZ_RS( darwin_Fet_RelaxFile,fet_obs1,intime1,
+     &        myIter,myThid )
+       ENDIF
+       IF ( darwin_Si_RelaxFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( darwin_Si_RelaxFile,si_obs0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XYZ_RS( darwin_Si_RelaxFile,si_obs1,intime1,
+     &        myIter,myThid )
+       ENDIF
+#endif
 
 
        _END_MASTER(myThid)
@@ -169,6 +230,17 @@ C
        _EXCH_XYZ_R4(nut_wvel0, myThid )
        _EXCH_XYZ_R4(nut_wvel1, myThid )
 #endif
+#ifdef RELAX_NUTS
+       _EXCH_XYZ_R4(po4_obs0, myThid )
+       _EXCH_XYZ_R4(po4_obs1, myThid )
+       _EXCH_XYZ_R4(no3_obs0, myThid )
+       _EXCH_XYZ_R4(no3_obs1, myThid )
+       _EXCH_XYZ_R4(fet_obs0, myThid )
+       _EXCH_XYZ_R4(fet_obs1, myThid )
+       _EXCH_XYZ_R4(si_obs0, myThid )
+       _EXCH_XYZ_R4(si_obs1, myThid )
+#endif
+
 
 C
        ENDIF
@@ -217,6 +289,33 @@ c artificial wvel for nutrient supply in 1-d and 2-d models
              ENDDO
             ENDIF
 #endif
+#ifdef RELAX_NUTS
+            IF ( darwin_PO4_RelaxFile .NE. ' '  ) THEN
+             DO k=1,nR
+               po4_obs(i,j,k,bi,bj) = bWght*po4_obs0(i,j,k,bi,bj)
+     &                         +aWght*po4_obs1(i,j,k,bi,bj)
+             ENDDO
+            ENDIF
+            IF ( darwin_NO3_RelaxFile .NE. ' '  ) THEN
+             DO k=1,nR
+               no3_obs(i,j,k,bi,bj) = bWght*no3_obs0(i,j,k,bi,bj)
+     &                         +aWght*no3_obs1(i,j,k,bi,bj)
+             ENDDO
+            ENDIF
+            IF ( darwin_Fet_RelaxFile .NE. ' '  ) THEN
+             DO k=1,nR
+               fet_obs(i,j,k,bi,bj) = bWght*fet_obs0(i,j,k,bi,bj)
+     &                         +aWght*fet_obs1(i,j,k,bi,bj)
+             ENDDO
+            ENDIF
+            IF ( darwin_Si_RelaxFile .NE. ' '  ) THEN
+             DO k=1,nR
+               si_obs(i,j,k,bi,bj) = bWght*si_obs0(i,j,k,bi,bj)
+     &                         +aWght*si_obs1(i,j,k,bi,bj)
+             ENDDO
+            ENDIF
+#endif
+
 c
           ENDDO
          ENDDO
