@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.8 2008/08/13 19:53:47 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.9 2008/08/13 21:29:10 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -770,7 +770,7 @@ c ANNA endif
      &            (1+(chl2cmax(np)*alphatmp(np)*PARlocal)/
      &               (2*pcm(np)))
              chl2c(np)=min(chl2c(np),chl2cmax(np))
-             phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
+             chl2c(np)=max(chl2c(np),chl2cmin(np))
              if (PARlocal.gt.1. _d -1) then
                pcarbon(np)=pcm(np)*( 1 -
      &          exp((-alphatmp(np)*PARlocal*chl2c(np))/(pcm(np))) )
@@ -787,11 +787,11 @@ c ANNA endif
              endif
            else
              pcm(np)=0.d0
-             chl2c(np)=0.d0
-             phychl(np)=0.d0
+             chl2c(np)=chl2cmin(np)
              pcarbon(np)=0.d0
              ilimit(np)=0.d0
            endif
+           phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
           enddo
           if (debug.eq.14) print*,'ilimit',ilimit, PARlocal
           if (debug.eq.14) print*,'chl:c',chl2c

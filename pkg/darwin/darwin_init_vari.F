@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.13 2008/08/01 21:35:16 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.14 2008/08/13 21:29:10 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,7 +54,19 @@ C     msgBuf    - Informational/error meesage buffer
         INTEGER nz
 c ANNA need nl for wavebands
 #ifdef WAVEBANDS
-        INTEGER nl
+        integer i,ilam
+        integer nl
+
+c ANNA for interpolation
+         _RL cu_area
+         _RL waves_diff
+         _RL light_diff
+         _RL alpha_diff
+         _RL squ_part
+         _RL tri_part
+         _RL seg_area
+         _RL alpha_mean(npmax)
+
 #endif
 
 CEOP
@@ -153,17 +165,38 @@ c ANNA use aphy_chl_ps for growth. To turn off, simply set same coefs as aphy_ch
 #ifndef WAVEBANDS
          do np = 1,npmax
           alphachl(np) = mQyield(np) * aphy_chl_ave 
-         end do
+c C:CHl minimum: chosen to be Chl:C at high light (2000uEin/m2/s) and
+c  no temp/nutrient limitation
+          chl2cmin(np)=chl2cmax(np)/
+     &            (1+(chl2cmax(np)*alphachl(np)*2000. _d 0)/
+     &               (2*pcmax(np)))
+c         chl2cmin(np)=0. _d 0
+         enddo
 #else
          do np = 1,npmax
 c ANNA for wavebands only, re-set mQyield to be constant for all np's
 c ANNA i.e. let alpha vary only with aphy_chl_ps
 c ANNA value is mean of vals for big and small.
-         mQyield(np) = 4.0 _d -5
+          mQyield(np) = 4.0 _d -5
           do nl = 1,tlam
            alphachl_nl(np,nl) = mQyield(np) * aphy_chl_ps(np,nl)
           end do
-         end do
+c find mean 
+          cu_area = 0.d0
+          do nl = 1,(tlam-1)
+            waves_diff = pwaves(nl+1)-pwaves(nl)
+            alpha_diff = alphachl_nl(np,nl+1)-alphachl_nl(np,nl)
+            squ_part = waves_diff * alphachl_nl(np,nl+1)
+            tri_part = waves_diff * alpha_diff * 5.D-1
+            seg_area = squ_part - tri_part
+            cu_area = cu_area + seg_area
+          end do
+          alpha_mean(np) = cu_area / (pwaves(tlam) - pwaves(1))
+
+          chl2cmin(np)=chl2cmax(np)/
+     &            (1+(chl2cmax(np)* alpha_mean(np) *2000. _d 0)/
+     &               (2*pcmax(np)))
+        end do
 #endif
 #endif
 c ANNA endif

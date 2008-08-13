@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.5 2008/08/01 21:35:16 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.6 2008/08/13 21:29:10 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -204,7 +204,7 @@ c    istar          - photoadaptation light limit
 #ifdef GEIDER
 c ANNA geider by mQyield instead of alpha
         COMMON/geider_vars/
-     &         pcmax, alphachl, chl2cmax,
+     &         pcmax, alphachl, chl2cmax, chl2cmin,
      &         mQyield,aphy_chl_ave,
 c     &         Bigalphachl, Bigalphachlrange,
 c     &         Smallalphachl, Smallalphachlrange,
@@ -217,6 +217,7 @@ c        _RL phychl(npmax)
          _RL alphachl(npmax)
          _RL mQyield(npmax)
          _RL chl2cmax(npmax)
+         _RL chl2cmin(npmax)
 c         _RL Bigalphachl, Bigalphachlrange,
 c     &         Smallalphachl, Smallalphachlrange,
          _RL BigmQyield, BigmQyieldrange,
