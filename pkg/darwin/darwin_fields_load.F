@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.9 2008/08/11 14:48:39 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.10 2008/08/13 18:57:28 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,6 +33,9 @@ c#include "GCHEM.h"
 #endif
 #ifdef ALLOW_THSICE
 #include "THSICE_VARS.h"
+#endif
+#ifdef ALLOW_OFFLINE
+#include "OFFLINE.h"
 #endif
 
 C     == Routine arguments ==
@@ -249,7 +252,7 @@ C
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-cQQ need to include ice moel here, if used
+cQQ need to include ice model here, if used
 #ifdef ALLOW_THSICE
              FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
 #else
@@ -264,6 +267,13 @@ cQQ need to include ice moel here, if used
            ENDIF
 #endif
 #endif
+c or use offline fields if provided
+#ifdef ALLOW_OFFLINE
+           IF (IceFile      .NE. ' ') THEN
+             fice(i,j,bi,bj)  = ICEM(i,j,bi,bj)
+           ENDIF
+#endif
+
            IF ( darwin_ironFile .NE. ' '  ) THEN
             inputFe(i,j,bi,bj)   = bWght*featmos0(i,j,bi,bj)
      &                            +aWght*featmos1(i,j,bi,bj)
