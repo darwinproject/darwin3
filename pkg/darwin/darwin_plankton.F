@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.7 2008/08/01 21:35:16 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.8 2008/08/13 19:53:47 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -144,6 +144,7 @@ c zoo   = zooplankton
          _RL dPSidt
 #ifdef GEIDER
          _RL phychl(npmax)
+         _RL alphatmp(npmax)
 #endif
          _RL runtim
 
@@ -727,34 +728,8 @@ c Now Check Against General Nutrient Limiting Tendency
 
 
 #ifdef GEIDER
-c ANNA if not wavebands uses alphachl derived from mQyield * aphy_chl_ave
-#ifndef WAVEBANDS
-          do np = 1, npmax
-             pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
-             chl2c(np)=chl2cmax(np)/
-     &            (1+(chl2cmax(np)*alphachl(np)*PARlocal)/
-     &               (2*pcm(np)))
-             chl2c(np)=min(chl2c(np),chl2cmax(np))
-             phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
-           if (PARlocal.gt.1. _d -1) then
-             pcarbon(np)=pcm(np)*( 1 -
-     &        exp((-alphachl(np)*PARlocal*chl2c(np))/(pcm(np))) )
-             if (pcarbon(np).lt. 0. _d 0) 
-     &               print*,'QQ ERROR pc=',pcarbon(np)
-             if (pcm(np).gt.0. _d 0) then
-               ilimit(np)=pcarbon(np)/pcm(np)
-             else
-               ilimit(np)= 0. _d 0
-             endif
-           else
-             ilimit(np)=0. _d 0
-             pcarbon(np)=0. _d 0
-           endif
-          enddo
-          if (debug.eq.14) print*,'ilimit',ilimit, PARlocal
-          if (debug.eq.14) print*,'chl:c',chl2c
-          if (debug.eq.14) print*,'chl',phychl
-#else
+
+#ifdef WAVEBANDS
 c ANNA if wavebands then uses spectral alphachl derived from spectral alpha * I
 c so first get value for alphachl_nl * PARwlocal
 c value will depend on matchup between spectra of alphachl_nl (ie. aphy_chl) and PARwlocal
@@ -762,10 +737,10 @@ c value will depend on matchup between spectra of alphachl_nl (ie. aphy_chl) and
            do nl = 1,tlam
             alpha_I_local_nl(nl) = alphachl_nl(np,nl) * PARwlocal(nl)
            end do
-          
+
 c interpolate for sum of alphachl_nl * PARwlocal
            cu_area = 0.d0
-           do nl = 1,(tlam-1) 
+           do nl = 1,(tlam-1)
             waves_diff = pwaves(nl+1)-pwaves(nl)
             alphaI_diff = alpha_I_local_nl(nl+1)-alpha_I_local_nl(nl)
             squ_part = waves_diff * alpha_I_local_nl(nl+1)
@@ -775,37 +750,52 @@ c interpolate for sum of alphachl_nl * PARwlocal
            end do
 
 c           alpha_I_local(np) = cu_area / (pwaves(tlam) - pwaves(1))
-           alpha_I_local(np) = cu_area 
+           alpha_I_local(np) = cu_area
+           alphatmp(np) = alpha_I_local(np)
           end do
 
 c Geider growth (and chl2c) now depends on this (sinlge) value of alpha_chl * I
+#else
+c ANNA if not wavebands uses alphachl derived from mQyield * aphy_chl_ave
           do np = 1, npmax
-             pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
+            alphatmp(np)=alphachl(np)
+          enddo
+c ANNA endif
+#endif
+
+          do np = 1, npmax
+           pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
+           if (pcm(np).gt.0.d0) then
              chl2c(np)=chl2cmax(np)/
-     &            (1+(chl2cmax(np)*alpha_I_local(np))/
+     &            (1+(chl2cmax(np)*alphatmp(np)*PARlocal)/
      &               (2*pcm(np)))
              chl2c(np)=min(chl2c(np),chl2cmax(np))
              phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
-           if (PARlocal.gt.1. _d -1) then
-             pcarbon(np)=pcm(np)*( 1 -
-     &        exp((-alpha_I_local(np)*chl2c(np))/(pcm(np))) )
-             if (pcarbon(np).lt. 0. _d 0) 
-     &               print*,'QQ ERROR pc=',pcarbon(np)
-             if (pcm(np).gt.0. _d 0) then
-               ilimit(np)=pcarbon(np)/pcm(np)
+             if (PARlocal.gt.1. _d -1) then
+               pcarbon(np)=pcm(np)*( 1 -
+     &          exp((-alphatmp(np)*PARlocal*chl2c(np))/(pcm(np))) )
+               if (pcarbon(np).lt. 0. _d 0) 
+     &                 print*,'QQ ERROR pc=',np,pcarbon(np)
+               if (pcm(np).gt.0. _d 0) then
+                 ilimit(np)=pcarbon(np)/pcm(np)
+               else
+                 ilimit(np)= 0. _d 0
+               endif
              else
-               ilimit(np)= 0. _d 0
+               ilimit(np)=0. _d 0
+               pcarbon(np)=0. _d 0
              endif
            else
-             ilimit(np)=0. _d 0
-             pcarbon(np)=0. _d 0
+             pcm(np)=0.d0
+             chl2c(np)=0.d0
+             phychl(np)=0.d0
+             pcarbon(np)=0.d0
+             ilimit(np)=0.d0
            endif
           enddo
           if (debug.eq.14) print*,'ilimit',ilimit, PARlocal
           if (debug.eq.14) print*,'chl:c',chl2c
           if (debug.eq.14) print*,'chl',phychl
-#endif
-c ANNA endif
 #endif
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
