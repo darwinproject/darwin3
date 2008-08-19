@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.14 2008/08/13 21:29:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.15 2008/08/19 20:26:17 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -167,10 +167,10 @@ c ANNA use aphy_chl_ps for growth. To turn off, simply set same coefs as aphy_ch
           alphachl(np) = mQyield(np) * aphy_chl_ave 
 c C:CHl minimum: chosen to be Chl:C at high light (2000uEin/m2/s) and
 c  no temp/nutrient limitation
-          chl2cmin(np)=chl2cmax(np)/
-     &            (1+(chl2cmax(np)*alphachl(np)*2000. _d 0)/
-     &               (2*pcmax(np)))
-c         chl2cmin(np)=0. _d 0
+c         chl2cmin(np)=chl2cmax(np)/
+c    &            (1+(chl2cmax(np)*alphachl(np)*2000. _d 0)/
+c    &               (2*pcmax(np)))
+          chl2cmin(np)=0. _d 0
          enddo
 #else
          do np = 1,npmax

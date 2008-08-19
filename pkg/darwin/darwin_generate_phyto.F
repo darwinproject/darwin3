@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.8 2008/08/01 21:35:16 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.9 2008/08/19 20:26:17 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -72,7 +72,7 @@ c RANDOM NUMBERS
 c phyto either "small" (physize(np)=0.0) or "big" (physize(np)=1.0)
 c at this point independent of whether diatom or not
         RandNo = darwin_random(myThid)
-        if(RandNo .gt. 0.7500 _d 0)then
+        if(RandNo .gt. 0.500 _d 0)then
           physize(np) = 1.0 _d 0
         else
           physize(np) = 0.0 _d 0
@@ -240,9 +240,9 @@ c Diaz will be 0 if not defined, and will have nsource = 0.
 c ANNA number of RandNo's carreid out MUST MATCH regardless of wavebands or not.
 C ANNA the number of RandNo statements here MUST MATCH the number done above
 
-         RandNo = darwin_random(myThid)
-         RandNo = darwin_random(myThid)
-         RandNo = darwin_random(myThid)
+c        RandNo = darwin_random(myThid)
+c        RandNo = darwin_random(myThid)
+c        RandNo = darwin_random(myThid)
 
 #endif
 c ANNA endif
