@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.5 2008/02/08 15:34:31 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.6 2008/08/21 20:36:33 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-#ifdef PORTRAND
+#ifdef PORT_RAND
 #ifdef OLDSEED
       These lines are here intentionally to cause a compile-time error:
-      If you really want to use PORTRAND with OLDSEED, comment them out.
+      If you really want to use PORT_RAND with OLDSEED, comment them out.
 #endif
 #endif
 
