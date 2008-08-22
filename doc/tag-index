@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.14 2008/07/21 17:45:17 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.15 2008/08/22 19:18:30 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt61_20080822
+o add code to relax nutrients (needed for 1-D version)
+o add waveband dependence of light attenuation and absorption,
+  - NOTE: need to have geider turned on too
+o add geider chl:c ratio and growth rate dependence,
+  - no photo-inhibition at this point
 o make number of phytoplankton species flexible (at compile time)
   - DARWIN_SIZE defines location of darwin fields in Ptracer
 
