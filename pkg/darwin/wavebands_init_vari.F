@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.2 2008/08/22 16:20:38 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.3 2008/08/22 18:59:50 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_vari.F assigns actual values to choices made by coin-flips in darwin_generate_phyto.F
@@ -37,6 +37,7 @@ CEOP
 C     !LOCAL VARIABLES:
 C     == Local variables ==
        INTEGER np,nl,i,ilam
+       INTEGER unit1, unit2
        
        _RL outfile(npmax,tlam)
        _RL outfile_ps(npmax,tlam)
@@ -87,15 +88,18 @@ c ANNA create output files for WAVEBANDS
 c ANNA see format_helps folder for more info on file structures
 
 c file for ap_types assigned via coin flips
-         open(17,file='p-ini-char-aptype.dat',status='new')
-         open(18,file='p_ini_char_aptype_nohead.dat',status='new')
-         write(17,*)'np   ap_type' !to have bp_type for backscattering too
+         CALL MDSFINDUNIT( unit1, mythid )
+         open(unit1,file='p-ini-char-aptype.dat',status='unknown')
+         CALL MDSFINDUNIT( unit2, mythid )
+         open(unit2,file='p_ini_char_aptype_nohead.dat', 
+     &        status='unknown')
+         write(unit1,*)'np   ap_type' !to have bp_type for backscattering too
          do np = 1,npmax
-           write(17,120)np,ap_type(np)
-           write(18,120)np,ap_type(np)
+           write(unit1,120)np,ap_type(np)
+           write(unit2,120)np,ap_type(np)
          enddo
-         close(17)
-         close(18)
+         close(unit1)
+         close(unit2)
 120      format(2i5)
 
 c file of total absorption spectra
@@ -105,17 +109,17 @@ c rows = pwaves, columns = np
              outfile(np,ilam) = aphy_chl(np,ilam)
            enddo
           enddo
-         open(19,file='p-ini-char-apspec.dat',status='new')
-         open(20,file='p_ini_char_aspec_nohead.dat',status='new')
-         write(19,*)'Rows = pwaves. Columns = np'
-         write(19,*)'pwaves found in pwaves-check.dat'
-         write(19,*)'col_1 to col_<npmax>'
-         write(19,*)'is absorption aphy_chl (m-2 mg chla-1)'
-         write(19,130)outfile
-         write(20,130)outfile
+         open(unit1,file='p-ini-char-apspec.dat',status='unknown')
+         open(unit2,file='p_ini_char_aspec_nohead.dat',status='unknown')
+         write(unit1,*)'Rows = pwaves. Columns = np'
+         write(unit1,*)'pwaves found in pwaves-check.dat'
+         write(unit1,*)'col_1 to col_<npmax>'
+         write(unit1,*)'is absorption aphy_chl (m-2 mg chla-1)'
+         write(unit1,130)outfile
+         write(unit2,130)outfile
 c make sure outfile is defined above with the correct size
-         close(19)
-         close(20)
+         close(unit1)
+         close(unit2)
 
 c file for absorption spectra of PS's only
 c rows = pwaves, columns = np
@@ -124,23 +128,24 @@ c rows = pwaves, columns = np
              outfile_ps(np,ilam) = aphy_chl_ps(np,ilam)
            enddo
           enddo
-         open(21,file='p-ini-char-apspec-psc.dat',status='new')
-         open(22,file='p_ini_char_aspec_psc_nohead.dat',status='new')
-         write(21,*)'Rows = pwaves. Columns = np'
-         write(21,*)'pwaves found in pwaves-check.dat'
-         write(21,*)'Is absoprtion by photosynthetic'
-         write(21,*)'pigments only aphy_chl_ps (m-2 mg chla-1)'
-         write(21,130)outfile_ps
-         write(22,130)outfile_ps
-         close(21)
-         close(22)
+         open(unit1,file='p-ini-char-apspec-psc.dat',status='unknown')
+         open(unit2,file='p_ini_char_aspec_psc_nohead.dat',
+     &        status='unknown')
+         write(unit1,*)'Rows = pwaves. Columns = np'
+         write(unit1,*)'pwaves found in pwaves-check.dat'
+         write(unit1,*)'Is absoprtion by photosynthetic'
+         write(unit1,*)'pigments only aphy_chl_ps (m-2 mg chla-1)'
+         write(unit1,130)outfile_ps
+         write(unit2,130)outfile_ps
+         close(unit1)
+         close(unit2)
 130      format(<npmax>f10.4)
 
 
 c file for wavebands used
-         open(23,file='pwaves-check.dat',status='new')
-         write(23,140)pwaves
-         close(23) 
+         open(unit1,file='pwaves-check.dat',status='unknown')
+         write(unit1,140)pwaves
+         close(unit1) 
 140      format(i5)
 
 
