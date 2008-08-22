@@ -1,21 +1,40 @@
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.2 2008/08/22 16:20:38 jahn Exp $
+C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
 
 #include "GCHEM_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: WAVEBANDS_INIT_FIXED
+C     !INTERFACE:
        subroutine wavebands_init_fixed(myThid)
 
-#ifdef WAVEBANDS
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE WAVEBANDS_INIT_FIXED
+C     | o reads-in and assigns input paramters for WAVEBANDS.
+C     *==========================================================*
+C     \ev
 
+C     !USES:
        implicit none
-
+C     == Global variables ===
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
 #include "WAVEBANDS_PARAMS.h"
 
-
-c local variables      
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myThid     :: my Thread Id number
       integer myThid      
+CEOP
+
+#ifdef WAVEBANDS
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+c local variables      
       character*80 title
       integer pwaves_all(tnabp,tlam)
       integer wwaves(tlam),sfwaves(tlam)

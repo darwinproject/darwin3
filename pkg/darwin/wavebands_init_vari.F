@@ -1,22 +1,41 @@
-
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.2 2008/08/22 16:20:38 jahn Exp $
+C $Name:  $
 
 c ANNA wavebands_init_vari.F assigns actual values to choices made by coin-flips in darwin_generate_phyto.F
 c ANNA wavebands_init_vari.F creates output files
 
 #include "GCHEM_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: WAVEBANDS_INIT_VARI
+C     !INTERFACE:
        SUBROUTINE WAVEBANDS_INIT_VARI(myThid)
 
-#ifdef WAVEBANDS
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE WAVEBANDS_INIT_VARI
+C     | o assigns actual values to choices made by coin-flips
+C     |   in darwin_generate_phyto.F; creates output files
+C     *==========================================================*
+C     \ev
 
+C     !USES:
        implicit none
-
+C     == Global variables ===
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
 #include "WAVEBANDS_PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myThid     :: my Thread Id number
+      integer myThid      
+CEOP
 
-       INTEGER myThid
+#ifdef WAVEBANDS
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
        INTEGER np,nl,i,ilam
        
        _RL outfile(npmax,tlam)
