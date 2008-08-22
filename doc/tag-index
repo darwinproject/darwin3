@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.15 2008/08/22 19:18:30 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.16 2008/08/22 19:31:10 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt61b_20080822
+o upgrade to checkpoint61b of MITgcm
 
 ctrb_darwin_ckpt61_20080822
 o add code to relax nutrients (needed for 1-D version)
