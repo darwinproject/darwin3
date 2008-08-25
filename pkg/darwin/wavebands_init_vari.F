@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.3 2008/08/22 18:59:50 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.4 2008/08/25 19:38:20 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_vari.F assigns actual values to choices made by coin-flips in darwin_generate_phyto.F
@@ -115,8 +115,10 @@ c rows = pwaves, columns = np
          write(unit1,*)'pwaves found in pwaves-check.dat'
          write(unit1,*)'col_1 to col_<npmax>'
          write(unit1,*)'is absorption aphy_chl (m-2 mg chla-1)'
-         write(unit1,130)outfile
-         write(unit2,130)outfile
+         do ilam=1,tlam
+           write(unit1,130)outfile(:,ilam)
+           write(unit2,130)outfile(:,ilam)
+         enddo
 c make sure outfile is defined above with the correct size
          close(unit1)
          close(unit2)
@@ -135,11 +137,13 @@ c rows = pwaves, columns = np
          write(unit1,*)'pwaves found in pwaves-check.dat'
          write(unit1,*)'Is absoprtion by photosynthetic'
          write(unit1,*)'pigments only aphy_chl_ps (m-2 mg chla-1)'
-         write(unit1,130)outfile_ps
-         write(unit2,130)outfile_ps
+         do ilam=1,tlam
+           write(unit1,130)outfile_ps(:,ilam)
+           write(unit2,130)outfile_ps(:,ilam)
+         enddo
          close(unit1)
          close(unit2)
-130      format(<npmax>f10.4)
+130      format(9999f10.4)
 
 
 c file for wavebands used
