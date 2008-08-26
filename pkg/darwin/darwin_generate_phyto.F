@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.9 2008/08/19 20:26:17 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.10 2008/08/26 14:46:10 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -236,7 +236,7 @@ c Diaz will be 0 if not defined, and will have nsource = 0.
           end if
          end if
 
-#else if
+#else
 c ANNA number of RandNo's carreid out MUST MATCH regardless of wavebands or not.
 C ANNA the number of RandNo statements here MUST MATCH the number done above
 
