@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM_OPTIONS.h,v 1.4 2008/08/12 14:26:05 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM_OPTIONS.h,v 1.5 2008/08/26 14:14:18 jahn Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -30,7 +30,7 @@ CEOP
 #undef  OLD_NSCHEME
 #undef  ALLOW_MUTANTS
 #define PORT_RAND
-#define OLDSEED
+#undef  OLDSEED
 #undef GEIDER
 #undef WAVEBANDS
 #undef RELAX_NUTS
