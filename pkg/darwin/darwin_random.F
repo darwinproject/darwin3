@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.6 2008/08/21 20:36:33 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.7 2008/08/26 18:47:13 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -14,15 +14,30 @@ C $Name:  $
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_DARWIN
 
-c ==========================================================
-c SUBROUTINE DARWIN_RANDOM_INIT(seed)
-c initializes the random number generator
-c seed must be positive
-c NOTE: not thread-safe yet!!!
-c ==========================================================
-c 
+CBOP
+C     !ROUTINE: DARWIN_RANDOM_INIT
+C     !INTERFACE:
       SUBROUTINE DARWIN_RANDOM_INIT(seed, myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE DARWIN_RANDOM_INIT
+C     | o Initializes the random number generator.
+C     |   seed must be positive.
+C     |   NOTE: not thread-safe yet!!!
+C     *===========================================================
+C     | Algorithms:
+C     | - With PORT_RAND defined, this uses port_rand.f, which is
+C     |   Knuth's portable random number generator [see Numerical
+C     |   Recipes, Ch.7.1: ran3].
+C     |   We use the floating-point version.
+C     |   In order to obtain unique sequences of random numbers,
+C     |   the seed should be between 1 and 1618032.
+C     | - With PORT_RAND undefined, it uses the system's RAND 
+C     |   function.  See the system documentation for ranges, etc.
+C     *==========================================================*
+C     \ev
 
+C     !USES:
       IMPLICIT NONE
 
 #include "EEPARAMS.h"
@@ -102,13 +117,18 @@ C need to call again to get a non-zero random number
       RETURN 
       END
 
-c ==========================================================
-c FUNCTION DARWIN_RANDOM()
-c returns a uniform random number between 0 and 1
-c ==========================================================
-c 
+CBOP
+C     !ROUTINE: DARWIN_RANDOM
+C     !INTERFACE:
       FUNCTION DARWIN_RANDOM(myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | FUNCTION DARWIN_RANDOM
+c     | o returns a uniform random number between 0 and 1
+C     *==========================================================*
+C     \ev
 
+C     !USES:
       IMPLICIT NONE
 
 #include "EEPARAMS.h"
@@ -157,13 +177,19 @@ CEOP
       RETURN 
       END 
 
-c ==========================================================
-c FUNCTION DARWIN_RANDOM_NORMAL()
-c returns a normally distributed random number with mean 0 and stddev 1
-c ==========================================================
-c 
+CBOP
+C     !ROUTINE: DARWIN_RANDOM_NORMAL
+C     !INTERFACE:
       FUNCTION DARWIN_RANDOM_NORMAL(myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | FUNCTION DARWIN_RANDOM_NORMAL
+C     | o returns a normally distributed random number with
+C     |   mean 0 and stddev 1
+C     *==========================================================*
+C     \ev
 
+C     !USES:
       IMPLICIT NONE
 
 #include "EEPARAMS.h"
