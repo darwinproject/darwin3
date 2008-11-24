@@ -1,0 +1,160 @@
+\documentclass[letterpaper,10pt]{article}
+\usepackage[margin=10mm,bmargin=20mm]{geometry}
+\usepackage{amsmath}
+
+\newcommand{\dy}{\mathrm{day}}
+\newcommand{\yr}{\mathrm{y}}
+\newcommand{\uM}{\mu\mathrm{M}}
+\renewcommand{\P}{\mathrm{P}}
+\newcommand{\uEin}{\mu\text{Ein}}
+\newcommand{\m}{\mathrm{m}}
+\newcommand{\s}{\mathrm{s}}
+
+
+\newcommand{\pcm}[1]{P^C_{m#1}}
+\newcommand{\pcmax}[1]{P^C_{\textrm{MAX}#1}}
+\newcommand{\pcarbon}{P^C}
+\newcommand{\chltoc}{\theta}
+\newcommand{\chltocmax}{\theta^{\textrm{max}}}
+\newcommand{\chltocmin}{\theta^{\textrm{min}}}
+\newcommand{\alphachl}{\alpha^{\textrm{Chl}}}
+\newcommand{\mQyield}{\mathrm{mQ}^{\textrm{yield}}}
+\newcommand{\RPC}{R^{PC}}
+\newcommand{\phychl}{\mathit{Chl}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\aphychlave}{A^{\mathrm{phy}}_{\mathrm{Chl,ave}}}
+
+\begin{document}
+\thispagestyle{empty}
+
+\section*{Darwin model parameters and default values as of checkpoint61}
+
+\noindent
+\begin{tabular}{llllllllll}
+  paper               & variable       & fixed           & values \\\hline
+  $\mu_{max_j}$             & mu             & Big/Smallgrow   & $1/(0.4\,\dy)$ (big)  & $1/(0.7\,\dy)$ (small)  & $\times 1/2$ (diatom) \\
+  $m^P_j$             & mortphy        & Big/Smallmort   & $1/(10\,\dy)$ \\
+  $\lambda_{mp_{ij}}$ & ExportFracP    & Big/Smallexport & 0.5 (big)             & 0.2 (small) \\
+  $w^P_j$             & wsink          & Big/Smallsink   & 0.5 m/day (big)       & 0 (small) \\ 
+                      &                & phymin          & 1E-20 $\uM\,\P$ \\ 
+  \hline                              
+  $1/\tau_1$ & phytoTempCoeff   & tempcoeff1            & 1/3 \\ 
+  $B$        & phytoTempExp2    & tempcoeff2\_big/small & 0.0003 (big) & 0.001 (small) \\
+  $A$        & phytoTempExp1    & tempcoeff3            & 1.04 \\
+  $T_o$      & phytoTempOptimum & tempmax               & $30-32x$ \\
+  $\tau_2$   &                  & tempnorm              & 0.3 \\
+  $C$        & phytoDecayPower  & tempdecay             & 4.0 \\
+  \hline                              
+  $10 k_{par}$        & ksatPAR        & Big/smallksatpar(std) & $0.12\pm0.06X$ (big) & $0.12\pm0.20X$ (small) & $\m^2\,\s/\uEin$ \\
+  $10^3 k_{inhib}$    & kinhib         & Big/smallkinhib(std)  & $1.0\pm0.05X$ (big)  & $6.0\pm0.10X$ (small)  & $\m^2\,\s/\uEin$ \\
+                      &                & parfrac               & $0.4$         & W PAR/W sw\\
+                      &                & parconv               & $0.2174^{-1}$ & uEin W$^{-1}$ s$^{-1}$ \\
+  \hline
+  $\kappa_{Si_{ij}}$  & ksatSi  & val\_ksatsi        & 1 $\uM\,\P$ \\
+  $\kappa_{PO4_{ij}}$ & ksatPO4 & Big/Small/ProcPsat & $0.035+0.02x$ (big) & $0.015+0.02x$ (small) & $0.01+0.005x$ (Proc) \\
+  $\kappa_{Fe_{ij}}$  & ksatFe  &                    & ksatPO4*R\_FeP       \\
+  $\kappa_{IN}$       & ksatNO3 &                    & ksatPO4*R\_NP        \\
+  $\kappa_{IN}^{\#1}$ & ksatNO2 &                    & ksatNO3*ksatNO2fac   \\
+  $\kappa_{NH4}$      & ksatNH4 &                    & ksatNO3*ksatNH4fac   \\
+                      &         & ksatNO2fac         & 1.0 \\
+                      &         & ksatNH4fac         & 0.5 \\
+  $\psi$              &         & sig1               & 4.6 $(\uM\,\P)^{-1}$ \\
+  \hline
+  $M_{ij}$            & R\_SiP  & val\_R\_SiP\_diatom & 0      & 16 (diatom) \\
+  $M_{ij}$            & R\_NP   & val\_R\_NP(\_diazo) & 16     & 40 (diazo) \\
+  $M_{ij}$            & R\_FeP  & val\_RFeP(\_diazo)  & 1E-3   & 7.5E-3 (diazo) \\
+  \hline
+  $g_{max}$           & grazemax       & GrazeFast           & $(2\,\dy)^{-1}$ \\
+  $\eta_{j k}$        & palat          & palathi/lo          & 1.0 (same sz.)  & 0.2 (diff. size)   & $\times 0.7$ (diatom) \\
+  $\zeta_{j k}$       & asseff         & GrazeEffhi/lo       & 0.5 (same sz.)  & 0.7 (sm.phy)       & 0.2 (lg.phy) \\
+  $\kappa^P_k$        &                & kgrazesat           & 0.1 $\uM\,\P$ \\
+                      &                & phygrazmin          & 1E-10 $\uM\,\P$ \\
+  $m^Z_j$             & mortzoo        & ZoomortBig/Small    & $(30\,\dy)^{-1}$ \\
+  $\lambda_{g_{ijk}}$ & ExportFracGraz & ExGrazfracbig/small & 0.8 \\
+  $\lambda_{mz_{ik}}$ & ExportFracZ    & zooexfacBig/Small   & 0.7 (big) & 0.2 (small) \\
+  \hline
+  $r_{DOP}$, & $r_{DON}$, $r_{DOFe}$   & Kdop, Kdon, KdoFe & $1/(100\,\dy)$ \\
+% $r_{DON}$           &  & Kdon         & $1/(100\,\dy)$ \\
+% $r_{DOFe}$          &  & KdoFe        & $1/(100\,\dy)$ \\
+  $r_{POP}$, & $r_{PON}$, $r_{POFe}$    & Kpremin\_P/N/Fe & $1/(50\,\dy)$ \\
+% $r_{PON}$           &  & Kpremin\_N   & ./. \\
+% $r_{POFe}$          &  & Kpremin\_Fe  & ./. \\
+  $r_{POSi}$          &  & Kpremin\_Si  & $1/(300\,\dy)$ \\
+  $w_{POP}$, & ...       & wp\_sink, ... & 10 m/day \\
+% $w_{PON}$           &  & wn\_sink     & ./. \\
+% $w_{POFe}$          &  & wfe\_sink    & ./. \\
+% $w_{POSi}$          &  & wsi\_sink    & ./. \\
+  \hline                
+  $\alpha$            &  & alpfe        & 0.04 \\
+  $c_{\text{scav}}$   &  & scav         & 0.4$\,\yr^{-1}$ \\
+  $L_{tot}$           &  & ligand\_tot  & 1E-3$\,\uM\,\P$ \\
+  $L_{stab}$          &  & ligand\_stab & 2E5$\,(\uM\,\P)^{-1}$ \\
+  $Fe'_{max}$         &  & freefemax    & 0.4E-3$\,\uM\,\P$ \\
+  \hline
+  $\zeta_{NO2}^0$     &  & knita        & $1/(0.5\,\dy)$ \\
+  $\zeta_{NO3}^0$     &  & knitb        & $1/(10\,\dy)$ \\
+  $I_0$               &  & PAR0         & $10\,\uEin\,\m^{-2}\,\s^{-1}$ \\
+  \hline
+  \hline
+%\end{tabular}
+%
+%\vfill
+%\goodbreak
+%
+%\noindent\textbf{Geider:}\nobreak
+%
+% aphy_chl_ave (ie. x chla gives absorption m-1)
+%
+%\noindent
+%\begin{tabular}{llllllllll}
+% paper          & variable & fixed          & values \\\hline
+  $\pcmax{j}$    & pcmax    & Big/Smallgrow  & $(0.4\,\dy)^{-1}$ (big)       & $(0.7\,\dy)^{-1}$ (small)        & $\times 2^{-1}$ (diatom) \\ %& $\times 2^{-1}$ (diazo) \\
+                 &          &                &                               &                                  & $\times 2^{-1}$ (diazo) \\
+% $\alphachl_j$  & alphachl &                     &         & mmol C (uEin/m-2)$^{-1}$ (mg Chl)$^{-1}$ \\
+%                &          &                     &         & mmol C (uEin/m-2)$^{-1}$ (mg Chl)$^{-1}$ \\
+%                &          &                     &         & mmol C (uEin/m-2)$^{-1}$ (mg Chl)$^{-1}$ \\
+%                &          &                     &         & mmol C (uEin/m-2)$^{-1}$ (mg Chl)$^{-1}$ \\
+  $\mQyield_j$   & mQyield  & Big/smallmQyield    & $(3+4x)$E-5 (big) &  $(5+10x)$E-5 (small) & mmol C uEin$^{-1}$ \\
+  $\aphychlave$  &          & aphy\_chl\_ave      & 0.02    & m$^2$ (mg Chl)$^{-1}$ \\
+  $\chltocmax_j$ & chl2cmax & Big/smallchl2cmax   & $0.5+0.3x$ (big)  & $0.2+0.3x$ (small) & mg Chl (mmol C)$^{-1}$ \\
+  $\RPC_j$       & R\_PC    & val\_R\_PC         & 120     & mmol C/mmol P\\
+  \hline
+\end{tabular}
+
+where $x$ stands for uniformly distributed random numbers in $[0,1[$ and $X$ for normally distributed ones.
+
+
+\begin{tabular}{llllllllll}
+ fixed           & value               \\\hline
+ diver\_thresh0  & $10^{-12}\,\uM\,\P$ & threshold for $P_\mathrm{tot}$ for all Diver diagnostics \\
+ diver\_thresh1  & $10^{-8}\,\uM\,\P$  & threshold for $P_j$ for Diver1       \\
+ diver\_thresh2  & $10^{-3}$           & threshold for $P_j/P_{\mathrm{tot}}$ for Diver2 \\
+ diver\_thresh3  & $0.999$             & biomass fraction of abundant species for Diver3 \\
+ diver\_thresh4  & $10^{-5}$           & threshold for $P_j/P_{\mathrm{max}}$ for Diver4 \\
+\end{tabular}
+
+\end{document}
+\endinput
+
+  paper               & variable       &
+                      &                &
+                      &                &
+                      &                &
+                      &                &
+                      &                &
+
+
+#ifdef DAR_DIAG_DIVER
+c only look at grid point with a minimum biomass
+        diver_thresh0=1 _d -12
+c diver1 - if any type greater than
+        diver_thresh1=1 _d -8
+c diver2 - if more than this proportion of total biomass
+        diver_thresh2=1 _d -3
+c diver3 - fraction of biomass to count
+        diver_thresh3=.999 _d 0
+c diver4 - fraction of maximum species
+        diver_thresh4=1 _d -5
+#endif
+
+

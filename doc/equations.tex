@@ -1,0 +1,325 @@
+\documentclass[11pt,letterpaper,english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\setlength\parskip{\medskipamount}
+\setlength\parindent{0pt}
+\usepackage{amsmath}
+%\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{babel}
+%use epsfig package for figs
+\usepackage{epsfig}
+\makeatother
+
+
+%MICK - STUFF TO USE HELVETICA FONTS IN TEX
+%%\usepackage[scaled=0.92]{helvet}
+\usepackage{helvet}
+\usepackage[sf]{titlesec}
+\renewcommand\familydefault{\sfdefault}
+
+%use lgrind to include code listing
+%\usepackage{lgrind}
+
+%other formatting stuff
+\oddsidemargin 0pt
+\flushbottom
+\parskip 10pt
+\parindent 0pt
+\textwidth 465pt
+\topmargin 10pt
+\textheight 610pt
+\renewcommand{\baselinestretch}{1.0}
+
+
+\begin{document}
+
+% SOME MACROS
+\newcommand{\etal}{{\em et al.}}
+\newcommand{\ux}{{\underline{x}}}
+\newcommand{\tdt}{{t}}
+
+
+{\bf {\large A1. Ecosystem Model Parametrization}}
+
+The ecosystem model equations are similar that used in Follows et al. (2007).
+Most significant change is that the grazing term is now includes variable
+palatibility of phytoplankton and sloppy feeding as treated in Dutkiewicz et al
+(2005), and the nitrogen limitation term has been slightly modified.  For
+fuller discussions we refer the reader to the Online Supplemental material of
+Follows et al. (2007).
+
+Several nutrients $N_i$ nourish many phytoplankton types $P_j$ which are grazed
+by several zooplankton types $Z_k$. Mortality of and excretion from plankton,
+and sloppy feeding by zooplankton contribute to a dissolved organic matter
+$DOM_i$ pool and a sinking particulate organic matter pool $POM_i$.  Subscript
+$i$ refers to a nutrient/element, $j$ for a specific phytoplankton type, and
+$k$ for a zooplankton type.
+
+\begin{eqnarray}
+\frac{\partial N_i}{\partial t} & = & 
+-\nabla \cdot (\textbf{u} N_i) +\nabla \cdot (\kappa\nabla N_i)-
+\sum_j [\mu_j P_j M_{ij}]+S_{N_i}
+\nonumber  \\
+\frac{\partial P_j}{\partial t} & = & 
+-\nabla \cdot (\textbf{u} P_j) + \nabla \cdot (\kappa\nabla P_j)+
+\mu_j P_j - m_j^P P_j-\sum_k [g_{jk} Z_{k,i=1}]
+-\frac{\partial(w_j^P P_j)}{\partial z}
+\nonumber \\
+\frac{\partial Z_{ki}}{\partial t} & = & 
+- \nabla \cdot (\textbf{u} Z_{ki}) + \nabla \cdot (\kappa\nabla Z_{ki})
++Z_{ki}\sum_j [\zeta_{jk} g_{jk} M_{ij}] -m_k^Z Z_{ki}
+\nonumber \\
+\frac{\partial POM_i}{\partial t} & = & 
+-\nabla \cdot (\textbf{u} POM_i) + \nabla \cdot (\kappa\nabla POM_i)-
+r_{PO_i}POM_i-\frac{\partial(w_{POi} POM_i)}{\partial z}+S_{POM_i}
+\nonumber \\
+\frac{\partial DOM_i}{\partial t} & = & 
+-\nabla \cdot (\textbf{u} DOM_i) + \nabla \cdot (\kappa\nabla DOM_i)- 
+r_{DO_i}DOM_i + S_{DOM_i} 
+\nonumber
+\end{eqnarray}
+
+where:\\
+\mbox{} \hspace{.5cm} $\textbf{u}=(u,v,w),$ velocity in physical model, \\
+\mbox{} \hspace{.5cm} $\kappa=$Mixing coefficients used in physical model,\\
+\mbox{} \hspace{.5cm} $\mu_j=$Growth rate of phytoplankton $j$ (see below),\\
+\mbox{} \hspace{.5cm} $M_{ij}=$Matrix of Redfield ratio of element $i$ to P
+for phytoplankton $j$\\
+\mbox{} \hspace{.5cm} $\zeta_{jk}=$ Grazing efficiency of zooplankton $k$ on phytoplankton $j$ (represents sloppy feeding), \\
+\mbox{} \hspace{.5cm} $g_{jk}=$Grazing of zooplankton $k$ on phytoplankton $j$ (see below),\\
+\mbox{} \hspace{.5cm} $m_j^P=$Mortality/Excretion rate for phytoplankton $j$,\\
+\mbox{} \hspace{.5cm} $m_k^Z=$Mortality/Excretion rate for zooplankton $k$,\\
+\mbox{} \hspace{.5cm} $w_j^P=$Sinking rate for phytoplankton $j$,\\
+\mbox{} \hspace{.5cm} $w_{POi}=$Sinking rate for POM $i$,\\
+\mbox{} \hspace{.5cm} $r_{DOM_i}=$Remineralization rate of DOM for element
+$i$,\\
+\mbox{} \hspace{.5cm} $r_{POM_i}=$Remineralization rate of POM for element
+$i$,\\
+\mbox{} \hspace{.5cm} $S_{N_i}=$Additional source or sink for nutrient $i$
+(see below),\\
+\mbox{} \hspace{.5cm} $S_{DOM_i}=$ Source of DOM $i$,
+for element $i$ (see below),\\
+\mbox{} \hspace{.5cm} $S_{POM_i}=$ Source of POM $i$,
+for element $i$ (see below),\\
+
+
+
+\vspace{.2cm}
+
+{\it {\bf A1.1. Phytoplankton growth:}}\\
+\[
+\mu_j = \mu_{max_{j}} \gamma_j^T \gamma_j^I \gamma_j^N
+\]
+where\\
+\mbox{} \hspace{.5cm} $\mu_{max_{j}}=$ maximum growth rate of phytoplankton $j$,\\
+\mbox{} \hspace{.5cm} $\gamma_j^T=$Modification of growth rate by
+temperature for phytoplankton $j$,\\
+\mbox{} \hspace{.5cm} $\gamma_j^I=$Modification of growth rate by light for
+phytoplankton $j$,\\
+\mbox{} \hspace{.5cm} $\gamma_j^N=$Modification of growth rate by nutrients
+for phytoplankton $j$.\\
+
+Temperature modification (Fig. \ref{fig-growexp1}a):\\
+\[
+\gamma_j^T= \frac{1}{\tau_1} (A^T e^{-B(T-T_o)^c} - \tau_2 )
+\]
+where coefficients $\tau_1$ and $\tau_2$ normalize the maximum
+value, and $A,B,T_o$ and $C$ regulate the form of the temperature
+modification function. $T$ is the local model ocean temperature.
+
+Light modification (Fig. \ref{fig-growexp1}b):\\
+\[
+\gamma_j^I= \frac{1}{F_o} (1-e^{k_{par} I} ) e^{-k_{inhib} I}
+\]
+where $F_{o}$ is a factor controlling the maximum value, $k_{par}$ is the
+PAR saturation coefficient and $k_{inhib}$ is the PAR inhibition factor.
+$I$ is the local PAR, that has been attenuated through the water column
+(including the effects of self-shading).
+
+Nutrient limitation is determined by the most limiting nutrient:
+\[
+\gamma_j^N = \min(N_i^{lim})
+\]
+where typically
+$N_i^{lim}=\frac{N_i}{N_i+\kappa_{N_{ij}}}$
+(Fig. \ref{fig-growexp1}c) and $\kappa_{N_{ij}}$ is the half saturation constant of nutrient $i$ for phytoplankton $j$.
+
+When we include the nitrogen as a potential limiting nutrient (EXP2) we 
+modify $N_i^{lim}$ to take into account the uptake inhibition caused by ammonium:
+\[
+N_N^{lim} = \frac{NO_3 + NO_2}{NO_3+NO_2+\kappa_{IN}} e^{-\psi NH_4}
++\frac{NH_4}{NH_4 + \kappa_{NH4}}
+\]
+where $\psi$ reflects the inhibition and $\kappa_{IN}$ and $ \kappa_{NH4}$
+are the half saturation constant of $IN=NO_3+NO_2$ and $NH_4$ respectively.
+
+\vspace{.2cm}
+
+{\it {\bf A1.2. Zooplankton grazing:}}\\
+\[
+ g_{jk} =g_{max_{jk}} \frac{\eta_{jk} P_j}{A_k} \frac{A_k}{A_k+\kappa^P_k}
+\]
+where\\
+\mbox{} \hspace{.5cm} $g_{max_{jk}}=$ Maximum grazing rate of zooplankton $k$ on
+phytoplankton $j$,\\
+\mbox{} \hspace{.5cm} $\eta_{jk}=$ Palatibility of plankton $j$ to zooplankton $k$,\\
+\mbox{} \hspace{.5cm} $A_k=$ Palatibility (for zooplankton $k$) weighted total phytoplankton concentration,\\
+\mbox{} \hspace{1.1cm} $=\sum_j [\eta_{jk} P_j$] \\
+\mbox{} \hspace{.5cm} $\kappa^P_k=$Half-saturation constant for grazing of zooplankton $k$,\\
+
+
+\vspace{.2cm}
+
+{\it {\bf A1.3. Inorganic nutrient Source/Sink terms:}}\\
+$S_{N_i}$ depends on the specific nutrient, and includes the remineralization
+of organic matter, external sources and other non-biological transformations:
+\begin{eqnarray}
+S_{PO4} & = & r_{DOP} DOP + r_{POP} POP \nonumber \\
+S_{Si}  & = & r_{POSi} POSi \nonumber \\
+S_{FeT} & = &  r_{DOFe} DOFe + r_{POFe} POFe -c_{scav} Fe' + \alpha F_{atmos} \nonumber \\
+S_{NO3} & = &  \zeta_{NO3} NO_2 \nonumber \\
+S_{NO2} & = &  \zeta_{NO2} NH4 - \zeta_{NO3} NO_2 \nonumber \\
+S_{NH4} & = &  r_{DON} DON + r_{PON} PON - \zeta_{NO2} NH_4 \nonumber
+\end{eqnarray}
+
+where:\\
+\mbox{} \hspace{.5cm} $r_{DOM_i}=$Remineralization rate of DOM for element
+$i$, here P, Fe, N,\\
+\mbox{} \hspace{.5cm} $r_{POM_i}=$Remineralization rate of POM for element
+$i$, here P, Si, Fe, N,\\
+\mbox{} \hspace{.5cm} $c_{scav}=$scavenging rate for free iron,\\
+\mbox{} \hspace{.5cm} $Fe'=$free iron, modelled as in Parekh et al (2004), \\
+\mbox{} \hspace{.5cm} $alpha=$solubility of iron dust in ocean water, \\
+\mbox{} \hspace{.5cm} $F_{atmos}=$atmospheric deposition of iron dust on surface of model ocean,\\
+\mbox{} \hspace{.5cm} $\zeta_{NO3}=\zeta_{NO3}^0(1-I/I_0)_+=$oxidation rate of NO$_2$ to NO$_3$,\\
+\mbox{} \hspace{.5cm} $\zeta_{NO2}=\zeta_{NO2}^0(1-I/I_0)_+=$oxidation rate of NH$_4$ to NO$_2$ (is photoinhibited),\\
+\mbox{} \hspace{.5cm} $I_0=$critical light level below which oxidation occurs,\\
+
+The remineralization timescale $r_{DOi}$ and $r_{POi}$ parameterizes the break
+down of organic matter to an inorganic form through the microbial loop.
+
+
+{\it {\bf A1.3.1 Fe chemistry:}}\\
+\begin{eqnarray}
+Fe' & = & FeT - FeL \nonumber \\
+FeL & = & L_{tot} -
+  \frac{ L_{stab} (L_{tot} - FeT) - 1
+        +\sqrt{(1 - L_{stab} (L_{tot} - FeT))^2 + 4 L_{stab} L_{tot}}}
+     {2 L_{stab}} \nonumber
+\end{eqnarray}
+($Fe'$ may be constrained to be less than $Fe'_{max}$ while preserving $FeT$).
+
+ 
+{\it {\bf A1.4 DOM and POM Source terms:}}\\
+$S_{DOM_i}$ and $S_{POM_i}$ are the sources of dissolved and particulate
+organic detritus arising from mortality, excretion and sloppy feeding of the
+plantkon. We simply define that a fixed fraction $\lambda_m$ of the the
+mortality/excretion term and the non-consumed grazed phytoplankton
+($\lambda_g$) go into the dissolved pool and the remainder into the particulate
+pool. 
+\begin{eqnarray}
+S_{DOM_i} & = & \sum_{j} [\lambda_{mp_{ij}} m^p_j P_j M_{ij}] 
+             + \sum_{k} [\lambda_{mz_{ik}} m^z_k Z_{ik}]
+             + \sum_{k} \sum_{j} [\lambda_{g_{ijk}} (1-\zeta_{jk})
+                                        g_{ij} M_{ij} Z_k ]
+\nonumber \\
+S_{POM_i} & = & \sum_{j} [(1-\lambda_{m_{ij}}) m^p_j P_j M_{ij}]
+             + \sum_{k} [(1-\lambda_{mz_{ik}}) m^z_k Z_{ik}]
+             + \sum_{k} \sum_{j} [(1-\lambda_{g_{ijk}}) (1-\zeta_{jk})  
+                                       g_{ij} M_{ij} Z_k ]
+\nonumber
+\end{eqnarray}
+
+
+\newcommand{\pcm}[1]{P^C_{m#1}}
+\newcommand{\pcmax}[1]{P^C_{\textrm{MAX}#1}}
+\newcommand{\pcarbon}{P^C}
+\newcommand{\chltoc}{\theta}
+\newcommand{\chltocmax}{\theta^{\textrm{max}}}
+\newcommand{\chltocmin}{\theta^{\textrm{min}}}
+\newcommand{\alphachl}{\alpha^{\textrm{Chl}}}
+\newcommand{\mQyield}{\mathit{mQ}^{\textrm{yield}}}
+\newcommand{\RPC}{R^{PC}}
+\newcommand{\phychl}{\mathit{Chl}}
+\newcommand{\aphychlave}{A^{\mathrm{phy}}_{\mathrm{Chl,ave}}}
+
+{\it {\bf A1.4 Geider light limitation model:}}\\
+The phytoplankton growth rate is given by the carbon-specific photosynthesis rate
+(rate of carbon synthesized per carbon present),
+\[
+  \mu_j = \pcarbon_j
+\]
+The carbon-specific photosynthesis rate
+\[
+  \pcarbon_j = \pcm{,j} \begin{cases}
+     1 - e^{-\alphachl_j I \chltoc_j/\pcm{,j}} & \text{if }I>0.1 \\
+     0                                         & \text{otherwise}
+   \end{cases}
+\]
+depends on the carbon-specific, light-saturated photosynthesis rate
+\[
+  \pcm{,j}=\pcmax{j} \gamma^N_j \gamma^T_j
+\]
+and the Chl $a$ to carbon ratio
+\[
+  \chltoc_j = \left[ \frac{\chltocmax_j}
+                   {1 + \chltocmax_j \alphachl_j I / (2 \pcm{,j})}
+		   \right]^{\chltocmax_j}_{\chltocmin_j}
+\]
+
+The chlorophyll concentration is
+\[
+  \phychl_j=P_j \RPC_j \chltoc_j
+\]
+
+The light limitation factor can be diagnosed
+\[
+  \gamma^I_j=\pcarbon_j/\pcm{,j}
+\]
+
+\[
+  \alphachl_j = \mQyield_j \aphychlave
+\]
+
+Parameters:\\
+\begin{tabular}{@{\qquad}r@{}l}
+ $\pcmax{j}    ={}$& Maximum C-spec.\ photosynthesis rate at reference temperature of phytoplankton $j$\\
+ $\chltocmax_j ={}$& Maximum Chl a to C ratio if phytoplankton $j$\\
+ $\RPC_j       ={}$& Carbon to phosphorus (!) ratio of phytoplankton $j$\\
+ $\alphachl_j  ={}$& Chl a-specific initial slope of the photosynthesis-light curve\\
+ $\mQyield_j   ={}$& slope of the photosynthesis-light curve per absorption\\
+ $\aphychlave  ={}$& absorption ($m^{-1}$) per mg Chl a
+\end{tabular}
+
+
+
+\newcommand{\Ptot}{P_{\mathrm{tot}}}
+
+{\it {\bf A2 Diagnostics:}}\\
+Total phytoplankton biomass:
+\[
+  \Ptot = \sum_j P_j
+\]
+
+\begin{tabular}{llll}
+ name & definition && units \\
+\hline
+ \texttt{PhyTot  } & $\Ptot$                                                        && $\mu\mathrm{M\,P}$ \\
+ \texttt{PhyGrp1 } & Total biomass of small phytoplankton with $\texttt{nsrc}=1$    && $\mu\mathrm{M\,P}$ \\
+ \texttt{PhyGrp2 } & Total biomass of small phytoplankton with $\texttt{nsrc}=2$    && $\mu\mathrm{M\,P}$ \\
+ \texttt{PhyGrp3 } & Total biomass of small phytoplankton with $\texttt{nsrc}=3$    && $\mu\mathrm{M\,P}$ \\
+ \texttt{PhyGrp4 } & Total biomass of large non-diatoms                             && $\mu\mathrm{M\,P}$ \\
+ \texttt{PhyGrp5 } & Total biomass of diatoms                                       && $\mu\mathrm{M\,P}$ \\
+ \texttt{PP      } & Primary production                                             && $\mu\mathrm{M\,P}\, \mathrm{s}^{-1}$ \\
+ \texttt{Nfix    } & Nitrogen fixation                                              && $\mu\mathrm{M\,N}\, \mathrm{s}^{-1}$ \\
+ \texttt{PAR     } & Photosynthetically active radiation                            && $\mu\mathrm{Ein}\, \mathrm{m}^{-2}\,\mathrm{s}^{-1}$ \\
+ \texttt{Rstar01 } & $R^*_{\mathrm{PO4}}$ of Phytoplankton species \#1, \dots       && $\mu\mathrm{M\,P}$ \\
+ \texttt{Diver1  } & Number of species with $P_j > 10^{-8}\,\mu\mathrm{M\,P}$       & where $\Ptot>10^{-12}$ \\
+ \texttt{Diver2  } & Number of species with $P_j > 0.1\%\,  \Ptot$                  & where $\Ptot>10^{-12}$ \\
+ \texttt{Diver3  } & Number of species that constitute 99.9\% of $\Ptot$            & where $\Ptot>10^{-12}$ \\
+ \texttt{Diver4  } & Number of species with $P_j > 10^{-5} \cdot \max\limits_j P_j$ & where $\Ptot>10^{-12}$ \\
+\end{tabular}
+
+
+\end{document} 
