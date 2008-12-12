@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.11 2008/08/11 14:48:39 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.12 2008/12/12 19:54:20 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -562,6 +562,12 @@ c only works for two layer model
               endif
              ENDIF
             endif
+#endif
+#ifdef FLUX_NUTS
+                dpo4l=dpo4l+po4_flx(i,j,k,bi,bj)
+                dno3l=dno3l+no3_flx(i,j,k,bi,bj)
+                dfetl=dfetl+fet_flx(i,j,k,bi,bj)
+                dsil=dsil+si_flx(i,j,k,bi,bj)
 #endif
 c
 c now update main tracer arrays

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.7 2008/10/13 18:03:15 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.8 2008/12/12 19:54:20 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -27,6 +27,8 @@ C  darwin_seed          :: seed for the random number generator
      &        darwin_PO4_relaxFile, darwin_NO3_relaxFile,
      &        darwin_FeT_relaxFile, darwin_Si_relaxFile,
      &        darwin_relaxscale,
+     &        darwin_PO4_fluxFile, darwin_NO3_FluxFile,
+     &        darwin_FeT_fluxFile, darwin_Si_fluxFile,
      &        darwin_forcingPeriod, darwin_forcingCycle,
      &        darwin_seed
 
@@ -38,6 +40,10 @@ C  darwin_seed          :: seed for the random number generator
       CHARACTER*(MAX_LEN_FNAM) darwin_NO3_relaxFile
       CHARACTER*(MAX_LEN_FNAM) darwin_FeT_relaxFile
       CHARACTER*(MAX_LEN_FNAM) darwin_Si_relaxFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_PO4_fluxFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_NO3_fluxFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_FeT_fluxFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_Si_fluxFile
       _RL darwin_relaxscale
       _RL     darwin_forcingPeriod
       _RL     darwin_forcingCycle
@@ -55,6 +61,9 @@ c    sur_par        - surface PAR
 #ifdef RELAX_NUTS
      &      ,po4_obs, no3_obs, fet_obs, si_obs
 #endif
+#ifdef FLUX_NUTS
+     &      ,po4_flx, no3_flx, fet_flx, si_flx
+#endif
 c
        _RL   fice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx, nSy)
        _RL   inputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx, nSy)
@@ -68,8 +77,12 @@ c
        _RL   fet_obs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
        _RL   si_obs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
 #endif
-
-
+#ifdef FLUX_NUTS
+       _RL   po4_flx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+       _RL   no3_flx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+       _RL   fet_flx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+       _RL   si_flx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+#endif
 c
 c OUPUT DIAGNOSTICS
 c    PPave        - average primary production

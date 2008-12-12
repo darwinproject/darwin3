@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM_OPTIONS.h,v 1.5 2008/08/26 14:14:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM_OPTIONS.h,v 1.6 2008/12/12 19:54:33 stephd Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -34,6 +34,7 @@ CEOP
 #undef GEIDER
 #undef WAVEBANDS
 #undef RELAX_NUTS
+#undef FLUX_NUTS
 
 #undef  CHECK_CONS
 #undef  DAR_DIAG_RSTAR

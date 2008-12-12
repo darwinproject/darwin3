@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.10 2008/08/13 18:57:28 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.11 2008/12/12 19:54:20 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,6 +54,10 @@ C     msgBuf    - Informational/error meesage buffer
      &    , po4_obs0, po4_obs1, no3_obs0, no3_obs1
      &    , fet_obs0, fet_obs1, si_obs0, si_obs1
 #endif
+#ifdef FLUX_NUTS
+     &    , po4_flx0, po4_flx1, no3_flx0, no3_flx1
+     &    , fet_flx0, fet_flx1, si_flx0, si_flx1
+#endif
       _RS fice0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fice1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS featmos0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -73,6 +77,16 @@ C     msgBuf    - Informational/error meesage buffer
       _RS fet_obs1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RS si_obs0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RS si_obs1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+#endif
+#ifdef FLUX_NUTS
+      _RS po4_flx0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS po4_flx1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS no3_flx0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS no3_flx1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS fet_flx0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS fet_flx1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS si_flx0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS si_flx1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
 #endif
        INTEGER bi,bj,i,j,k,intime0,intime1
       _RL aWght,bWght,rdt
@@ -105,7 +119,7 @@ cQQQ need to check timing
           ENDDO
          ENDDO
 #endif
-#ifdef NUT_SUPPLY
+#ifdef RELAX_NUTS
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1-Oly,sNy+Oly
@@ -125,6 +139,27 @@ cQQQ need to check timing
           ENDDO
          ENDDO
 #endif
+#ifdef FLUX_NUTS
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             DO k=1,nR
+               po4_flx0(i,j,k,bi,bj) = 0. _d 0
+               po4_flx1(i,j,k,bi,bj) = 0. _d 0
+               no3_flx0(i,j,k,bi,bj) = 0. _d 0
+               no3_flx1(i,j,k,bi,bj) = 0. _d 0
+               fet_flx0(i,j,k,bi,bj) = 0. _d 0
+               fet_flx1(i,j,k,bi,bj) = 0. _d 0
+               si_flx0(i,j,k,bi,bj) = 0. _d 0
+               si_flx1(i,j,k,bi,bj) = 0. _d 0
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+#endif
+
 
        ENDIF
 
@@ -219,7 +254,32 @@ C      data for the period ahead and the period behind myTime.
      &        myIter,myThid )
        ENDIF
 #endif
-
+#ifdef FLUX_NUTS
+       IF ( darwin_PO4_FluxFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( darwin_PO4_FluxFile,po4_flx0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XYZ_RS( darwin_PO4_FluxFile,po4_flx1,intime1,
+     &        myIter,myThid )
+       ENDIF
+       IF ( darwin_NO3_FluxFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( darwin_NO3_FluxFile,no3_flx0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XYZ_RS( darwin_NO3_FluxFile,no3_flx1,intime1,
+     &        myIter,myThid )
+       ENDIF
+       IF ( darwin_Fet_FluxFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( darwin_Fet_FluxFile,fet_flx0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XYZ_RS( darwin_Fet_FluxFile,fet_flx1,intime1,
+     &        myIter,myThid )
+       ENDIF
+       IF ( darwin_Si_FluxFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( darwin_Si_FluxFile,si_flx0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XYZ_RS( darwin_Si_FluxFile,si_flx1,intime1,
+     &        myIter,myThid )
+       ENDIF
+#endif
 
        _END_MASTER(myThid)
 C
@@ -243,6 +303,17 @@ C
        _EXCH_XYZ_R4(si_obs0, myThid )
        _EXCH_XYZ_R4(si_obs1, myThid )
 #endif
+#ifdef FLUX_NUTS
+       _EXCH_XYZ_R4(po4_flx0, myThid )
+       _EXCH_XYZ_R4(po4_flx1, myThid )
+       _EXCH_XYZ_R4(no3_flx0, myThid )
+       _EXCH_XYZ_R4(no3_flx1, myThid )
+       _EXCH_XYZ_R4(fet_flx0, myThid )
+       _EXCH_XYZ_R4(fet_flx1, myThid )
+       _EXCH_XYZ_R4(si_flx0, myThid )
+       _EXCH_XYZ_R4(si_flx1, myThid )
+#endif
+
 
 
 C
@@ -325,7 +396,32 @@ c artificial wvel for nutrient supply in 1-d and 2-d models
              ENDDO
             ENDIF
 #endif
-
+#ifdef FLUX_NUTS
+            IF ( darwin_PO4_FluxFile .NE. ' '  ) THEN
+             DO k=1,nR
+               po4_flx(i,j,k,bi,bj) = bWght*po4_flx0(i,j,k,bi,bj)
+     &                         +aWght*po4_flx1(i,j,k,bi,bj)
+             ENDDO
+            ENDIF
+            IF ( darwin_NO3_FluxFile .NE. ' '  ) THEN
+             DO k=1,nR
+               no3_flx(i,j,k,bi,bj) = bWght*no3_flx0(i,j,k,bi,bj)
+     &                         +aWght*no3_flx1(i,j,k,bi,bj)
+             ENDDO
+            ENDIF
+            IF ( darwin_Fet_FluxFile .NE. ' '  ) THEN
+             DO k=1,nR
+               fet_flx(i,j,k,bi,bj) = bWght*fet_flx0(i,j,k,bi,bj)
+     &                         +aWght*fet_flx1(i,j,k,bi,bj)
+             ENDDO
+            ENDIF
+            IF ( darwin_Si_FluxFile .NE. ' '  ) THEN
+             DO k=1,nR
+               si_flx(i,j,k,bi,bj) = bWght*si_flx0(i,j,k,bi,bj)
+     &                         +aWght*si_flx1(i,j,k,bi,bj)
+             ENDDO
+            ENDIF
+#endif
 c
           ENDDO
          ENDDO
