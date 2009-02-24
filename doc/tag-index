@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.17 2008/10/13 18:05:13 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.18 2009/02/24 17:06:24 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt61d_20081212
+o add new code to allow for a flux of nutrients to be read in from files;
+  this is especially for a 1-D setup
 
 ctrb_darwin_ckpt61d_20081013
 o upgrade to checkpoint61d of MITgcm
