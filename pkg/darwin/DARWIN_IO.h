@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.8 2008/12/12 19:54:20 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.9 2009/02/27 19:04:26 jahn Exp $
 C $Name:  $
 
-#include "GCHEM_OPTIONS.h"
+#include "DARWIN_OPTIONS.h"
 
 c DARWIN_IO.h
 c --------------------------------------------------------------------

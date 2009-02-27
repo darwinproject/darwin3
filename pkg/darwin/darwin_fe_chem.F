@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.6 2008/07/02 19:07:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.7 2009/02/27 19:04:27 jahn Exp $
 C $Name:  $
 
 c#include "DIC_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
+#include "DARWIN_OPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE DARWIN_Fe_CHEM(

@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.6 2008/07/02 19:07:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.7 2009/02/27 19:04:27 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
+#include "DARWIN_OPTIONS.h"
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_DARWIN

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.4 2008/12/12 19:54:20 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.5 2009/02/27 19:04:27 jahn Exp $
 C $Name:  $
 
-#include "GCHEM_OPTIONS.h"
+#include "DARWIN_OPTIONS.h"
 
 CBOP
 C !ROUTINE: DARWIN_READPARMS

@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.22 2009/02/24 17:33:51 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.23 2009/02/27 19:04:26 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o move darwin options to new header DARWIN_OPTIONS.h
 
 ctrb_darwin_ckpt61i_20090224
 o upgrade to checkpoint61i of MITgcm

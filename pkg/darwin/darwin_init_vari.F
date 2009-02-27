@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.15 2008/08/19 20:26:17 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.16 2009/02/27 19:04:27 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
+#include "DARWIN_OPTIONS.h"
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_DARWIN

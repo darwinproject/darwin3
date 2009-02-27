@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM_OPTIONS.h,v 1.6 2008/12/12 19:54:33 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/GCHEM_OPTIONS.h,v 1.7 2009/02/27 19:04:27 jahn Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -17,28 +17,6 @@ C options for biogeochemistry package
 CEOP
 
 #define GCHEM_SEPARATE_FORCING
-#undef  DIC_BIOTIC
-#undef  ALLOW_FE
-#undef  CAR_DISS
-#define READ_PAR
-#undef  USE_QSW
-#define MINFE
-#undef  NUT_SUPPLY
-#undef  CONS_SUPP
-#undef  OLD_GRAZE
-#undef  ALLOW_DIAZ
-#undef  OLD_NSCHEME
-#undef  ALLOW_MUTANTS
-#define PORT_RAND
-#undef  OLDSEED
-#undef GEIDER
-#undef WAVEBANDS
-#undef RELAX_NUTS
-#undef FLUX_NUTS
-
-#undef  CHECK_CONS
-#undef  DAR_DIAG_RSTAR
-#undef  DAR_DIAG_DIVER
 
 #endif /* ALLOW_GCHEM */
 #endif /* GCHEM_OPTIONS_H */

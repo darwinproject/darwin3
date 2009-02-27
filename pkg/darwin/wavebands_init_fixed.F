@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.2 2008/08/22 16:20:38 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.3 2009/02/27 19:04:27 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
 
-#include "GCHEM_OPTIONS.h"
+#include "DARWIN_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: WAVEBANDS_INIT_FIXED

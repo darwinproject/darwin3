@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.4 2008/08/25 19:38:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.5 2009/02/27 19:04:27 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_vari.F assigns actual values to choices made by coin-flips in darwin_generate_phyto.F
 c ANNA wavebands_init_vari.F creates output files
 
-#include "GCHEM_OPTIONS.h"
+#include "DARWIN_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: WAVEBANDS_INIT_VARI

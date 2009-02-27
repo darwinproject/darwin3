@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.6 2008/09/03 19:05:12 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.7 2009/02/27 19:04:27 jahn Exp $
 C $Name:  $
 
-#include "GCHEM_OPTIONS.h"
+#include "DARWIN_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP

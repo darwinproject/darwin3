@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.5 2008/07/02 19:07:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.6 2009/02/27 19:04:27 jahn Exp $
 C $Name:  $
 
-#include "GCHEM_OPTIONS.h"
+#include "DARWIN_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE DARWIN_DIAGS( myTime, myIter, myThid )
