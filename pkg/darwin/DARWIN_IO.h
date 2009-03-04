@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.9 2009/02/27 19:04:26 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.10 2009/03/04 20:40:42 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -135,3 +135,13 @@ c
      &      Chl_phy          
          _RL Chl_phy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy,npmax)
 #endif
+
+#ifdef ALLOW_PAR_DAY
+C     PARday    :: array for accumulating/storing daily-averaged PAR
+      COMMON /DARWIN_PAR_DAY/ PARday,
+     &      darwin_PARavPeriod, darwin_PARnav
+      _RL PARday(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,2)
+      _RL darwin_PARavPeriod
+      INTEGER darwin_PARnav
+#endif
+

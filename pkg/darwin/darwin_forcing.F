@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.13 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.14 2009/03/04 20:40:42 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,6 +44,13 @@ c tracers
        INTEGER myIter
        _RL myTime
        INTEGER myThid
+
+C     !FUNCTIONS:
+C     ==  Functions ==
+#ifdef ALLOW_PAR_DAY
+      LOGICAL  DIFF_PHASE_MULTIPLE
+      EXTERNAL DIFF_PHASE_MULTIPLE
+#endif
 
 C============== Local variables ============================================
 c plankton arrays
@@ -100,6 +107,12 @@ COJ for diagnostics
 COJ
 #endif
 
+#ifdef ALLOW_PAR_DAY
+      LOGICAL itistime
+      INTEGER PARiprev, PARiaccum, iperiod, nav
+      _RL phase
+      _RL dtsubtime
+#endif
 c   
       _RL freefu
       _RL inputFel
@@ -236,6 +249,28 @@ c          if (i.eq.1.and.j.ge.1.and.j.le.sNy)
 c    &                write(24,*) sur_par(i,j,bi,bj)
          ENDDO
          ENDDO
+#endif
+#endif
+
+#ifdef ALLOW_PAR_DAY
+C find out which slot of PARday has previous day's average
+         dtsubtime = dTtracerLev(1)/float(nsubtime)
+C        running index of averaging period
+C        myTime has already been incremented in this iteration,
+C        go back half a substep to avoid roundoff problems
+         iperiod = FLOOR((newtime-0.5 _d 0*dtsubtime)
+     &                   /darwin_PARavPeriod)
+C        0 -> 1, 1->2, 2->0, ...
+         PARiprev = MOD(iperiod, 2) + 1
+         
+#ifdef   ALLOW_DIAGNOSTICS
+C        always fill; this will be the same during PARavPeriod, but this
+C        way it won't blow up for weird diagnostics periods.
+C        we fill before updating, so the diag is the one used in this time
+C        step
+         CALL DIAGNOSTICS_FILL(
+     &         PARday(1-Olx,1-Oly,1,bi,bj,PARiprev),'PARday  ',
+     &         0,Nr,2,bi,bj,myThid )
 #endif
 #endif
 
@@ -496,6 +531,9 @@ c ANNA pass extra variables if WAVEBANDS
      O                       drF(k),
 #endif
 #endif
+#ifdef ALLOW_PAR_DAY
+     I                       PARday(i,j,k,bi,bj,PARiprev),
+#endif
      I                       debug,
      I                       runtim,
      I                       MyThid) 
@@ -726,6 +764,50 @@ c
 
        ENDDO ! i
        ENDDO ! j
+
+#ifdef ALLOW_PAR_DAY
+C      1 <-> 2
+       PARiaccum  = 3 - PARiprev
+
+       DO k=1,nR
+        DO j=1,sNy
+         DO i=1,sNx
+           PARday(i,j,k,bi,bj,PARiaccum) = 
+     &     PARday(i,j,k,bi,bj,PARiaccum) + PAR(i,j,k)
+         ENDDO
+        ENDDO
+       ENDDO
+
+       phase = 0. _d 0
+       itistime = DIFF_PHASE_MULTIPLE( phase, darwin_PARavPeriod,
+     &              newtime, dtsubtime)
+
+       IF ( itistime ) THEN
+C       compute average
+        nav = darwin_PARnav
+        IF (newtime - baseTime .LT. darwin_PARavPeriod) THEN
+C         incomplete period at beginning of run
+          nav = NINT((newtime-baseTime)/dtsubtime)
+        ENDIF
+        DO k=1,nR
+         DO j=1,sNy
+          DO i=1,sNx
+            PARday(i,j,k,bi,bj,PARiaccum) = 
+     &      PARday(i,j,k,bi,bj,PARiaccum) / nav
+          ENDDO
+         ENDDO
+        ENDDO
+C       reset the other slot for averaging
+        DO k=1,nR
+         DO j=1,sNy
+          DO i=1,sNx
+            PARday(i,j,k,bi,bj,PARiprev) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+C itistime
+#endif
 
 COJ fill diagnostics
 #ifdef ALLOW_DIAGNOSTICS

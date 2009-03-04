@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.1 2009/02/27 19:04:26 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.2 2009/03/04 20:40:42 jahn Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -35,6 +35,9 @@ CEOP
 #undef  CHECK_CONS
 #undef  DAR_DIAG_RSTAR
 #undef  DAR_DIAG_DIVER
+
+C average PAR daily and store previous day
+#undef  ALLOW_PAR_DAY
 
 #endif /* ALLOW_DARWIN */
 #endif /* DARWIN_OPTIONS_H */

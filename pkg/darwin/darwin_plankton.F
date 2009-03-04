@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.10 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.11 2009/03/04 20:40:42 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -63,6 +63,9 @@ c ANNA pass extra variables if WAVEBANDS
      O                       PARwlocal,PARwuplocal,
      O                       dz,
 #endif
+#endif
+#ifdef ALLOW_PAR_DAY
+     I                       PARdaylocal,
 #endif
      I                       debug,
      I                       runtim,
@@ -145,6 +148,9 @@ c zoo   = zooplankton
 #ifdef GEIDER
          _RL phychl(npmax)
          _RL alphatmp(npmax)
+#endif
+#ifdef ALLOW_PAR_DAY
+         _RL PARdaylocal
 #endif
          _RL runtim
 

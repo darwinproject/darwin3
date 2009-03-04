@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.5 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.6 2009/03/04 20:40:42 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -122,6 +122,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I              diagName, diagCode, diagUnits, diagTitle, myThid )
 #endif /* DAR_DIAG_DIVER */
 
+#ifdef ALLOW_PAR_DAY
+      diagName = 'PARday  '
+      WRITE(diagTitle, '(A)') 'daily-averaged PAR'
+      diagUnits = 'uEin/m^2/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+#endif /* ALLOW_PAR_DAY */
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN

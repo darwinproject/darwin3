@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.16 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.17 2009/03/04 20:40:42 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,13 +48,13 @@ C     msgBuf    - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER IniUnit1, IniUnit2
 
-        INTEGER bi, bj, k
+        INTEGER bi, bj, k, i, j, iPAR
  
         INTEGER np
         INTEGER nz
 c ANNA need nl for wavebands
 #ifdef WAVEBANDS
-        integer i,ilam
+        integer ilam
         integer nl
 
 c ANNA for interpolation
@@ -313,6 +313,26 @@ c ANNA outputs mQyield as 10^(4) mmol C (uEin)-1
          ENDDO
 #endif
 
+#ifdef ALLOW_PAR_DAY
+      DO iPAR=1,2
+       DO bj=myByLo(myThid), myByHi(myThid)
+        DO bi=myBxLo(myThid), myBxHi(myThid)
+         DO k=1,nR
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            PARday(i,j,k,bi,bj,iPAR) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
+     &     .AND. pickupSuff .EQ. ' ') ) THEN
+COJ should probably initialize from a file when nIter0 .EQ. 0
+        CALL DARWIN_READ_PICKUP( nIter0, myThid )
+      ENDIF
+#endif
 c
 #ifdef ALLOW_TIMEAVE
 c set arrays to zero if first timestep
