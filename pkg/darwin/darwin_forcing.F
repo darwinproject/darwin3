@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.14 2009/03/04 20:40:42 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.15 2009/03/04 20:47:39 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -104,14 +104,26 @@ COJ for diagnostics
 #ifdef DAR_DIAG_RSTAR
       _RL  Rstararr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,npmax)
 #endif
-COJ
 #endif
 
+
+      _RL  totphyC
 #ifdef ALLOW_PAR_DAY
       LOGICAL itistime
       INTEGER PARiprev, PARiaccum, iperiod, nav
       _RL phase
       _RL dtsubtime
+#endif
+#ifdef DAR_DIAG_CHL
+      _RL ChlGeiderlocal, ChlDoneylocal, ChlCloernlocal
+#ifdef ALLOW_DIAGNOSTICS
+      _RL GeiderChlarr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL GeiderChl2Carr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL DoneyChlarr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL DoneyChl2Carr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL CloernChlarr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL CloernChl2Carr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
 #endif
 c   
       _RL freefu
@@ -341,6 +353,11 @@ c brute force...
              NH4l  = max(Ptr(i,j,k,bi,bj,iNH4  ),0. _d 0)
              NO2l  = max(Ptr(i,j,k,bi,bj,iNO2  ),0. _d 0)
 
+             totphyC = 0. _d 0
+             DO np=1,npmax
+              totphyC = totphyC + R_PC(np)*Ptr(i,j,k,bi,bj,iPhy+np-1)
+             ENDDO
+
 #ifdef DAR_DIAG_DIVER
             Diver1(i,j,k)=0. _d 0
             Diver2(i,j,k)=0. _d 0
@@ -534,6 +551,10 @@ c ANNA pass extra variables if WAVEBANDS
 #ifdef ALLOW_PAR_DAY
      I                       PARday(i,j,k,bi,bj,PARiprev),
 #endif
+#ifdef DAR_DIAG_CHL
+     O                       ChlGeiderlocal, ChlDoneylocal,
+     O                       ChlCloernlocal,
+#endif
      I                       debug,
      I                       runtim,
      I                       MyThid) 
@@ -701,8 +722,22 @@ COJ for diagnostics
                Rstararr(i,j,k,np) = Rstarl(np)
              ENDDO
 #endif
-COJ
+#ifdef DAR_DIAG_CHL
+             GeiderChlarr(i,j,k) = ChlGeiderlocal
+             DoneyChlarr(i,j,k) = ChlDoneylocal
+             CloernChlarr(i,j,k) = ChlCloernlocal
+             IF (totphyC .NE. 0. _d 0) THEN
+               GeiderChl2Carr(i,j,k) = ChlGeiderlocal/totphyC
+               DoneyChl2Carr(i,j,k) = ChlDoneylocal/totphyC
+               CloernChl2Carr(i,j,k) = ChlCloernlocal/totphyC
+             ELSE
+               GeiderChl2Carr(i,j,k) = 0. _d 0
+               DoneyChl2Carr(i,j,k) = 0. _d 0
+               CloernChl2Carr(i,j,k) = 0. _d 0
+             ENDIF
 #endif
+COJ
+#endif /* ALLOW_DIAGNOSTICS */
 
 c total fixation (NOTE - STILL NEEDS GLOB SUM)
              tot_Nfix=tot_Nfix+ 
@@ -772,7 +807,7 @@ C      1 <-> 2
        DO k=1,nR
         DO j=1,sNy
          DO i=1,sNx
-           PARday(i,j,k,bi,bj,PARiaccum) = 
+           PARday(i,j,k,bi,bj,PARiaccum) =
      &     PARday(i,j,k,bi,bj,PARiaccum) + PAR(i,j,k)
          ENDDO
         ENDDO
@@ -792,7 +827,7 @@ C         incomplete period at beginning of run
         DO k=1,nR
          DO j=1,sNy
           DO i=1,sNx
-            PARday(i,j,k,bi,bj,PARiaccum) = 
+            PARday(i,j,k,bi,bj,PARiaccum) =
      &      PARday(i,j,k,bi,bj,PARiaccum) / nav
           ENDDO
          ENDDO
@@ -841,6 +876,20 @@ COJ fill diagnostics
      &                         0,Nr,2,bi,bj,myThid )
         WRITE(diagname,'(A8)') 'Diver4  '
         CALL DIAGNOSTICS_FILL( Diver4(1-Olx,1-Oly,1), diagname,
+     &                         0,Nr,2,bi,bj,myThid )
+#endif
+#ifdef DAR_DIAG_CHL
+        CALL DIAGNOSTICS_FILL( GeiderChlarr(1-Olx,1-Oly,1), 'ChlGeide',
+     &                         0,Nr,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( GeiderChl2Carr(1-Olx,1-Oly,1),'Chl2CGei',
+     &                         0,Nr,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( DoneyChlarr(1-Olx,1-Oly,1), 'ChlDoney',
+     &                         0,Nr,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( DoneyChl2Carr(1-Olx,1-Oly,1), 'Chl2CDon',
+     &                         0,Nr,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( CloernChlarr(1-Olx,1-Oly,1), 'ChlCloer',
+     &                         0,Nr,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( CloernChl2Carr(1-Olx,1-Oly,1),'Chl2CClo',
      &                         0,Nr,2,bi,bj,myThid )
 #endif
        ENDIF

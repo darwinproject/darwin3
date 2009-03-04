@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.11 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.12 2009/03/04 20:47:39 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -21,6 +21,7 @@ c ==========================================================
         implicit none
 #include "EEPARAMS.h"
 #include "DARWIN_SIZE.h"
+#include "DARWIN_PARAMS.h"
 #include "DARWIN.h"
 
 
@@ -415,6 +416,29 @@ c ANNA STEPH msgBuf changed for mQyield?
      &                       SQUEEZE_RIGHT , mythid)
          write(msgBuf,'(A,I4,A,1P1G24.15E3)')
      &     'generate Phyto: np = ',np,' chl2cmax     =', chl2cmax(np)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , mythid)
+#endif
+
+#ifdef DAR_DIAG_CHL
+        if(physize(np) .eq. 1.0 _d 0)then
+          Geider_alphachl(np) = Geider_Bigalphachl
+          Geider_chl2cmax(np) = Geider_Bigchl2cmax
+          Geider_chl2cmin(np) = Geider_Bigchl2cmin
+        else
+          Geider_alphachl(np) = Geider_smallalphachl
+          Geider_chl2cmax(np) = Geider_smallchl2cmax
+          Geider_chl2cmin(np) = Geider_smallchl2cmin
+        end if
+
+         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+     &     'generate Phyto: np = ',np,' Geider_alphachl =',
+     &     Geider_alphachl(np)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , mythid)
+         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
+     &     'generate Phyto: np = ',np,' Geider_chl2cmax =',
+     &     Geider_chl2cmax(np)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , mythid)
 #endif

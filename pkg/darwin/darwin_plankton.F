@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.11 2009/03/04 20:40:42 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.12 2009/03/04 20:47:39 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,6 +67,10 @@ c ANNA pass extra variables if WAVEBANDS
 #ifdef ALLOW_PAR_DAY
      I                       PARdaylocal,
 #endif
+#ifdef DAR_DIAG_CHL
+     O                       ChlGeiderlocal, ChlDoneylocal,
+     O                       ChlCloernlocal,
+#endif
      I                       debug,
      I                       runtim,
      I                       MyThid) 
@@ -75,6 +79,7 @@ c ANNA pass extra variables if WAVEBANDS
          implicit none
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+#include "DARWIN_PARAMS.h"
 
 c ANNA set wavebands params
 #ifdef WAVEBANDS
@@ -151,6 +156,9 @@ c zoo   = zooplankton
 #endif
 #ifdef ALLOW_PAR_DAY
          _RL PARdaylocal
+#endif
+#ifdef DAR_DIAG_CHL
+         _RL ChlGeiderlocal, ChlDoneylocal, ChlCloernlocal
 #endif
          _RL runtim
 
@@ -243,6 +251,10 @@ c  variables for zooplankton grazing rates
         _RL chl2c(npmax)
 #endif
 
+#ifdef DAR_DIAG_CHL
+         _RL tmppcm
+         _RL tmpchl2c
+#endif
 c variables for nutrient uptake
          _RL consumpPO4
          _RL consumpNO3
@@ -802,7 +814,45 @@ c ANNA endif
           if (debug.eq.14) print*,'ilimit',ilimit, PARlocal
           if (debug.eq.14) print*,'chl:c',chl2c
           if (debug.eq.14) print*,'chl',phychl
-#endif
+#endif /* GEIDER */
+
+#ifdef DAR_DIAG_CHL
+c diagnostic version of the above that does not feed back to growth
+          ChlGeiderlocal = 0. _d 0
+          do np = 1, npmax
+           tmppcm = mu(np)*limit(np)*phytoTempFunction(np)
+           if (tmppcm.gt.0.d0) then
+             tmpchl2c = Geider_chl2cmax(np)/
+     &         (1+(Geider_chl2cmax(np)*Geider_alphachl(np)*PARdaylocal)/
+     &            (2*tmppcm))
+             tmpchl2c = min(tmpchl2c, Geider_chl2cmax(np))
+             tmpchl2c = max(tmpchl2c, Geider_chl2cmin(np))
+           else
+             tmpchl2c = Geider_chl2cmin(np)
+           endif
+           ChlGeiderlocal = ChlGeiderlocal + phyto(np)*R_PC(np)*tmpchl2c
+          enddo
+C Chl a la Doney
+          ChlDoneylocal = 0. _d 0
+          do np = 1, npmax
+            tmpchl2c = (Doney_Bmax - (Doney_Bmax-Doney_Bmin)*
+     &                          MIN(1. _d 0,PARdaylocal/Doney_PARstar))
+     &                    *limit(np)
+            ChlDoneylocal = ChlDoneylocal +
+     &                      tmpchl2c*R_PC(np)*phyto(np)
+          enddo
+C Chl a la Cloern
+          ChlCloernlocal = 0. _d 0
+          do np = 1, npmax
+            tmpchl2c = Cloern_chl2cmin +
+     &                     Cloern_A*exp(Cloern_B*Tlocal)
+     &                             *exp(-Cloern_C*PARdaylocal)
+     &                    *limit(np)
+            ChlCloernlocal = ChlCloernlocal +
+     &                       tmpchl2c*R_PC(np)*phyto(np)
+          enddo
+#endif /* DAR_DIAG_CHL */
+
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.6 2009/03/04 20:40:42 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.7 2009/03/04 20:47:39 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -130,6 +130,49 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid )
 #endif /* ALLOW_PAR_DAY */
+
+#ifdef DAR_DIAG_CHL
+      diagName = 'ChlGeide'
+      WRITE(diagTitle, '(A)') 'Chlorophyll a concentration a la Geider'
+      diagUnits = 'mg Chla/m^3     '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName = 'Chl2CGei'
+      WRITE(diagTitle, '(A)')'Chlorophyll a to carbon ratio a la Geider'
+      diagUnits = 'mg Chla/mmol C  '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName = 'ChlDoney'
+      WRITE(diagTitle, '(A)') 'Chlorophyll a concentration a la Doney'
+      diagUnits = 'mg Chla/m^3     '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName = 'Chl2CDon'
+      WRITE(diagTitle, '(A)') 'Chlorophyll a to carbon ratio a la Doney'
+      diagUnits = 'mg Chla/mmol C  '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName = 'ChlCloer'
+      WRITE(diagTitle, '(A)') 'Chlorophyll a concentration a la Cloern'
+      diagUnits = 'mg Chla/m^3     '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName = 'Chl2CClo'
+      WRITE(diagTitle, '(A)')'Chlorophyll a to carbon ratio a la Cloern'
+      diagUnits = 'mg Chla/mmol C  '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+#endif /* DAR_DIAG_CHL */
+
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN

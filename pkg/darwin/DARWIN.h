@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.6 2008/08/13 21:29:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.7 2009/03/04 20:47:39 jahn Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -226,3 +226,11 @@ c     &         Smallalphachl, Smallalphachlrange,
      &         Smallchl2cmax, Smallchl2cmaxrange,
      &         aphy_chl_ave
 #endif
+#ifdef DAR_DIAG_CHL
+      COMMON/DAR_DIAG_CHL_VARS/
+     &       Geider_alphachl, Geider_chl2cmin, Geider_chl2cmax
+      _RL Geider_alphachl(npmax)
+      _RL Geider_chl2cmin(npmax)
+      _RL Geider_chl2cmax(npmax)
+#endif /* DAR_DIAG_CHL */
+

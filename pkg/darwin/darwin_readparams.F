@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.6 2009/03/04 20:40:42 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.7 2009/03/04 20:47:39 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -20,6 +20,7 @@ C !USES: ===============================================================
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN_IO.h"
+#include "DARWIN_PARAMS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -52,6 +53,15 @@ CEOP
      &           darwin_PARavPeriod,
 #endif
      &           darwin_seed
+
+#ifdef DAR_DIAG_CHL
+      NAMELIST /DARWIN_CHL/
+     &       Geider_Bigalphachl, Geider_smallalphachl,
+     &       Geider_Bigchl2cmax, Geider_smallchl2cmax,
+     &       Geider_Bigchl2cmin,
+     &       Doney_Bmin, Doney_Bmax, Doney_PARstar,
+     &       Cloern_A, Cloern_B, Cloern_C, Cloern_chl2cmin
+#endif
 
 C Set defaults values for parameters in DARWIN_IO.h
       darwin_iceFile=' '
@@ -87,6 +97,32 @@ C Open and read the data.darwin file
 #ifdef ALLOW_PAR_DAY
       darwin_PARnav = NINT(darwin_PARavPeriod*nsubtime/dTtracerLev(1))
 #endif
+
+#ifdef DAR_DIAG_CHL
+C default values
+C Geider:  chl:c = max(chl2cmin, chl2cmax/(1+(chl2cmax*alphachl*PARday)/(2*Pcm)))
+C          Pcm = mu*limit*phytoTempFunction
+      Geider_smallalphachl = 2. _d -6                ! mmol C (mg Chl)-1 m2 (uEin)-1
+      Geider_Bigalphachl   = 1. _d -6                ! mmol C (mg Chl)-1 m2 (uEin)-1
+      Geider_smallchl2cmax = 0.35 _d 0               ! mg Chl (mmol C)-1
+      Geider_Bigchl2cmax   = 0.65 _d 0               ! mg Chl (mmol C)-1
+      Geider_smallchl2cmin = 0.003  _d 0 * 12. _d 0  ! mg Chl a/mmol C
+      Geider_Bigchl2cmin   = 0.003  _d 0 * 12. _d 0  ! mg Chl a/mmol C
+
+C Doney:  chl:c = (Bmax - (Bmax-Bmin)*MIN(1,PARday/PARstar))*limit
+      Doney_Bmax    = 12. _d 0 / 37. _d 0     ! mg Chl a/mmol C
+      Doney_Bmin    = 12. _d 0 / 90. _d 0     ! mg Chl a/mmol C
+      Doney_PARstar = 90. _d 0 / 0.2174 _d 0  ! uEin/m2/s
+
+C Cloern:  chl:c = chl2cmin + A*exp(B*T)*exp(-C*PARday)*limit
+      Cloern_chl2cmin = 0.003  _d 0 * 12. _d 0               ! mg Chl a/mmol C
+      Cloern_A        = 0.0154 _d 0 * 12. _d 0               ! mg Chl a/mmol C
+      Cloern_B        = 0.050  _d 0                          ! (degree C)^{-1}
+      Cloern_C        = 0.059  _d 0 * 86400. _d 0 / 1. _d 6  ! m^2 s/uEin
+
+      READ(UNIT=iUnit,NML=DARWIN_CHL)
+#endif /* DAR_DIAG_CHL */
+
       WRITE(msgBuf,'(A)')
      &  ' DARWIN_READPARMS: finished reading data.darwin'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,

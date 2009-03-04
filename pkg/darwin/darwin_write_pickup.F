@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_write_pickup.F,v 1.1 2009/03/04 20:40:42 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_write_pickup.F,v 1.2 2009/03/04 20:47:39 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -60,13 +60,13 @@ c     IF ( DARWIN_pickup_write_mdsio ) THEN
 C     record number < 0 : a hack not to write meta files now:
         ifld = ifld + 1
         irec = irec - 1
-        CALL WRITE_REC_3D_RL( fn, prec, nR, 
+        CALL WRITE_REC_3D_RL( fn, prec, nR,
      &                        PARday(1-OLx,1-OLy,1,1,1,1),
      &                        irec, myIter, myThid )
         IF (ifld.LE.listDim) wrFldList(ifld) = 'PARday1 '
         ifld = ifld + 1
         irec = irec - 1
-        CALL WRITE_REC_3D_RL( fn, prec, nR, 
+        CALL WRITE_REC_3D_RL( fn, prec, nR,
      &                        PARday(1-OLx,1-OLy,1,1,1,2),
      &                        irec, myIter, myThid )
         IF (ifld.LE.listDim) wrFldList(ifld) = 'PARday2 '
