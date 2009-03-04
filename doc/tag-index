@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.23 2009/02/27 19:04:26 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.24 2009/03/04 20:53:29 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+o add chlorophyll diagnostics (Geider, Doney, Cloern)
+o add daily-averaged and stored PAR (ALLOW_PAR_DAY)
 o move darwin options to new header DARWIN_OPTIONS.h
 
 ctrb_darwin_ckpt61i_20090224
