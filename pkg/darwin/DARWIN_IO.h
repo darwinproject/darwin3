@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.10 2009/03/04 20:40:42 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.11 2009/03/10 20:44:30 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -95,6 +95,11 @@ c    npzd_timeave  - time for averaging
       COMMON /DARWIN_OUPUT/
      &      PPave, Nfixave, Zoograzave,
      &      PARave, Chlave, 
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+     &      Pchlave,
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
      &      Rstarave, RNstarave,
 #endif
@@ -108,6 +113,11 @@ c
        _RL  Zoograzave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
        _RL  PARave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
        _RL  Chlave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+       _RL  Pchlave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy,npmax)
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
        _RL  Rstarave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy,npmax)
        _RL  RNstarave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy,npmax)

@@ -45,6 +45,11 @@ c n.b. local PARwl and PARwupl are assigned in darwin_forcing.F and darwin_plank
      &          alphachl_nl,
      &          pwaves,
      &          aw,bw,ap,bp,sf,ap_ps,
+c ANNA_INHIB INHIB_TESTS define inhibcoef_ap
+#ifdef INHIB_WAVES
+     &          inhibcoef_ap1, inhibcoef_ap2,
+     &          inhibcoef_ap3, inhibcoef_ap4,
+#endif
      &          acdom
                       
 
@@ -57,5 +62,10 @@ c n.b. local PARwl and PARwupl are assigned in darwin_forcing.F and darwin_plank
          _RL aw(tlam),bw(tlam)
          _RL acdom(tlam)
          _RL sf(tlam)
+c ANNA_INHIB INHIB_TESTS
+#ifdef INHIB_WAVES
+         _RL inhibcoef_ap1, inhibcoef_ap2
+         _RL inhibcoef_ap3, inhibcoef_ap4
+#endif
 
 

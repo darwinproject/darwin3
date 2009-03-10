@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.7 2009/03/04 20:47:39 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.8 2009/03/10 20:44:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -72,6 +72,24 @@ C--   Add diagnostic PAR, PP and Nfix
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid )
+
+c ANNA_TAVE 
+#ifdef WAVES_DIAG_PCHL
+      DO np=1,MIN(99,npmax)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--    Add diagnostics of Pchl
+c ANNA_Q format to allow more Ptracers I2.3 ??
+       WRITE(diagName,'(A,I2.2,A)') 'Pchl',np,' '
+       WRITE(diagTitle,'(A,I2.2)') 'Chl of Phy', np
+       diagUnits = 'mg chl/m^3      '
+       diagCode  = 'SM P    MR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      ENDDO /* np */
+#endif /* WAVES_DIAG_PCHL */
+c ANNA end TAVE
 
 #ifdef DAR_DIAG_RSTAR
       DO np=1,MIN(99,npmax)

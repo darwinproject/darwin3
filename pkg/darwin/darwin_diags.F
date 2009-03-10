@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.6 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.7 2009/03/10 20:44:30 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -70,6 +70,20 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(Nfixave, DAR_timeave, nR ,
      &                 bi,bj,myThid)
+
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+         do np=1,npmax
+           CALL TIMEAVE_NORMALIZ(Pchlave(1-Olx,1-Oly,1,1,1,np), 
+     &                          DAR_timeave, nR ,
+     &                 bi,bj,myThid)
+c           CALL TIMEAVE_NORMALIZ(Pchlave(1-Olx,1-Oly,1,1,1,np),
+c     &                          DAR_timeave, nR ,
+c     &                 bi,bj,myThid)
+         enddo
+#endif
+c ANNA end TAVE
+
 #ifdef DAR_DIAG_RSTAR
          do np=1,npmax
            CALL TIMEAVE_NORMALIZ(Rstarave(1-Olx,1-Oly,1,1,1,np), 
@@ -109,6 +123,17 @@ c    &                 bi,bj,myThid)
      &        myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('DAR_Nfixtave.',suff,Nfixave,
      &        myIter,myThid)
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+         do np=1,npmax
+           WRITE(suff,'(A7,I2.2,A1,I10.10)') 'Pchlave',
+     &           np,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           Pchlave(1-Olx,1-Oly,1,1,1,np),
+     &           myIter,myThid)
+         enddo
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
          do np=1,npmax
            WRITE(suff,'(A7,I2.2,A1,I10.10)') 'Rstarave',
@@ -154,6 +179,20 @@ c    &        myIter,myThid)
      &        pf,'dar_tave',0,0,'dar_Chl_ave',Chlave,myThid)
          CALL MNC_CW_RL_W(
      &        pf,'dar_tave',0,0,'dar_Nfix_ave',Nfixave,myThid)
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+         do np=1,npmax
+            ii=PTRACERS_numInUse-npmax+np
+            DO jj = 1,MAX_LEN_FNAM
+              name(jj:jj) = ' '
+            ENDDO
+            ilnb = ILNBLNK(PTRACERS_names(ii))
+            WRITE(name,'(a,a)') 'dar_Pchl_',PTRACERS_names(ii)(1:ilnb)
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           Pchlave(1-OLx,1-OLy,1,1,1,np),myThid)
+         enddo
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
          do np=1,npmax
             ii=PTRACERS_numInUse-npmax+np
@@ -199,6 +238,14 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(PPave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(Chlave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(Nfixave,Nr,bi,bj,myThid)
+c ANNA_TAVE 
+#ifdef WAVES_DIAG_PCHL
+         do np=1,npmax
+           CALL TIMEAVE_RESET(Pchlave(1-OLx,1-OLy,1,1,1,np),
+     &                                      Nr,bi,bj,myThid)
+         enddo
+#endif
+c ANNA and TAVE
 #ifdef DAR_DIAG_RSTAR
          do np=1,npmax
            CALL TIMEAVE_RESET(Rstarave(1-OLx,1-OLy,1,1,1,np),

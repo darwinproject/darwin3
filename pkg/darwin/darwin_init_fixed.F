@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.12 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.13 2009/03/10 20:44:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -155,6 +155,13 @@ c ANNA value of aphy_chl_ave = 0.02 - its the mean of all spectras used as input
        aphy_chl_ave = 0.02 _d 0      !m2 (mg chla)-1 (ie. x chla gives absorption m-1)
 #endif
 c
+c ANNA_INHIB INHIB_FINAL 
+#ifdef INHIB_GEID
+c currently one value for all phyto
+       inhibcoef_geid = 1.2 _d 0 !DUMMY VAL 
+#endif
+c endif ANNA_INHIB INHIB_FINAL
+
 c set temperature function
        tempcoeff1 = 1. _d 0/3. _d 0
        tempcoeff2_small = 0.001 _d 0

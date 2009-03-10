@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.15 2009/03/04 20:47:39 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.16 2009/03/10 20:44:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -101,6 +101,11 @@ c ANNA endif
 COJ for diagnostics
       _RL  PParr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  Nfixarr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+      _RL  Pchlarr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,npmax)
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
       _RL  Rstararr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,npmax)
 #endif
@@ -207,6 +212,13 @@ c
 COJ for diagnostics
            PParr(i,j,k) = 0. _d 0
            Nfixarr(i,j,k) = 0. _d 0
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+           DO np=1,npmax
+             Pchlarr(i,j,k,np) = 0. _d 0
+           ENDDO
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
            DO np=1,npmax
              Rstararr(i,j,k,np) = 0. _d 0
@@ -717,6 +729,13 @@ C           endif
 COJ for diagnostics
              PParr(i,j,k) = PP
              Nfixarr(i,j,k) = Nfix
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+             DO np = 1,npmax
+               Pchlarr(i,j,k,np) = phychl(np)
+             ENDDO
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
              DO np = 1,npmax
                Rstararr(i,j,k,np) = Rstarl(np)
@@ -764,6 +783,14 @@ c    &                       deltaTclock/float(nsubtime)
      &                           PP*dtplankton
              Nfixave(i,j,k,bi,bj)=Nfixave(i,j,k,bi,bj)+
      &                           Nfix*dtplankton
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+             do np=1,npmax
+               Pchlave(i,j,k,bi,bj,np)=Pchlave(i,j,k,bi,bj,np)+
+     &                           phychl(np)*dtplankton
+             enddo
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
              do np=1,npmax
                Rstarave(i,j,k,bi,bj,np)=Rstarave(i,j,k,bi,bj,np)+
@@ -857,6 +884,15 @@ COJ fill diagnostics
         WRITE(diagname,'(A8)') 'Nfix    '
         CALL DIAGNOSTICS_FILL( Nfixarr(1-Olx,1-Oly,1), diagname,
      &                         0,Nr,2,bi,bj,myThid )
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+        DO np=1,MIN(99,npmax)
+         WRITE(diagname,'(A5,I2.2,A1)') 'Pchl',np,' '
+         CALL DIAGNOSTICS_FILL( Pchlarr(1-Olx,1-Oly,1,np), diagname,
+     &                          0,Nr,2,bi,bj,myThid )
+        ENDDO
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
         DO np=1,MIN(99,npmax)
          WRITE(diagname,'(A5,I2.2,A1)') 'Rstar',np,' '

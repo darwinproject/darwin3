@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.3 2009/03/04 20:47:39 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.4 2009/03/10 20:44:30 stephd Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -35,6 +35,11 @@ CEOP
 #undef  CHECK_CONS
 #undef  DAR_DIAG_RSTAR
 #undef  DAR_DIAG_DIVER
+
+c ANNA turn inhbition on/off
+c curently only set for Wavebands, LL Pro's
+c#define INHIB_GEID 
+#define INHIB_WAVES
 
 C diagnostic chlorophyll
 #undef  DAR_DIAG_CHL

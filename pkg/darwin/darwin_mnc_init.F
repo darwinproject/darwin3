@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.7 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.8 2009/03/10 20:44:30 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -68,7 +68,21 @@ C     Functions
       CALL MNC_CW_ADD_VATTR_TEXT('dar_Nfix_ave','description',
      &     '', myThid)
 
-
+c ANNA_TAVE
+#ifdef WAVES_DIAG_PCHL
+      do np=1,npmax
+          ii=iPhy+np-1
+          DO jj = 1,MAX_LEN_FNAM
+             name(jj:jj) = ' '
+          ENDDO
+          ilnb = ILNBLNK(PTRACERS_names(ii))
+          WRITE(name,'(a,a)') 'dar_Pchl_',PTRACERS_names(ii)(1:ilnb)
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+      enddo
+#endif
+c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
       do np=1,npmax
           ii=iPhy+np-1
