@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.7 2009/03/11 18:40:28 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.8 2009/03/11 18:40:42 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_vari.F assigns actual values to choices made by coin-flips in darwin_generate_phyto.F
@@ -92,7 +92,7 @@ c ANNA see format_helps folder for more info on file structures
 
 c file for ap_types assigned via coin flips
          CALL MDSFINDUNIT( IniUnit1, mythid )
-         open(IniUnit1,file='p_ini_char_aptype_nohead.dat',
+         open(IniUnit1,file='p-ini-char-aptype.dat',
      &        status='unknown')
          CALL MDSFINDUNIT( IniUnit2, mythid )
          open(IniUnit2,file='p_ini_char_aptype_nohead.dat',
@@ -124,8 +124,8 @@ c rows = pwaves, columns = np
          write(IniUnit3,*)'col_1 to col_<npmax>'
          write(IniUnit3,*)'is absorption aphy_chl (m-2 mg chla-1)'
          do ilam=1,tlam
-          write(IniUnit3,130)(outfile(np,ilam),np=1:npmax)
-          write(IniUnit4,130)(outfile(np,ilam),np=1:npmax)
+          write(IniUnit3,130)(outfile(np,ilam),np=1,npmax)
+          write(IniUnit4,130)(outfile(np,ilam),np=1,npmax)
          enddo
 c make sure outfile is defined above with the correct size
          close(IniUnit3)
@@ -149,8 +149,8 @@ c rows = pwaves, columns = np
          write(IniUnit5,*)'Is absoprtion by photosynthetic'
          write(IniUnit5,*)'pigments only aphy_chl_ps (m-2 mg chla-1)'
          do ilam=1,tlam
-          write(IniUnit5,130)(outfile_ps(np,ilam),np=1:npmax)
-          write(IniUnit6,130)(outfile_ps(np,ilam),np=1:npmax)
+          write(IniUnit5,130)(outfile_ps(np,ilam),np=1,npmax)
+          write(IniUnit6,130)(outfile_ps(np,ilam),np=1,npmax)
          enddo
          close(IniUnit5)
          close(IniUnit6)
