@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.13 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.14 2009/04/01 14:32:12 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -498,7 +498,8 @@ c get total attenuation (absorption) by phyto at each wavelength
 
 c find for the midpoint of the gridcell (gridcell mean)
           do nl = 1,tlam
-           PARwlocal(nl)=exp((log(PARwuplocal(nl))+log(PARwdn(nl)))*0.5)
+C          PARwlocal(nl)=exp((log(PARwuplocal(nl))+log(PARwdn(nl)))*0.5)
+           PARwlocal(nl)=sqrt(PARwuplocal(nl)*PARwdn(nl))
           enddo
 
 c re-assign PARwlocalup
