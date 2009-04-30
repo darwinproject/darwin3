@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.12 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.13 2009/04/30 18:14:24 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -283,35 +283,35 @@ C      data for the period ahead and the period behind myTime.
 
        _END_MASTER(myThid)
 C
-       _EXCH_XY_R4(fice0, myThid )
-       _EXCH_XY_R4(fice1, myThid )
-       _EXCH_XY_R4(featmos0, myThid )
-       _EXCH_XY_R4(featmos1, myThid )
-       _EXCH_XY_R4(sur_par0, myThid )
-       _EXCH_XY_R4(sur_par1, myThid )
+       _EXCH_XY_RS(fice0, myThid )
+       _EXCH_XY_RS(fice1, myThid )
+       _EXCH_XY_RS(featmos0, myThid )
+       _EXCH_XY_RS(featmos1, myThid )
+       _EXCH_XY_RS(sur_par0, myThid )
+       _EXCH_XY_RS(sur_par1, myThid )
 #ifdef NUT_SUPPLY
-       _EXCH_XYZ_R4(nut_wvel0, myThid )
-       _EXCH_XYZ_R4(nut_wvel1, myThid )
+       _EXCH_XYZ_RS(nut_wvel0, myThid )
+       _EXCH_XYZ_RS(nut_wvel1, myThid )
 #endif
 #ifdef RELAX_NUTS
-       _EXCH_XYZ_R4(po4_obs0, myThid )
-       _EXCH_XYZ_R4(po4_obs1, myThid )
-       _EXCH_XYZ_R4(no3_obs0, myThid )
-       _EXCH_XYZ_R4(no3_obs1, myThid )
-       _EXCH_XYZ_R4(fet_obs0, myThid )
-       _EXCH_XYZ_R4(fet_obs1, myThid )
-       _EXCH_XYZ_R4(si_obs0, myThid )
-       _EXCH_XYZ_R4(si_obs1, myThid )
+       _EXCH_XYZ_RS(po4_obs0, myThid )
+       _EXCH_XYZ_RS(po4_obs1, myThid )
+       _EXCH_XYZ_RS(no3_obs0, myThid )
+       _EXCH_XYZ_RS(no3_obs1, myThid )
+       _EXCH_XYZ_RS(fet_obs0, myThid )
+       _EXCH_XYZ_RS(fet_obs1, myThid )
+       _EXCH_XYZ_RS(si_obs0, myThid )
+       _EXCH_XYZ_RS(si_obs1, myThid )
 #endif
 #ifdef FLUX_NUTS
-       _EXCH_XYZ_R4(po4_flx0, myThid )
-       _EXCH_XYZ_R4(po4_flx1, myThid )
-       _EXCH_XYZ_R4(no3_flx0, myThid )
-       _EXCH_XYZ_R4(no3_flx1, myThid )
-       _EXCH_XYZ_R4(fet_flx0, myThid )
-       _EXCH_XYZ_R4(fet_flx1, myThid )
-       _EXCH_XYZ_R4(si_flx0, myThid )
-       _EXCH_XYZ_R4(si_flx1, myThid )
+       _EXCH_XYZ_RS(po4_flx0, myThid )
+       _EXCH_XYZ_RS(po4_flx1, myThid )
+       _EXCH_XYZ_RS(no3_flx0, myThid )
+       _EXCH_XYZ_RS(no3_flx1, myThid )
+       _EXCH_XYZ_RS(fet_flx0, myThid )
+       _EXCH_XYZ_RS(fet_flx1, myThid )
+       _EXCH_XYZ_RS(si_flx0, myThid )
+       _EXCH_XYZ_RS(si_flx1, myThid )
 #endif
 
 

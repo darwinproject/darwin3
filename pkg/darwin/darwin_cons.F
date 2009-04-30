@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.6 2009/02/27 19:04:26 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.7 2009/04/30 18:14:24 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -113,10 +113,10 @@ c------------------------------------------------------------
         ENDDO
         ENDDO
 
-        _GLOBAL_SUM_R8(tmptotP,myThid)
-        _GLOBAL_SUM_R8(tmptotN,myThid)
-        _GLOBAL_SUM_R8(tmptotFe,myThid)
-        _GLOBAL_SUM_R8(tmptotSi,myThid)
+        _GLOBAL_SUM_RL(tmptotP,myThid)
+        _GLOBAL_SUM_RL(tmptotN,myThid)
+        _GLOBAL_SUM_RL(tmptotFe,myThid)
+        _GLOBAL_SUM_RL(tmptotSi,myThid)
 
         print*,'tmptotP',tmptotP
         print*,'tmptotN',tmptotN
