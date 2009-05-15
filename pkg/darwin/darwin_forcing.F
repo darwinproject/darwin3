@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.16 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.17 2009/05/15 21:29:47 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -184,6 +184,26 @@ c local tendencies
        _RL dNH4l
        _RL dNO2l
 
+#ifdef ALLOW_CARBON
+       _RL dicl
+       _RL docl
+       _RL pocl
+       _RL picl
+       _RL alkl
+       _RL o2l
+       _RL ZooCl(nzmax)
+       _RL pocupl
+       _RL picupl
+c tendencies
+       _RL ddicl
+       _RL ddocl
+       _RL dpocl
+       _RL dpicl
+       _RL dalkl
+       _RL do2l
+       _RL dZooCl(nzmax)
+#endif
+
        _RL tot_Nfix
 
        _RL tmp
@@ -364,6 +384,17 @@ c brute force...
              psil  = max(Ptr(i,j,k,bi,bj,iPOSi ),0. _d 0)
              NH4l  = max(Ptr(i,j,k,bi,bj,iNH4  ),0. _d 0)
              NO2l  = max(Ptr(i,j,k,bi,bj,iNO2  ),0. _d 0)
+#ifdef ALLOW_CARBON
+             dicl  = max(Ptr(i,j,k,bi,bj,iDIC  ),0. _d 0)
+             docl  = max(Ptr(i,j,k,bi,bj,iDOC  ),0. _d 0)
+             pocl  = max(Ptr(i,j,k,bi,bj,iPOC  ),0. _d 0)
+             picl  = max(Ptr(i,j,k,bi,bj,iPIC  ),0. _d 0)
+             alkl  = max(Ptr(i,j,k,bi,bj,iALK  ),0. _d 0)
+             o2l   = max(Ptr(i,j,k,bi,bj,iO2   ),0. _d 0)
+             DO nz = 1,nzmax
+               ZooCl(nz)  = max(Ptr(i,j,k,bi,bj,iZooC (nz)),0. _d 0)
+             ENDDO
+#endif
 
              totphyC = 0. _d 0
              DO np=1,npmax
@@ -448,6 +479,10 @@ c for explicit sinking of particulate matter and phytoplankton
                 do np=1,npmax
                   Phyup(np)=0. _d 0
                 enddo
+#ifdef ALLOW_CARBON
+                pocupl = 0. _d 0
+                picupl = 0. _d 0
+#endif
              endif
 
 c ANNA only define PARl here if not WAVEBANDS
@@ -497,6 +532,17 @@ c set tendencies to 0
              dPSil=0. _d 0
              dNH4l=0. _d 0
              dNO2l=0. _d 0
+#ifdef ALLOW_CARBON
+             ddicl=0. _d 0
+             ddocl=0. _d 0
+             dpocl=0. _d 0
+             dpicl=0. _d 0
+             dalkl=0. _d 0
+             do2l=0. _d 0
+             do nz=1,nzmax
+               dzoocl(nz)=0. _d 0
+             enddo
+#endif
 c set other arguments to zero
              PP=0. _d 0
              Nfix=0. _d 0
@@ -553,6 +599,13 @@ c ANNA pass extra variables if WAVEBANDS
      O                       dNH4l, dNO2l,
      O                       dDOPl, dDONl, dDOFel, 
      O                       dPOPl, dPONl, dPOFel, dPSil,
+#ifdef ALLOW_CARBON
+     I                       dicl, docl, pocl, picl,
+     I                       alkl, zoocl,
+     I                       pocupl, picupl,
+     O                       ddicl, ddocl, dpocl, dpicl,
+     O                       dalkl, do2l, dzoocl,
+#endif
 #ifdef GEIDER
      O                       phychl,
 #ifdef WAVEBANDS
@@ -592,6 +645,17 @@ c
              do np=1,npmax
                Phyup(np) = Phy(np) 
              enddo
+c
+#ifdef ALLOW_CARBON
+             pocupl = POCl
+             picupl = PICl
+c include surface forcing
+             if (k.eq.1) then
+              ddicl  =  ddicl  !+fluxco2(i,j,bi,bj)
+              dalkl  =  dalkl  !+fluxalk(i,j,bi,bj)
+              do2l   =  do2l   !+fluxo2(i,j,bi,bj)
+             endif
+#endif
 c
 #ifdef CONS_SUPP
 c only works for two layer model
@@ -686,7 +750,25 @@ c now update main tracer arrays
            Chl_phy(i,j,k,bi,bj,np)=phychl(np)
 #endif
           ENDDO
-
+#ifdef ALLOW_CARBON
+          Ptr(i,j,k,bi,bj,iDIC ) = Ptr(i,j,k,bi,bj,iDIC ) +
+     &                                  dtplankton*ddicl
+          Ptr(i,j,k,bi,bj,iDOC ) = Ptr(i,j,k,bi,bj,iDOC ) +
+     &                                  dtplankton*ddocl
+          Ptr(i,j,k,bi,bj,iPOC ) = Ptr(i,j,k,bi,bj,iPOC ) +
+     &                                  dtplankton*dpocl
+          Ptr(i,j,k,bi,bj,iPIC ) = Ptr(i,j,k,bi,bj,iPIC ) +
+     &                                  dtplankton*dpicl
+          Ptr(i,j,k,bi,bj,iALK ) = Ptr(i,j,k,bi,bj,iALK ) +
+     &                                  dtplankton*dalkl
+          Ptr(i,j,k,bi,bj,iO2  ) = Ptr(i,j,k,bi,bj,iO2  ) +
+     &                                  dtplankton*do2l
+          DO nz = 1,nzmax
+           Ptr(i,j,k,bi,bj,iZooC (nz)) = Ptr(i,j,k,bi,bj,iZooC (nz)) +
+     &                                        dtplankton*dzoocl (nz)
+          ENDDO
+#endif
+c
 #ifdef ALLOW_MUTANTS
 cQQQQTEST
           if (debug.eq.11) then

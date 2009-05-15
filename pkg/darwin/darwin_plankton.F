@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.14 2009/04/01 14:32:12 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.15 2009/05/15 21:29:47 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,6 +57,13 @@ c ANNA pass extra variables if WAVEBANDS
      O                       dNH4dt, dNO2dt,
      O                       dDOPdt, dDONdt, dDOFedt, 
      O                       dPOPdt, dPONdt, dPOFedt, dPSidt,
+#ifdef ALLOW_CARBON
+     I                       DIClocal, DOClocal, POClocal, PIClocal,
+     I                       ALKlocal, ZooClocal,
+     I                       POCuplocal, PICuplocal,
+     O                       dDICdt, dDOCdt, dPOCdt, dPICdt,
+     O                       dALKdt, dO2dt, dZOOCdt,
+#endif
 #ifdef GEIDER
      O                       phychl,
 #ifdef WAVEBANDS
@@ -150,6 +157,24 @@ c zoo   = zooplankton
          _RL dPONdt
          _RL dPOFedt
          _RL dPSidt
+#ifdef ALLOW_CARBON
+         _RL DIClocal
+         _RL DOClocal
+         _RL POClocal
+         _RL PIClocal
+         _RL ALKlocal
+         _RL O2local
+         _RL ZooClocal(nzmax)
+         _RL POCuplocal
+         _RL PICuplocal
+         _RL dDICdt
+         _RL dDOCdt
+         _RL dPOCdt
+         _RL dPICdt
+         _RL dALKdt
+         _RL dO2dt
+         _RL dZOOCdt(nzmax)
+#endif
 #ifdef GEIDER
          _RL phychl(npmax)
          _RL alpha_I_tmp(npmax)
@@ -278,6 +303,28 @@ c for sinking matter
          _RL psinkFe
          _RL psinkSi
          _RL psinkphy(npmax)
+
+#ifdef ALLOW_CARBON
+         _RL consumpDIC
+         _RL preminC
+         _RL DOCremin
+         _RL totphy_doc
+         _RL totzoo_doc
+         _RL totphy_poc
+         _RL totzoo_poc
+         _RL totphy_pic
+         _RL psinkC
+         _RL psinkPIC
+         _RL disscPIC
+#ifdef OLD_GRAZE
+         _RL grazingC(nzmax)
+#else
+c  variables for zooplankton grazing rates
+         _RL sumgrazzooC(nzmax)
+         _RL sumgrazlossC(nzmax)
+#endif
+
+#endif
 
 c variables for conversions from phyto and zoo to DOM and POM
          _RL totphy_dop
@@ -429,6 +476,15 @@ c set sum totals to zero
          consumpNH4 = 0.0 _d 0
          consumpFeT = 0.0 _d 0
          consumpSi  = 0.0 _d 0
+
+#ifdef ALLOW_CARBON
+         totphy_doc = 0. _d 0
+         totphy_poc = 0. _d 0
+         totphy_pic = 0. _d 0
+         totzoo_doc = 0. _d 0
+         totzoo_poc = 0. _d 0
+         consumpDIC = 0.0 _d 0
+#endif
 
 c zeros for diagnostics
         PP=0. _d 0
@@ -967,6 +1023,10 @@ c sum over phy for impact on zoo, and all remainder to go to POM
            sumgrazlossN(nz)=0. _d 0
            sumgrazlossFe(nz)=0. _d 0
            sumgrazlossSi(nz)=0. _d 0
+#ifdef ALLOW_CARBON
+           sumgrazzooC(nz)=0. _d 0
+           sumgrazlossC(nz)=0. _d 0
+#endif
            do np=1,npmax
               sumgrazzoo(nz)=sumgrazzoo(nz)+
      &             asseff(np,nz)*grazphy(np,nz)*zooP(nz)
@@ -989,6 +1049,13 @@ c sum over phy for impact on zoo, and all remainder to go to POM
               sumgrazlossSi(nz)=sumgrazlossSi(nz)+
      &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
      &                                     zooP(nz)*R_SiP(np)
+#ifdef ALLOW_CARBON
+              sumgrazzooC(nz)=sumgrazzooC(nz)+
+     &             asseff(np,nz)*grazphy(np,nz)*zooP(nz)*R_PC(np)
+              sumgrazlossC(nz)=sumgrazlossC(nz)+
+     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
+     &                                      zooClocal(nz)*R_PC(np)
+#endif
            enddo
           enddo
           if (debug.eq.2) print*,'sumgrazzoo',sumgrazzoo
@@ -1019,6 +1086,12 @@ c accumulate particulate and dissolved detritus
      &               (1. _d 0-ExportFracP(np))*mortphy(np)*phytomin(np)
                totphy_posi=totphy_posi+ R_SiP(np)*
      &                mortphy(np)*phytomin(np)
+#ifdef ALLOW_CARBON
+               totphy_poc=totphy_poc+ R_PC(np)*
+     &                ExportFracP(np)*mortphy(np)*phytomin(np)
+               totphy_doc=totphy_doc+ R_PC(np)*
+     &               (1. _d 0-ExportFracP(np))*mortphy(np)*phytomin(np)
+#endif
             enddo 
             if (debug.eq.3) print*,'tot_phy_pop',totphy_pop
             if (debug.eq.3) print*,'tot_phy_dop',totphy_dop
@@ -1041,6 +1114,9 @@ c grazing: sum contribution from all phytoplankton
               grazingN(nz) = 0.0 _d 0
               grazingFe(nz) = 0.0 _d 0
               grazingSi(nz) = 0.0 _d 0
+#ifdef ALLOW_CARBON
+              grazingC(nz) = 0.0 _d 0
+#endif
               do np = 1, npmax
                facpz = (phytomin(np)/(phytomin(np) + kgrazesat))
      &                  *zooTempFunction(nz)
@@ -1052,6 +1128,10 @@ c grazing: sum contribution from all phytoplankton
      &                          graze(np,nz)*R_FeP(np)*facpz
                grazingSi(nz) = grazingSi(nz) + 
      &                          graze(np,nz)*R_SiP(np)*facpz
+#ifdef ALLOW_CARBON
+               grazingC(nz) = grazingC(nz) +
+     &                         graze(np,nz)*R_PC(np)*facpz
+#endif
               enddo
             enddo
             if (debug.eq.4) print*,'grazingP', grazingP
@@ -1077,6 +1157,12 @@ c accumulate particulate and dissolved detritus
      &                    (1. _d 0-ExportFracZ(nz))*mortzoo(nz)*zooFe(nz)
                totzoo_posi=totzoo_posi+ 
      &                     mortzoo(nz)*zooSi(nz)
+#ifdef ALLOW_CARBON
+               totzoo_poc=totzoo_poc+
+     &                    ExportFracZ(nz)*mortzoo(nz)*zooClocal(nz)
+               totzoo_doc=totzoo_doc+
+     &           (1. _d 0-ExportFracZ(nz))*mortzoo(nz)*zooClocal(nz)
+#endif
             enddo
 
 #ifndef OLD_GRAZE
@@ -1095,6 +1181,12 @@ c accumulate particulate and dissolved detritus
      &                 +(1. _d 0-ExportFracGraz(nz))*sumgrazlossFe(nz)
                totzoo_posi=totzoo_posi+
      &                     +sumgrazlossSi(nz)
+#ifdef ALLOW_CARBON
+               totzoo_poc=totzoo_poc+
+     &                    +ExportFracGraz(nz)*sumgrazlossC(nz)
+               totzoo_doc=totzoo_doc+
+     &                 +(1. _d 0-ExportFracGraz(nz))*sumgrazlossC(nz)
+#endif
             enddo
 #endif
             if (debug.eq.5) print*,'totzoo_pop',totzoo_pop
@@ -1125,6 +1217,7 @@ c     &              ,PspecificPO4(np)
                consumpPO4 = consumpPO4 + PspecificPO4(np)
                consumpFeT = consumpFeT + PspecificPO4(np)*R_FeP(np)
                consumpSi  = consumpSi  + PspecificPO4(np)*R_SiP(np)
+cswd should have O2prod as function of np?
 c New Way of doing Nitrogen Consumption .......................
                if(diazotroph(np) .ne. 1.0 _d 0)then
                 if (Nlimit(np).le.0. _d 0) then
@@ -1145,6 +1238,9 @@ c New Way of doing Nitrogen Consumption .......................
                  consumpNH4 = consumpNH4
                  Nfix=Nfix+PspecificPO4(np)*R_NP(np)
                endif
+#ifdef ALLOW_CARBON
+               consumpDIC  = consumpDIC  + PspecificPO4(np)*R_PC(np)
+#endif
             enddo
            if (debug.eq.7) print*,'local', parlocal,tlocal,po4local,
      &                  no3local, no2local,nh4local,fetlocal,silocal
@@ -1168,6 +1264,10 @@ c sinking phytoplankton and POM
                psinkPhy(np) =
      &                     (wsink(np)*Phytoup(np))/(dzlocal)
               enddo
+#ifdef ALLOW_CARBON
+              psinkC  = (wc_sink*POCuplocal)/(dzlocal)
+              psinkPIC = (wpic_sink*PICuplocal)/(dzlocal)
+#endif
             else
               psinkP  = (wp_sink*(POPuplocal-POPlocal))/(dzlocal)
               psinkN  = (wn_sink*(PONuplocal-PONlocal))/(dzlocal)
@@ -1177,6 +1277,10 @@ c sinking phytoplankton and POM
                psinkPhy(np) =
      &                  (wsink(np))*(Phytoup(np)-Phyto(np))/(dzlocal)
               enddo
+#ifdef ALLOW_CARBON
+              psinkC  = (wc_sink*(POCuplocal-POClocal))/(dzlocal)
+              psinkPIC  = (wpic_sink*(PICuplocal-PIClocal))/(dzlocal)
+#endif
             endif
 
 c DOM remineralization rates
@@ -1189,6 +1293,13 @@ c remineralization of sinking particulate
             preminN  = Kpremin_N*PONlocal
             preminFe = Kpremin_Fe*POFelocal
             preminSi = Kpremin_Si*PSilocal
+
+#ifdef ALLOW_CARBON
+           DOCremin =  Kdoc * DOClocal
+           preminC  = Kpremin_C*POClocal
+c dissolution
+           disscPIC = Kdissc*PIClocal
+#endif
 
 c chemistry
 c NH4 -> NO2 -> NO3 by bacterial action
@@ -1312,6 +1423,28 @@ c tendency of particulate detritus pools
             dpondt  = totphy_pon  + totzoo_pon   - preminN + psinkN
             dpofedt = totphy_pofe + totzoo_pofe  - preminFe + psinkFe
             dpSidt  = totphy_posi + totzoo_posi  - preminSi + psinkSi
+#ifdef ALLOW_CARBON
+            dDICdt =  - consumpDIC +  preminC  + DOCremin
+            dDOCdt  = totphy_doc  + totzoo_doc  - DOCremin
+            dPOCdt  = totphy_poc  + totzoo_poc  - preminC + psinkC
+            dPICdt  = totphy_pic                - disscPIC + psinkPIC
+            dALKdt  = - dNO3dt    - 2.d0 * dPICdt
+c should be = O2prod - preminP - DOPremin?
+            dO2dt   = - R_OP*dPO4dt
+#ifdef OLD_GRAZE
+            do nz=1,nzmax
+              dzooCdt(nz)  = grazingC(nz)*zooClocal(nz)
+     &                           - mortzoo(nz)*zooClocal(nz)
+            enddo
+#else
+            do nz=1,nzmax
+              dzooCdt(nz)  = sumgrazzooc(nz)
+     &                           - mortzoo(nz)*zooClocal(nz)
+            enddo
+#endif
+
+#endif
+
             if (debug.eq.10) print*,'dDOPdt', dDOPdt
             if (debug.eq.10) print*,'dpopdt',dpopdt
             if (debug.eq.10) print*,'dDONdt',dDONdt

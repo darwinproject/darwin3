@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_check.F,v 1.2 2009/02/27 19:04:26 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_check.F,v 1.3 2009/05/15 21:29:47 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -136,6 +136,41 @@ C     msgBuf      - Informational/error meesage buffer
      &  iPhy+npmax-1,'Phy(',npmax,')', PTRACERS_names(iPhy+npmax-1)
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &                   SQUEEZE_RIGHT,myThid) 
+
+#ifdef ALLOW_CARBON
+      WRITE(msgBuf,'(A,I4,X,A,A32)') 'DARWIN_CHECK: ',
+     &  iDIC   ,'DIC      ', PTRACERS_names(iDIC   )
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A,I4,X,A,A32)') 'DARWIN_CHECK: ',
+     &  iDOC   ,'DOC      ', PTRACERS_names(iDOC   )
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A,I4,X,A,A32)') 'DARWIN_CHECK: ',
+     &  iPOC   ,'POC      ', PTRACERS_names(iPOC   )
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A,I4,X,A,A32)') 'DARWIN_CHECK: ',
+     &  iPIC   ,'PIC      ', PTRACERS_names(iPIC   )
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A,I4,X,A,A32)') 'DARWIN_CHECK: ',
+     &  iALK   ,'ALK      ', PTRACERS_names(iALK   )
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A,I4,X,A,A32)') 'DARWIN_CHECK: ',
+     &  iO2    ,'iO2      ', PTRACERS_names(iO2    )
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+      DO nz = 1,nzmax
+        iPtr = iZooC (nz)
+        WRITE(msgBuf,'(A,I4,X,A,I1,A,A32)') 'DARWIN_CHECK: ',
+     &    iPtr, 'ZooC (',nz,') ', PTRACERS_names(iPtr)
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                     SQUEEZE_RIGHT,myThid)
+      ENDDO
+
+#endif
        
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.13 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.14 2009/05/15 21:29:47 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -263,6 +263,15 @@ c sinking rate for particulate matter (m/s)
          wfe_sink = wp_sink
          wsi_sink = wp_sink
 
+#ifdef ALLOW_CARBON
+         R_OP = 170 _d 0
+         Kdoc = 1.0 _d 0/(100.0 _d 0*pday)
+         Kpremin_C = 1.0 _d 0/(50.0 _d 0*pday)
+         Kdissc =  1.0 _d 0/(300.0 _d 0*pday)
+         wc_sink = wp_sink
+         wpic_sink = 15.0 _d 0/pday
+#endif
+
 C make sure we have reserved enough space in Ptracers
       IF ( nCompZooMax .LT. 4 ) THEN
         WRITE(msgBuf,'(A,A,I3)')
@@ -277,6 +286,11 @@ C make sure we have reserved enough space in Ptracers
         iZooFe(nz)  = iZoo + 2*strideCompZoo + (nz-1)*strideTypeZoo
         iZooSi(nz)  = iZoo + 3*strideCompZoo + (nz-1)*strideTypeZoo
       ENDDO
+#ifdef ALLOW_CARBON
+       DO nz = 1,nzmax
+        iZooC (nz)  = iZoC +                   (nz-1)
+      ENDDO
+#endif
 
 #ifdef DAR_DIAG_DIVER
 c only look at grid point with a minimum biomass

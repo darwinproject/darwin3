@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.2 2008/07/02 19:07:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.3 2009/05/15 21:29:47 stephd Exp $
 C $Name:  $
 
 c DARWIN_SIZE.h 
@@ -64,6 +64,15 @@ C remember to bring the fields in data.ptracers in the right order !
       INTEGER nCompZooMax
       INTEGER strideCompZoo
       INTEGER strideTypeZoo
+#ifdef ALLOW_CARBON
+      INTEGER iDIC
+      INTEGER iDOC
+      INTEGER iPOC
+      INTEGER iPIC
+      INTEGER iALK
+      INTEGER iO2
+      INTEGER iZoC
+#endif
       PARAMETER (nCompZooMax=4)
       PARAMETER (strideCompZoo=1)
       PARAMETER (strideTypeZoo=nCompZooMax)
@@ -82,8 +91,18 @@ C remember to bring the fields in data.ptracers in the right order !
       PARAMETER (iNH4  =iPOSi +1)
       PARAMETER (iNO2  =iNH4  +1)
       PARAMETER (iPhy  =iNO2  +1)
+#ifdef ALLOW_CARBON
+      PARAMETER (iDIC  =iPhy +npmax)
+      PARAMETER (iDOC  =iDIC+1)
+      PARAMETER (iPOC  =iDOC+1)
+      PARAMETER (iPIC  =iPOC+1)
+      PARAMETER (iALK  =iPIC+1)
+      PARAMETER (iO2   =iALK+1)
+      PARAMETER (iZoC  =iO2+1)
+      PARAMETER (nDarwin=iZoC+nzmax-1)
+#else
       PARAMETER (nDarwin=iPhy +npmax-1)
-
+#endif
 C iZooP(nzmax)  :: index of phosphorus content of each zooplankton type
 C iZooN(nzmax)  :: index of nitrogen   content of each zooplankton type
 C iZooFe(nzmax) :: index of iron       content of each zooplankton type
@@ -93,5 +112,10 @@ C these are computed in darwin_init_fixed from iZoo, strideCompZoo and strideTyp
       INTEGER iZooN (nzmax)
       INTEGER iZooFe(nzmax)
       INTEGER iZooSi(nzmax)
+#ifdef ALLOW_CARBON
+      INTEGER iZooC(nzmax)
+#endif
       COMMON/DARWIN_SIZE/ iZooP, iZooN, iZooFe, iZooSi
-
+#ifdef ALLOW_CARBON
+     &                  ,iZooC
+#endif

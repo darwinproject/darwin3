@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.8 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.9 2009/05/15 21:29:47 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -172,6 +172,17 @@ c           have been tried
          _RL Knita
          _RL Knitb
          _RL diaz_growfac
+
+#ifdef ALLOW_CARBON
+         COMMON/darwin_carbon/ R_OP, wc_sink, wpic_sink,
+     &                 Kdoc, Kpremin_C, Kdissc
+         _RL R_OP
+         _RL wc_sink
+         _RL wpic_sink
+         _RL Kdoc
+         _RL Kpremin_C
+         _RL Kdissc
+#endif
 
 c    scav           - chemical scavenging rate for iron
 c    ligand_tot     - total organic ligand (assumed constant)
