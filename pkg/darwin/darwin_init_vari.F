@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.18 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.19 2009/05/18 19:38:10 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -129,12 +129,14 @@ c big grazers preferentially eat big phyto etc...
              else 
                graze(np,nz) = GrazeSlow 
              end if
-             if (diatom(np).eq.1) then
+             if (diacoc(np).eq.1) then
                graze(np,nz)= graze(np,nz)*diatomgraz
-             else
-               if (physize(np).eq.1) then
-                 graze(np,nz)= graze(np,nz)*olargegraz
-               endif
+             endif
+             if (diacoc(np).eq.2) then
+               graze(np,nz)= graze(np,nz)*coccograz
+             endif
+             if (diacoc(np).eq.0.and.physize(np).eq.1) then
+               graze(np,nz)= graze(np,nz)*olargegraz
              endif
            end do
          end do
@@ -209,11 +211,11 @@ c write out initial phyto characteristics
          open(IniUnit2,file='plankton_ini_char_nohead.dat',
      &        status='unknown')
 #ifdef OLD_GRAZE
-         write(IniUnit1,*)'diat diaz size   mu  mort   Rnp  Rfep   Rsip
+         write(IniUnit1,*)'dico diaz size   mu  mort   Rnp  Rfep   Rsip
      & wsink  KsP  KsN   KsFe    KsSi     g1      g2     Kpar  Kinh
      &  Topt nsrc np'
          do np = 1, npmax
-           write(IniUnit1,110)diatom(np),diazotroph(np),physize(np),
+           write(IniUnit1,110)diacoc(np),diazotroph(np),physize(np),
      &                   1.0/(mu(np)*86400.), 1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),
@@ -222,7 +224,7 @@ c write out initial phyto characteristics
      &                   graze(np,1),graze(np,2),
      &                   KsatPAR(np),Kinhib(np),
      &                   phytoTempOptimum(np),nsource(np),np
-            write(IniUnit2,110)diatom(np),diazotroph(np),physize(np),
+            write(IniUnit2,110)diacoc(np),diazotroph(np),physize(np),
      &                   1.0/(mu(np)*86400.),1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),
@@ -233,11 +235,11 @@ c write out initial phyto characteristics
      &                   phytoTempOptimum(np),nsource(np),np
          end do
 #else
-         write(IniUnit1,*)'diat diaz size mu mort Rnp Rfep Rsip wsink
+         write(IniUnit1,*)'dico diaz size mu mort Rnp Rfep Rsip wsink
      & KsP KsN   KsFe   KsSi    palat1 palat2  Kpar  Kinh  Topt  nsrc
      & np'
          do np = 1, npmax
-           write(IniUnit1,111)diatom(np),diazotroph(np),physize(np),
+           write(IniUnit1,111)diacoc(np),diazotroph(np),physize(np),
      &                   1.0/(mu(np)*86400.), 1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),
@@ -246,7 +248,7 @@ c write out initial phyto characteristics
      &                   palat(np,1),palat(np,2),
      &                   KsatPAR(np),Kinhib(np),
      &                   phytoTempOptimum(np),nsource(np),np
-            write(IniUnit2,111)diatom(np),diazotroph(np),physize(np),
+            write(IniUnit2,111)diacoc(np),diazotroph(np),physize(np),
      &                   1.0/(mu(np)*86400.),1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),
@@ -266,11 +268,11 @@ c ANNA outputs mQyield as 10^(4) mmol C (uEin)-1
          CALL MDSFINDUNIT( IniUnit2, mythid )
          open(IniUnit2,file='gplankton_ini_char_nohead.dat',
      &        status='unknown')
-         write(IniUnit1,*)'diat diaz size pcmax mort Rnp Rfep Rsip wsink
+         write(IniUnit1,*)'dico diaz size pcmax mort Rnp Rfep Rsip wsink
      & KsP KsN   KsFe   KsSi    palat1 palat2 mQY(-4) chl2c  Topt  nsrc
      & np'
          do np = 1, npmax
-           write(IniUnit1,111)diatom(np),diazotroph(np),physize(np),
+           write(IniUnit1,111)diacoc(np),diazotroph(np),physize(np),
      &                 1.0/(pcmax(np)*86400.), 1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),
@@ -279,7 +281,7 @@ c ANNA outputs mQyield as 10^(4) mmol C (uEin)-1
      &                   palat(np,1),palat(np,2),
      &                   mQyield(np)*1e4,chl2cmax(np),
      &                   phytoTempOptimum(np),nsource(np),np
-            write(IniUnit2,111)diatom(np),diazotroph(np),physize(np),
+            write(IniUnit2,111)diacoc(np),diazotroph(np),physize(np),
      &                 1.0/(pcmax(np)*86400.), 1.0/(mortphy(np)*86400.),
      &                   R_NP(np),R_FeP(np)*1000.,R_SiP(np),
      &                   wsink(np),

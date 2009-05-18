@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.9 2009/05/15 21:29:47 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.10 2009/05/18 19:38:10 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -21,7 +21,8 @@ c wsink = sinking speed, phyto specific
 c R_XY = stoichiometric ratios of nutrients in phytoplankton
 c        specific to each functional group, relative to Phos
 c physize = size class of phytoplankton; 0.0="small", 1.0="big"
-c diatom: 1.0 uses silica, 0.0 does not use silica
+c diacoc: 1.0 uses silica, 0.0 does not use silica
+c diacoc: 2.0 uses PIC, 0.0 does not use PIC
 c diazotrph: 1.0 fixes nitrogen, 0.0 does not fix nitrogen
 c zoosize = size class of zooplankton; 0.0="small", 1.0="big"
 c ExportFracZ(nzmax) = fraction of Z mortality sinking out:
@@ -33,14 +34,14 @@ c           have been tried
 
          COMMON/darwin_ecoparam/mu,ksatPO4,ksatNO3,ksatNO2,ksatNH4,
      &          ksatSi,ksatFeT,ksatPAR,
-     &          mortzoo,wsink,R_NP,R_FeP,R_SiP,R_PC,physize,
-     &          diatom,diazotroph,zoosize,ExportFracZ,
+     &          mortzoo,wsink,R_NP,R_FeP,R_SiP,R_PC,R_PICPOC, physize,
+     &          diacoc,diazotroph,zoosize,ExportFracZ,
      &          Kpremin_P, Kpremin_N, Kpremin_Fe, Kpremin_Si,
      &          sig1,sig2,sig3,
      &          phytoTempCoeff, phytoTempExp1, 
      &          phytoTempExp2, phytoTempOptimum, phytoDecayPower,
      &          zooTempCoeff, zooTempExp, zooTempOptimum, kinhib,
-     &          diatomgraz, olargegraz,
+     &          diatomgraz, coccograz, olargegraz,
      &          mortphy, ExportFracP,
      &          Smallgrow, Biggrow, Smallmort, Bigmort,
      &          Smallgrowrange, Biggrowrange, Smallmortrange, 
@@ -73,6 +74,7 @@ c           have been tried
      &          ZoomortSmall, ZoomortBig, ZooexfacSmall, ZooexfacBig,
      &          val_R_SiP_diatom, val_R_NP_diaz, val_RFeP_diaz,
      &          val_R_NP, val_RFeP, val_R_PC,
+     &          val_R_PICPOC,
      &          ksatNH4fac, ksatNO2fac, val_ksatsi,
      &          ngrowfac, ilight,
      &          phymin, PAR0, diaz_growfac,
@@ -92,8 +94,9 @@ c           have been tried
          _RL R_FeP(npmax)
          _RL R_SiP(npmax)
          _RL R_PC(npmax)
+         _RL R_PICPOC(npmax)
          _RL physize(npmax)
-         _RL diatom(npmax)
+         _RL diacoc(npmax)
          _RL diazotroph(npmax)
          _RL zoosize(nzmax)
          _RL ExportFracZ(nzmax)
@@ -109,7 +112,7 @@ c           have been tried
          _RL zooTempCoeff(nzmax)
          _RL zooTempExp(nzmax) 
          _RL zooTempOptimum(nzmax)
-         _RL diatomgraz, olargegraz
+         _RL diatomgraz, coccograz, olargegraz
          _RL kinhib(npmax)
          _RL mortphy(npmax)
          _RL ExportFracP(npmax)
@@ -149,7 +152,7 @@ c           have been tried
 #endif
          _RL ZoomortSmall, ZoomortBig, ZooexfacSmall, ZooexfacBig
          _RL val_R_SiP_diatom, val_R_NP_diaz, val_RFeP_diaz,
-     &          val_R_NP, val_RFeP, val_R_PC
+     &          val_R_NP, val_RFeP, val_R_PC, val_R_PICPOC
          _RL ngrowfac,ilight
          _RL phymin
          _RL PAR0

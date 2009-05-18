@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.14 2009/05/15 21:29:47 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.15 2009/05/18 19:38:10 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -198,6 +198,7 @@ c set nutrient ratios for phyto
        val_R_NP=16.0 _d 0
        val_RFeP=1.0 _d -3
        val_R_PC=120 _d 0
+       val_R_PICPOC=0.8 _d 0
 #ifdef OLD_GRAZE
 c grazing hlaf saturation
        kgrazesat = 0.1 _d 0
@@ -209,6 +210,7 @@ c set grazing effeciency
        GrazeEffbig  =0.2 _d 0
 c set grazing of diatom factor
        diatomgraz = 0.8 _d 0
+       coccograz = 0.7 _d 0
        olargegraz = 0.9 _d 0
 #else
 c grazing hlaf saturation
@@ -230,6 +232,7 @@ c set palatibility
        palatlo = 0.2 _d 0
 c set palatibilty diatom factor
        diatomgraz = 0.7 _d 0
+       coccograz = 0.6 _d 0
        olargegraz = 0.9 _d 0
 c set faction graz to POM
        ExGrazfracbig = 0.8 _d 0
