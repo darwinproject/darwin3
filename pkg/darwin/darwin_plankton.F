@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.15 2009/05/15 21:29:47 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.16 2009/05/18 19:36:06 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1154,7 +1154,7 @@ c accumulate particulate and dissolved detritus
                totzoo_pofe=totzoo_pofe+
      &                     ExportFracZ(nz)*mortzoo(nz)*zooFe(nz)
                totzoo_dofe=totzoo_dofe+
-     &                    (1. _d 0-ExportFracZ(nz))*mortzoo(nz)*zooFe(nz)
+     &                   (1. _d 0-ExportFracZ(nz))*mortzoo(nz)*zooFe(nz)
                totzoo_posi=totzoo_posi+ 
      &                     mortzoo(nz)*zooSi(nz)
 #ifdef ALLOW_CARBON
