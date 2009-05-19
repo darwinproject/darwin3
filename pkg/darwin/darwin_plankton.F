@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.16 2009/05/18 19:36:06 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.17 2009/05/19 20:28:08 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -306,6 +306,7 @@ c for sinking matter
 
 #ifdef ALLOW_CARBON
          _RL consumpDIC
+         _RL consumpDIC_PIC
          _RL preminC
          _RL DOCremin
          _RL totphy_doc
@@ -484,6 +485,7 @@ c set sum totals to zero
          totzoo_doc = 0. _d 0
          totzoo_poc = 0. _d 0
          consumpDIC = 0.0 _d 0
+         consumpDIC_PIC = 0.0 _d 0
 #endif
 
 c zeros for diagnostics
@@ -1091,6 +1093,8 @@ c accumulate particulate and dissolved detritus
      &                ExportFracP(np)*mortphy(np)*phytomin(np)
                totphy_doc=totphy_doc+ R_PC(np)*
      &               (1. _d 0-ExportFracP(np))*mortphy(np)*phytomin(np)
+               totphy_pic=totphy_pic+ R_PC(np)*R_PICPOC(np)*
+     &                mortphy(np)*phytomin(np)
 #endif
             enddo 
             if (debug.eq.3) print*,'tot_phy_pop',totphy_pop
@@ -1240,6 +1244,8 @@ c New Way of doing Nitrogen Consumption .......................
                endif
 #ifdef ALLOW_CARBON
                consumpDIC  = consumpDIC  + PspecificPO4(np)*R_PC(np)
+               consumpDIC_PIC = consumpDIC_PIC + 
+     &                           PspecificPO4(np)*R_PC(np)*R_PICPOC(np)
 #endif
             enddo
            if (debug.eq.7) print*,'local', parlocal,tlocal,po4local,
@@ -1424,7 +1430,9 @@ c tendency of particulate detritus pools
             dpofedt = totphy_pofe + totzoo_pofe  - preminFe + psinkFe
             dpSidt  = totphy_posi + totzoo_posi  - preminSi + psinkSi
 #ifdef ALLOW_CARBON
-            dDICdt =  - consumpDIC +  preminC  + DOCremin
+            dDICdt =  - consumpDIC - consumpDIC_PIC 
+     &                                         +  preminC  + DOCremin
+     &                                         + disscPIC
             dDOCdt  = totphy_doc  + totzoo_doc  - DOCremin
             dPOCdt  = totphy_poc  + totzoo_poc  - preminC + psinkC
             dPICdt  = totphy_pic                - disscPIC + psinkPIC
