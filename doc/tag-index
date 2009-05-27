@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.28 2009/05/13 20:35:24 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.29 2009/05/27 14:56:47 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt61n_20090519
+o add PIC cycling to carbon part.
+o add possiblity of coccolithophores
+o adding carbon/o2/alkalinity (only soft tissue at this stage)
 
 ctrb_darwin_ckpt61n_20090513
 o upgrade to checkpoint61n of MITgcm
