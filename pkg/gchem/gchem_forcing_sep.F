@@ -1,10 +1,14 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_forcing_sep.F,v 1.5 2008/07/02 23:13:53 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_forcing_sep.F,v 1.6 2009/05/29 18:37:42 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
 #ifdef ALLOW_DIC
 #include "DIC_OPTIONS.h"
 #endif
+#ifdef ALLOW_DARWIN
+#include "DARWIN_OPTIONS.h"
+#endif
+
 
 CBOP
 C !ROUTINE: GCHEM_FORCING_SEP
@@ -139,6 +143,9 @@ C array because of last (iPtr) index
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
           call DARWIN_cons(myIter,myTime,myThid)
+#ifdef ALLOW_CARBON
+       CALL DIC_ATMOS( 1, myTime, myIter, myThid )
+#endif
         ENDIF
 #endif
 

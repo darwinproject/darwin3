@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_diags.F,v 1.2 2008/07/02 23:13:53 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_diags.F,v 1.3 2009/05/29 18:37:42 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
+#ifdef ALLOW_DARWIN
+#include "DARWIN_OPTIONS.h"
+#endif
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_DIAGS(myTime,myIter, myThid )
@@ -42,6 +45,9 @@ cccccccccccccccccccccc
 #ifdef ALLOW_TIMEAVE
       IF ( useDARWIN ) THEN
        call darwin_diags( myTime, myIter, myThid )
+#ifdef ALLOW_CARBON
+       call dic_diags( myTime, myIter, myThid )
+#endif
       ENDIF
 #endif
 #endif

@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_write_pickup.F,v 1.2 2009/03/04 20:40:42 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/gchem/Attic/gchem_write_pickup.F,v 1.3 2009/05/29 18:37:42 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
+#ifdef ALLOW_DARWIN
+#include "DARWIN_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GCHEM_WRITE_PICKUP
@@ -49,6 +52,10 @@ C     !LOCAL VARIABLES:
       IF ( useDARWIN ) THEN
         CALL DARWIN_WRITE_PICKUP( permPickup, suff,
      I                            myTime, myIter, myThid )
+#ifdef ALLOW_CARBON
+        CALL DIC_WRITE_PICKUP( permPickup, suff,
+     I                         myTime, myIter, myThid )
+#endif
       ENDIF
 #endif /* ALLOW_DARWIN */
 
