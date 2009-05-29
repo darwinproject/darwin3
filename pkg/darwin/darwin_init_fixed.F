@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.15 2009/05/18 19:38:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.16 2009/05/29 18:32:50 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -24,6 +24,7 @@ C     === Global variables ===
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
 #include "DARWIN_IO.h"
+#include "DARWIN_FLUX.h"
 
         INTEGER myThid
 C============== Local variables ============================================
@@ -273,6 +274,8 @@ c sinking rate for particulate matter (m/s)
          Kdissc =  1.0 _d 0/(300.0 _d 0*pday)
          wc_sink = wp_sink
          wpic_sink = 15.0 _d 0/pday
+         permil      = 1. _d 0 / 1024.5 _d 0
+         Pa2Atm      = 1.01325 _d 5
 #endif
 
 C make sure we have reserved enough space in Ptracers
@@ -312,6 +315,9 @@ c set up diagnostics
 #ifdef ALLOW_MNC
       IF ( useMNC ) THEN
         CALL DARWIN_MNC_INIT( myThid )
+#ifdef ALLOW_CARBON
+        CALL DIC_MNC_INIT( myThid )
+#endif
       ENDIF
 #endif /* ALLOW_MNC */
 

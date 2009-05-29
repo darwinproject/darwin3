@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.13 2009/04/30 18:14:24 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.14 2009/05/29 18:32:50 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -27,6 +27,7 @@ C     == GLobal variables ==
 #include "GRID.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN_IO.h"
+#include "DARWIN_FLUX.h"
 c#include "GCHEM.h"
 #ifdef ALLOW_SEAICE
 #include "SEAICE.h"
@@ -47,6 +48,9 @@ C     msgBuf    - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       COMMON/ darwin_load / 
      &    fice0, fice1, featmos0, featmos1, sur_par0, sur_par1
+#ifdef ALLOW_CARBON
+     &    ,dicwind0, dicwind1,atmosp0, atmosp1
+#endif
 #ifdef NUT_SUPPLY
      &    ,  nut_wvel0, nut_wvel1
 #endif
@@ -64,6 +68,12 @@ C     msgBuf    - Informational/error meesage buffer
       _RS featmos1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS sur_par0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS sur_par1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_CARBON
+      _RS dicwind0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dicwind1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS atmosp0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS atmosp1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 #ifdef NUT_SUPPLY
       _RS nut_wvel0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RS nut_wvel1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
@@ -105,6 +115,12 @@ cQQQ need to check timing
          CALL LEF_ZERO( featmos1,myThid )
          CALL LEF_ZERO( sur_par0,myThid )
          CALL LEF_ZERO( sur_par1,myThid )
+#ifdef ALLOW_CARBON
+         CALL LEF_ZERO( dicwind0,myThid )
+         CALL LEF_ZERO( dicwind1,myThid )
+         CALL LEF_ZERO( atmosp0,myThid )
+         CALL LEF_ZERO( atmosp1,myThid )
+#endif
 #ifdef NUT_SUPPLY
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -220,6 +236,20 @@ C      data for the period ahead and the period behind myTime.
          CALL READ_REC_XY_RS( darwin_PARFile,sur_par1,intime1,
      &        myIter,myThid )
        ENDIF
+#ifdef ALLOW_CARBON
+        IF ( DIC_windFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_windFile,dicwind0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XY_RS( DIC_windFile,dicwind1,intime1,
+     &        myIter,myThid )
+        ENDIF
+        IF ( DIC_atmospFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_atmospFile,atmosp0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XY_RS( DIC_atmospFile,atmosp1,intime1,
+     &        myIter,myThid )
+        ENDIF
+#endif
 #ifdef NUT_SUPPLY
        IF ( darwin_nutWVelFile .NE. ' '  ) THEN
          CALL READ_REC_XYZ_RS( darwin_nutWVelFile,nut_wvel0,intime0,
@@ -289,6 +319,12 @@ C
        _EXCH_XY_RS(featmos1, myThid )
        _EXCH_XY_RS(sur_par0, myThid )
        _EXCH_XY_RS(sur_par1, myThid )
+#ifdef ALLOW_CARBON
+       _EXCH_XY_RS(dicwind0, myThid )
+       _EXCH_XY_RS(dicwind1, myThid )
+       _EXCH_XY_RS(atmosp0, myThid )
+       _EXCH_XY_RS(atmosp1, myThid )
+#endif
 #ifdef NUT_SUPPLY
        _EXCH_XYZ_RS(nut_wvel0, myThid )
        _EXCH_XYZ_RS(nut_wvel1, myThid )
@@ -361,6 +397,22 @@ c light (load as Ein/m2/d; convert to uEin/m2/s)
            ELSE
             sur_par(i,j,bi,bj)  =  200. _d 0*maskC(i,j,1,bi,bj)
            ENDIF
+#ifdef ALLOW_CARBON
+         IF ( DIC_windFile .NE. ' '  ) THEN
+             WIND(i,j,bi,bj) = bWght*dicwind0(i,j,bi,bj)
+     &                       + aWght*dicwind1(i,j,bi,bj)
+         ELSE
+             WIND(i,j,bi,bj) = 5. _d 0
+         ENDIF
+#ifndef USE_PLOAD
+         IF ( DIC_atmospFile .NE. ' '  ) THEN
+             AtmosP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
+     &                         + aWght*atmosp1(i,j,bi,bj)
+         ELSE
+             AtmosP(i,j,bi,bj) = 1. _d 0
+         ENDIF
+#endif
+#endif
 #ifdef NUT_SUPPLY
 c artificial wvel for nutrient supply in 1-d and 2-d models
             IF ( darwin_nutWVelFile .NE. ' '  ) THEN

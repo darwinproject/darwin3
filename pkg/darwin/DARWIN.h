@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.10 2009/05/18 19:38:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.11 2009/05/29 18:32:50 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -176,17 +176,6 @@ c           have been tried
          _RL Knitb
          _RL diaz_growfac
 
-#ifdef ALLOW_CARBON
-         COMMON/darwin_carbon/ R_OP, wc_sink, wpic_sink,
-     &                 Kdoc, Kpremin_C, Kdissc
-         _RL R_OP
-         _RL wc_sink
-         _RL wpic_sink
-         _RL Kdoc
-         _RL Kpremin_C
-         _RL Kdissc
-#endif
-
 c    scav           - chemical scavenging rate for iron
 c    ligand_tot     - total organic ligand (assumed constant)
 c    ligand_stab    - ligand stability
@@ -256,3 +245,14 @@ c     &         Smallalphachl, Smallalphachlrange,
       _RL Geider_chl2cmax(npmax)
 #endif /* DAR_DIAG_CHL */
 
+
+#ifdef ALLOW_CARBON
+         COMMON/darwin_carbon/ R_OP, wc_sink, wpic_sink,
+     &                 Kdoc, Kpremin_C, Kdissc
+         _RL R_OP
+         _RL wc_sink
+         _RL wpic_sink
+         _RL Kdoc
+         _RL Kpremin_C
+         _RL Kdissc
+#endif

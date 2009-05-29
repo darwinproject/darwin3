@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.17 2009/05/15 21:29:47 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.18 2009/05/29 18:32:50 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,6 +26,7 @@ C==============================================================
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
 #include "DARWIN_IO.h"
+#include "DARWIN_FLUX.h"
 #include "DYNVARS.h"
 #ifdef USE_QSW
 #include "FFIELDS.h"
@@ -202,6 +203,10 @@ c tendencies
        _RL dalkl
        _RL do2l
        _RL dZooCl(nzmax)
+c air-sea fluxes
+       _RL flxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL flxALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL flxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
        _RL tot_Nfix
@@ -268,6 +273,26 @@ c ---------------------------
      &                       Ptr(1-OLx,1-OLy,1,bi,bj,iFeT), freefe,
      &                       myIter, mythid)
 c --------------------------
+#ifdef ALLOW_CARBON
+c air-sea flux of CO2
+         call dic_surfforcing(Ptr(1-OLx,1-OLy,1,bi,bj,iDIC),
+     &                        Ptr(1-OLx,1-OLy,1,bi,bj,iALK),
+     &                        Ptr(1-OLx,1-OLy,1,bi,bj,iPO4),
+     &                        Ptr(1-OLx,1-OLy,1,bi,bj,iSi),
+     &                        flxCO2,
+     &                    bi,bj,imin,imax,jmin,jmax,
+     &                    myIter,myTime,myThid)
+c air-sea flux of O2
+         call dic_o2_surfforcing(Ptr(1-OLx,1-OLy,1,bi,bj,iO2),
+     &                       flxO2,
+     &                    bi,bj,imin,imax,jmin,jmax,
+     &                    myIter,myTime,myThid)
+c dillusion of alkalinity
+         call dic_alk_surfforcing(Ptr(1-OLx,1-OLy,1,bi,bj,iALK),
+     &                       flxALK,
+     &                    bi,bj,imin,imax,jmin,jmax,
+     &                    myIter,myTime,myThid)
+#endif
 
  
 c find light in each grid cell
@@ -651,9 +676,9 @@ c
              picupl = PICl
 c include surface forcing
              if (k.eq.1) then
-              ddicl  =  ddicl  !+fluxco2(i,j,bi,bj)
-              dalkl  =  dalkl  !+fluxalk(i,j,bi,bj)
-              do2l   =  do2l   !+fluxo2(i,j,bi,bj)
+              ddicl  =  ddicl  + flxCO2(i,j,bi,bj)
+              dalkl  =  dalkl  + flxALK(i,j,bi,bj)
+              do2l   =  do2l   + flxO2(i,j,bi,bj)
              endif
 #endif
 c
@@ -899,6 +924,19 @@ c    &            py2*min(fu/(fu+flim2),
 c    &                      min(nu/(nu+nlim2),si/(si+slim2)) )  )
 c    &                          * deltaTclock/float(nsubtime)
 #endif
+
+#ifdef ALLOW_CARBON
+             if (k.eq.1) then
+              SURave(i,j,bi,bj)    =SURave(i,j,bi,bj)+
+     &                              flxco2(i,j,bi,bj)*dtplankton
+              SUROave(i,j,bi,bj)   =SUROave(i,j,bi,bj)+
+     &                              flxo2(i,j,bi,bj)*dtplankton
+              pCO2ave(i,j,bi,bj)   =pCO2ave(i,j,bi,bj)+
+     &                              pCO2(i,j,bi,bj)*dtplankton
+              pHave(i,j,bi,bj)     =pHave(i,j,bi,bj)+
+     &                              pH(i,j,bi,bj)*dtplankton
+             endif
+#endif
           endif  
 c end if hFac>0
 
@@ -1024,6 +1062,10 @@ c save averages
        do k=1,nR
          dar_timeave(bi,bj,k)=dar_timeave(bi,bj,k)
      &                         +dtplankton
+#ifdef ALLOW_CARBON
+         dic_timeave(bi,bj,k)=dic_timeave(bi,bj,k)
+     &                         +dtplankton
+#endif
        enddo
 #endif
 c

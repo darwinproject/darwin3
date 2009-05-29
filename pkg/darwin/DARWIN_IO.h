@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.11 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.12 2009/05/29 18:32:50 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -155,3 +155,21 @@ C     PARday    :: array for accumulating/storing daily-averaged PAR
       INTEGER darwin_PARnav
 #endif
 
+#ifdef ALLOW_CARBON
+C--   COMMON /DIC_FILENAMES/
+C  DIC_windFile    :: file name of wind speeds
+C  DIC_atmospFile  :: file name of atmospheric pressure
+C  dic_pCO2          :: Atmospheric pCO2 to be rad in data.dic
+C  dic_int*          :: place holder to read in a integer number, set at run time
+
+      COMMON /DIC_FILENAMES/
+     &        DIC_windFile, DIC_atmospFile, 
+     &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
+      CHARACTER*(MAX_LEN_FNAM) DIC_windFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_atmospFile
+      _RL dic_pCO2
+      INTEGER dic_int1
+      INTEGER dic_int2
+      INTEGER dic_int3
+      INTEGER dic_int4
+#endif

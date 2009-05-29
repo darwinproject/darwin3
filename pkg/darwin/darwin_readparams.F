@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.7 2009/03/04 20:47:39 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.8 2009/05/29 18:32:50 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -63,6 +63,12 @@ CEOP
      &       Cloern_A, Cloern_B, Cloern_C, Cloern_chl2cmin
 #endif
 
+#ifdef ALLOW_CARBON
+      NAMELIST /DIC_NAMES/
+     &        DIC_windFile, DIC_atmospFile,
+     &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
+#endif
+
 C Set defaults values for parameters in DARWIN_IO.h
       darwin_iceFile=' '
       darwin_ironFile=' '
@@ -78,6 +84,15 @@ C Set defaults values for parameters in DARWIN_IO.h
       darwin_Si_fluxFile=' '
       darwin_relaxscale=0. _d 0
       darwin_seed=0
+#ifdef ALLOW_CARBON
+       DIC_windFile  = ' '
+       DIC_atmospFile= ' '
+       dic_int1    = 0
+       dic_int2    = 0
+       dic_int3    = 0
+       dic_int4    = 0
+       dic_pCO2    = 0. _d 0
+#endif
 #ifdef ALLOW_PAR_DAY
       darwin_PARavPeriod=86400. _d 0
 #endif
