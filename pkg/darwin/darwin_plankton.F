@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.18 2009/05/29 18:32:50 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.19 2009/06/09 18:26:35 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -617,6 +617,12 @@ c steph's version
      &                      (abs(Tlocal - phytoTempOptimum(np)))**
      &                                         phytoDecayPower(np))) -
      &                      tempnorm
+#ifdef TWO_SPECIES_SETUP
+cswd -- this gives Eppley curve only
+             phytoTempFunction(np) = (
+     &                      (phytoTempExp1(np)**Tlocal))-
+     &                      tempnorm
+#endif
              phytoTempFunction(np) = phytoTempCoeff(np)*
      &                  max(phytoTempFunction(np), 1. _d -10)
              phytoTempFunction(np) = min(phytoTempFunction(np),1. _d 0)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.14 2009/05/18 19:38:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.15 2009/06/09 18:26:35 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -78,6 +78,10 @@ c at this point independent of whether diatom or coccolithophor or not
         else
           physize(np) = 0.0 _d 0
         end if
+#ifdef TWO_SPECIES_SETUP
+        if (np.eq.1) physize(np) = 1.0 _d 0
+        if (np.eq.2) physize(np) = 0.0 _d 0
+#endif
 c
 c phyto either diatoms (diacoc=1.0) and use silica or cocolithophor
 c (diacoc=2.0) and produce PIC or neither (diacoc=0.0)
@@ -101,6 +105,9 @@ c         endif
         else
            diacoc(np) = 0.0 _d 0
         endif
+#ifdef TWO_SPECIES_SETUP
+        diacoc(np) = 0.0 _d 0
+#endif
 c TEST ...........................................
 c       diacoc(np) = 0.0 _d 0
 c       write(msgBuf,'(A,I4,A)')
@@ -127,6 +134,9 @@ c TEST ...........................................
      &                      SQUEEZE_RIGHT , mythid)
 #endif
 c TEST ...........................................
+#ifdef TWO_SPECIES_SETUP
+        diazotroph(np) = 0.0 _d 0
+#endif
 
 
 c growth rates
@@ -141,6 +151,13 @@ c but diazotrophs always slower due to energetics
         if(diazotroph(np) .eq. 1.0 _d 0) then
             growthdays = growthdays * diaz_growfac
         endif 
+#ifdef TWO_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          growthdays = Biggrow 
+        else
+          growthdays = Smallgrow
+        end if
+#endif
 c now convert to a growth rate
         if (growthdays.gt.0. _d 0) then
          mu(np) = 1.0 _d 0/(growthdays*pday)
@@ -158,6 +175,13 @@ c big/small phyto mortality rates..
           mortdays = Smallmort +RandNo*Smallmortrange
           ExportFracP(np)=Smallexport
         end if
+#ifdef TWO_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          mortdays = Bigmort
+        else
+          mortdays = Smallmort
+        end if
+#endif
 c now convert to a mortality rate
         if (mortdays.gt.0. _d 0) then
           mortphy(np) = 1.0 _d 0/(mortdays*pday)
@@ -194,6 +218,9 @@ c           endif
         else
               nsource(np) = 0
         end if 
+#ifdef TWO_SPECIES_SETUP
+        nsource(np) = 3
+#endif
 
 c.....................................................
 c ANNA make selections for WAVEBANDS 
@@ -333,6 +360,13 @@ c           endif
              ksatPO4(np) = ProcPsat + RandNo*ProcPsatrange
            endif
         endif
+#ifdef TWO_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+           ksatPO4(np) = BigPsat 
+        else
+           ksatPO4(np) = SmallPsat
+        endif
+#endif
         ksatNO3(np) = ksatPO4(np)*R_NP(np)
         ksatNO2(np) = ksatNO3(np)*ksatNO2fac 
 c Made ksatNH4 smaller since it is the preferred source
@@ -363,6 +397,15 @@ c Low Light Groups for Small size:
                  RandNo = darwin_random_normal(myThid)
                  kinhib(np) = abs(smallkinhib+smallkinhibstd*RandNo)
               endif
+#ifdef TWO_SPECIES_SETUP
+              if(physize(np) .eq. 1.0 _d 0)then
+                 ksatPAR(np) = abs(Bigksatpar)
+                 kinhib(np) = abs(Bigkinhib)
+              else
+                 ksatPAR(np) = abs(smallksatpar)
+                 kinhib(np) = abs(smallkinhib)
+              endif
+#endif
          write(msgBuf,'(A,I4,A,1P1G24.15E3)')
      &     'generate Phyto: np = ',np,' ksatPAR    =', ksatPAR(np)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -385,6 +428,13 @@ c but diazotrophs always slower due to energetics
         if(diazotroph(np) .eq. 1.0 _d 0) then
             growthdays = growthdays * diaz_growfac
         endif
+#ifdef TWO_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          growthdays = Biggrow 
+        else
+          growthdays = Smallgrow 
+        end if
+#endif
 c now convert to a growth rate
         if (growthdays.gt.0. _d 0) then
          pcmax(np) = 1.0 _d 0/(growthdays*pday)
@@ -408,6 +458,13 @@ c big/small phyto Maximum Quantum Yield
         else
           mQyield(np) = SmallmQyield +RandNo*SmallmQyieldrange
         end if
+#ifdef TWO_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          mQyield(np) = BigmQyield
+        else
+          mQyield(np) = SmallmQyield
+        end if
+#endif
 
         RandNo = darwin_random(myThid)
 c big/small phyto C:Chl max
@@ -416,6 +473,13 @@ c big/small phyto C:Chl max
         else
           chl2cmax(np) = Smallchl2cmax +RandNo*Smallchl2cmaxrange
         end if
+#ifdef TWO_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          chl2cmax(np) = Bigchl2cmax 
+        else
+          chl2cmax(np) = Smallchl2cmax 
+        end if
+#endif
 c ANNA chl2cmin added
         chl2cmin(np) = 0.003  _d 0 * 12. _d 0  ! mg Chl a/mmol C
 
