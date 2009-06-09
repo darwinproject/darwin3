@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.30 2009/05/27 15:52:25 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.31 2009/06/09 19:04:36 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o two-species setup (no random choices): one big, one small
+  use #define TWO_SPECIES_SETUP
 
 ctrb_darwin_ckpt61o_20090527
 o upgrade to checkpoint61o of MITgcm
