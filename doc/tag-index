@@ -1,11 +1,14 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.31 2009/06/09 19:04:36 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.32 2009/06/10 18:50:53 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt61o_20090610
 o two-species setup (no random choices): one big, one small
   use #define TWO_SPECIES_SETUP
+o new files and modifications for air-sea exchange of CO2 and O2
+  (still in development)
 
 ctrb_darwin_ckpt61o_20090527
 o upgrade to checkpoint61o of MITgcm
