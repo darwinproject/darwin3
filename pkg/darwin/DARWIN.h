@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.11 2009/05/29 18:32:50 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.12 2009/06/10 16:11:35 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -78,7 +78,8 @@ c           have been tried
      &          ksatNH4fac, ksatNO2fac, val_ksatsi,
      &          ngrowfac, ilight,
      &          phymin, PAR0, diaz_growfac,
-     &          nsource,ngroups
+     &          nsource,ngroups,
+     &          phyto_esd, phyto_vol
     
          _RL mu(npmax)
          _RL ksatPO4(npmax)
@@ -156,6 +157,8 @@ c           have been tried
          _RL ngrowfac,ilight
          _RL phymin
          _RL PAR0
+         _RL phyto_esd(npmax)
+         _RL phyto_vol(npmax)
          INTEGER nsource(npmax)
          INTEGER ngroups
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.15 2009/06/09 18:26:35 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.16 2009/06/10 16:11:35 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,9 +56,14 @@ C     msgBuf    - Informational/error meesage buffer
         _RL fiveday
         _RL rtime
         _RL standin
+        _RL dm
+        _RL volp
+        _RL PI
         INTEGER np
         INTEGER nz
         INTEGER signvar
+        PARAMETER ( PI    = 3.14159265358979323844D0   )
+
 CEOP
 c
         standin=0. _d 0
@@ -82,6 +87,19 @@ c at this point independent of whether diatom or coccolithophor or not
         if (np.eq.1) physize(np) = 1.0 _d 0
         if (np.eq.2) physize(np) = 0.0 _d 0
 #endif
+
+c size of phytoplankton
+        if(physize(np).eq. 1.0 _d 0)then
+          dm = 10. _d 0  ! diameter (micrometer)
+        else
+          dm = 1. _d 0  ! diameter (micrometer)
+        end if
+c phytoplankton volume in micrometers cubed
+        volp=4. _d 0/3. _d 0 *PI*(dm/2. _d 0)**3 _d 0
+c
+c common block variables (in m and m3)
+        phyto_esd(np)=dm* 1. _d -6
+        phyto_vol(np)=volp* 1. _d -18
 c
 c phyto either diatoms (diacoc=1.0) and use silica or cocolithophor
 c (diacoc=2.0) and produce PIC or neither (diacoc=0.0)
