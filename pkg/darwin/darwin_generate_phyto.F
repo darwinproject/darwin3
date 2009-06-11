@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.16 2009/06/10 16:11:35 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.17 2009/06/11 18:51:21 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -541,53 +541,6 @@ c ANNA STEPH msgBuf changed for mQyield?
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , mythid)
 #endif
-
-#ifndef OLD_GRAZE
-c    for zooplankton
-c assume zoo(1) = small, zoo(2) = big
-         zoosize(1) = 0.0 _d 0
-         zoosize(2) = 1.0 _d 0
-         grazemax(1) = GrazeFast
-         grazemax(2) = GrazeFast
-         ExportFracZ(1)=ZooexfacSmall
-         ExportFracZ(2)=ZooexfacBig
-         mortzoo(1) = ZoomortSmall
-         mortzoo(2) = ZoomortBig
-         ExportFracGraz(1)=ExGrazFracbig
-         ExportFracGraz(2)=ExGrazFracsmall
-         IF ( nzmax.GT.2 ) THEN
-           WRITE(msgBuf,'(2A,I5)') 'DARWIN_GENERATE_PHYTO: ',
-     &       'nzmax = ', nzmax
-           CALL PRINT_ERROR( msgBuf , 1)
-           WRITE(msgBuf,'(2A)') 'DARWIN_GENERATE_PHYTO: ',
-     &       'please provide size info for nz > 2'
-           CALL PRINT_ERROR( msgBuf , 1)
-           STOP 'ABNORMAL END: S/R DARWIN_GENERATE_PHYTO'
-         ENDIF
-c
-          do nz=1,nzmax
-c palatibity according to "allometry"
-c big grazers preferentially eat big phyto etc...
-           if (zoosize(nz).eq.physize(np)) then
-              palat(np,nz)=palathi
-              asseff(np,nz)=GrazeEffmod
-           else
-              palat(np,nz)=palatlo
-              if (physize(np).eq.0. _d 0) then
-                asseff(np,nz)=GrazeEffhi
-              else
-                asseff(np,nz)=GrazeEfflow
-              endif
-           endif
-c diatoms even less palatible
-           if (diacoc(np).eq.1. _d 0) then
-               palat(np,nz)= palat(np,nz)*diatomgraz
-           endif
-           if (diacoc(np).eq.2. _d 0) then
-               palat(np,nz)= palat(np,nz)*coccograz
-           endif
-          enddo
-#endif 
 
         RETURN
         END

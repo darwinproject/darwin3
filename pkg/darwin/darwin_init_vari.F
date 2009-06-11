@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.19 2009/05/18 19:38:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.20 2009/06/11 18:51:21 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -103,57 +103,10 @@ c initialize total number of functional groups tried
 #endif
          end do
 
+c initialize zooplankton
+         call darwin_generate_zoo(MyThid)
+
 c %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#ifdef OLD_GRAZE
-c    for zooplankton
-c assume zoo(1) = small, zoo(2) = big
-c then grazing efficiency according to size
-         zoosize(1) = 0.0 _d 0
-         zoosize(2) = 1.0 _d 0
-         IF ( nzmax.GT.2 ) THEN
-           WRITE(msgBuf,'(2A,I5)') 'DARWIN_INIT_VARIA: ',
-     &       'nzmax = ', nzmax
-           CALL PRINT_ERROR( msgBuf , 1)
-           WRITE(msgBuf,'(2A)') 'DARWIN_INIT_VARIA: ',
-     &       'please provide size info for nz > 2'
-           CALL PRINT_ERROR( msgBuf , 1)
-           STOP 'ABNORMAL END: S/R DARWIN_INIT_VARIA'
-         ENDIF
-
-c grazing rates according to "allometry"
-c big grazers preferentially eat big phyto etc...
-         do np=1,npmax
-           do nz=1,nzmax
-             if(zoosize(nz) .eq. physize(np))then
-               graze(np,nz) = GrazeFast 
-             else 
-               graze(np,nz) = GrazeSlow 
-             end if
-             if (diacoc(np).eq.1) then
-               graze(np,nz)= graze(np,nz)*diatomgraz
-             endif
-             if (diacoc(np).eq.2) then
-               graze(np,nz)= graze(np,nz)*coccograz
-             endif
-             if (diacoc(np).eq.0.and.physize(np).eq.1) then
-               graze(np,nz)= graze(np,nz)*olargegraz
-             endif
-           end do
-         end do
-
-c zooplankton export/mortality       
-c small zooplankton (zoosize = 0.) lower export fraction
-         do nz = 1, nzmax
-           if(zoosize(nz) .eq. 0.0)then 
-             ExportFracZ(nz) = ZooexfacSmall
-             mortzoo(nz) = ZoomortSmall
-           else
-             ExportFracZ(nz) = ZooexfacBig
-             mortzoo(nz) = ZoomortBig
-           endif
-         end do
-#endif
-
 
 c ANNA call WAVEBANDS_INIT_VARI to assign variable parameters      
 #ifdef WAVEBANDS
