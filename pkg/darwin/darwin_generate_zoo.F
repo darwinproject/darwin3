@@ -123,7 +123,7 @@ c assume zoo(1) = small, zoo(2) = big
 c
           do nz=1,nzmax
 c size of phytoplankton
-           if(zoosize(np).eq. 1.0 _d 0)then
+           if(zoosize(nz).eq. 1.0 _d 0)then
              dm = 300. _d 0  ! diameter (micrometer)
            else
              dm = 30. _d 0  ! diameter (micrometer)
