@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.14 2009/05/29 18:32:50 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.15 2009/06/26 20:06:15 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -364,7 +364,7 @@ cQQ need to include ice model here, if used
              FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
 #else
 #ifdef ALLOW_SEAICE
-             FIce(i,j,bi,bj) = AREA(i,j,1,bi,bj)
+             FIce(i,j,bi,bj) = AREA(i,j,bi,bj)
 #else
            IF ( darwin_iceFile .NE. ' '  ) THEN
             fice(i,j,bi,bj)   = bWght*fice0(i,j,bi,bj)
