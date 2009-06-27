@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.20 2009/06/11 18:51:21 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.21 2009/06/27 01:00:33 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -156,6 +156,7 @@ c find mean
 #endif
 c ANNA endif
 
+         _BEGIN_MASTER(myThid)
 c write out initial phyto characteristics
 #ifndef GEIDER
          CALL MDSFINDUNIT( IniUnit1, mythid )
@@ -343,6 +344,7 @@ coj find unused units for darwin_cons output
         CALL MDSFINDUNIT( DAR_cons_unit4, mythid )
         open(DAR_cons_unit4,file='darwin_cons_Si.txt',status='unknown')
 #endif
+         _END_MASTER(myThid)
 
 c test....................
 c       write(6,*)'finishing darwin_init_vari '
