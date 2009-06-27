@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.18 2009/05/29 18:32:50 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.19 2009/06/27 01:00:57 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -731,7 +731,7 @@ c only works for two layer model
 #endif
 c
 c now update main tracer arrays
-          dtplankton = dTtracerLev(k)/float(nsubtime)
+          dtplankton = PTRACERS_dTLev(k)/float(nsubtime)
           Ptr(i,j,k,bi,bj,iPO4 ) = Ptr(i,j,k,bi,bj,iPO4) +
      &                                  dtplankton*dpo4l
           Ptr(i,j,k,bi,bj,iNO3 ) = Ptr(i,j,k,bi,bj,iNO3) +

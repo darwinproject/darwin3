@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.7 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.8 2009/06/27 01:00:57 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,6 +20,8 @@ C==============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GCHEM.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
 #include "DARWIN_IO.h"
@@ -86,7 +88,7 @@ c
        DO i=1-OLx,sNx+OLx
         do k=1,Nr
              Nut(i,j,k) = Nut(i,j,k)+
-     &                          dTtracerLev(k)*dnut(i,j,k)
+     &                          PTRACERS_dTLev(k)*dnut(i,j,k)
         enddo
 c end layer loop
        ENDDO
