@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.19 2009/06/27 01:00:57 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.20 2009/06/27 01:01:04 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -30,6 +30,9 @@ C==============================================================
 #include "DYNVARS.h"
 #ifdef USE_QSW
 #include "FFIELDS.h"
+#endif
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP.h"
 #endif
 
 c ANNA include wavebands_params.h
@@ -153,6 +156,7 @@ c some local variables
        _RL PSiupl
        _RL Tlocal
        _RL Slocal
+       _RL Qswlocal
        _RL NH4l
        _RL NO2l
        _RL PARl
@@ -302,7 +306,12 @@ c determine incident light
 #ifdef USE_QSW
          DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           sur_par(i,j,bi,bj)=-parfrac*Qsw(i,j,bi,bj)*
+#ifdef ALLOW_LONGSTEP
+           Qswlocal=LS_Qsw(i,j,bi,bj)
+#else
+           Qswlocal=Qsw(i,j,bi,bj)
+#endif
+           sur_par(i,j,bi,bj)=-parfrac*Qswlocal*
      &                         parconv*maskC(i,j,1,bi,bj)
          ENDDO
          ENDDO
@@ -515,8 +524,13 @@ c ANNA only define PARl here if not WAVEBANDS
              PARl = PAR(i,j,k)
 #endif
 
+#ifdef ALLOW_LONGSTEP
+             Tlocal = LS_theta(i,j,k,bi,bj)
+             Slocal = LS_salt(i,j,k,bi,bj)
+#else
              Tlocal = theta(i,j,k,bi,bj)
              Slocal = salt(i,j,k,bi,bj)
+#endif
 
              freefu = max(freefe(i,j,k),0. _d 0)
              if (k.eq.1) then
