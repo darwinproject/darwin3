@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.15 2009/06/26 20:06:15 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.16 2009/08/21 20:29:31 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,6 +38,9 @@ c#include "GCHEM.h"
 #ifdef ALLOW_OFFLINE
 #include "OFFLINE.h"
 #endif
+#ifdef OASIM
+#include "SPECTRAL.h"
+#endif
 
 C     == Routine arguments ==
       INTEGER myIter
@@ -61,6 +64,9 @@ C     msgBuf    - Informational/error meesage buffer
 #ifdef FLUX_NUTS
      &    , po4_flx0, po4_flx1, no3_flx0, no3_flx1
      &    , fet_flx0, fet_flx1, si_flx0, si_flx1
+#endif
+#ifdef OASIM
+     &    , oasim_ed0, oasim_ed1, oasim_es0, oasim_es1
 #endif
       _RS fice0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fice1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -98,7 +104,16 @@ C     msgBuf    - Informational/error meesage buffer
       _RS si_flx0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RS si_flx1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
 #endif
-       INTEGER bi,bj,i,j,k,intime0,intime1
+#ifdef OASIM
+      _RS oasim_ed0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,tlam,nSx,nSy)
+      _RS oasim_ed1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,tlam,nSx,nSy)
+      _RS oasim_es0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,tlam,nSx,nSy)
+      _RS oasim_es1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,tlam,nSx,nSy)
+      _RS tmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS tmp2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER ilam, fp, nj0, nj1
+#endif
+      INTEGER bi,bj,i,j,k,intime0,intime1
       _RL aWght,bWght,rdt
       _RL tmp1Wght, tmp2Wght
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
@@ -175,6 +190,25 @@ cQQQ need to check timing
           ENDDO
          ENDDO
 #endif
+#ifdef OASIM
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             tmp1(i,j,bi,bj) = 0. _d 0
+             tmp2(i,j,bi,bj) = 0. _d 0
+             DO ilam=1,tlam
+               oasim_ed0(i,j,ilam,bi,bj) = 0. _d 0
+               oasim_ed1(i,j,ilam,bi,bj) = 0. _d 0
+               oasim_es0(i,j,ilam,bi,bj) = 0. _d 0
+               oasim_es1(i,j,ilam,bi,bj) = 0. _d 0
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+#endif
+
 
 
        ENDIF
@@ -310,6 +344,62 @@ C      data for the period ahead and the period behind myTime.
      &        myIter,myThid )
        ENDIF
 #endif
+#ifdef OASIM
+      IF ( darwin_oasim_edFile .NE. ' '  ) THEN
+         nj0= (intime0-1)*tlam
+         nj1= (intime1-1)*tlam
+c        print*,'ZZ nj0,nj1',nj0, nj1, intime0, intime1
+         do ilam=1,tlam
+          nj0=nj0+1
+          CALL READ_REC_XY_RS( darwin_oasim_edFile, tmp1,nj0,
+     &        myIter,myThid )
+          nj1=nj1+1
+          CALL READ_REC_XY_RS( darwin_oasim_edFile, tmp2,nj1,
+     &        myIter,myThid )
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+               oasim_ed0(i,j,ilam,bi,bj) = tmp1(i,j,bi,bj)
+               oasim_ed1(i,j,ilam,bi,bj) = tmp2(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+c        print*,oasim_ed0(1,1,ilam,1,1), oasim_ed1(1,1,ilam,1,1)
+        enddo
+c       CALL READ_MFLDS_3D_RS( darwin_oasim_edFile, oasim_ed0,
+c    &               nj0, fp, tlam, myIter,myThid )
+c       CALL READ_MFLDS_3D_RS( darwin_oasim_edFile, oasim_ed1,
+c    &               nj1, fp, tlam, myIter,myThid )
+      ENDIF
+      IF ( darwin_oasim_esFile .NE. ' '  ) THEN
+         nj0= (intime0-1)*tlam
+         nj1= (intime1-1)*tlam
+         do ilam=1,tlam
+          nj0=nj0+1
+          CALL READ_REC_XY_RS( darwin_oasim_esFile, tmp1,nj0,
+     &        myIter,myThid )
+          nj1=nj1+1
+          CALL READ_REC_XY_RS( darwin_oasim_esFile, tmp2,nj1,
+     &        myIter,myThid )
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+               oasim_es0(i,j,ilam,bi,bj) = tmp1(i,j,bi,bj)
+               oasim_es1(i,j,ilam,bi,bj) = tmp2(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        enddo
+c       CALL READ_MFLDS_3D_RS( darwin_oasim_esFile, oasim_es0,
+c    &               nj0, fp, tlam, myIter,myThid )
+c       CALL READ_MFLDS_3D_RS( darwin_oasim_esFile, oasim_es1,
+c    &               nj1, fp, tlam, myIter,myThid )
+      ENDIF
+#endif
 
        _END_MASTER(myThid)
 C
@@ -349,7 +439,12 @@ C
        _EXCH_XYZ_RS(si_flx0, myThid )
        _EXCH_XYZ_RS(si_flx1, myThid )
 #endif
-
+#ifdef OASIM
+       CALL EXCH_3D_RS   (oasim_ed0, tlam, myThid)
+       CALL EXCH_3D_RS   (oasim_ed1, tlam, myThid)
+       CALL EXCH_3D_RS   (oasim_es0, tlam, myThid)
+       CALL EXCH_3D_RS   (oasim_es0, tlam, myThid)
+#endif
 
 
 C
@@ -473,6 +568,36 @@ c artificial wvel for nutrient supply in 1-d and 2-d models
      &                         +aWght*si_flx1(i,j,k,bi,bj)
              ENDDO
             ENDIF
+#endif
+#ifdef OASIM
+            IF ( darwin_oasim_edFile .NE. ' '  ) THEN
+c oasim data (load as Ein/m2/d; convert to uEin/m2/s)
+             DO ilam=1,tlam
+               oasim_ed(i,j,ilam,bi,bj) = 
+     &                          bWght*oasim_ed0(i,j,ilam,bi,bj)
+     &                         +aWght*oasim_ed1(i,j,ilam,bi,bj)
+               oasim_ed(i,j,ilam,bi,bj) =
+     &          oasim_ed(i,j,ilam,bi,bj)*1. _d 6/86400. _d 0
+             ENDDO
+            ENDIF
+            IF ( darwin_oasim_esFile .NE. ' '  ) THEN
+             DO ilam=1,tlam
+               oasim_es(i,j,ilam,bi,bj) =
+     &                          bWght*oasim_es0(i,j,ilam,bi,bj)
+     &                         +aWght*oasim_es1(i,j,ilam,bi,bj)
+               oasim_es(i,j,ilam,bi,bj) =
+     &          oasim_es(i,j,ilam,bi,bj)*1. _d 6/86400. _d 0
+             ENDDO
+            ENDIF
+#ifndef SPECTRAL
+c if not spectral add wavebands to give a single surface PAR
+            sur_par(i,j,bi,bj)= 0. _d 0
+            DO ilam=1,tlam
+              sur_par(i,j,bi,bj)=sur_par(i,j,bi,bj)+
+     &                             oasim_ed(i,j,ilam,bi,bj)+
+     &                             oasim_es(i,j,ilam,bi,bj)
+            ENDDO
+#endif
 #endif
 c
           ENDDO

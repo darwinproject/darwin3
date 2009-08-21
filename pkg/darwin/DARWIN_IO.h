@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.12 2009/05/29 18:32:50 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.13 2009/08/21 20:29:30 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -29,6 +29,7 @@ C  darwin_seed          :: seed for the random number generator
      &        darwin_relaxscale,
      &        darwin_PO4_fluxFile, darwin_NO3_FluxFile,
      &        darwin_FeT_fluxFile, darwin_Si_fluxFile,
+     &        darwin_oasim_edFile, darwin_oasim_esFile,
      &        darwin_forcingPeriod, darwin_forcingCycle,
      &        darwin_seed
 
@@ -44,6 +45,8 @@ C  darwin_seed          :: seed for the random number generator
       CHARACTER*(MAX_LEN_FNAM) darwin_NO3_fluxFile
       CHARACTER*(MAX_LEN_FNAM) darwin_FeT_fluxFile
       CHARACTER*(MAX_LEN_FNAM) darwin_Si_fluxFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_oasim_edFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_oasim_esFile
       _RL darwin_relaxscale
       _RL     darwin_forcingPeriod
       _RL     darwin_forcingCycle

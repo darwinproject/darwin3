@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.20 2009/06/27 01:01:04 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.21 2009/08/21 20:29:31 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -379,7 +379,12 @@ c taken into account
 c ANNA split surface PAR into wavebands
 #ifdef WAVEBANDS
          do ilam = 1,tlam
+#ifdef OASIM
+          sfPAR(ilam) = oasim_ed(i,j,ilam,bi,bj)+
+     &                      oasim_es(i,j,ilam,bi,bj)
+#else
           sfPAR(ilam) = sf(ilam)*lite
+#endif
           PARwupl(ilam) = sfPAR(ilam)
           PARwl(ilam) = 0. _d 0
          enddo
