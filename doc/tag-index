@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.37 2009/08/20 15:00:11 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.38 2009/08/25 21:46:50 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt61u_20090825
+o upgrade to checkpoint61u of MITgcm
+o add ability to read OASIM spectral data. add placeholder for SPECTRAL.h
 
 ctrb_darwin_ckpt61t_20090820
 o upgrade to checkpoint61t of MITgcm
