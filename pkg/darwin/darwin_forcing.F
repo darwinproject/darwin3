@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.21 2009/08/21 20:29:31 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.22 2009/08/26 21:39:03 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -689,6 +689,18 @@ c
              do np=1,npmax
                Phyup(np) = Phy(np) 
              enddo
+
+#ifdef IRON_SED_SOURCE
+c only above minimum depth (continental shelf)
+             if (rF(k).lt.depthfesed) then
+c only if bottom layer
+               if (HFacC(i,j,k+1,bi,bj).eq.0. _d 0) then
+                 dFetl=dFetl+fesedflux/
+     &                   (drF(k)*hFacC(i,j,k,bi,bj))
+               endif
+             endif
+#endif
+
 c
 #ifdef ALLOW_CARBON
              pocupl = POCl

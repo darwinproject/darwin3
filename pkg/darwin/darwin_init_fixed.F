@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.16 2009/05/29 18:32:50 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.17 2009/08/26 21:39:03 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -87,6 +87,19 @@ c iron related
       ligand_tot=1. _d -3                   !total ligand (uM)
       ligand_stab=2. _d 5                   !ligand stability rate ratio
       freefemax = .4 _d -3                  ! max free fe
+
+#ifdef IRON_SED_SOURCE
+c iron sediment source
+      depthfesed=1000.0 _d 0       !depth above which to add sediment source
+      fesedflux =1.0 _d 0 * 1.0 _d -3 / (86400.0 _d 0) !iron flux
+#endif
+#ifdef PART_SCAV
+      scav_rat=0.005 _d 0 /(86400.0 _d 0)
+      scav_inter=0.079 _d 0
+      scav_exp=0.58 _d 0
+#endif
+
+
 c
 c oxidation rates for ammonium and nitrite
 c i.e. Knita ...    NH4 -> NO2

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.19 2009/06/09 18:26:35 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.20 2009/08/26 21:39:03 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -355,6 +355,12 @@ c variables for conversions from phyto and zoo to DOM and POM
          _RL tmpr,tmpz, tmpgrow, tmp1, tmp2
 
          integer ITEST
+
+#ifdef PART_SCAV
+        _RL scav_part
+        _RL scav_poc
+#endif
+
 
 c ANNA local variables for WAVEBANDS
 #ifdef WAVEBANDS 
@@ -1321,7 +1327,12 @@ c NH4 -> NO2 -> NO3 by bacterial action
      &                *NO2local 
 c           NO2prod = knita*NH4local
 c           NO3prod = knitb*NO2local
-
+c
+#ifdef PART_SCAV
+            scav_poc=POPlocal/1.1321 _d -4
+c scav rate 
+            scav_part=scav_rat*scav_inter*(scav_poc**scav_exp)
+#endif
 c -------------------------------------------------------------------
 c calculate tendency terms (and some diagnostics)
 c ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -1423,7 +1434,12 @@ c sum contributions to inorganic nutrient tendencies
      &                                   + NO3prod
 c-ONLYNO3   dNO3dt =  - consumpNO3 +  preminN  + DONremin
             dFeTdt =  - consumpFeT +  preminFe + DOFeremin
-     &                 - scav*freefelocal + alpfe*inputFelocal/dzlocal
+#ifdef PART_SCAV
+     &                 - scav_part*freefelocal +
+#else
+     &                 - scav*freefelocal + 
+#endif          
+     &                 alpfe*inputFelocal/dzlocal
             dSidt  =  - consumpSi  +  preminSi
 
 c tendency of dissolved organic pool

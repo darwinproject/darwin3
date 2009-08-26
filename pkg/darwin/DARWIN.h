@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.13 2009/06/11 18:51:21 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.14 2009/08/26 21:39:03 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -81,6 +81,12 @@ c           have been tried
      &          nsource,ngroups,
      &          phyto_esd, phyto_vol,
      &          zoo_esd, zoo_vol
+#ifdef IRON_SED_SOURCE
+     &         ,depthfesed,fesedflux
+#endif
+#ifdef PART_SCAV
+     &         ,scav_rat, scav_inter, scav_exp
+#endif
     
          _RL mu(npmax)
          _RL ksatPO4(npmax)
@@ -162,6 +168,13 @@ c           have been tried
          _RL phyto_vol(npmax)
          _RL zoo_esd(nzmax)
          _RL zoo_vol(nzmax)
+#ifdef IRON_SED_SOURCE
+         _RL depthfesed, fesedflux
+#endif
+#ifdef PART_SCAV
+         _RL scav_rat, scav_inter, scav_exp
+#endif
+
          INTEGER nsource(npmax)
          INTEGER ngroups
 
