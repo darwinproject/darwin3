@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.21 2009/06/27 01:00:33 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.22 2009/08/27 18:41:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,6 +31,12 @@ c#include "GCHEM.h"
 c ANNA define params for WAVEBANDS
 #ifdef WAVEBANDS
 #include "WAVEBANDS_PARAMS.h"
+#endif
+
+#ifdef ALLOW_DIAZ
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #endif
 
 
@@ -102,6 +108,26 @@ c initialize total number of functional groups tried
             call darwin_generate_phyto(MyThid, np)
 #endif
          end do
+
+c reduce amount of diaz 
+#ifdef ALLOW_DIAZ
+        do np = 1, npmax
+         if (diazotroph(np) .eq. 1. _d 0) then
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             DO k=1,nR
+               Ptracer(i,j,k,bi,bj,iPhy+np-1) =  
+     &                Ptracer(i,j,k,bi,bj,iPhy+np-1)/10. _d 0
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         endif
+        enddo
+#endif
 
 c initialize zooplankton
          call darwin_generate_zoo(MyThid)
@@ -319,6 +345,14 @@ c ANNA end TAVE
           CALL TIMEAVE_RESET(Diver2ave,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(Diver3ave,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(Diver4ave,   Nr,  bi, bj, myThid)
+#endif
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+          do np=1,npmax
+           CALL TIMEAVE_RESET(NfixPave(1-OLx,1-OLy,1,1,1,np),
+     &                                      Nr,bi,bj,myThid)
+          enddo
+#endif
 #endif
 c         CALL TIMEAVE_RESET(SURave,   1,  bi, bj, myThid)
           WRITE(msgbuf,'(A)')

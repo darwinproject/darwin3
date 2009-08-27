@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.17 2009/06/11 18:51:21 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.18 2009/08/27 18:41:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -372,9 +372,14 @@ c          ksatPO4(np) = SmallPsat + RandNo*SmallPsatrange
 c          if (nsource(np).lt.3) then
 c            ksatPO4(np) = ksatPO4(np)*prochlPsat
 c           endif
-           if (nsource(np).eq.3.or.nsource(np).eq.0) then
+           if (nsource(np).eq.3) then
              ksatPO4(np) = SmallPsat + RandNo*SmallPsatrange
-           else
+           endif
+           if (nsource(np).eq..0) then
+c            ksatPO4(np) = SmallPsat + RandNo*SmallPsatrange
+             ksatPO4(np) = UniDzPsat + RandNo*UniDzPsatrange 
+           endif
+           if (nsource(np).eq.2.or.nsource(np).eq.1) then
              ksatPO4(np) = ProcPsat + RandNo*ProcPsatrange
            endif
         endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.20 2009/08/26 21:39:03 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.21 2009/08/27 18:41:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,6 +51,9 @@ c ANNA pass extra variables if WAVEBANDS
      I                       freefelocal, inputFelocal,
      I                       bottom, dzlocal,
      O                       Rstarlocal, RNstarlocal,
+#ifdef ALLOW_DIAZ
+     O                       NfixPlocal,
+#endif
      O                       dphytodt, dzooPdt, dzooNdt, dzooFedt,
      O                       dzooSidt,
      O                       dPO4dt, dNO3dt, dFeTdt, dSidt,
@@ -138,6 +141,9 @@ c zoo   = zooplankton
          _RL dzlocal
          _RL Rstarlocal(npmax)
          _RL RNstarlocal(npmax)
+#ifdef ALLOW_DIAZ
+         _RL NfixPlocal(npmax)
+#endif
          INTEGER debug
          _RL dphytodt(npmax)
          _RL dzooPdt(nzmax)
@@ -507,6 +513,9 @@ c set up other variable used more than once to zero
            NH4limit(np)=0. _d 0
            NO2limit(np)=0. _d 0
            NO3limit(np)=0. _d 0
+#ifdef ALLOW_DIAZ
+           NfixPlocal(np)=0. _d 0
+#endif
          enddo
 
 
@@ -1253,6 +1262,9 @@ c New Way of doing Nitrogen Consumption .......................
                  consumpNO2 = consumpNO2
                  consumpNH4 = consumpNH4
                  Nfix=Nfix+PspecificPO4(np)*R_NP(np)
+#ifdef ALLOW_DIAZ
+                 NfixPlocal(np)=PspecificPO4(np)*R_NP(np)
+#endif
                endif
 #ifdef ALLOW_CARBON
                consumpDIC  = consumpDIC  + PspecificPO4(np)*R_PC(np)

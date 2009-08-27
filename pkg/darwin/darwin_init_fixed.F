@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.17 2009/08/26 21:39:03 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.18 2009/08/27 18:41:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -99,6 +99,9 @@ c iron sediment source
       scav_exp=0.58 _d 0
 #endif
 
+c depth for denitrification to start
+      depthdenit=185.0 _d 0
+
 
 c
 c oxidation rates for ammonium and nitrite
@@ -189,13 +192,15 @@ c set phosphate half stauration constants .. small or big organism
        SmallPsat=0.015 _d 0
        BigPsat=0.035 _d 0
        ProcPsat=0.01 _d 0
+       UniDzPsat=0.012 _d 0
        SmallPsatrange=0.02 _d 0
        BigPsatrange=0.02 _d 0
        ProcPsatrange=0.005 _d 0
+       UniDzPsat=0.02 _d 0
 c set NH4/NO2 frac, so that NH4/NO2 can be preferred nitrogen source
        ksatNH4fac=.50 _d 0
        ksatNO2fac=1.0 _d 0
-c set prochl lower half-sat
+c set prochl lower half-sat (used only for mutants)
        prochlPsat=.85 _d 0
 c ammonia and nitrite inhibition
        sig1 = 4.6 _d 0
@@ -206,12 +211,12 @@ c ammonia and nitrite inhibition
 c set si half sat
        val_ksatsi=1. _d 0
 c set nutrient ratios for phyto
-       val_R_SiP_diatom=16.0 _d 0
-       val_R_NP_diaz=40.0 _d 0
-       val_RFeP_diaz=7.5 _d -3
+       val_R_SiP_diatom=16.0 _d 0  ! 32 for Fanny's runs
        val_R_NP=16.0 _d 0
        val_RFeP=1.0 _d -3
-       val_R_PC=120 _d 0
+       val_R_NP_diaz=40.0 _d  0
+       val_RFeP_diaz=30.0 _d 0 * val_RFeP
+       val_R_PC=120.0 _d 0
        val_R_PICPOC=0.8 _d 0
 #ifdef OLD_GRAZE
 c grazing hlaf saturation

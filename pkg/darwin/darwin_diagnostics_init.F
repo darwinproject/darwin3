@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.8 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.9 2009/08/27 18:41:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -139,6 +139,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid )
 #endif /* DAR_DIAG_DIVER */
+
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+      DO np=1,MIN(99,npmax)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|C--    Add diagnostics of NFix
+       WRITE(diagName,'(A,I2.2,A)') 'NfixP',np,' '
+       WRITE(diagTitle,'(A,I2.2)') 'Nfix of Phy', np
+       diagUnits = 'mmol N/m^3      '
+       diagCode  = 'SM P    MR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|      ENDDO /* np */
+      ENDDO /* np */
+#endif /* DAR_DIAG_NFIXP */
+#endif
 
 #ifdef ALLOW_PAR_DAY
       diagName = 'PARday  '

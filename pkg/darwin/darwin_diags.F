@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.7 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.8 2009/08/27 18:41:30 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -108,8 +108,16 @@ c ANNA end TAVE
      &                          DAR_timeave, nR ,
      &                 bi,bj,myThid)
 #endif
-c        CALL TIMEAVE_NORMALIZ(SURave,dic_timeave, 1 ,
-c    &                 bi,bj,myThid)
+
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+         do np=1,npmax
+           CALL TIMEAVE_NORMALIZ(NfixPave(1-Olx,1-Oly,1,1,1,np),
+     &                          DAR_timeave, nR ,
+     &                 bi,bj,myThid)
+         enddo
+#endif
+#endif
         ENDDO
        ENDDO
        
@@ -161,8 +169,17 @@ c ANNA end TAVE
          CALL WRITE_FLD_XYZ_RL('DAR_Diver4tave.',suff,Diver4ave,
      &        myIter,myThid)
 #endif
-c        CALL WRITE_FLD_XY_RL('DIC_Surtave.',suff,SURave,
-c    &        myIter,myThid)
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+         do np=1,npmax
+           WRITE(suff,'(A7,I2.2,A1,I10.10)') 'NfixPave',
+     &           np,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           NfixPave(1-Olx,1-Oly,1,1,1,np),
+     &           myIter,myThid)
+         enddo
+#endif
+#endif
        ENDIF
 
 #ifdef ALLOW_MNC
@@ -225,9 +242,20 @@ c ANNA end TAVE
          CALL MNC_CW_RL_W(
      &        pf,'dar_tave',0,0,'dar_Diver4_ave',Diver4ave,myThid)
 #endif
-c        CALL MNC_CW_RL_W(
-c    &        pf,'dic_tave',0,0,'dic_SUR_ave',SURave,myThid)
-c        CALL MNC_CW_RL_W(
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+         do np=1,npmax
+            ii=PTRACERS_numInUse-npmax+np
+            DO jj = 1,MAX_LEN_FNAM
+              name(jj:jj) = ' '
+            ENDDO
+            ilnb = ILNBLNK(PTRACERS_names(ii))
+            WRITE(name,'(a,a)') 'dar_NfixP_',PTRACERS_names(ii)(1:ilnb)
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           NfixPave(1-OLx,1-OLy,1,1,1,np),myThid)
+         enddo
+#endif
+#endif
        ENDIF
 #endif
 
@@ -262,7 +290,14 @@ c ANNA and TAVE
          CALL TIMEAVE_RESET(Diver3ave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(Diver4ave,Nr,bi,bj,myThid)
 #endif
-c        CALL TIMEAVE_RESET(SURave,1,bi,bj,myThid)
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+         do np=1,npmax
+           CALL TIMEAVE_RESET(NfixPave(1-OLx,1-OLy,1,1,1,np),
+     &                                      Nr,bi,bj,myThid)
+         enddo
+#endif
+#endif
          do k=1,Nr
            DAR_TimeAve(bi,bj,k)=0.d0
          enddo

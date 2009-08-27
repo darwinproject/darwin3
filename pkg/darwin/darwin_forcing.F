@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.22 2009/08/26 21:39:03 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.23 2009/08/27 18:41:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -113,6 +113,11 @@ c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
       _RL  Rstararr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,npmax)
 #endif
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+      _RL  NfixParr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,npmax)
+#endif
+#endif
 #endif
 
 
@@ -168,6 +173,9 @@ c some local variables
        _RL Chl
        _RL Rstarl(npmax)
        _RL RNstarl(npmax)
+#ifdef ALLOW_DIAZ
+       _RL NfixPl(npmax)
+#endif
 
 c local tendencies
        _RL dphy(npmax)
@@ -254,6 +262,13 @@ c ANNA end TAVE
            ENDDO
 #endif
 COJ
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+           DO np=1,npmax
+             NfixParr(i,j,k,np) = 0. _d 0
+           ENDDO
+#endif
+#endif
 #endif
         enddo
        ENDDO
@@ -593,6 +608,9 @@ c set other arguments to zero
              do np=1,npmax
                 Rstarl(np)=0. _d 0
                 RNstarl(np)=0. _d 0
+#ifdef ALLOW_DIAZ
+                NfixPl(np)=0. _d 0
+#endif
              enddo
 
 
@@ -637,6 +655,9 @@ c ANNA pass extra variables if WAVEBANDS
      I                       freefu, inputFel,
      I                       bottom, dzlocal,
      O                       Rstarl, RNstarl,
+#ifdef ALLOW_DIAZ
+     O                       NfixPl,
+#endif
      O                       dphy, dzooP, dzooN, dzooFe,
      O                       dzooSi,
      O                       dPO4l, dNO3l, dFeTl, dSil,
@@ -723,6 +744,29 @@ c only works for two layer model
             endif
 #endif
 #ifdef RELAX_NUTS
+#ifdef DENIT_RELAX
+           if (rF(k).gt.depthdenit) then
+            if (darwin_relaxscale.gt.0. _d 0) then
+             IF ( darwin_NO3_RelaxFile .NE. ' '  ) THEN
+c Fanny's formulation
+              tmp=(Ptr(i,j,k,bi,bj,iNO3 )-no3_obs(i,j,k,bi,bj))
+              if (tmp.gt.0. _d 0) then
+                dno3l=dno3l-(tmp/
+     &                      darwin_relaxscale)
+              endif
+c --- end fanny's formulation
+             ENDIF
+c steph's alternative
+c            tmp=(Ptr(i,j,k,bi,bj,iNO3 )-
+c    &                16. _d 0 * Ptr(i,j,k,bi,bj,iPO4 ))
+c            if (tmp.gt.0. _d 0) then
+c               dno3l=dno3l-(tmp/
+c    &                      darwin_relaxscale)
+c             endif
+c ---- end steph's alternative
+            endif
+           endif
+#else
             if (darwin_relaxscale.gt.0. _d 0) then
              IF ( darwin_PO4_RelaxFile .NE. ' '  ) THEN
               tmp=(Ptr(i,j,k,bi,bj,iPO4 )-po4_obs(i,j,k,bi,bj))
@@ -753,6 +797,7 @@ c only works for two layer model
               endif
              ENDIF
             endif
+#endif
 #endif
 #ifdef FLUX_NUTS
                 dpo4l=dpo4l+po4_flx(i,j,k,bi,bj)
@@ -879,6 +924,13 @@ c ANNA end TAVE
                Rstararr(i,j,k,np) = Rstarl(np)
              ENDDO
 #endif
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+             DO np = 1,npmax
+               NfixParr(i,j,k,np) = NfixPl(np)
+             ENDDO
+#endif
+#endif
 #ifdef DAR_DIAG_CHL
              GeiderChlarr(i,j,k) = ChlGeiderlocal
              DoneyChlarr(i,j,k) = ChlDoneylocal
@@ -947,13 +999,14 @@ c ANNA end TAVE
              Diver4ave(i,j,k,bi,bj)=Diver4ave(i,j,k,bi,bj)+
      &                           Diver4(i,j,k)*dtplankton
 #endif
-c            Chlave(i,j,k,bi,bj)=Chlave(i,j,k,bi,bj)+
-c    &           (chlpmax-(chlpmax-chlpmin)*
-c    &           min(lite*exp(-atten)/istar, 1. _d 0) )*
-c    &           (py1*min(nu/(nu+nlim1),fu/(fu+flim1)) +
-c    &            py2*min(fu/(fu+flim2),
-c    &                      min(nu/(nu+nlim2),si/(si+slim2)) )  )
-c    &                          * deltaTclock/float(nsubtime)
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+             do np=1,npmax
+               NfixPave(i,j,k,bi,bj,np)=NfixPave(i,j,k,bi,bj,np)+
+     &                           NfixPl(np)*dtplankton
+             enddo
+#endif
+#endif
 #endif
 
 #ifdef ALLOW_CARBON
@@ -1064,6 +1117,15 @@ c ANNA end TAVE
         WRITE(diagname,'(A8)') 'Diver4  '
         CALL DIAGNOSTICS_FILL( Diver4(1-Olx,1-Oly,1), diagname,
      &                         0,Nr,2,bi,bj,myThid )
+#endif
+#ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
+        DO np=1,MIN(99,npmax)
+         WRITE(diagname,'(A5,I2.2,A1)') 'NfixP',np,' '
+         CALL DIAGNOSTICS_FILL( NfixParr(1-Olx,1-Oly,1,np), diagname,
+     &                          0,Nr,2,bi,bj,myThid )
+        ENDDO
+#endif
 #endif
 #ifdef DAR_DIAG_CHL
         CALL DIAGNOSTICS_FILL( GeiderChlarr(1-Olx,1-Oly,1), 'ChlGeide',
