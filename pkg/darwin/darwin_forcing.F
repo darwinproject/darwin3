@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.23 2009/08/27 18:41:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.24 2009/08/31 22:15:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -174,7 +174,9 @@ c some local variables
        _RL Rstarl(npmax)
        _RL RNstarl(npmax)
 #ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
        _RL NfixPl(npmax)
+#endif
 #endif
 
 c local tendencies
@@ -609,7 +611,9 @@ c set other arguments to zero
                 Rstarl(np)=0. _d 0
                 RNstarl(np)=0. _d 0
 #ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
                 NfixPl(np)=0. _d 0
+#endif
 #endif
              enddo
 
@@ -656,7 +660,9 @@ c ANNA pass extra variables if WAVEBANDS
      I                       bottom, dzlocal,
      O                       Rstarl, RNstarl,
 #ifdef ALLOW_DIAZ
+#ifdef DAR_DIAG_NFIXP
      O                       NfixPl,
+#endif
 #endif
      O                       dphy, dzooP, dzooN, dzooFe,
      O                       dzooSi,
