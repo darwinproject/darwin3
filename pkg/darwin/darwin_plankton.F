@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.22 2009/08/31 22:15:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.23 2009/09/15 23:38:12 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -299,6 +299,7 @@ c variables for nutrient uptake
          _RL consumpSi
 
 c variables for reminerlaization of DOM and POM
+         _RL reminTempFunction
          _RL DOPremin
          _RL DONremin
          _RL DOFeremin
@@ -549,17 +550,13 @@ c as zeros too
 ccccccccccccccccccccccccccccccc
 #endif
 
+
+c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+          call DARWIN_TEMPFUNC(Tlocal,phytoTempFunction,
+     &            zooTempFunction, reminTempFunction, myThid)
+          if (debug.eq.1) print*,'phytoTempFunction',
+     &                          phytoTempFunction, Tlocal
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c Determine ZooPlankton Temp Dep. Function: will affect maximum
-c grazing rates
-          do nz = 1,nzmax  
-c              zooTempFunction(nz) = zooTempCoeff(nz)*EXP(
-c    &             zooTempExp(nz)*(Tlocal - zooTempOptimum(nz)))
-            zooTempFunction(nz) = 1.0 _d 0
-          end do   
-Ccccccccccccccccccccccccccccccccccc ccccccccccccccccccccccccccccccc
-
-
 c..........................................................
 c ANNA do light attenuation for wavebands 
 c.......................................................... 
@@ -628,31 +625,6 @@ c using Platt-like equations with inhibition
 #endif
 c ANNA endif
 
-c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c Determine temperature Dependent Growth function for Phyto
-          do np=1, npmax
-c steph's version
-             phytoTempFunction(np) = (
-     &                      (phytoTempExp1(np)**Tlocal)*
-     &                      exp(- phytoTempExp2(np)*
-     &                      (abs(Tlocal - phytoTempOptimum(np)))**
-     &                                         phytoDecayPower(np))) -
-     &                      tempnorm
-#ifdef TWO_SPECIES_SETUP
-cswd -- this gives Eppley curve only
-             phytoTempFunction(np) = (
-     &                      (phytoTempExp1(np)**Tlocal))-
-     &                      tempnorm
-#endif
-             phytoTempFunction(np) = phytoTempCoeff(np)*
-     &                  max(phytoTempFunction(np), 1. _d -10)
-             phytoTempFunction(np) = min(phytoTempFunction(np),1. _d 0)
-
-c no temp limitation
-c             phytoTempFunction(np) = 1.0 _d 0
-          enddo
-          if (debug.eq.1) print*,'phytoTempFunction',
-     &                          phytoTempFunction, Tlocal
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c Determine phytoplankton nutrient limitation as mimimum of 
 c P,N,Si,Fe. However N can be utilized in several forms, so
@@ -1199,24 +1171,24 @@ c accumulate particulate and dissolved detritus
 #ifndef OLD_GRAZE
             do nz=1, nzmax
                totzoo_pop=totzoo_pop+
-     &                    +ExportFracGraz(nz)*sumgrazloss(nz)
+     &                    ExportFracGraz(nz)*sumgrazloss(nz)
                totzoo_dop=totzoo_dop+
-     &                 +(1. _d 0-ExportFracGraz(nz))*sumgrazloss(nz)
+     &                 (1. _d 0-ExportFracGraz(nz))*sumgrazloss(nz)
                totzoo_pon=totzoo_pon+
-     &                    +ExportFracGraz(nz)*sumgrazlossN(nz)
+     &                    ExportFracGraz(nz)*sumgrazlossN(nz)
                totzoo_don=totzoo_don+
-     &                 +(1. _d 0-ExportFracGraz(nz))*sumgrazlossN(nz)
+     &                 (1. _d 0-ExportFracGraz(nz))*sumgrazlossN(nz)
                totzoo_pofe=totzoo_pofe+
-     &                    +ExportFracGraz(nz)*sumgrazlossFe(nz)
+     &                    ExportFracGraz(nz)*sumgrazlossFe(nz)
                totzoo_dofe=totzoo_dofe+
-     &                 +(1. _d 0-ExportFracGraz(nz))*sumgrazlossFe(nz)
+     &                 (1. _d 0-ExportFracGraz(nz))*sumgrazlossFe(nz)
                totzoo_posi=totzoo_posi+
-     &                     +sumgrazlossSi(nz)
+     &                     sumgrazlossSi(nz)
 #ifdef ALLOW_CARBON
                totzoo_poc=totzoo_poc+
-     &                    +ExportFracGraz(nz)*sumgrazlossC(nz)
+     &                    ExportFracGraz(nz)*sumgrazlossC(nz)
                totzoo_doc=totzoo_doc+
-     &                 +(1. _d 0-ExportFracGraz(nz))*sumgrazlossC(nz)
+     &                 (1. _d 0-ExportFracGraz(nz))*sumgrazlossC(nz)
 #endif
             enddo
 #endif
@@ -1322,19 +1294,19 @@ c sinking phytoplankton and POM
             endif
 
 c DOM remineralization rates
-            DOPremin =  Kdop * DOPlocal
-            DONremin =  Kdon * DONlocal
-            DOFeremin =  KdoFe * DOFelocal
+            DOPremin =  reminTempFunction * Kdop * DOPlocal
+            DONremin =  reminTempFunction * Kdon * DONlocal
+            DOFeremin =  reminTempFunction * KdoFe * DOFelocal
 
 c remineralization of sinking particulate
-            preminP  = Kpremin_P*POPlocal
-            preminN  = Kpremin_N*PONlocal
-            preminFe = Kpremin_Fe*POFelocal
-            preminSi = Kpremin_Si*PSilocal
+            preminP  = reminTempFunction * Kpremin_P*POPlocal
+            preminN  = reminTempFunction * Kpremin_N*PONlocal
+            preminFe = reminTempFunction * Kpremin_Fe*POFelocal
+            preminSi = reminTempFunction * Kpremin_Si*PSilocal
 
 #ifdef ALLOW_CARBON
-           DOCremin =  Kdoc * DOClocal
-           preminC  = Kpremin_C*POClocal
+           DOCremin =  reminTempFunction * Kdoc * DOClocal
+           preminC  = reminTempFunction * Kpremin_C*POClocal
 c dissolution
            disscPIC = Kdissc*PIClocal
 #endif
