@@ -43,8 +43,8 @@ c            if undefined, then full Eppley/Arrenhius curve used
 
 #undef NOTEMP
 #define TEMP_RANGE
-#undef  OLDVERSION   
-#define VERSION2
+#define OLDVERSION   
+#undef  VERSION2
 
 c if two species setup we don't want specific temperature ranges
 #ifdef  TWO_SPECIES_SETUP
