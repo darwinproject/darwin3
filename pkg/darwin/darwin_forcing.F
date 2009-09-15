@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.24 2009/08/31 22:15:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.25 2009/09/15 17:04:12 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -709,6 +709,25 @@ c              print*,'dNO3 etc',dNO3l,dNH4l, dNO2l
 c              print*,'PO4',PO4l,dPO4l
 c            endif
 c
+#ifdef IRON_SED_SOURCE
+c only above minimum depth (continental shelf)
+             if (rF(k).lt.depthfesed) then
+c only if bottom layer
+               if (HFacC(i,j,k+1,bi,bj).eq.0. _d 0) then
+#ifdef IRON_SED_SOURCE_VARIABLE
+c calculate sink of POP into bottom layer
+                tmp=(wp_sink*POPupl)/(dzlocal)
+c convert to dPOCl
+                dFetl=dFetl+fesedflux_pcm*(tmp*106. _d 0)
+#else
+                 dFetl=dFetl+fesedflux/
+     &                   (drF(k)*hFacC(i,j,k,bi,bj))
+#endif
+               endif
+             endif
+#endif
+
+
              popupl = POPl
              ponupl = PONl
              pofeupl = POFel
@@ -717,16 +736,6 @@ c
                Phyup(np) = Phy(np) 
              enddo
 
-#ifdef IRON_SED_SOURCE
-c only above minimum depth (continental shelf)
-             if (rF(k).lt.depthfesed) then
-c only if bottom layer
-               if (HFacC(i,j,k+1,bi,bj).eq.0. _d 0) then
-                 dFetl=dFetl+fesedflux/
-     &                   (drF(k)*hFacC(i,j,k,bi,bj))
-               endif
-             endif
-#endif
 
 c
 #ifdef ALLOW_CARBON

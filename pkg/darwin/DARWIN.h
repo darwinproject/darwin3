@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.15 2009/08/27 18:41:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.16 2009/09/15 17:04:11 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -83,7 +83,7 @@ c           have been tried
      &          phyto_esd, phyto_vol,
      &          zoo_esd, zoo_vol
 #ifdef IRON_SED_SOURCE
-     &         ,depthfesed,fesedflux
+     &         ,depthfesed,fesedflux,fesedflux_pcm
 #endif
 #ifdef PART_SCAV
      &         ,scav_rat, scav_inter, scav_exp
@@ -172,7 +172,7 @@ c           have been tried
          _RL zoo_esd(nzmax)
          _RL zoo_vol(nzmax)
 #ifdef IRON_SED_SOURCE
-         _RL depthfesed, fesedflux
+         _RL depthfesed, fesedflux, fesedflux_pcm
 #endif
 #ifdef PART_SCAV
          _RL scav_rat, scav_inter, scav_exp

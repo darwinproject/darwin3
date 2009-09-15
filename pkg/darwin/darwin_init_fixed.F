@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.18 2009/08/27 18:41:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.19 2009/09/15 17:04:12 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -91,7 +91,9 @@ c iron related
 #ifdef IRON_SED_SOURCE
 c iron sediment source
       depthfesed=1000.0 _d 0       !depth above which to add sediment source
-      fesedflux =1.0 _d 0 * 1.0 _d -3 / (86400.0 _d 0) !iron flux
+      fesedflux =1.0 _d 0 * 1.0 _d -3 / (86400.0 _d 0) !iron flux (mmol/m2/s)
+      fesedflux_pcm =0.68 _d 0 * 1.0 _d -3 !iron flux (mmol/m3/s) per
+c                                            mmol POC/m3/s
 #endif
 #ifdef PART_SCAV
       scav_rat=0.005 _d 0 /(86400.0 _d 0)
