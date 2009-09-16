@@ -13,20 +13,29 @@ c ====================================================================
        SUBROUTINE DARWIN_TEMPFUNC(
      I                    Tlocal,
      O                    phytoTempFunction,
+#ifndef QUOTA
      O                    zooTempFunction,
+#endif
      O                    reminTempFunction,
      I                    myThid)
 
          implicit none
+#ifdef QUOTA
+#include "QUOTA_SIZE.h"
+#include "QUOTA.h"
+#else
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+#endif
 #include "DARWIN_PARAMS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
        INTEGER myThid
        _RL phytoTempFunction(npmax)
+#ifndef QUOTA
        _RL zooTempFunction(nzmax)
+#endif
        _RL reminTempFunction
        _RL Tlocal
 
@@ -72,11 +81,13 @@ cswd -- temperature range
      &                  max(phytoTempFunction(np), 1. _d -10)
              phytoTempFunction(np) = min(phytoTempFunction(np),1. _d 0)
           enddo
+#ifndef QUOTA
           do nz = 1,nzmax
 c              zooTempFunction(nz) = zooTempCoeff(nz)*EXP(
 c    &             zooTempExp(nz)*(Tlocal - zooTempOptimum(nz)))
             zooTempFunction(nz) = 1.0 _d 0
           end do
+#endif
           reminTempFunction = 1.0 _d 0
 #endif
 c ++++++++++++++ END VERSION 1 +++++++++++++++++++++++++++++++++++++++
@@ -108,6 +119,7 @@ cswd -- temperature range
              phytoTempFunction(np) = phytoTempCoeff(np)*
      &                  max(phytoTempFunction(np), 1. _d -10)
          enddo
+#ifndef QUOTA
          do nz = 1,nzmax
               zooTempFunction(nz) = 
      &                  exp(TempAe*(1/(Tlocal+Tkel) -
@@ -117,6 +129,7 @@ cswd -- temperature range
      &                  max(zooTempFunction(nz), 1. _d -10)
 c              zooTempFunction(nz) = 1. _d 0
          end do
+#endif
          reminTempFunction = exp(TempAe*(1/(Tlocal+Tkel) -
      &                                   1/(Tempref) ) )
          reminTempFunction = reminTempFunction  - tempnorm
@@ -133,9 +146,11 @@ c +++++++++++++++++++  NO TEMP LIMITATION +++++++++++++++++++++++++++++
          do np=1, npmax
               phytoTempFunction(np) = 1.0 _d 0
          enddo
+#ifndef QUOTA
          do nz = 1,nzmax
               zooTempFunction(nz) = 1.0 _d 0
          end do
+#endif
          reminTempFunction = 1.0 _d 0
 #endif
 c +++++++++++++  END NO TEMP LIMITATION +++++++++++++++++++++++++++++
