@@ -147,10 +147,13 @@ $N_i^{lim}=\frac{N_i}{N_i+\kappa_{N_{ij}}}$
 
 When we include the nitrogen as a potential limiting nutrient (EXP2) we 
 modify $N_i^{lim}$ to take into account the uptake inhibition caused by ammonium:
-\[
-N_N^{lim} = \frac{NO_3 + NO_2}{NO_3+NO_2+\kappa_{IN}} e^{-\psi NH_4}
-+\frac{NH_4}{NH_4 + \kappa_{NH4}}
-\]
+\begin{align*}
+N_N^{lim} &= \frac{NO_2}{NO_2+\kappa_{IN}} e^{-\psi NH_4}
++\frac{NH_4}{NH_4 + \kappa_{NH4}}  && \text{(nsource=1)} \\
+N_N^{lim} &= \frac{NH_4}{NH_4 + \kappa_{NH4}}  && \text{(nsource=2)} \\
+N_N^{lim} &= \frac{NO_3 + NO_2}{NO_3+NO_2+\kappa_{IN}} e^{-\psi NH_4}
++\frac{NH_4}{NH_4 + \kappa_{NH4}}  && \text{(nsource=3)}
+\end{align*}
 where $\psi$ reflects the inhibition and $\kappa_{IN}$ and $ \kappa_{NH4}$
 are the half saturation constant of $IN=NO_3+NO_2$ and $NH_4$ respectively.
 
