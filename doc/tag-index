@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.39 2009/10/24 22:55:46 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.40 2009/10/24 22:58:01 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt61w_20091024
 
 ctrb_darwin_ckpt61v_20091024
 o changes so will work with either old model or quota model
