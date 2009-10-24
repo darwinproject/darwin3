@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.41 2009/10/24 22:59:12 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.42 2009/10/24 23:34:25 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o darwin_baltic_76x72x24: set SEAICE_clipVelocities = .FALSE.
 
 ctrb_darwin_ckpt61x_20091024
 
