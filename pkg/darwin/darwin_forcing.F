@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.25 2009/09/15 17:04:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.26 2009/12/10 16:13:17 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -173,6 +173,10 @@ c some local variables
        _RL Chl
        _RL Rstarl(npmax)
        _RL RNstarl(npmax)
+#ifdef DAR_DIAG_GROW
+       _RL Growl(npmax)
+       _RL Growsql(npmax)
+#endif
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
        _RL NfixPl(npmax)
@@ -610,6 +614,10 @@ c set other arguments to zero
              do np=1,npmax
                 Rstarl(np)=0. _d 0
                 RNstarl(np)=0. _d 0
+#ifdef DAR_DIAG_GROW
+                Growl(np)=0.  _d 0
+                Growsql(np)=0. _d 0
+#endif
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
                 NfixPl(np)=0. _d 0
@@ -659,6 +667,9 @@ c ANNA pass extra variables if WAVEBANDS
      I                       freefu, inputFel,
      I                       bottom, dzlocal,
      O                       Rstarl, RNstarl,
+#ifdef DAR_DIAG_GROW
+     O                       Growl, Growsql,
+#endif
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
      O                       NfixPl,
@@ -1014,6 +1025,15 @@ c ANNA end TAVE
              Diver4ave(i,j,k,bi,bj)=Diver4ave(i,j,k,bi,bj)+
      &                           Diver4(i,j,k)*dtplankton
 #endif
+#ifdef DAR_DIAG_GROW
+             do np=1,npmax
+               Growave(i,j,k,bi,bj,np)=Growave(i,j,k,bi,bj,np)+
+     &                           Growl(np)*dtplankton
+               Growsqave(i,j,k,bi,bj,np)=Growsqave(i,j,k,bi,bj,np)+
+     &                           Growsql(np)*dtplankton
+             enddo
+#endif
+
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
              do np=1,npmax

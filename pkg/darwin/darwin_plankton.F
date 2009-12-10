@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.23 2009/09/15 23:38:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.24 2009/12/10 16:13:17 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,6 +51,9 @@ c ANNA pass extra variables if WAVEBANDS
      I                       freefelocal, inputFelocal,
      I                       bottom, dzlocal,
      O                       Rstarlocal, RNstarlocal,
+#ifdef DAR_DIAG_GROW
+     O                       Growlocal, Growsqlocal,
+#endif
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
      O                       NfixPlocal,
@@ -143,6 +146,10 @@ c zoo   = zooplankton
          _RL dzlocal
          _RL Rstarlocal(npmax)
          _RL RNstarlocal(npmax)
+#ifdef DAR_DIAG_GROW
+         _RL Growlocal(npmax)
+         _RL Growsqlocal(npmax)
+#endif
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
          _RL NfixPlocal(npmax)
@@ -1375,6 +1382,17 @@ c phytoplankton
               else
                 RNstarlocal(np)=-9999. _d 0
               endif
+#endif
+#ifdef DAR_DIAG_GROW
+c include temp, light, nutrients
+c             Growlocal(np)=grow(np)
+c include temp and light, but not nutrients
+              Growlocal(np)=ngrow(np)*mu(np)*ilimit(np)*
+     &              phytoTempFunction(np)
+c include temp, but not nutrients or light
+c             Growlocal(np)=ngrow(np)*mu(np)*
+c    &              phytoTempFunction(np)
+              Growsqlocal(np)=Growlocal(np)**2
 #endif
             enddo
             if (debug.eq.10) print*,'dphytodt',dphytodt

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.14 2009/08/27 18:41:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.15 2009/12/10 16:13:17 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -109,6 +109,9 @@ c ANNA end TAVE
 #ifdef DAR_DIAG_DIVER
      &      Diver1ave, Diver2ave, Diver3ave, Diver4ave,
 #endif
+#ifdef DAR_DIAG_GROW
+     &      Growave, Growsqave,
+#endif
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
      &      NfixPave,
@@ -135,6 +138,10 @@ c ANNA end TAVE
        _RL  Diver2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
        _RL  Diver3ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
        _RL  Diver4ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy)
+#endif
+#ifdef DAR_DIAG_GROW
+       _RL Growave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy,npmax)
+       _RL Growsqave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy,npmax)
 #endif
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP

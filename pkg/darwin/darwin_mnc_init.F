@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.9 2009/08/27 18:41:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.10 2009/12/10 16:13:17 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -137,6 +137,30 @@ c ANNA end TAVE
       CALL MNC_CW_ADD_VATTR_TEXT('dar_Diver4_ave','description',
      &     '', myThid)
 
+#endif
+#ifdef DAR_DIAG_GROW
+      do np=1,npmax
+          ii=iPhy+np-1
+          DO jj = 1,MAX_LEN_FNAM
+             name(jj:jj) = ' '
+          ENDDO
+          ilnb = ILNBLNK(PTRACERS_names(ii))
+          WRITE(name,'(a,a)') 'dar_Grow_',PTRACERS_names(ii)(1:ilnb)
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+      enddo
+      do np=1,npmax
+          ii=iPhy+np-1
+          DO jj = 1,MAX_LEN_FNAM
+             name(jj:jj) = ' '
+          ENDDO
+          ilnb = ILNBLNK(PTRACERS_names(ii))
+          WRITE(name,'(a,a)') 'dar_Growsq_',PTRACERS_names(ii)(1:ilnb)
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+      enddo
 #endif
 
 #ifdef ALLOW_DIAZ

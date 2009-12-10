@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.4 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.5 2009/12/10 16:13:17 stephd Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -35,6 +35,7 @@ CEOP
 #undef  CHECK_CONS
 #undef  DAR_DIAG_RSTAR
 #undef  DAR_DIAG_DIVER
+#undef  DAR_DIAG_GROW
 
 c ANNA turn inhbition on/off
 c curently only set for Wavebands, LL Pro's

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.8 2009/08/27 18:41:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.9 2009/12/10 16:13:17 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -108,8 +108,19 @@ c ANNA end TAVE
      &                          DAR_timeave, nR ,
      &                 bi,bj,myThid)
 #endif
-
+c
+#ifdef DAR_DIAG_GROW
+         do np=1,npmax
+           CALL TIMEAVE_NORMALIZ(Growave(1-Olx,1-Oly,1,1,1,np),
+     &                          DAR_timeave, nR ,
+     &                 bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(Growsqave(1-Olx,1-Oly,1,1,1,np),
+     &                          DAR_timeave, nR ,
+     &                 bi,bj,myThid)
+         enddo
+#endif
 #ifdef ALLOW_DIAZ
+c
 #ifdef DAR_DIAG_NFIXP
          do np=1,npmax
            CALL TIMEAVE_NORMALIZ(NfixPave(1-Olx,1-Oly,1,1,1,np),
@@ -169,6 +180,24 @@ c ANNA end TAVE
          CALL WRITE_FLD_XYZ_RL('DAR_Diver4tave.',suff,Diver4ave,
      &        myIter,myThid)
 #endif
+c
+#ifdef DAR_DIAG_GROW
+         do np=1,npmax
+           WRITE(suff,'(A7,I2.2,A1,I10.10)') 'Growave',
+     &           np,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           Growave(1-Olx,1-Oly,1,1,1,np),
+     &           myIter,myThid)
+         enddo
+         do np=1,npmax
+           WRITE(suff,'(A7,I2.2,A1,I10.10)') 'Growsqave',
+     &           np,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           Growsqave(1-Olx,1-Oly,1,1,1,np),
+     &           myIter,myThid)
+         enddo
+#endif
+c
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
          do np=1,npmax
@@ -242,6 +271,30 @@ c ANNA end TAVE
          CALL MNC_CW_RL_W(
      &        pf,'dar_tave',0,0,'dar_Diver4_ave',Diver4ave,myThid)
 #endif
+c
+#ifdef DAR_DIAG_GROW
+         do np=1,npmax
+            ii=PTRACERS_numInUse-npmax+np
+            DO jj = 1,MAX_LEN_FNAM
+              name(jj:jj) = ' '
+            ENDDO
+            ilnb = ILNBLNK(PTRACERS_names(ii))
+            WRITE(name,'(a,a)') 'dar_Grow_',PTRACERS_names(ii)(1:ilnb)
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           Growave(1-OLx,1-OLy,1,1,1,np),myThid)
+         enddo
+         do np=1,npmax
+            ii=PTRACERS_numInUse-npmax+np
+            DO jj = 1,MAX_LEN_FNAM
+              name(jj:jj) = ' '
+            ENDDO
+            ilnb = ILNBLNK(PTRACERS_names(ii))
+            WRITE(name,'(a,a)') 'dar_Growsq_',PTRACERS_names(ii)(1:ilnb)
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           Growsqave(1-OLx,1-OLy,1,1,1,np),myThid)
+         enddo
+#endif
+c
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
          do np=1,npmax
@@ -290,6 +343,18 @@ c ANNA and TAVE
          CALL TIMEAVE_RESET(Diver3ave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(Diver4ave,Nr,bi,bj,myThid)
 #endif
+c
+#ifdef DAR_DIAG_GROW
+         do np=1,npmax
+           CALL TIMEAVE_RESET(Growave(1-OLx,1-OLy,1,1,1,np),
+     &                                      Nr,bi,bj,myThid)
+         enddo
+         do np=1,npmax
+           CALL TIMEAVE_RESET(Growsqave(1-OLx,1-OLy,1,1,1,np),
+     &                                      Nr,bi,bj,myThid)
+         enddo
+#endif
+c
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
          do np=1,npmax
