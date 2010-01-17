@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.9 2009/08/27 18:41:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.10 2010/01/17 17:17:46 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,22 +56,22 @@ C--   Add diagnostic PAR, PP and Nfix
       WRITE(diagTitle, '(A)') 'PAR'
       diagUnits = 'uEin/m^2/s      '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName = 'PP      '
       WRITE(diagTitle, '(A)') 'Primary Production'
       diagUnits = 'mmol P/m^3/s    '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName = 'Nfix    '
       WRITE(diagTitle, '(A)') 'N fixation'
       diagUnits = 'mmol N/m^3/s    '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 c ANNA_TAVE 
 #ifdef WAVES_DIAG_PCHL
@@ -83,8 +83,8 @@ c ANNA_Q format to allow more Ptracers I2.3 ??
        WRITE(diagTitle,'(A,I2.2)') 'Chl of Phy', np
        diagUnits = 'mg chl/m^3      '
        diagCode  = 'SM P    MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDDO /* np */
@@ -99,8 +99,8 @@ C--    Add diagnostics of Rstar
        WRITE(diagTitle,'(A,I2.2)') 'Rstar^PO4 of Phy', np
        diagUnits = 'mmol P/m^3      '
        diagCode  = 'SM P    MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDDO /* np */
@@ -112,32 +112,32 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &    '# Phy species over absolute threshold'
       diagUnits = '1               '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       
       diagName = 'Diver2  '
       WRITE(diagTitle, '(A)')
      &    '# Phy species over threshold for proportion of biomass'
       diagUnits = '1               '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       
       diagName = 'Diver3  '
       WRITE(diagTitle, '(A)') 
      &    '# Phy species constituting bulk of biomass'
       diagUnits = '1               '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       
       diagName = 'Diver4  '
       WRITE(diagTitle, '(A)')
      &    '# Phy species over threshold for ratio to maximum species'
       diagUnits = '1               '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* DAR_DIAG_DIVER */
 
 #ifdef ALLOW_DIAZ
@@ -148,8 +148,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        WRITE(diagTitle,'(A,I2.2)') 'Nfix of Phy', np
        diagUnits = 'mmol N/m^3      '
        diagCode  = 'SM P    MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|      ENDDO /* np */
       ENDDO /* np */
@@ -161,8 +161,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(diagTitle, '(A)') 'daily-averaged PAR'
       diagUnits = 'uEin/m^2/s      '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_PAR_DAY */
 
 #ifdef DAR_DIAG_CHL
@@ -170,41 +170,41 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(diagTitle, '(A)') 'Chlorophyll a concentration a la Geider'
       diagUnits = 'mg Chla/m^3     '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       diagName = 'Chl2CGei'
       WRITE(diagTitle, '(A)')'Chlorophyll a to carbon ratio a la Geider'
       diagUnits = 'mg Chla/mmol C  '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName = 'ChlDoney'
       WRITE(diagTitle, '(A)') 'Chlorophyll a concentration a la Doney'
       diagUnits = 'mg Chla/m^3     '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName = 'Chl2CDon'
       WRITE(diagTitle, '(A)') 'Chlorophyll a to carbon ratio a la Doney'
       diagUnits = 'mg Chla/mmol C  '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName = 'ChlCloer'
       WRITE(diagTitle, '(A)') 'Chlorophyll a concentration a la Cloern'
       diagUnits = 'mg Chla/m^3     '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       diagName = 'Chl2CClo'
       WRITE(diagTitle, '(A)')'Chlorophyll a to carbon ratio a la Cloern'
       diagUnits = 'mg Chla/mmol C  '
       diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* DAR_DIAG_CHL */
 
 #endif /* ALLOW_DIAGNOSTICS */
