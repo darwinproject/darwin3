@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.46 2010/01/17 17:17:46 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.47 2010/02/01 20:22:39 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt62b_20100201
 
 ctrb_darwin_ckpt62a_20100117
 o replace DIAGNOSTICS_ADD2LIST by DIAGNOSTICS_ADDTOLIST
