@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.24 2009/12/10 16:13:17 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.25 2010/04/27 19:02:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1062,7 +1062,7 @@ c sum over phy for impact on zoo, and all remainder to go to POM
      &             asseff(np,nz)*grazphy(np,nz)*zooP(nz)*R_PC(np)
               sumgrazlossC(nz)=sumgrazlossC(nz)+
      &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
-     &                                      zooClocal(nz)*R_PC(np)
+     &                                      zooP(nz)*R_PC(np)
 #endif
            enddo
           enddo
