@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.8 2009/05/29 18:32:50 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.9 2010/04/27 20:27:52 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -64,7 +64,7 @@ CEOP
 #endif
 
 #ifdef ALLOW_CARBON
-      NAMELIST /DIC_NAMES/
+      NAMELIST /DIC_FORCING/
      &        DIC_windFile, DIC_atmospFile,
      &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
 #endif
@@ -137,6 +137,11 @@ C Cloern:  chl:c = chl2cmin + A*exp(B*T)*exp(-C*PARday)*limit
 
       READ(UNIT=iUnit,NML=DARWIN_CHL)
 #endif /* DAR_DIAG_CHL */
+
+#ifdef ALLOW_CARBON
+      READ(UNIT=iUnit,NML=DIC_FORCING)
+#endif
+
 
       WRITE(msgBuf,'(A)')
      &  ' DARWIN_READPARMS: finished reading data.darwin'
