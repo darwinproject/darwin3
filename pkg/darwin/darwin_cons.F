@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.7 2009/04/30 18:14:24 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.8 2010/04/27 18:50:12 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,6 +38,11 @@ C============== Local variables ============================================
        _RL tmptotN
        _RL tmptotSi
        _RL tmptotFe
+#ifdef ALLOW_CARBON
+       _RL tmptotC
+       _RL tmptotA
+       _RL tmptotO
+#endif
        _RL vol, voltot
 
        INTEGER i,j,k,bi,bj
@@ -50,6 +55,11 @@ c
          tmptotN=0. _d 0
          tmptotFe=0. _d 0
          tmptotSi=0. _d 0
+#ifdef ALLOW_CARBON
+         tmptotC=0. _d 0
+         tmptotA=0. _d 0
+         tmptotO=0. _d 0
+#endif
          voltot=0. _d 0
 
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -107,6 +117,24 @@ c Silica budget
               tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,npnum)*R_SiP(np)*vol  !Phy
            enddo
 c------------------------------------------------------------
+#ifdef ALLOW_CARBON
+c carbon budget
+           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iDIC)*vol    !DIC
+           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iDOC)*vol    !DOC
+           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iPOC)*vol   !POC
+           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iPIC)*vol   !PIC
+           do nz=1,nzmax
+             tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iZooC(nz))*vol    !ZOOC
+           enddo
+           do np=1,npmax
+              npnum=iPhy+np-1
+              tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,npnum)*R_PC(np)*vol  !Phy
+           enddo
+c alkalinity budget !!!!! NOT FULL BUDGET!!!!!
+           tmptotA=tmptotA+Ptracer(i,j,k,bi,bj,iALK)*vol    !ALK
+c oxygem budget !!!!!!!! NOT FULL BUDGET !!!!!!!!!!!
+           tmptotO=tmptotO+Ptracer(i,j,k,bi,bj,iO2)*vol    !O2
+#endif
           enddo
          ENDDO
          ENDDO
@@ -117,16 +145,33 @@ c------------------------------------------------------------
         _GLOBAL_SUM_RL(tmptotN,myThid)
         _GLOBAL_SUM_RL(tmptotFe,myThid)
         _GLOBAL_SUM_RL(tmptotSi,myThid)
+        _GLOBAL_SUM_RL(voltot,myThid)
+#ifdef ALLOW_CARBON
+        _GLOBAL_SUM_RL(tmptotC,myThid)
+        _GLOBAL_SUM_RL(tmptotA,myThid)
+        _GLOBAL_SUM_RL(tmptotO,myThid)
+#endif
+
 
         print*,'tmptotP',tmptotP
         print*,'tmptotN',tmptotN
         print*,'tmptotFe',tmptotFe
         print*,'tmptotSi',tmptotSi
+#ifdef ALLOW_CARBON
+        print*,'tmptotC',tmptotC
+        print*,'tmptotA',tmptotA
+        print*,'tmptotO',tmptotO
+#endif
 
         write(DAR_cons_unit1,*), myIter, tmptotP, tmptotP/voltot
         write(DAR_cons_unit2,*), myIter, tmptotN, tmptotN/voltot
         write(DAR_cons_unit3,*), myIter, tmptotFe, tmptotFe/voltot
         write(DAR_cons_unit4,*), myIter, tmptotSi, tmptotSi/voltot
+#ifdef ALLOW_CARBON
+        write(DAR_cons_unit5,*), myIter, tmptotC, tmptotC/voltot
+        write(DAR_cons_unit6,*), myIter, tmptotA, tmptotA/voltot
+        write(DAR_cons_unit7,*), myIter, tmptotO, tmptotO/voltot
+#endif
 
       _END_MASTER(myThid)
 

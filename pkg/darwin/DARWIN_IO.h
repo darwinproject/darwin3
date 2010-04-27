@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.15 2009/12/10 16:13:17 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.16 2010/04/27 18:50:12 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -153,11 +153,16 @@ c ANNA end TAVE
 #ifdef CHECK_CONS
       COMMON /DARWIN_CHECK_CONS/
      &      DAR_cons_unit1, DAR_cons_unit2,
-     &      DAR_cons_unit3, DAR_cons_unit4
+     &      DAR_cons_unit3, DAR_cons_unit4,
+     &      DAR_cons_unit5, DAR_cons_unit6,
+     &      DAR_cons_unit7
        INTEGER DAR_cons_unit1
        INTEGER DAR_cons_unit2
        INTEGER DAR_cons_unit3
        INTEGER DAR_cons_unit4
+       INTEGER DAR_cons_unit5
+       INTEGER DAR_cons_unit6
+       INTEGER DAR_cons_unit7
 #endif
 
 #ifdef GEIDER
