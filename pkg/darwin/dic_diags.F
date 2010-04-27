@@ -60,6 +60,8 @@ C      Normalize by integrated time
         DO bi = myBxLo(myThid), myBxHi(myThid)
          CALL TIMEAVE_NORMALIZ(SURave,dic_timeave, 1 ,
      &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(SURCave,dic_timeave, 1 ,
+     &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(SUROave,dic_timeave, 1 ,
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(pCO2ave,dic_timeave, 1 ,
@@ -72,6 +74,8 @@ C      Normalize by integrated time
        IF ( PTRACERS_timeave_mdsio )  THEN
          WRITE(suff,'(I10.10)') myIter
          CALL WRITE_FLD_XY_RL('DIC_Surtave.',suff,SURave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XY_RL('DIC_SurCtave.',suff,SURCave,
      &        myIter,myThid)
          CALL WRITE_FLD_XY_RL('DIC_SurOtave.',suff,SUROave,
      &        myIter,myThid)
@@ -90,6 +94,8 @@ C      Normalize by integrated time
          CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_SUR_ave',SURave,myThid)
          CALL MNC_CW_RL_W(
+     &        pf,'dic_tave',0,0,'dic_SURC_ave',SURCave,myThid)
+         CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_SURO_ave',SUROave,myThid)
          CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_pH_ave',pHave,myThid)
@@ -102,6 +108,7 @@ C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          CALL TIMEAVE_RESET(SURave,1,bi,bj,myThid)
+         CALL TIMEAVE_RESET(SURCave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(SUROave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(pCO2ave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(pHave,1,bi,bj,myThid)

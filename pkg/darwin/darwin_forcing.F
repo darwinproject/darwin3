@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.26 2009/12/10 16:13:17 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.27 2010/04/27 19:06:31 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -299,7 +299,7 @@ c ---------------------------
      &                       myIter, mythid)
 c --------------------------
 #ifdef ALLOW_CARBON
-c air-sea flux of CO2
+c air-sea flux and dilution of CO2
          call dic_surfforcing(Ptr(1-OLx,1-OLy,1,bi,bj,iDIC),
      &                        Ptr(1-OLx,1-OLy,1,bi,bj,iALK),
      &                        Ptr(1-OLx,1-OLy,1,bi,bj,iPO4),
@@ -312,7 +312,7 @@ c air-sea flux of O2
      &                       flxO2,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
-c dillusion of alkalinity
+c dilusion of alkalinity
          call dic_alk_surfforcing(Ptr(1-OLx,1-OLy,1,bi,bj,iALK),
      &                       flxALK,
      &                    bi,bj,imin,imax,jmin,jmax,
@@ -1047,9 +1047,11 @@ c ANNA end TAVE
 #ifdef ALLOW_CARBON
              if (k.eq.1) then
               SURave(i,j,bi,bj)    =SURave(i,j,bi,bj)+
-     &                              flxco2(i,j,bi,bj)*dtplankton
+     &                              flxCO2(i,j,bi,bj)*dtplankton
+              SURCave(i,j,bi,bj)    =SURCave(i,j,bi,bj)+
+     &                              FluxCO2(i,j,bi,bj)*dtplankton
               SUROave(i,j,bi,bj)   =SUROave(i,j,bi,bj)+
-     &                              flxo2(i,j,bi,bj)*dtplankton
+     &                              flxO2(i,j,bi,bj)*dtplankton
               pCO2ave(i,j,bi,bj)   =pCO2ave(i,j,bi,bj)+
      &                              pCO2(i,j,bi,bj)*dtplankton
               pHave(i,j,bi,bj)     =pHave(i,j,bi,bj)+

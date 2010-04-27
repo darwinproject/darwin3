@@ -40,6 +40,7 @@ c set arrays to zero if first timestep
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_RESET(SURave,   1,  bi, bj, myThid)
+          CALL TIMEAVE_RESET(SURCave,   1,  bi, bj, myThid)
           CALL TIMEAVE_RESET(SUROave,   1,  bi, bj, myThid)
           CALL TIMEAVE_RESET(pCO2ave,   1,  bi, bj, myThid)
           CALL TIMEAVE_RESET(pHave,   1,  bi, bj, myThid)

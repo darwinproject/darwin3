@@ -73,9 +73,10 @@ C schmidt number coefficients
       _RL  sox4
 
       COMMON /DIC_DIAGS_NEEDS/
-     &     SURave, SUROave, pCO2ave, pHave,     
+     &     SURave, SURCave, SUROave, pCO2ave, pHave,     
      &     dic_timeave
       _RL SURave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SURCave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SUROave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pHave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

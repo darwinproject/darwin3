@@ -34,6 +34,13 @@ CEOP
      &     '', myThid)
 
       CALL MNC_CW_ADD_VNAME(
+     &     'dic_SURC_ave', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT(
+     &     'dic_SURC_ave','units','--', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('dic_SURC_ave','description',
+     &     '', myThid)
+
+      CALL MNC_CW_ADD_VNAME(
      &     'dic_SURO_ave', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT(
      &     'dic_SURO_ave','units','--', myThid)
