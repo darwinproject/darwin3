@@ -214,13 +214,14 @@ C determine inorganic carbon chem coefficients
         DO j=jMin,jMax
          DO i=iMin,iMax
 
-             surfdic(i,j) = Ptracer(1-OLx,1-OLy,1,bi,bj,iDIC)*1e-3
+c use surface layer values and convert to mol/m3
+             surfdic(i,j) = Ptracer(i,j,1,bi,bj,iDIC)*1e-3
      &                          * maskC(i,j,kLev,bi,bj)
-             surfalk(i,j) = Ptracer(1-OLx,1-OLy,1,bi,bj,iALK)*1e-3
+             surfalk(i,j) = Ptracer(i,j,1,bi,bj,iALK)*1e-3
      &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = Ptracer(1-OLx,1-OLy,1,bi,bj,iPO4)*1e-3
+             surfphos(i,j)  = Ptracer(i,j,1,bi,bj,iPO4)*1e-3
      &                          * maskC(i,j,kLev,bi,bj)
-             surfsi(i,j)   = Ptracer(1-OLx,1-OLy,1,bi,bj,iSi) *1e-3
+             surfsi(i,j)   = Ptracer(i,j,1,bi,bj,iSi) *1e-3
      &                          * maskC(i,j,kLev,bi,bj)
 c
              WIND(i,j,bi,bj)   = 5. _d 0*maskC(i,j,1,bi,bj)
