@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.27 2010/04/27 19:06:31 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.28 2010/05/03 17:21:09 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -99,6 +99,9 @@ c ANNA endif
 
 #ifdef GEIDER
       _RL phychl(npmax)
+#ifdef DYNAMIC_CHL
+      _RL dphychl(npmax)
+#endif
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -230,6 +233,8 @@ c air-sea fluxes
        _RL tot_Nfix
 
        _RL tmp
+
+       _RL phytmp, chltmp
 
       INTEGER i,j,k,it, ktmp
       INTEGER np, nz, np2, npsave
@@ -435,7 +440,11 @@ c brute force...
              DO np = 1,npmax
                Phy(np) = max(Ptr(i,j,k,bi,bj,iPhy+np-1),0. _d 0)
 #ifdef GEIDER
+#ifdef DYNAMIC_CHL
+               phychl(np) = max(Ptr(i,j,k,bi,bj,iChl+np-1),0. _d 0)
+#else
                phychl(np) = max(Chl_phy(i,j,k,bi,bj,np), 0. _d 0)
+#endif
 #endif
              ENDDO
              popl  = max(Ptr(i,j,k,bi,bj,iPOP  ),0. _d 0)
@@ -518,7 +527,7 @@ c find local light
                 sumpy = sumpy + phychl(np)
 #else
                 sumpy = sumpy + Phy(np)
-#endif             
+#endif
              enddo
 c ANNA attenuation for WAVEBANDS is done in darwin_plankton.F, not here
 #ifndef WAVEBANDS
@@ -597,6 +606,11 @@ c set tendencies to 0
              dPSil=0. _d 0
              dNH4l=0. _d 0
              dNO2l=0. _d 0
+#ifdef DYNAMIC_CHL
+             do np=1,npmax
+               dphychl(np)=0. _d 0
+             enddo
+#endif
 #ifdef ALLOW_CARBON
              ddicl=0. _d 0
              ddocl=0. _d 0
@@ -690,6 +704,9 @@ c ANNA pass extra variables if WAVEBANDS
 #endif
 #ifdef GEIDER
      O                       phychl,
+#ifdef DYNAMIC_CHL
+     I                       dphychl,
+#endif
 #ifdef WAVEBANDS
      O                       PARwl,PARwupl,
      O                       drF(k),
@@ -874,9 +891,22 @@ c now update main tracer arrays
            Ptr(i,j,k,bi,bj,iPhy+np-1) = Ptr(i,j,k,bi,bj,iPhy+np-1) +
      &                                       dtplankton*dPhy(np)
 #ifdef GEIDER
+#ifdef DYNAMIC_CHL
+           if (np.eq.1) Chl=0. _d 0
+           Ptr(i,j,k,bi,bj,iChl+np-1) = Ptr(i,j,k,bi,bj,iChl+np-1) +
+     &                                       dtplankton*dphychl(np)
+c          chltmp=Ptr(i,j,k,bi,bj,iChl+np-1)
+c          phytmp=Ptr(i,j,k,bi,bj,iPhy+np-1)
+c          if (np.eq.1.and.i.eq.1.and.j.eq.1.and.k.eq.1)
+c    &     print*,chltmp,phytmp,phytmp*R_PC(np)*chl2cmin(np),
+c    &                   phytmp*R_PC(np)*chl2cmax(np)
+c in darwin_plankton this is stored for previous timestep. Reset here.
+           Chl=Chl+Ptr(i,j,k,bi,bj,iChl+np-1)
+#else
            Chl_phy(i,j,k,bi,bj,np)=phychl(np)
 #endif
-          ENDDO
+#endif
+         ENDDO
 #ifdef ALLOW_CARBON
           Ptr(i,j,k,bi,bj,iDIC ) = Ptr(i,j,k,bi,bj,iDIC ) +
      &                                  dtplankton*ddicl

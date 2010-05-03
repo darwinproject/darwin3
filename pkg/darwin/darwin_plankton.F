@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.25 2010/04/27 19:02:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.26 2010/05/03 17:21:09 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -73,7 +73,10 @@ c ANNA pass extra variables if WAVEBANDS
      O                       dALKdt, dO2dt, dZOOCdt,
 #endif
 #ifdef GEIDER
-     O                       phychl,
+     I                       phychl,
+#ifdef DYNAMIC_CHL
+     O                       dphychl,
+#endif
 #ifdef WAVEBANDS
      O                       PARwlocal,PARwuplocal,
      O                       dz,
@@ -194,7 +197,9 @@ c zoo   = zooplankton
 #endif
 #ifdef GEIDER
          _RL phychl(npmax)
-         _RL alpha_I_tmp(npmax)
+#ifdef DYNAMIC_CHL
+         _RL dphychl(npmax)
+#endif
 #endif
 #ifdef ALLOW_PAR_DAY
          _RL PARdaylocal
@@ -288,9 +293,13 @@ c  variables for zooplankton grazing rates
 #endif
 
 #ifdef GEIDER
+        _RL alpha_I_tmp(npmax)
         _RL pcarbon(npmax)
         _RL pcm(npmax)
         _RL chl2c(npmax)
+#ifdef DYNAMIC_CHL
+        _RL acclim(npmax)
+#endif
 #endif
 
 #ifdef DAR_DIAG_CHL
@@ -474,6 +483,9 @@ c energetic disadvantage of using NO2/No3: off=0, on=1
            pcarbon(np) = 0. _d 0
            pcm(np)=0. _d 0
            chl2c(np)=0. _d 0
+#ifdef DYNAMIC_CHL
+           acclim(np)=0. _d 0
+#endif
          enddo
 #endif
          
@@ -878,42 +890,53 @@ c ANNA endif
 
           do np = 1, npmax
            pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
+#ifdef DYNAMICAL_CHL
+             chl2c(np)=phychl(np)/(phyto(np)*R_PC(np))
+c            if (chl2c(np).gt.chl2cmax(np))
+c    &         print*,'PROBLEM chl2c>chl2cmax',chl2c(np),chl2cmax(np)
+c            if (chl2c(np).lt.chl2cmin(np))
+c    &         print*,'PROBLEM chl2c<chl2cmin',chl2c(np),chl2cmin(np)
+#endif
            if (pcm(np).gt.0.d0) then
+#ifndef DYNAMICAL_CHL
+c assumes balanced growth, eq A14 in Geider et al 1997
              chl2c(np)=chl2cmax(np)/
      &            (1+(chl2cmax(np)*alpha_I_tmp(np))/
      &               (2*pcm(np)))
              chl2c(np)=min(chl2c(np),chl2cmax(np))
              chl2c(np)=max(chl2c(np),chl2cmin(np))
+#endif
              if (PARlocal.gt.1. _d -1) then
+c Eq A1 in Geider et al 1997
                pcarbon(np)=pcm(np)*( 1 -
      &          exp((-alpha_I_tmp(np)*chl2c(np))/(pcm(np))) )
 c ANNA_INHIB INHIB_FINAL
 #ifdef INHIB_GEID
-            Ek = pcm(np)/(chl2c(np)*(alpha_I_tmp(np)*PARlocal))
-            EkoverE = Ek / PARlocal
-            if (PARlocal .ge. Ek) then !photoinhibition begins
-               pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_geid)
-            endif
+               Ek = pcm(np)/(chl2c(np)*(alpha_I_tmp(np)*PARlocal))
+               EkoverE = Ek / PARlocal
+               if (PARlocal .ge. Ek) then !photoinhibition begins
+                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_geid)
+               endif
 #endif
 #ifdef INHIB_WAVES
 c NB there is a spectral consideration here!
 c but it is ignored through use of mean alphachl_nl and PARwlocal
-            Ek = pcm(np)/(chl2c(np)*alpha_mean(np))
-            EkoverE = Ek / PARlocal
-            if (PARlocal .ge. Ek) then !photoinhibition begins
-              if (ap_type(np) .eq. 4) then
-               pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap4)
-c              elseif (ap_type(np) .eq. 2) then
-c               pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap2)
-c              elseif (ap_type(np) .eq. 3) then
-c               pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap3)
-c              elseif (ap_type(np) .eq. 4) then
-c               pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap1)
-              endif
-            endif
+               Ek = pcm(np)/(chl2c(np)*alpha_mean(np))
+               EkoverE = Ek / PARlocal
+               if (PARlocal .ge. Ek) then !photoinhibition begins
+                 if (ap_type(np) .eq. 4) then
+                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap4)
+c                 elseif (ap_type(np) .eq. 2) then
+c                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap2)
+c                 elseif (ap_type(np) .eq. 3) then
+c                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap3)
+c                 elseif (ap_type(np) .eq. 4) then
+c                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap1)
+                 endif
+               endif
 #endif
 c end ANNA_INHIB 
-                if (pcarbon(np).lt. 0. _d 0) 
+               if (pcarbon(np).lt. 0. _d 0) 
      &                 print*,'QQ ERROR pc=',np,pcarbon(np)
                if (pcm(np).gt.0. _d 0) then
                  ilimit(np)=pcarbon(np)/pcm(np)
@@ -926,15 +949,28 @@ c end ANNA_INHIB
              endif
            else ! if pcm 0
              pcm(np)=0.d0
+#ifndef DYNAMIC_CHL
              chl2c(np)=chl2cmin(np)
+#endif
              pcarbon(np)=0.d0
              ilimit(np)=0.d0
            endif
+#ifdef DYNAMIC_CHL
+c new growth will be acclimated to current conditions 
+c (eq A14 in Geider et al 1997)
+          acclim(np)=chl2cmax(np)/
+     &            (1+(chl2cmax(np)*alpha_I_tmp(np))/
+     &               (2*pcm(np)))
+#else
            phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
+#endif
           enddo
           if (debug.eq.14) print*,'ilimit',ilimit, PARlocal
           if (debug.eq.14) print*,'chl:c',chl2c
           if (debug.eq.14) print*,'chl',phychl
+#ifdef DYNAMIC_CHL
+          if (debug.eq.14) print*,'acclim',acclim
+#endif
 #endif /* GEIDER */
 
 #ifdef DAR_DIAG_CHL
@@ -1346,10 +1382,24 @@ c phytoplankton
 #endif
      &                        - mortphy(np)*phytomin(np)
      &                        + psinkphy(np)
-              PP = PP + PspecificPO4(np)
 #ifdef GEIDER
+#ifdef DYNAMIC_CHL
+              dphychl(np) = acclim(np)*PspecificPO4(np)*R_PC(np)
+     &                     +(
+#ifdef OLD_GRAZE
+     &                        - grazing_phyto(np)*
+     &              (phytomin(np)/(phytomin(np) + kgrazesat))
+#else
+     &                        - sumgrazphy(np)
+#endif
+     &                        - mortphy(np)*phytomin(np)
+     &                        + psinkphy(np) )*chl2c(np)*R_PC(np)
+#endif
               Chl=Chl + phychl(np)
 #endif
+c %% diagnostics
+              PP = PP + PspecificPO4(np)
+c%%% 
 #ifdef OLD_GRAZE
               tmpr=grazing_phyto(np)*
      &              (phytomin(np)/(phytomin(np) + kgrazesat)) 
@@ -1395,7 +1445,9 @@ c    &              phytoTempFunction(np)
               Growsqlocal(np)=Growlocal(np)**2
 #endif
             enddo
+c end np loop
             if (debug.eq.10) print*,'dphytodt',dphytodt
+c
 #ifdef OLD_GRAZE
 c zooplankton growth by grazing
             do nz=1,nzmax

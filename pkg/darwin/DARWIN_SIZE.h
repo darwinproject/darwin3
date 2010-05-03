@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.3 2009/05/15 21:29:47 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.4 2010/05/03 17:21:09 stephd Exp $
 C $Name:  $
 
 c DARWIN_SIZE.h 
@@ -31,6 +31,7 @@ C iNH4          :: index of NH4  in Ptracer
 C iNO2          :: index of NO2  in Ptracer
 C iZoo          :: index of first zooplankton
 C iPhy          :: index of first phytoplankton
+C iChl          :: index of first phytoplankton Chl (if using dynamic chl)
 C nDarwin       :: total number of ptracers used by DARWIN
 C nCompZooMax   :: maximum number of components each zooplankton can have (P,N,...)
 C strideCompZoo :: increment between components of zooplankton
@@ -64,6 +65,7 @@ C remember to bring the fields in data.ptracers in the right order !
       INTEGER nCompZooMax
       INTEGER strideCompZoo
       INTEGER strideTypeZoo
+      INTEGER iTot
 #ifdef ALLOW_CARBON
       INTEGER iDIC
       INTEGER iDOC
@@ -72,6 +74,9 @@ C remember to bring the fields in data.ptracers in the right order !
       INTEGER iALK
       INTEGER iO2
       INTEGER iZoC
+#endif
+#ifdef DYNAMIC_CHL
+      INTEGER iChl
 #endif
       PARAMETER (nCompZooMax=4)
       PARAMETER (strideCompZoo=1)
@@ -91,8 +96,14 @@ C remember to bring the fields in data.ptracers in the right order !
       PARAMETER (iNH4  =iPOSi +1)
       PARAMETER (iNO2  =iNH4  +1)
       PARAMETER (iPhy  =iNO2  +1)
+#ifdef DYNAMIC_CHL
+      PARAMETER (iChl =iPhy +npmax)
+      PARAMETER (iTOT =iPhy +npmax+npmax)
+#else
+      PARAMETER (iTOT =iPhy +npmax)
+#endif
 #ifdef ALLOW_CARBON
-      PARAMETER (iDIC  =iPhy +npmax)
+      PARAMETER (iDIC  =iTOT)
       PARAMETER (iDOC  =iDIC+1)
       PARAMETER (iPOC  =iDOC+1)
       PARAMETER (iPIC  =iPOC+1)
@@ -101,7 +112,7 @@ C remember to bring the fields in data.ptracers in the right order !
       PARAMETER (iZoC  =iO2+1)
       PARAMETER (nDarwin=iZoC+nzmax-1)
 #else
-      PARAMETER (nDarwin=iPhy +npmax-1)
+      PARAMETER (nDarwin=iTOT-1)
 #endif
 C iZooP(nzmax)  :: index of phosphorus content of each zooplankton type
 C iZooN(nzmax)  :: index of nitrogen   content of each zooplankton type

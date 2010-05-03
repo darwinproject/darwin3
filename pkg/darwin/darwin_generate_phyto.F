@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.18 2009/08/27 18:41:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.19 2010/05/03 17:21:09 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -504,7 +504,7 @@ c big/small phyto C:Chl max
         end if
 #endif
 c ANNA chl2cmin added
-        chl2cmin(np) = 0.003  _d 0 * 12. _d 0  ! mg Chl a/mmol C
+c       chl2cmin(np) = 0.003  _d 0 * 12. _d 0  ! mg Chl a/mmol C
 
          write(msgBuf,'(A,I4,A,1P1G24.15E3)')
      &     'generate Phyto: np = ',np,' pcmax    =', pcmax(np)

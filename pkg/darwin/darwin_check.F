@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_check.F,v 1.3 2009/05/15 21:29:47 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_check.F,v 1.4 2010/05/03 17:21:09 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -136,6 +136,17 @@ C     msgBuf      - Informational/error meesage buffer
      &  iPhy+npmax-1,'Phy(',npmax,')', PTRACERS_names(iPhy+npmax-1)
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &                   SQUEEZE_RIGHT,myThid) 
+
+#ifdef DYNAMIC_CHL
+      WRITE(msgBuf,'(A,I4,X,A,A32)') 'DARWIN_CHECK: ',
+     &  iChl   ,'Chl(1)   ', PTRACERS_names(iChl   )
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A,I4,X,A,I4,A,A32)') 'DARWIN_CHECK: ',
+     &  iChl+npmax-1,'Chl(',npmax,')', PTRACERS_names(iChl+npmax-1)
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+#endif
 
 #ifdef ALLOW_CARBON
       WRITE(msgBuf,'(A,I4,X,A,A32)') 'DARWIN_CHECK: ',
