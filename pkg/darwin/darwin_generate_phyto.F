@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.19 2010/05/03 17:21:09 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.20 2010/05/04 16:00:10 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -464,6 +464,23 @@ c now convert to a growth rate
         else
          pcmax(np) = 0. _d 0
         endif
+c
+c photo-inhibition 
+#ifdef WAVEBANDS
+c only LL Pro are inhibited
+         if (ap_type(np).eq.4) then
+            inhibcoef_geid(np) = inhibcoef_geid_val
+         else
+            inhibcoef_geid(np) = 0. _d 0
+         endif
+#else
+c large none, small some
+         if(physize(np) .eq. 1.0 _d 0)then
+           inhibcoef_geid(np) = 0. _d 0
+         else
+           inhibcoef_geid(np) = inhibcoef_geid_val
+         endif
+#endif
 c
         RandNo = darwin_random(myThid)
 

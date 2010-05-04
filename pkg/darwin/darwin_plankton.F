@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.26 2010/05/03 17:21:09 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.27 2010/05/04 16:00:10 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -412,19 +412,11 @@ c ANNA inportant but local variables that can be fogotten
 #endif
 c ANNA endif
 
-c ANNA_INHIB 
-#ifdef INHIB_GEID
-         _RL Ek
-         _RL EkoverE
-#endif
-#ifdef INHIB_WAVES
-c local variables for inhibition tests
+c ANNA - for inhib
          _RL Ek
          _RL EkoverE
          _RL alpha_mean(npmax)
          _RL alpha_diff
-#endif
-c end this bit ANNA_INHIB
 
 c.................................................................
 
@@ -863,8 +855,7 @@ c           alpha_I_local(np) = cu_area / (pwaves(tlam) - pwaves(1))
           end do
 c Geider growth (and chl2c) now depends on this (sinlge) value of alpha_chl * I
 
-c ANNA_INHIB INHIB_FINAL photoinhibition for wavebands requires mean alphachl_nl and PARwlocal
-#ifdef INHIB_WAVES
+c ANNA_INHIB photoinhibition for wavebands requires mean alphachl_nl and PARwlocal
           do np = 1,npmax
            cu_area = 0.d0
            do nl = 1,(tlam-1)
@@ -877,8 +868,6 @@ c ANNA_INHIB INHIB_FINAL photoinhibition for wavebands requires mean alphachl_nl
            end do
            alpha_mean(np) = cu_area / (pwaves(tlam) - pwaves(1))
           end do
-#endif
-c end this bit of ANNA_INHIB
 #else
 c ANNA if not wavebands uses alphachl derived from mQyield * aphy_chl_ave
 c for use with generic geider equation need to use alpha_I_tmp (ie. alphachl*PARlocal)
@@ -910,32 +899,19 @@ c assumes balanced growth, eq A14 in Geider et al 1997
 c Eq A1 in Geider et al 1997
                pcarbon(np)=pcm(np)*( 1 -
      &          exp((-alpha_I_tmp(np)*chl2c(np))/(pcm(np))) )
-c ANNA_INHIB INHIB_FINAL
-#ifdef INHIB_GEID
-               Ek = pcm(np)/(chl2c(np)*(alpha_I_tmp(np)*PARlocal))
-               EkoverE = Ek / PARlocal
-               if (PARlocal .ge. Ek) then !photoinhibition begins
-                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_geid)
-               endif
+c for inhibition
+               if (inhibcoef_geid(np).gt.0. _d 0) then
+#ifdef WAVEBANDS 
+                 Ek = pcm(np)/(chl2c(np)*alpha_mean(np))
+#else
+                 Ek = pcm(np)/(chl2c(np)*(alpha_I_tmp(np)*PARlocal))
 #endif
-#ifdef INHIB_WAVES
-c NB there is a spectral consideration here!
-c but it is ignored through use of mean alphachl_nl and PARwlocal
-               Ek = pcm(np)/(chl2c(np)*alpha_mean(np))
-               EkoverE = Ek / PARlocal
-               if (PARlocal .ge. Ek) then !photoinhibition begins
-                 if (ap_type(np) .eq. 4) then
-                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap4)
-c                 elseif (ap_type(np) .eq. 2) then
-c                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap2)
-c                 elseif (ap_type(np) .eq. 3) then
-c                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap3)
-c                 elseif (ap_type(np) .eq. 4) then
-c                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_ap1)
+                 EkoverE = Ek / PARlocal
+                 if (PARlocal .ge. Ek) then !photoinhibition begins
+                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_geid(np))
                  endif
                endif
-#endif
-c end ANNA_INHIB 
+c end inhib
                if (pcarbon(np).lt. 0. _d 0) 
      &                 print*,'QQ ERROR pc=',np,pcarbon(np)
                if (pcm(np).gt.0. _d 0) then

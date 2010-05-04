@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.16 2009/09/15 17:04:11 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.17 2010/05/04 16:00:10 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -231,10 +231,7 @@ c ANNA geider by mQyield instead of alpha
         COMMON/geider_vars/
      &         pcmax, alphachl, chl2cmax, chl2cmin,
      &         mQyield,aphy_chl_ave,
-c ANNA_INHIB INHIB_TESTS define inhibcoef_geid
-#ifdef INHIB_GEID
-     &         inhibcoef_geid,
-#endif
+     &         inhibcoef_geid, inhibcoef_geid_val,
 c     &         Bigalphachl, Bigalphachlrange,
 c     &         Smallalphachl, Smallalphachlrange,
      &         BigmQyield, BigmQyieldrange,
@@ -247,10 +244,8 @@ c        _RL phychl(npmax)
          _RL mQyield(npmax)
          _RL chl2cmax(npmax)
          _RL chl2cmin(npmax)
-c ANNA_INHIB INHIB_TESTS define inhibcoef_geid
-#ifdef INHIB_GEID
-         _RL inhibcoef_geid
-#endif
+         _RL inhibcoef_geid(npmax)
+         _RL inhibcoef_geid_val
 c         _RL Bigalphachl, Bigalphachlrange,
 c     &         Smallalphachl, Smallalphachlrange,
          _RL BigmQyield, BigmQyieldrange,

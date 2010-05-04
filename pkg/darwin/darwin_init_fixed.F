@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.19 2009/09/15 17:04:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.20 2010/05/04 16:00:10 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -172,14 +172,11 @@ c ANNA ranges for mQyield are same as alphachl but reduced by factor 100
 
 c ANNA value of aphy_chl_ave = 0.02 - its the mean of all spectras used as input data
        aphy_chl_ave = 0.02 _d 0      !m2 (mg chla)-1 (ie. x chla gives absorption m-1)
+
+c inhib for Prochl?
+       inhibcoef_geid_val = 1.2 _d 0 !DUMMY VAL
 #endif
 c
-c ANNA_INHIB INHIB_FINAL 
-#ifdef INHIB_GEID
-c currently one value for all phyto
-       inhibcoef_geid = 1.2 _d 0 !DUMMY VAL 
-#endif
-c endif ANNA_INHIB INHIB_FINAL
 
 c set temperature function
        tempcoeff1 = 1. _d 0/3. _d 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.4 2009/03/10 20:44:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.5 2010/05/04 16:00:10 stephd Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -45,15 +45,6 @@ c local variables
       real sacdom      
 c local indeces
       integer nabp,i,ilam
-
-c ANNA_INHIB 
-#ifdef INHIB_WAVES
-      inhibcoef_ap1 = 1.2 _d 0 ! dummy val for now
-c      inhibcoef_ap2 = 1.2 _d 0
-c      inhibcoef_ap3 = 1.2 _d 0
-c      inhibcoef_ap4 = 1.2 _d 0
-#endif
-c end ANNA_INHIB
 
 
 c  Water data files
