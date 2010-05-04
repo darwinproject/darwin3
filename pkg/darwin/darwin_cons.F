@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.8 2010/04/27 18:50:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.9 2010/05/04 19:36:36 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -153,14 +153,14 @@ c oxygem budget !!!!!!!! NOT FULL BUDGET !!!!!!!!!!!
 #endif
 
 
-        print*,'tmptotP',tmptotP
-        print*,'tmptotN',tmptotN
-        print*,'tmptotFe',tmptotFe
-        print*,'tmptotSi',tmptotSi
+c       print*,'tmptotP',tmptotP
+c       print*,'tmptotN',tmptotN
+c       print*,'tmptotFe',tmptotFe
+c       print*,'tmptotSi',tmptotSi
 #ifdef ALLOW_CARBON
-        print*,'tmptotC',tmptotC
-        print*,'tmptotA',tmptotA
-        print*,'tmptotO',tmptotO
+c       print*,'tmptotC',tmptotC
+c       print*,'tmptotA',tmptotA
+c       print*,'tmptotO',tmptotO
 #endif
 
         write(DAR_cons_unit1,*), myIter, tmptotP, tmptotP/voltot
