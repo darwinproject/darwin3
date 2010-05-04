@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.9 2010/04/27 20:27:52 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.10 2010/05/04 22:38:23 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -47,6 +47,8 @@ CEOP
      &           darwin_FeT_relaxFile, darwin_Si_relaxFile,
      &           darwin_PO4_fluxFile, darwin_NO3_fluxFile,
      &           darwin_FeT_fluxFile, darwin_Si_fluxFile,
+     &           darwin_waterabsorbFile, darwin_phytoabsorbFile,
+     &           darwin_surfacespecFile, darwin_acdomFile,
      &           darwin_relaxscale,
      &           darwin_ForcingPeriod, darwin_ForcingCycle,
 #ifdef ALLOW_PAR_DAY
@@ -82,6 +84,10 @@ C Set defaults values for parameters in DARWIN_IO.h
       darwin_NO3_fluxFile=' '
       darwin_FeT_fluxFile=' '
       darwin_Si_fluxFile=' '
+      darwin_waterabsorbFile=' '
+      darwin_phytoabsorbFile=' '
+      darwin_surfacespecFile=' '
+      darwin_acdomFile=' '
       darwin_relaxscale=0. _d 0
       darwin_seed=0
 #ifdef ALLOW_CARBON
