@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.20 2010/05/04 16:00:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.21 2010/05/05 18:17:07 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -474,11 +474,11 @@ c only LL Pro are inhibited
             inhibcoef_geid(np) = 0. _d 0
          endif
 #else
-c large none, small some
+c no inhibition
          if(physize(np) .eq. 1.0 _d 0)then
            inhibcoef_geid(np) = 0. _d 0
          else
-           inhibcoef_geid(np) = inhibcoef_geid_val
+           inhibcoef_geid(np) = 0. _d 0  !inhibcoef_geid_val
          endif
 #endif
 c
