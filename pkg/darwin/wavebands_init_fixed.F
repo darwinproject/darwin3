@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.6 2010/05/04 22:38:23 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.7 2010/05/05 15:17:48 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -69,7 +69,7 @@ c  Water data files
 20      format(i5,f15.4,f10.4)
        else
         WRITE(msgBuf,'(A)')
-     &      ' WAVEBANDS_INIT_FIXED: need to specify water absorption',
+     &      ' WAVEBANDS_INIT_FIXED: need to specify water absorption'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1 )
 
@@ -104,7 +104,7 @@ c ANNA easiest way to 'turn off' PS for growth is to put same values in both abs
         enddo
        else
         WRITE(msgBuf,'(A)')
-     &      ' WAVEBANDS_INIT_FIXED: need to specify phyto absorption',
+     &      ' WAVEBANDS_INIT_FIXED: need to specify phyto absorption'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1 )
 
@@ -129,7 +129,7 @@ c surface spectrum for initial use
 40     format(i5,f15.6)  
       else
         WRITE(msgBuf,'(A)')
-     &      ' WAVEBANDS_INIT_FIXED: need surface spectrum',
+     &      ' WAVEBANDS_INIT_FIXED: need surface spectrum'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1 )
 
@@ -154,7 +154,7 @@ c if no file given then CDOM is zero
 50      format(f10.4)
       else
         WRITE(msgBuf,'(A)')
-     &      ' WAVEBANDS_INIT_FIXED: no aCDOM',
+     &      ' WAVEBANDS_INIT_FIXED: no aCDOM'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1 )
 
