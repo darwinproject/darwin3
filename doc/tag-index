@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.51 2010/05/03 20:58:48 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.52 2010/05/18 17:45:50 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o add carbon diagnostics
 
 ctrb_darwin_ckpt62f_20100503
 
