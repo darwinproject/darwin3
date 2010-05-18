@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.20 2010/05/04 16:00:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.21 2010/05/18 17:43:54 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -342,6 +342,9 @@ COJ set up diagnostics
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDIAGNOSTICS ) THEN
         CALL DARWIN_DIAGNOSTICS_INIT( myThid )
+#ifdef ALLOW_CARBON
+        CALL DIC_DIAGNOSTICS_INIT( myThid )
+#endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 COJ

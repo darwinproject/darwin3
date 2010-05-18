@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.29 2010/05/04 14:19:43 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.30 2010/05/18 17:43:54 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1210,8 +1210,20 @@ c ANNA end TAVE
         CALL DIAGNOSTICS_FILL( CloernChl2Carr(1-Olx,1-Oly,1),'Chl2CClo',
      &                         0,Nr,2,bi,bj,myThid )
 #endif
+#ifdef ALLOW_CARBON
+        CALL DIAGNOSTICS_FILL( flxCO2(1-Olx,1-Oly,bi,bj), 'DICTFLX ',
+     &                         0,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( FluxCO2(1-Olx,1-Oly,bi,bj), 'DICCFLX ',
+     &                         0,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( flxO2(1-Olx,1-Oly,bi,bj), 'DICOFLX ',
+     &                         0,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( pCO2(1-Olx,1-Oly,bi,bj), 'DICPCO2 ',
+     &                         0,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( pH(1-Olx,1-Oly,bi,bj), 'DICPHAV ',
+     &                         0,1,2,bi,bj,myThid )
+#endif /* ALLOW_CARBON */
        ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 COJ
 
 c determine iron partitioning  - solve for free iron
