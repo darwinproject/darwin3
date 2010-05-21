@@ -1,12 +1,16 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.52 2010/05/18 17:45:50 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.53 2010/05/21 19:26:38 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+o fix reading of OASIM data (#define OASIM) regardless WAVEBANDS;
+  parameters in data.darwin:
+  - darwin_oasim_edFile, darwin_oasim_esFile :: file names
+  - darwin_oasim_waves :: band center wavelengths in nm
+                          (when used without WAVEBANDS)
+  units are W/m2 per waveband
 o add carbon diagnostics
-
-ctrb_darwin_ckpt62f_20100503
 
 ctrb_darwin_ckpt62e_20100417
 
