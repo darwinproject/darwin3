@@ -46,11 +46,10 @@ c         PARAMETER (tnabp=4)
      &          alphachl_nl,
      &          pwaves,
      &          aw,bw,ap,bp,ap_ps,
-#ifdef OASIM
-     &          wb_width,
-#else
+#ifndef OASIM
      &          sf,
 #endif
+     &          wb_width,
      &          acdom
                       
 
@@ -62,10 +61,9 @@ c         PARAMETER (tnabp=4)
          _RL ap(tnabp,tlam),ap_ps(tnabp,tlam),bp(tnabp,tlam)
          _RL aw(tlam),bw(tlam)
          _RL acdom(tlam)
-#ifdef OASIM
-         _RL wb_width(tlam)
-#else
+#ifndef OASIM
          _RL sf(tlam)
 #endif
+         _RL wb_width(tlam)
 
 

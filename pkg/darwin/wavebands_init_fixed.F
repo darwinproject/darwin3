@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.9 2010/05/21 19:21:58 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.10 2010/05/21 20:24:26 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -115,7 +115,6 @@ c ANNA easiest way to 'turn off' PS for growth is to put same values in both abs
        endif
 
 
-#ifdef OASIM
 C band widths used to convert OASIM data to irradiation per nm
 C put boundaries half-way between central values
 C but first and last boundary are at first and last "central" value
@@ -124,7 +123,8 @@ C but first and last boundary are at first and last "central" value
         wb_width(i) = .5*(pwaves(i+1)-pwaves(i-1))
       enddo
       wb_width(tlam) = .5*(pwaves(tlam)-pwaves(tlam-1))
-#else
+
+#ifndef OASIM
 c QQ NEED IN HERE ifndef OASIM
 c surface spectrum for initial use
        if (darwin_surfacespecFile .NE. ' '  ) THEN
@@ -148,7 +148,7 @@ c surface spectrum for initial use
 
         STOP
        endif
-#endif /* OASIM */
+#endif /* not OASIM */
 
 
 c absorption by cdom

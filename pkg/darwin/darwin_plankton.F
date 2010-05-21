@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.27 2010/05/04 16:00:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.28 2010/05/21 20:24:26 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -78,8 +78,7 @@ c ANNA pass extra variables if WAVEBANDS
      O                       dphychl,
 #endif
 #ifdef WAVEBANDS
-     O                       PARwlocal,PARwuplocal,
-     O                       dz,
+     I                       PARwlocal,
 #endif
 #endif
 #ifdef ALLOW_PAR_DAY
@@ -212,10 +211,7 @@ c zoo   = zooplankton
 c ANNA Global variables for WAVEBANDS
 c ANNA these variables are passed in/out of darwin_forcing.F
 #ifdef WAVEBANDS
-         _RL PARwuplocal(tlam)    !PAR at top(in) of local gridcell at each wavelength 
-                                  !reset to bottom of local gridcell on way out
          _RL PARwlocal(tlam)      !PAR at midpoint of previous(in) and local(out) gridcell
-         _RL dz                   !layer thickness 
 #endif
 c ANNA endif
 
@@ -568,49 +564,6 @@ c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           if (debug.eq.1) print*,'phytoTempFunction',
      &                          phytoTempFunction, Tlocal
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c..........................................................
-c ANNA do light attenuation for wavebands 
-c.......................................................... 
-#ifdef WAVEBANDS
-          do nl = 1,tlam     
-           sumaphy_nl(nl) = 0.d0      
-            do np = 1,npmax   
-c get total attenuation (absorption) by phyto at each wavelength
-            sumaphy_nl(nl) = sumaphy_nl(nl) +
-     &                         (phychl(np)*aphy_chl(np,nl))
-            enddo
-           attenwl(nl) = (aw(nl)+sumaphy_nl(nl)+acdom(nl))*(dz) 
-           PARwdn(nl) = PARwuplocal(nl)*exp(-attenwl(nl))
-          enddo
-
-c find for the midpoint of the gridcell (gridcell mean)
-          do nl = 1,tlam
-C          PARwlocal(nl)=exp((log(PARwuplocal(nl))+log(PARwdn(nl)))*0.5)
-           PARwlocal(nl)=sqrt(PARwuplocal(nl)*PARwdn(nl))
-          enddo
-
-c re-assign PARwlocalup
-          do nl=1,tlam
-           PARwuplocal(nl) = PARwdn(nl)
-          enddo
-
-c sum wavebands for total PAR        
-          cu_area = 0.d0;
-          do nl = 1,(tlam-1) 
-           waves_diff = pwaves(nl+1)-pwaves(nl)
-           light_diff = PARwlocal(nl+1)-PARwlocal(nl)
-           squ_part = waves_diff * PARwlocal(nl+1)
-           tri_part = waves_diff * light_diff * 5.D-1
-           seg_area = squ_part - tri_part
-           cu_area = cu_area + seg_area
-          enddo
-
-c update the total PAR at the mid point of the gridcell (PARlocal)
-          PARlocal = cu_area
-
-#endif
-c ANNA endif
-
 
 c ******************** GROWTH OF PHYTO ****************************
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

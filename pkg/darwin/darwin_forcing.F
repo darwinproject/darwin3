@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.31 2010/05/21 19:21:58 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.32 2010/05/21 20:24:26 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -85,7 +85,10 @@ c ANNA define variables for wavebands
        integer ilam
        _RL sfPAR(tlam)
        _RL PARwl(tlam)
-       _RL PARwupl(tlam)
+       _RL PARwup(tlam)
+       _RL PARwdn(tlam)
+       _RL attenwl(tlam)        !attenuation (m-1)
+       _RL sumaphy_nl(tlam)     !total phyto absorption at each wavelength
 #endif
 c ANNA endif
 
@@ -417,7 +420,7 @@ c         sfPAR(ilam) = sfPAR(ilam)*(1 _d 0 - fice(i,j,bi,bj))
 #else
           sfPAR(ilam) = sf(ilam)*lite
 #endif
-          PARwupl(ilam) = sfPAR(ilam)
+          PARwup(ilam) = sfPAR(ilam)
           PARwl(ilam) = 0. _d 0
          enddo
 #endif         
@@ -535,15 +538,46 @@ c find local light
                 sumpy = sumpy + Phy(np)
 #endif
              enddo
-c ANNA attenuation for WAVEBANDS is done in darwin_plankton.F, not here
 #ifndef WAVEBANDS
              atten= atten + (k0 + kc*sumpy)*5. _d -1*drF(k)
              if (k.gt.1)then
                atten = atten + (k0+kc*sumpyup)*5. _d -1*drF(k-1)
              endif
              PAR(i,j,k) = lite*exp(-atten)
+#else
+c..........................................................
+c ANNA do light attenuation for wavebands
+c..........................................................
+             do ilam = 1,tlam
+              sumaphy_nl(ilam) = 0.
+              do np = 1,npmax
+c get total attenuation (absorption) by phyto at each wavelength
+               sumaphy_nl(ilam) = sumaphy_nl(ilam) +
+     &                            (phychl(np)*aphy_chl(np,ilam))
+              enddo
+              attenwl(ilam) = (aw(ilam)+sumaphy_nl(ilam)+acdom(ilam))
+     &                        *drF(k)
+              PARwdn(ilam) = PARwup(ilam)*exp(-attenwl(ilam))
+             enddo
+
+c find for the midpoint of the gridcell (gridcell mean)
+             do ilam = 1,tlam
+C             PARwl(ilam)=exp((log(PARwup(ilam))+log(PARwdn(ilam)))*0.5)
+              PARwl(ilam)=sqrt(PARwup(ilam)*PARwdn(ilam))
+             enddo
+
+c re-assign PARwlocalup
+             do ilam=1,tlam
+              PARwup(ilam) = PARwdn(ilam)
+             enddo
+
+c sum wavebands for total PAR at the mid point of the gridcell (PARl)
+             PARl = 0.
+             do ilam = 1,tlam
+              PARl = PARl + wb_width(ilam)*PARwl(ilam)
+             enddo
+c ifdef SPECTRAL
 #endif
-c ANNA endif
 
 c for explicit sinking of particulate matter and phytoplankton
              if (k.eq.1) then
@@ -714,8 +748,7 @@ c ANNA pass extra variables if WAVEBANDS
      I                       dphychl,
 #endif
 #ifdef WAVEBANDS
-     O                       PARwl,PARwupl,
-     O                       drF(k),
+     I                       PARwl,
 #endif
 #endif
 #ifdef ALLOW_PAR_DAY
