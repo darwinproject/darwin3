@@ -72,12 +72,12 @@ c check Chl fields are reasonable
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              atten= 0. _d 0
-#ifdef SPECTRAL
+#if defined(WAVEBANDS) && defined(OASIM)
 c if spectral use wavebands to give a single surface PAR
              lite= 0. _d 0
              DO ilam=1,tlam
-              lite=lite+ oasim_ed(i,j,ilam,bi,bj)+
-     &                             oasim_es(i,j,ilam,bi,bj)
+              lite=lite+WtouEins(ilam)*(oasim_ed(i,j,ilam,bi,bj)+
+     &                             oasim_es(i,j,ilam,bi,bj))
              ENDDO    
 #else
              lite=sur_par(i,j,bi,bj)

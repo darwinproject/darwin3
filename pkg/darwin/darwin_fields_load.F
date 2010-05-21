@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.16 2009/08/21 20:29:31 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.17 2010/05/21 19:21:58 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -571,13 +571,13 @@ c artificial wvel for nutrient supply in 1-d and 2-d models
 #endif
 #ifdef OASIM
             IF ( darwin_oasim_edFile .NE. ' '  ) THEN
-c oasim data (load as Ein/m2/d; convert to uEin/m2/s)
+c oasim data (load as W/m2 per band)
              DO ilam=1,tlam
                oasim_ed(i,j,ilam,bi,bj) = 
      &                          bWght*oasim_ed0(i,j,ilam,bi,bj)
      &                         +aWght*oasim_ed1(i,j,ilam,bi,bj)
-               oasim_ed(i,j,ilam,bi,bj) =
-     &          oasim_ed(i,j,ilam,bi,bj)*1. _d 6/86400. _d 0
+c               oasim_ed(i,j,ilam,bi,bj) =
+c     &          oasim_ed(i,j,ilam,bi,bj)*1. _d 6/86400. _d 0
              ENDDO
             ENDIF
             IF ( darwin_oasim_esFile .NE. ' '  ) THEN
@@ -585,17 +585,18 @@ c oasim data (load as Ein/m2/d; convert to uEin/m2/s)
                oasim_es(i,j,ilam,bi,bj) =
      &                          bWght*oasim_es0(i,j,ilam,bi,bj)
      &                         +aWght*oasim_es1(i,j,ilam,bi,bj)
-               oasim_es(i,j,ilam,bi,bj) =
-     &          oasim_es(i,j,ilam,bi,bj)*1. _d 6/86400. _d 0
+c               oasim_es(i,j,ilam,bi,bj) =
+c     &          oasim_es(i,j,ilam,bi,bj)*1. _d 6/86400. _d 0
              ENDDO
             ENDIF
-#ifndef SPECTRAL
+#ifndef WAVEBANDS
 c if not spectral add wavebands to give a single surface PAR
+c and convert to uEin/m2/s
             sur_par(i,j,bi,bj)= 0. _d 0
             DO ilam=1,tlam
-              sur_par(i,j,bi,bj)=sur_par(i,j,bi,bj)+
-     &                             oasim_ed(i,j,ilam,bi,bj)+
-     &                             oasim_es(i,j,ilam,bi,bj)
+              sur_par(i,j,bi,bj)=sur_par(i,j,bi,bj)+WtouEins(ilam)
+     &                           *(oasim_ed(i,j,ilam,bi,bj)+
+     &                             oasim_es(i,j,ilam,bi,bj))
             ENDDO
 #endif
 #endif

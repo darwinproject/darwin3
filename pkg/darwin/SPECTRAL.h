@@ -12,4 +12,5 @@ c         PARAMETER (tlam=13)
 #ifdef OASIM
          _RL oasim_ed(1-OLx:sNx+OLx,1-OLy:sNy+OLy,tlam,nSx, nSy)
          _RL oasim_es(1-OLx:sNx+OLx,1-OLy:sNy+OLy,tlam,nSx, nSy)
+         COMMON /SPECTRAL_INPUT/ oasim_ed, oasim_es
 #endif

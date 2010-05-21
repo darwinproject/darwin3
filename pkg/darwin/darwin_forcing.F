@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.30 2010/05/18 17:43:54 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.31 2010/05/21 19:21:58 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,6 +38,9 @@ C==============================================================
 c ANNA include wavebands_params.h
 #ifdef WAVEBANDS
 #include "WAVEBANDS_PARAMS.h"
+#ifdef OASIM
+#include "SPECTRAL.h"
+#endif
 #endif
 
 
@@ -406,8 +409,11 @@ c ANNA split surface PAR into wavebands
 #ifdef WAVEBANDS
          do ilam = 1,tlam
 #ifdef OASIM
-          sfPAR(ilam) = oasim_ed(i,j,ilam,bi,bj)+
-     &                      oasim_es(i,j,ilam,bi,bj)
+c add direct and diffuse, convert to uEin/m2/s/nm
+          sfPAR(ilam) = WtouEins(ilam)*(oasim_ed(i,j,ilam,bi,bj)+
+     &                      oasim_es(i,j,ilam,bi,bj))/wb_width(ilam)
+c and take ice fraction into account
+c         sfPAR(ilam) = sfPAR(ilam)*(1 _d 0 - fice(i,j,bi,bj))
 #else
           sfPAR(ilam) = sf(ilam)*lite
 #endif

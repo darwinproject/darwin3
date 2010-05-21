@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.10 2010/05/04 22:38:23 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.11 2010/05/21 19:21:58 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -36,6 +36,11 @@ C  iUnit		:: unit number for I/O
 C  msgBuf		:: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef OASIM
+      INTEGER ilam
+      _RL darwin_oasim_waves(tlam)
+      _RL planck, c, hc, oavo, hcoavo, rlamm
+#endif
 CEOP
 
       NAMELIST /DARWIN_FORCING/
@@ -49,6 +54,10 @@ CEOP
      &           darwin_FeT_fluxFile, darwin_Si_fluxFile,
      &           darwin_waterabsorbFile, darwin_phytoabsorbFile,
      &           darwin_surfacespecFile, darwin_acdomFile,
+#ifdef OASIM
+     &           darwin_oasim_edFile, darwin_oasim_esFile,
+     &           darwin_oasim_waves,
+#endif
      &           darwin_relaxscale,
      &           darwin_ForcingPeriod, darwin_ForcingCycle,
 #ifdef ALLOW_PAR_DAY
@@ -88,6 +97,8 @@ C Set defaults values for parameters in DARWIN_IO.h
       darwin_phytoabsorbFile=' '
       darwin_surfacespecFile=' '
       darwin_acdomFile=' '
+      darwin_oasim_edFile=' '
+      darwin_oasim_esFile=' '
       darwin_relaxscale=0. _d 0
       darwin_seed=0
 #ifdef ALLOW_CARBON
@@ -101,6 +112,26 @@ C Set defaults values for parameters in DARWIN_IO.h
 #endif
 #ifdef ALLOW_PAR_DAY
       darwin_PARavPeriod=86400. _d 0
+#endif
+#ifdef OASIM
+      DO ilam=1,tlam
+        darwin_oasim_waves(ilam) = 0 _d 0
+      ENDDO
+      IF (tlam.EQ.13) THEN
+        darwin_oasim_waves(1) = 400 _d 0
+        darwin_oasim_waves(2) = 425 _d 0
+        darwin_oasim_waves(3) = 450 _d 0
+        darwin_oasim_waves(4) = 475 _d 0
+        darwin_oasim_waves(5) = 500 _d 0
+        darwin_oasim_waves(6) = 525 _d 0
+        darwin_oasim_waves(7) = 550 _d 0
+        darwin_oasim_waves(8) = 575 _d 0
+        darwin_oasim_waves(9) = 600 _d 0
+        darwin_oasim_waves(10) = 625 _d 0
+        darwin_oasim_waves(11) = 650 _d 0
+        darwin_oasim_waves(12) = 675 _d 0
+        darwin_oasim_waves(13) = 700 _d 0
+      ENDIF
 #endif
 c default periodic forcing to same as for GCHEM
       darwin_forcingPeriod=gchem_ForcingPeriod
@@ -156,6 +187,19 @@ C Cloern:  chl:c = chl2cmin + A*exp(B*T)*exp(-C*PARday)*limit
 
 C Close the open data file
       CLOSE(iUnit)
+
+#ifdef OASIM
+c   Quanta conversion
+      planck = 6.6256 _d -34   !Plancks constant J sec
+      c = 2.998 _d 8                 !speed of light m/sec
+      hc = 1.0/(planck*c)
+      oavo = 1.0/6.023 _d 23   ! 1/Avogadros number
+      hcoavo = hc*oavo
+      do ilam = 1,tlam
+       rlamm = darwin_oasim_waves(ilam)*1 _d -9  !lambda in m
+       WtouEins(ilam) = 1 _d 6*rlamm*hcoavo      !Watts to uEin/s conversion
+      enddo
+#endif OASIM
 
       _END_MASTER(myThid)
 

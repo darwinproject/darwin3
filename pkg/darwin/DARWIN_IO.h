@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.18 2010/05/04 22:38:23 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.19 2010/05/21 19:21:58 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -207,3 +207,10 @@ C  dic_int*          :: place holder to read in a integer number, set at run tim
       INTEGER dic_int3
       INTEGER dic_int4
 #endif
+
+#ifdef OASIM
+c WtouEins     = W to uEin/s conversion factor
+      COMMON/darwin_oasim/ WtouEins
+      _RL WtouEins(tlam)
+#endif
+

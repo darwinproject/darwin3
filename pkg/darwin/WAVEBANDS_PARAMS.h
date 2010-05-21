@@ -22,6 +22,7 @@ c                absorption by psc only is used in growth
 c bp           = backscatter spectra for phytoplankton types (currently zero)
 c sf           = PAR-normalised surface light spectrum
 c                intenities per nm and sum = 1 (uE m-2 s-1 (nm)-1)
+c wb_width     = width of wavebands (nm)
 c acdom        = absorption spectra for cdom (assumed constant) (m-1)
 c ap_type      = absorption 'type' of phytoplankton assigned in darwin_generate_phyto.F
 c aphy_chl     = absorption spectra assigned base on 'type' for each phtyo (chl normalised)
@@ -44,7 +45,12 @@ c         PARAMETER (tnabp=4)
      &          ap_type,
      &          alphachl_nl,
      &          pwaves,
-     &          aw,bw,ap,bp,sf,ap_ps,
+     &          aw,bw,ap,bp,ap_ps,
+#ifdef OASIM
+     &          wb_width,
+#else
+     &          sf,
+#endif
      &          acdom
                       
 
@@ -56,6 +62,10 @@ c         PARAMETER (tnabp=4)
          _RL ap(tnabp,tlam),ap_ps(tnabp,tlam),bp(tnabp,tlam)
          _RL aw(tlam),bw(tlam)
          _RL acdom(tlam)
+#ifdef OASIM
+         _RL wb_width(tlam)
+#else
          _RL sf(tlam)
+#endif
 
 
