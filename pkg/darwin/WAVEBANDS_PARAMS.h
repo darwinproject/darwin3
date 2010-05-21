@@ -35,9 +35,9 @@ c n.b. some info about input data is in the headers inside the input files.
 c n.b. final column in input fles reserved for backscatter coeffs. Currently 0.
 c n.b. local PARwl and PARwupl are assigned in darwin_forcing.F and darwin_plankton.F
 
-         integer tlam,tnabp
-         PARAMETER (tlam=13)
-         PARAMETER (tnabp=4) 
+c         integer tlam,tnabp
+c         PARAMETER (tlam=13)
+c         PARAMETER (tnabp=4) 
  
          COMMON/wavebands_params/aphy_chl,
      &          aphy_chl_ps,

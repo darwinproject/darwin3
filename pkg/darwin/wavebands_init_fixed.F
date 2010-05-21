@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.7 2010/05/05 15:17:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.8 2010/05/21 19:18:06 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -25,7 +25,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
+#ifdef WAVEBANDS
 #include "WAVEBANDS_PARAMS.h"
+#endif
 #include "DARWIN_IO.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

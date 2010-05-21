@@ -4,8 +4,9 @@ c        must match number of wavebands in input datafiles
 c        must be the same for all data types (water, phyto, CDOM, surface spectra)
 
 c need this if spectral AND/OR oasim
-         integer tlam
-         PARAMETER (tlam=13)
+coj: now defined in WAVEBANDS_PARAMS.h
+c         integer tlam
+c         PARAMETER (tlam=13)
 
 
 #ifdef OASIM

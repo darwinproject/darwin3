@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.4 2010/05/03 17:21:09 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.5 2010/05/21 19:18:06 jahn Exp $
 C $Name:  $
 
 c DARWIN_SIZE.h 
@@ -15,6 +15,15 @@ c
          INTEGER npmax
          INTEGER nzmax
          PARAMETER(npmax=78,nzmax=2)
+
+#if defined(WAVEBANDS) || defined(OASIM)
+         INTEGER tlam
+         PARAMETER (tlam=13)
+#endif
+#ifdef WAVEBANDS
+         INTEGER tnabp
+         PARAMETER (tnabp=4)
+#endif
 
 C iPO4          :: index of PO4  in Ptracer
 C iNO3          :: index of NO3  in Ptracer
