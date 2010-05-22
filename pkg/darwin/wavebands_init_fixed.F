@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.10 2010/05/21 20:24:26 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.11 2010/05/22 19:29:25 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -46,11 +46,15 @@ c local variables
       integer pwaves_all(tnabp,tlam)
       integer wwaves(tlam),sfwaves(tlam)
       integer swlambda,splambda,ssflambda,splambda_ps
-      real sap,sap_ps,sbp
-      real saw,sbw 
-      real ssf
-      real sacdom      
+      _RL sap,sap_ps,sbp
+      _RL saw,sbw
+      _RL ssf
       _RL planck, c, hc, oavo, hcoavo, rlamm
+#ifdef DAR_CALC_ACDOM
+      _RL rlam450,rlam
+#else
+      _RL sacdom
+#endif
 c local indeces
       integer nabp,i,ilam
 
@@ -152,6 +156,7 @@ c surface spectrum for initial use
 
 
 c absorption by cdom
+#ifndef DAR_CALC_ACDOM
 c if no file given then CDOM is zero
        if (darwin_acdomFile.NE. ' '  ) THEN 
         open(19,file=darwin_acdomFile,
@@ -175,6 +180,18 @@ c if no file given then CDOM is zero
          acdom(i) = 0. _d 0
         enddo
       endif
+#else
+c for 3-D or for direct comparison to RADTRANS would need the same formulation for CDOM as in radtrans.
+c   CDOM absorption exponent
+      rlam450 = 450.0 _d 0
+      do ilam = 1,tlam
+       if (pwaves(ilam) .eq. 450) nl450 = ilam
+       rlam = float(pwaves(ilam))
+       excdom(ilam) = exp(-darwin_Sdom*(rlam-rlam450))
+      enddo
+c ifdef DAR_CALC_ACDOM
+#endif
+
 
 #endif /* WAVEBANDS */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.11 2010/05/21 19:21:58 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.12 2010/05/22 19:29:25 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -21,6 +21,9 @@ C !USES: ===============================================================
 #include "DARWIN_SIZE.h"
 #include "DARWIN_IO.h"
 #include "DARWIN_PARAMS.h"
+#ifdef WAVEBANDS
+#include "WAVEBANDS_PARAMS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -62,6 +65,9 @@ CEOP
      &           darwin_ForcingPeriod, darwin_ForcingCycle,
 #ifdef ALLOW_PAR_DAY
      &           darwin_PARavPeriod,
+#endif
+#ifdef DAR_CALC_ACDOM
+     &           darwin_Sdom,
 #endif
      &           darwin_seed
 
@@ -132,6 +138,9 @@ C Set defaults values for parameters in DARWIN_IO.h
         darwin_oasim_waves(12) = 675 _d 0
         darwin_oasim_waves(13) = 700 _d 0
       ENDIF
+#endif
+#ifdef DAR_CALC_ACDOM
+      darwin_Sdom = 0.014 _d 0
 #endif
 c default periodic forcing to same as for GCHEM
       darwin_forcingPeriod=gchem_ForcingPeriod

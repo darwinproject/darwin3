@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.32 2010/05/21 20:24:26 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.33 2010/05/22 19:29:25 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -89,6 +89,12 @@ c ANNA define variables for wavebands
        _RL PARwdn(tlam)
        _RL attenwl(tlam)        !attenuation (m-1)
        _RL sumaphy_nl(tlam)     !total phyto absorption at each wavelength
+#ifdef DAR_CALC_ACDOM
+       _RL Phy_k(npmax,Nr)
+       _RL phychl_k(npmax,Nr)
+       _RL acdom_k(Nr,tlam)
+#endif
+       _RL acdoml(tlam)
 #endif
 c ANNA endif
 
@@ -423,6 +429,27 @@ c         sfPAR(ilam) = sfPAR(ilam)*(1 _d 0 - fice(i,j,bi,bj))
           PARwup(ilam) = sfPAR(ilam)
           PARwl(ilam) = 0. _d 0
          enddo
+
+c ------------ GET CDOM_k FOR WAVEBANDS_3D and RADTRANS ------------------
+#ifdef DAR_CALC_ACDOM
+c first, retrieve profiles of phy and phychl to pass to acdom (and edeu)
+         DO k=1,Nr
+          DO np = 1,npmax
+            Phy_k(np,k) = max(Ptr(i,j,k,bi,bj,iPhy+np-1),0. _d 0)
+            phychl_k(np,k) = max(Chl_phy(i,j,k,bi,bj,np), 0. _d 0)
+          ENDDO
+c set acdom to zero
+          DO ilam = 1,tlam
+            acdom_k(k,ilam) = 0.0 _d 0
+          ENDDO
+         ENDDO
+
+c call acdom code
+         call darwin_acdom(phychl_k,aphy_chl,aw,acdom_k,myThid)
+c acdom has its own depth loop
+c so now have acdom_k profile for use in RADTRANS and WAVEBANDS_3D
+#endif
+
 #endif         
 c ANNA endif
 
@@ -549,13 +576,18 @@ c..........................................................
 c ANNA do light attenuation for wavebands
 c..........................................................
              do ilam = 1,tlam
+#ifdef DAR_CALC_ACDOM
+               acdoml(ilam) = acdom_k(k,ilam)
+#else
+               acdoml(ilam) = acdom(ilam)
+#endif
               sumaphy_nl(ilam) = 0.
               do np = 1,npmax
 c get total attenuation (absorption) by phyto at each wavelength
                sumaphy_nl(ilam) = sumaphy_nl(ilam) +
      &                            (phychl(np)*aphy_chl(np,ilam))
               enddo
-              attenwl(ilam) = (aw(ilam)+sumaphy_nl(ilam)+acdom(ilam))
+              attenwl(ilam) = (aw(ilam)+sumaphy_nl(ilam)+acdoml(ilam))
      &                        *drF(k)
               PARwdn(ilam) = PARwup(ilam)*exp(-attenwl(ilam))
              enddo
@@ -597,6 +629,7 @@ c for explicit sinking of particulate matter and phytoplankton
 c ANNA only define PARl here if not WAVEBANDS
 #ifndef WAVEBANDS
              PARl = PAR(i,j,k)
+#else
 #endif
 
 #ifdef ALLOW_LONGSTEP

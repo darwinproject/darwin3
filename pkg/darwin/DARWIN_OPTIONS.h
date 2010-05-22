@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.6 2010/05/04 16:00:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.7 2010/05/22 19:29:25 jahn Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -29,6 +29,7 @@ CEOP
 #undef  OLDSEED
 #undef  GEIDER
 #undef  WAVEBANDS
+#undef  DAR_CALC_ACDOM
 #undef  RELAX_NUTS
 #undef  FLUX_NUTS
 
@@ -42,7 +43,6 @@ C diagnostic chlorophyll
 
 C average PAR daily and store previous day
 #undef  ALLOW_PAR_DAY
-
 
 C dependencies
 #ifdef DAR_DIAG_CHL
