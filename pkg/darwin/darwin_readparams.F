@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.13 2010/05/22 19:30:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.14 2010/05/22 19:46:33 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -215,7 +215,7 @@ c   Quanta conversion
        rlamm = darwin_oasim_waves(ilam)*1 _d -9  !lambda in m
        WtouEins(ilam) = 1 _d 6*rlamm*hcoavo      !Watts to uEin/s conversion
       enddo
-#endif OASIM
+#endif
 
       _END_MASTER(myThid)
 

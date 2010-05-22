@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.17 2010/05/04 16:00:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.18 2010/05/22 19:46:33 jahn Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -79,7 +79,6 @@ c           have been tried
      &          ksatNH4fac, ksatNO2fac, val_ksatsi,
      &          ngrowfac, ilight,
      &          phymin, PAR0, diaz_growfac,
-     &          nsource,ngroups,
      &          phyto_esd, phyto_vol,
      &          zoo_esd, zoo_vol
 #ifdef IRON_SED_SOURCE
@@ -88,6 +87,7 @@ c           have been tried
 #ifdef PART_SCAV
      &         ,scav_rat, scav_inter, scav_exp
 #endif
+     &         ,nsource,ngroups
     
          _RL mu(npmax)
          _RL ksatPO4(npmax)
