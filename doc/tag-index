@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.53 2010/05/21 19:26:38 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.54 2010/05/22 19:33:46 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+o add aCDOM diagnostic: #define DAR_DIAG_ACDOM (available with WAVEBANDS)
+  parameters in data.darwin:
+  - darwin_diag_acdom_ilam :: waveband index (or wavelength) to diagnose
+o add option to compute aCDOM from Chlorophyll: #define DAR_CALC_ACDOM
+  parameters in data.darwin:
+  - darwin_Sdom :: spectral slope for wavelength dependence of aCDOM
 o fix reading of OASIM data (#define OASIM) regardless WAVEBANDS;
   parameters in data.darwin:
   - darwin_oasim_edFile, darwin_oasim_esFile :: file names
