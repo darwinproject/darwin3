@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.10 2009/12/10 16:13:17 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.11 2010/05/22 19:30:08 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -67,6 +67,15 @@ C     Functions
      &     'dar_Nfix_ave','units','--', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('dar_Nfix_ave','description',
      &     '', myThid)
+
+#ifdef DAR_DIAG_ACDOM
+      CALL MNC_CW_ADD_VNAME(
+     &     'dar_aCDOM_ave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT(
+     &     'dar_aCDOM_ave','units','--', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('dar_aCDOM_ave','description',
+     &     '', myThid)
+#endif
 
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL

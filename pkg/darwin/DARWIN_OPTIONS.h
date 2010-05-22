@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.7 2010/05/22 19:29:25 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.8 2010/05/22 19:30:08 jahn Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -37,6 +37,7 @@ CEOP
 #undef  DAR_DIAG_RSTAR
 #undef  DAR_DIAG_DIVER
 #undef  DAR_DIAG_GROW
+#undef  DAR_DIAG_ACDOM
 
 C diagnostic chlorophyll
 #undef  DAR_DIAG_CHL

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.33 2010/05/22 19:29:25 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.34 2010/05/22 19:30:08 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -750,7 +750,8 @@ c ANNA pass extra variables if WAVEBANDS
      I                       POPl, PONl, POFel, PSil,
      I                       phyup, popupl, ponupl, 
      I                       pofeupl, psiupl,
-     I                       PARl,Tlocal, Slocal,
+     U                       PARl,
+     I                       Tlocal, Slocal,
      I                       freefu, inputFel,
      I                       bottom, dzlocal,
      O                       Rstarl, RNstarl,
@@ -1109,6 +1110,11 @@ c ANNA_TAVE
                Pchlave(i,j,k,bi,bj,np)=Pchlave(i,j,k,bi,bj,np)+
      &                           phychl(np)*dtplankton
              enddo
+#endif
+#ifdef DAR_DIAG_ACDOM
+             print*,'acdoml',k,acdoml(darwin_diag_acdom_ilam)
+             aCDOMave(i,j,k,bi,bj)=aCDOMave(i,j,k,bi,bj)+
+     &                       acdoml(darwin_diag_acdom_ilam)*dtplankton
 #endif
 c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR

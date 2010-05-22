@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.12 2010/05/22 19:29:25 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.13 2010/05/22 19:30:08 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -68,6 +68,9 @@ CEOP
 #endif
 #ifdef DAR_CALC_ACDOM
      &           darwin_Sdom,
+#endif
+#ifdef DAR_DIAG_ACDOM
+     &           darwin_diag_acdom_ilam,
 #endif
      &           darwin_seed
 
@@ -141,6 +144,10 @@ C Set defaults values for parameters in DARWIN_IO.h
 #endif
 #ifdef DAR_CALC_ACDOM
       darwin_Sdom = 0.014 _d 0
+#endif
+#ifdef DAR_DIAG_ACDOM
+c value >= 100 will be converted to index in wavebands_init_fixed      
+      darwin_diag_acdom_ilam = 450
 #endif
 c default periodic forcing to same as for GCHEM
       darwin_forcingPeriod=gchem_ForcingPeriod

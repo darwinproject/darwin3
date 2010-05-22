@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.9 2009/12/10 16:13:17 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.10 2010/05/22 19:30:08 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -70,6 +70,10 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(Nfixave, DAR_timeave, nR ,
      &                 bi,bj,myThid)
+#ifdef DAR_DIAG_ACDOM
+         CALL TIMEAVE_NORMALIZ(aCDOMave, DAR_timeave, nR ,
+     &                 bi,bj,myThid)
+#endif
 
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
@@ -142,6 +146,10 @@ c
      &        myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('DAR_Nfixtave.',suff,Nfixave,
      &        myIter,myThid)
+#ifdef DAR_DIAG_ACDOM
+         CALL WRITE_FLD_XYZ_RL('DAR_aCDOMtave',suff,aCDOMave,
+     &        myIter,myThid)
+#endif
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
          do np=1,npmax
@@ -225,6 +233,10 @@ c
      &        pf,'dar_tave',0,0,'dar_Chl_ave',Chlave,myThid)
          CALL MNC_CW_RL_W(
      &        pf,'dar_tave',0,0,'dar_Nfix_ave',Nfixave,myThid)
+#ifdef DAR_DIAG_ACDOM
+         CALL MNC_CW_RL_W(
+     &        pf,'dar_tave',0,0,'dar_aCDOM_ave',aCDOMave,myThid)
+#endif
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
          do np=1,npmax
@@ -319,6 +331,9 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(PPave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(Chlave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(Nfixave,Nr,bi,bj,myThid)
+#ifdef DAR_DIAG_ACDOM
+         CALL TIMEAVE_RESET(aCDOMave,Nr,bi,bj,myThid)
+#endif
 c ANNA_TAVE 
 #ifdef WAVES_DIAG_PCHL
          do np=1,npmax

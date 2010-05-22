@@ -42,9 +42,7 @@ c         PARAMETER (tnabp=4)
  
          COMMON/wavebands_params/aphy_chl
      &         ,aphy_chl_ps
-     &         ,ap_type
      &         ,alphachl_nl
-     &         ,pwaves
      &         ,aw,bw,ap,bp,ap_ps
      &         ,wb_width
 #ifndef OASIM
@@ -52,10 +50,17 @@ c         PARAMETER (tnabp=4)
 #endif
 #ifdef DAR_CALC_ACDOM
      &         ,darwin_Sdom          ! used in acdom calculations
-     &         ,nl450                ! what is this? used in acdom calculations
      &         ,excdom               ! CDOM exponent
 #else
      &         ,acdom
+#endif
+         COMMON/wavebands_params_i/ap_type
+     &         ,pwaves
+#ifdef DAR_CALC_ACDOM
+     &         ,nl450                ! what is this? used in acdom calculations
+#endif
+#ifdef DAR_DIAG_ACDOM
+     &         ,darwin_diag_acdom_ilam    ! waveband to write to diagnostic
 #endif
                       
 
@@ -72,10 +77,13 @@ c         PARAMETER (tnabp=4)
 #endif
 #ifdef DAR_CALC_ACDOM
          _RL darwin_Sdom        ! used in acdom calculations 
-         _RL nl450                ! what is this? it's the nl number for 450nm used in acdom calculations
          _RL excdom(tlam)         ! CDOM exponent
+         INTEGER nl450                ! what is this? it's the nl number for 450nm used in acdom calculations
 #else
          _RL acdom(tlam)
+#endif
+#ifdef DAR_DIAG_ACDOM
+         INTEGER darwin_diag_acdom_ilam    ! waveband to write to diagnostic
 #endif
 
 

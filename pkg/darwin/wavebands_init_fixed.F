@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.11 2010/05/22 19:29:25 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.12 2010/05/22 19:30:08 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -180,7 +180,7 @@ c if no file given then CDOM is zero
          acdom(i) = 0. _d 0
         enddo
       endif
-#else
+#else /* DAR_CALC_ACDOM */
 c for 3-D or for direct comparison to RADTRANS would need the same formulation for CDOM as in radtrans.
 c   CDOM absorption exponent
       rlam450 = 450.0 _d 0
@@ -189,13 +189,39 @@ c   CDOM absorption exponent
        rlam = float(pwaves(ilam))
        excdom(ilam) = exp(-darwin_Sdom*(rlam-rlam450))
       enddo
-c ifdef DAR_CALC_ACDOM
-#endif
 
+      WRITE(msgBuf,'(A,1P1E20.12)')
+     &      ' WAVEBANDS_INIT_FIXED: darwin_Sdom = ', darwin_Sdom
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,I3)')
+     &      ' WAVEBANDS_INIT_FIXED: nl450 = ', nl450
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+#endif /* DAR_CALC_ACDOM */
+
+#ifdef DAR_DIAG_ACDOM
+c     find waveband index for acdom diagnostic
+      if (darwin_diag_acdom_ilam.GE.100) then
+       do ilam = 1,tlam
+        if (pwaves(ilam) .eq. darwin_diag_acdom_ilam) then
+          darwin_diag_acdom_ilam = ilam
+          goto 60
+        endif
+       enddo
+60     continue
+      endif
+
+      WRITE(msgBuf,'(A,I3,A,I4)')
+     &      ' WAVEBANDS_INIT_FIXED: aCDOM diag ilam = ',
+     &      darwin_diag_acdom_ilam, ', lambda = ',
+     &      pwaves(darwin_diag_acdom_ilam)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+#endif
 
 #endif /* WAVEBANDS */
 
       return
       end
-
 

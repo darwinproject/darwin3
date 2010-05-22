@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.25 2010/05/05 18:16:14 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.26 2010/05/22 19:30:08 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -331,6 +331,9 @@ c set arrays to zero if first timestep
           CALL TIMEAVE_RESET(PPave,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(Chlave,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(Nfixave,   Nr,  bi, bj, myThid)
+#ifdef DAR_DIAG_ACDOM
+          CALL TIMEAVE_RESET(aCDOMave,   Nr,  bi, bj, myThid)
+#endif
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
           do np=1,npmax

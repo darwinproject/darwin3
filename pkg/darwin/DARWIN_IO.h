@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.19 2010/05/21 19:21:58 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.20 2010/05/22 19:30:08 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -109,6 +109,9 @@ c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
      &      Pchlave,
 #endif
+#ifdef DAR_DIAG_ACDOM
+     &      aCDOMave,
+#endif
 c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
      &      Rstarave, RNstarave,
@@ -134,6 +137,9 @@ c
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
        _RL  Pchlave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy,npmax)
+#endif
+#ifdef DAR_DIAG_ACDOM
+       _RL  aCDOMave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
 #endif
 c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR

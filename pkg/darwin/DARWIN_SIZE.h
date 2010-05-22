@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.5 2010/05/21 19:18:06 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.6 2010/05/22 19:30:08 jahn Exp $
 C $Name:  $
 
 c DARWIN_SIZE.h 
@@ -139,3 +139,5 @@ C these are computed in darwin_init_fixed from iZoo, strideCompZoo and strideTyp
 #ifdef ALLOW_CARBON
      &                  ,iZooC
 #endif
+
+
