@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.54 2010/05/22 19:33:46 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.55 2010/05/22 19:35:12 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt61f_20100522
 o add aCDOM diagnostic: #define DAR_DIAG_ACDOM (available with WAVEBANDS)
   parameters in data.darwin:
   - darwin_diag_acdom_ilam :: waveband index (or wavelength) to diagnose
