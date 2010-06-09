@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.13 2010/06/09 15:03:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.14 2010/06/09 16:00:20 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -43,13 +43,11 @@ C     == Local variables ==
 c local variables      
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       character*80 title
-      integer pwaves_all(tnabp,tlam)
-      integer wwaves(tlam),sfwaves(tlam)
-      integer swlambda,splambda,ssflambda,splambda_ps
+      integer swlambda,splambda,ssflambda
       _RL sap,sap_ps,sbp
       _RL saw,sbw
       _RL ssf
-      _RL planck, c, hc, oavo, hcoavo, rlamm
+c      _RL planck, c, hc, oavo, hcoavo, rlamm
 #ifdef DAR_CALC_ACDOM
       _RL rlam450,rlam
 #else
@@ -57,6 +55,25 @@ c local variables
 #endif
 c local indeces
       integer nabp,i,ilam
+
+C band widths used to convert OASIM data to irradiation per nm
+C put boundaries half-way between central values
+C but first and last boundary are at first and last "central" value
+      wb_width(1) = .5*(pwaves(2)-pwaves(1))
+      do i=2,tlam-1
+        wb_width(i) = .5*(pwaves(i+1)-pwaves(i-1))
+      enddo
+      wb_width(tlam) = .5*(pwaves(tlam)-pwaves(tlam-1))
+      wb_totalWidth = 0.0
+      do i=1,tlam
+        wb_totalWidth = wb_totalWidth + wb_width(i)
+      enddo
+      if (wb_totalWidth.LE.0) then
+        WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: ',
+     &  'please provide wavelengths in darwin_waves.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
+      endif
 
 
 c  Water data files
@@ -68,7 +85,15 @@ c  Water data files
         enddo
         do ilam = 1,tlam           
          read(14,20)swlambda,saw,sbw  
-         wwaves(ilam) = swlambda   
+         if (swlambda.NE.pwaves(ilam)) then
+           WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     "wavelength for water spectrum doesn't match darwin_waves:"
+           CALL PRINT_ERROR( msgBuf, myThid )
+           WRITE(msgBuf,'(2A,I3,A,I4,A,F4.0)') 'WAVEBANDS_INIT_FIXED: ',
+     &     'ilam', ilam, ': ', swlambda, ' versus ', pwaves(ilam)
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
+         endif
          aw(ilam) = saw
          bw(ilam) = sbw
         enddo
@@ -77,10 +102,8 @@ c  Water data files
        else
         WRITE(msgBuf,'(A)')
      &      ' WAVEBANDS_INIT_FIXED: need to specify water absorption'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, 1 )
-
-        STOP
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
        endif
        
 
@@ -95,42 +118,31 @@ c ANNA easiest way to 'turn off' PS for growth is to put same values in both abs
         enddo        
         do nabp = 1,tnabp        
          read(16,'(a50)')title   ! reads one line of text for the phytoplankton type header
-         do i  = 1,tlam         
+         do ilam  = 1,tlam         
           read(16,30)splambda,sap,sap_ps,sbp
-          pwaves_all(nabp,i) = splambda 
-          ap(nabp,i) = sap
-          ap_ps(nabp,i) = sap_ps
-          bp(nabp,i) = sbp
+          if (splambda.NE.pwaves(ilam)) then
+           WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     "wavelength for phyto spectrum doesn't match darwin_waves:"
+           CALL PRINT_ERROR( msgBuf, myThid )
+           WRITE(msgBuf,'(2A,I3,A,I4,A,F4.0)') 'WAVEBANDS_INIT_FIXED: ',
+     &     'ilam', ilam, ': ', splambda, ' versus ', pwaves(ilam)
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
+          endif
+          ap(nabp,ilam) = sap
+          ap_ps(nabp,ilam) = sap_ps
+          bp(nabp,ilam) = sbp
         enddo
         enddo
         close(16)
 30      format(i4,3f10.4)
-      
-        do i=1,tlam
-         pwaves(i) = pwaves_all(1,i)
-        enddo
        else
         WRITE(msgBuf,'(A)')
      &      ' WAVEBANDS_INIT_FIXED: need to specify phyto absorption'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, 1 )
-
-        STOP
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
        endif
 
-
-C band widths used to convert OASIM data to irradiation per nm
-C put boundaries half-way between central values
-C but first and last boundary are at first and last "central" value
-      wb_width(1) = .5*(pwaves(2)-pwaves(1))
-      do i=2,tlam-1
-        wb_width(i) = .5*(pwaves(i+1)-pwaves(i-1))
-      enddo
-      wb_width(tlam) = .5*(pwaves(tlam)-pwaves(tlam-1))
-      wb_totalWidth = 0.0
-      do i=1,tlam
-        wb_totalWidth = wb_totalWidth + wb_width(i)
-      enddo
 
 #ifndef OASIM
 c QQ NEED IN HERE ifndef OASIM
@@ -141,20 +153,26 @@ c surface spectrum for initial use
        do i = 1,3             ! three lines of text for the header
         read(18,'(a50)')title 
        enddo
-       do i = 1,tlam
+       do ilam = 1,tlam
         read(18,40)ssflambda,ssf
-        sfwaves(i) = ssflambda
-        sf(i) = ssf
+        if (ssflambda.NE.pwaves(ilam)) then
+           WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     "wavelength for surface spectrum doesn't match darwin_waves:"
+           CALL PRINT_ERROR( msgBuf, myThid )
+           WRITE(msgBuf,'(2A,I3,A,I4,A,F4.0)') 'WAVEBANDS_INIT_FIXED: ',
+     &     'ilam', ilam, ': ', ssflambda, ' versus ', pwaves(ilam)
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
+        endif
+        sf(ilam) = ssf
        enddo
        close(18)
 40     format(i5,f15.6)  
       else
         WRITE(msgBuf,'(A)')
      &      ' WAVEBANDS_INIT_FIXED: need surface spectrum'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, 1 )
-
-        STOP
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
        endif
 #endif /* not OASIM */
 

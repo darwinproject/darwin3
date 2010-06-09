@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.9 2010/05/21 19:18:06 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.10 2010/06/09 16:00:20 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_vari.F assigns actual values to choices made by coin-flips in darwin_generate_phyto.F
@@ -55,28 +55,52 @@ c make sure pigment types and actual spectra match - here keep 1-4 in same order
            do i = 1,tlam
            aphy_chl(np,i) = ap(1,i)
            aphy_chl_ps(np,i) = ap_ps(1,i)
+#ifdef DAR_RADTRANS
+           bphy_chl(np,i) = bp(1,i)
+#endif
            enddo
+#ifdef DAR_RADTRANS
+           bbphy(np) = darwin_bbphy(1)
+#endif
           endif
 
           if (ap_type(np).eq.2) then
            do i=1,tlam
            aphy_chl(np,i) = ap(2,i)
            aphy_chl_ps(np,i) = ap_ps(2,i)
+#ifdef DAR_RADTRANS
+           bphy_chl(np,i) = bp(2,i)
+#endif
            enddo
+#ifdef DAR_RADTRANS
+           bbphy(np) = darwin_bbphy(2)
+#endif
           endif
 
           if (ap_type(np).eq.3) then
            do i=1,tlam
            aphy_chl(np,i) = ap(3,i)
            aphy_chl_ps(np,i) = ap_ps(3,i)
+#ifdef DAR_RADTRANS
+           bphy_chl(np,i) = bp(3,i)
+#endif
            enddo
+#ifdef DAR_RADTRANS
+           bbphy(np) = darwin_bbphy(3)
+#endif
           endif
 
           if (ap_type(np).eq.4) then
            do i=1,tlam
            aphy_chl(np,i) = ap(4,i)
            aphy_chl_ps(np,i) = ap_ps(4,i)
+#ifdef DAR_RADTRANS
+           bphy_chl(np,i) = bp(4,i)
+#endif
            enddo
+#ifdef DAR_RADTRANS
+           bbphy(np) = darwin_bbphy(4)
+#endif
           endif
 
 c checking the output .dat file will reveal this
@@ -84,7 +108,13 @@ c checking the output .dat file will reveal this
            do i=1,tlam
            aphy_chl(np,i) = 9.9d2
            aphy_chl_ps(np,i) = 9.9d2
+#ifdef DAR_RADTRANS
+           bphy_chl(np,i) = 9.9d2
+#endif
            enddo
+#ifdef DAR_RADTRANS
+           bbphy(np) = 9.9d2
+#endif
           endif
 
          enddo

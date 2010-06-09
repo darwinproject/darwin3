@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.10 2010/05/22 19:30:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.11 2010/06/09 16:00:20 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -73,6 +73,32 @@ C      Normalize by integrated time
 #ifdef DAR_DIAG_ACDOM
          CALL TIMEAVE_NORMALIZ(aCDOMave, DAR_timeave, nR ,
      &                 bi,bj,myThid)
+#endif
+#ifdef DAR_DIAG_IRR
+         do ii = 1,tlam
+          CALL TIMEAVE_NORMALIZ(Edave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(Esave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(Euave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(Eutave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_ABSORP
+         do ii = 1,tlam
+          CALL TIMEAVE_NORMALIZ(aave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_SCATTER
+         do ii = 1,tlam
+          CALL TIMEAVE_NORMALIZ(btave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(bbave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+         enddo
 #endif
 
 c ANNA_TAVE
@@ -150,6 +176,54 @@ c
          CALL WRITE_FLD_XYZ_RL('DAR_aCDOMtave',suff,aCDOMave,
      &        myIter,myThid)
 #endif
+#ifdef DAR_DIAG_IRR
+         do ii = 1,tlam
+           WRITE(suff,'(A5,I2.2,A1,I10.10)') 'Edave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           Edave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+           WRITE(suff,'(A5,I2.2,A1,I10.10)') 'Esave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           Esave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+           WRITE(suff,'(A5,I2.2,A1,I10.10)') 'Euave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           Euave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+           WRITE(suff,'(A8,I2.2,A1,I10.10)') 'Eutopave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           Eutave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_ABSORP
+         do ii = 1,tlam
+           WRITE(suff,'(A4,I2.2,A1,I10.10)') 'aave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           aave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_SCATTER
+         do ii = 1,tlam
+           WRITE(suff,'(A5,I2.2,A1,I10.10)') 'btave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           btave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+           WRITE(suff,'(A5,I2.2,A1,I10.10)') 'bbave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           bbave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+         enddo
+#endif
+
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
          do np=1,npmax
@@ -236,6 +310,48 @@ c
 #ifdef DAR_DIAG_ACDOM
          CALL MNC_CW_RL_W(
      &        pf,'dar_tave',0,0,'dar_aCDOM_ave',aCDOMave,myThid)
+#endif
+#ifdef DAR_DIAG_IRR
+         do ii = 1,tlam
+            DO jj = 1,MAX_LEN_FNAM
+              name(jj:jj) = ' '
+            ENDDO
+            WRITE(name,'(a,i2.2)') 'dar_Ed',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           Edave(1-OLx,1-OLy,1,1,1,ii),myThid)
+            WRITE(name,'(a,i2.2)') 'dar_Es',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           Esave(1-OLx,1-OLy,1,1,1,ii),myThid)
+            WRITE(name,'(a,i2.2)') 'dar_Eu',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           Euave(1-OLx,1-OLy,1,1,1,ii),myThid)
+            WRITE(name,'(a,i2.2)') 'dar_Eutop',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           Eutave(1-OLx,1-OLy,1,1,1,ii),myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_ABSORP
+         do ii = 1,tlam
+            DO jj = 1,MAX_LEN_FNAM
+              name(jj:jj) = ' '
+            ENDDO
+            WRITE(name,'(a,i2.2)') 'dar_a',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           aave(1-OLx,1-OLy,1,1,1,ii),myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_SCATTER
+         do ii = 1,tlam
+            DO jj = 1,MAX_LEN_FNAM
+              name(jj:jj) = ' '
+            ENDDO
+            WRITE(name,'(a,i2.2)') 'dar_bt',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           btave(1-OLx,1-OLy,1,1,1,ii),myThid)
+            WRITE(name,'(a,i2.2)') 'dar_bb',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           bbave(1-OLx,1-OLy,1,1,1,ii),myThid)
+         enddo
 #endif
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
@@ -333,6 +449,32 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(Nfixave,Nr,bi,bj,myThid)
 #ifdef DAR_DIAG_ACDOM
          CALL TIMEAVE_RESET(aCDOMave,Nr,bi,bj,myThid)
+#endif
+#ifdef DAR_DIAG_IRR
+         do ii = 1,tlam
+           CALL TIMEAVE_RESET(Edave(1-OLx,1-OLy,1,1,1,ii),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(Esave(1-OLx,1-OLy,1,1,1,ii),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(Euave(1-OLx,1-OLy,1,1,1,ii),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(Eutave(1-OLx,1-OLy,1,1,1,ii),
+     &                                    Nr,bi,bj,myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_ABSORP
+         do ii = 1,tlam
+           CALL TIMEAVE_RESET(aave(1-OLx,1-OLy,1,1,1,ii),
+     &                                   Nr,bi,bj,myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_SCATTER
+         do ii = 1,tlam
+           CALL TIMEAVE_RESET(btave(1-OLx,1-OLy,1,1,1,ii),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(bbave(1-OLx,1-OLy,1,1,1,ii),
+     &                                    Nr,bi,bj,myThid)
+         enddo
 #endif
 c ANNA_TAVE 
 #ifdef WAVES_DIAG_PCHL

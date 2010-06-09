@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.20 2010/05/22 19:30:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.21 2010/06/09 16:00:20 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -112,6 +112,16 @@ c ANNA_TAVE
 #ifdef DAR_DIAG_ACDOM
      &      aCDOMave,
 #endif
+#ifdef DAR_DIAG_IRR
+     &      Edave,Esave,Euave,Eutave,
+#endif
+#ifdef DAR_DIAG_ABSORP
+     &      aave,
+#endif
+#ifdef DAR_DIAG_SCATTER
+     &      btave,
+     &      bbave,
+#endif
 c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
      &      Rstarave, RNstarave,
@@ -140,6 +150,19 @@ c ANNA_TAVE
 #endif
 #ifdef DAR_DIAG_ACDOM
        _RL  aCDOMave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+#endif
+#ifdef DAR_DIAG_IRR
+       _RL  Edave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
+       _RL  Esave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
+       _RL  Euave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
+       _RL  Eutave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
+#endif
+#ifdef DAR_DIAG_ABSORP
+       _RL  aave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
+#endif
+#ifdef DAR_DIAG_SCATTER
+       _RL  btave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
+       _RL  bbave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
 #endif
 c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
@@ -212,11 +235,5 @@ C  dic_int*          :: place holder to read in a integer number, set at run tim
       INTEGER dic_int2
       INTEGER dic_int3
       INTEGER dic_int4
-#endif
-
-#ifdef OASIM
-c WtouEins     = W to uEin/s conversion factor
-      COMMON/darwin_oasim/ WtouEins
-      _RL WtouEins(tlam)
 #endif
 

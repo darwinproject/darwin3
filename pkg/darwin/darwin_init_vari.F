@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.27 2010/06/09 15:03:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.28 2010/06/09 16:00:20 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -318,6 +318,32 @@ c set arrays to zero if first timestep
           CALL TIMEAVE_RESET(Nfixave,   Nr,  bi, bj, myThid)
 #ifdef DAR_DIAG_ACDOM
           CALL TIMEAVE_RESET(aCDOMave,   Nr,  bi, bj, myThid)
+#endif
+#ifdef DAR_DIAG_IRR
+          do i=1,tlam
+           CALL TIMEAVE_RESET(Edave(1-OLx,1-OLy,1,1,1,i),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(Esave(1-OLx,1-OLy,1,1,1,i),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(Euave(1-OLx,1-OLy,1,1,1,i),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(Eutave(1-OLx,1-OLy,1,1,1,i),
+     &                                    Nr,bi,bj,myThid)
+          enddo
+#endif
+#ifdef DAR_DIAG_ABSORP
+          do i=1,tlam
+           CALL TIMEAVE_RESET(aave(1-OLx,1-OLy,1,1,1,i),
+     &                                   Nr,bi,bj,myThid)
+          enddo
+#endif
+#ifdef DAR_DIAG_SCATTER
+          do i=1,tlam
+           CALL TIMEAVE_RESET(btave(1-OLx,1-OLy,1,1,1,i),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(bbave(1-OLx,1-OLy,1,1,1,i),
+     &                                    Nr,bi,bj,myThid)
+          enddo
 #endif
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL

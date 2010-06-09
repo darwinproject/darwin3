@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.14 2010/05/22 19:46:33 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.15 2010/06/09 16:00:20 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -19,6 +19,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
+#include "DARWIN.h"
 #include "DARWIN_IO.h"
 #include "DARWIN_PARAMS.h"
 #ifdef WAVEBANDS
@@ -37,11 +38,13 @@ C  none
 C !LOCAL VARIABLES: ====================================================
 C  iUnit		:: unit number for I/O
 C  msgBuf		:: message buffer
-      INTEGER iUnit
+C  darwin_waves         :: 'central' wavelengths of wavebands (nm)
+C                          for OASIM and WAVEBANDS
+      INTEGER iUnit,errIO
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef OASIM
-      INTEGER ilam
-      _RL darwin_oasim_waves(tlam)
+      INTEGER darwin_waves(tlam)
+#if defined(WAVEBANDS) || defined(OASIM)
+      INTEGER ilam,i
       _RL planck, c, hc, oavo, hcoavo, rlamm
 #endif
 CEOP
@@ -59,20 +62,35 @@ CEOP
      &           darwin_surfacespecFile, darwin_acdomFile,
 #ifdef OASIM
      &           darwin_oasim_edFile, darwin_oasim_esFile,
-     &           darwin_oasim_waves,
 #endif
      &           darwin_relaxscale,
      &           darwin_ForcingPeriod, darwin_ForcingCycle,
 #ifdef ALLOW_PAR_DAY
      &           darwin_PARavPeriod,
 #endif
+     &           darwin_seed
+
+      NAMELIST /DARWIN_SPECTRAL_PARM/
+     &           darwin_waves
+#ifdef WAVEBANDS
 #ifdef DAR_CALC_ACDOM
-     &           darwin_Sdom,
+     &          ,darwin_Sdom
 #endif
 #ifdef DAR_DIAG_ACDOM
-     &           darwin_diag_acdom_ilam,
+     &          ,darwin_diag_acdom_ilam
 #endif
-     &           darwin_seed
+#ifdef DAR_RADTRANS
+     &          ,darwin_PAR_ilamLo
+     &          ,darwin_PAR_ilamHi
+     &          ,darwin_radmodThresh
+     &          ,darwin_Dmax
+     &          ,darwin_rmus
+     &          ,darwin_rmuu 
+     &          ,darwin_bbw 
+     &          ,darwin_bbphy
+     &          ,darwin_bbmin
+#endif
+#endif /* WAVEBANDS */
 
 #ifdef DAR_DIAG_CHL
       NAMELIST /DARWIN_CHL/
@@ -110,6 +128,10 @@ C Set defaults values for parameters in DARWIN_IO.h
       darwin_oasim_esFile=' '
       darwin_relaxscale=0. _d 0
       darwin_seed=0
+c default periodic forcing to same as for GCHEM
+      darwin_forcingPeriod=gchem_ForcingPeriod
+      darwin_forcingCycle=gchem_ForcingCycle
+
 #ifdef ALLOW_CARBON
        DIC_windFile  = ' '
        DIC_atmospFile= ' '
@@ -119,29 +141,33 @@ C Set defaults values for parameters in DARWIN_IO.h
        dic_int4    = 0
        dic_pCO2    = 0. _d 0
 #endif
+
 #ifdef ALLOW_PAR_DAY
       darwin_PARavPeriod=86400. _d 0
 #endif
-#ifdef OASIM
+
+#if defined(WAVEBANDS) || defined(OASIM)
       DO ilam=1,tlam
-        darwin_oasim_waves(ilam) = 0 _d 0
+        darwin_waves(ilam) = 0
       ENDDO
       IF (tlam.EQ.13) THEN
-        darwin_oasim_waves(1) = 400 _d 0
-        darwin_oasim_waves(2) = 425 _d 0
-        darwin_oasim_waves(3) = 450 _d 0
-        darwin_oasim_waves(4) = 475 _d 0
-        darwin_oasim_waves(5) = 500 _d 0
-        darwin_oasim_waves(6) = 525 _d 0
-        darwin_oasim_waves(7) = 550 _d 0
-        darwin_oasim_waves(8) = 575 _d 0
-        darwin_oasim_waves(9) = 600 _d 0
-        darwin_oasim_waves(10) = 625 _d 0
-        darwin_oasim_waves(11) = 650 _d 0
-        darwin_oasim_waves(12) = 675 _d 0
-        darwin_oasim_waves(13) = 700 _d 0
+        darwin_waves(1) = 400
+        darwin_waves(2) = 425
+        darwin_waves(3) = 450
+        darwin_waves(4) = 475
+        darwin_waves(5) = 500
+        darwin_waves(6) = 525
+        darwin_waves(7) = 550
+        darwin_waves(8) = 575
+        darwin_waves(9) = 600
+        darwin_waves(10) = 625
+        darwin_waves(11) = 650
+        darwin_waves(12) = 675
+        darwin_waves(13) = 700
       ENDIF
 #endif
+
+#ifdef WAVEBANDS
 #ifdef DAR_CALC_ACDOM
       darwin_Sdom = 0.014 _d 0
 #endif
@@ -149,9 +175,21 @@ C Set defaults values for parameters in DARWIN_IO.h
 c value >= 100 will be converted to index in wavebands_init_fixed      
       darwin_diag_acdom_ilam = 450
 #endif
-c default periodic forcing to same as for GCHEM
-      darwin_forcingPeriod=gchem_ForcingPeriod
-      darwin_forcingCycle=gchem_ForcingCycle
+#ifdef DAR_RADTRANS
+      darwin_PAR_ilamLo = 1
+      darwin_PAR_ilamHi = tlam
+      darwin_radmodThresh = 1 _d -4
+      darwin_Dmax = 500 _d 0
+      darwin_rmus = 1.0/0.83 _d 0
+      darwin_rmuu = 1.0/0.4 _d 0
+      darwin_bbmin = 0.0002 _d 0
+      darwin_bbw = 0.5 _d 0
+      do i=1,tnabp
+        darwin_bbphy(i) = 0 _d 0
+      enddo
+#endif
+#endif /* WAVEBANDS */
+
 C Open and read the data.darwin file
       _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' DARWIN_READPARMS: opening data.darwin'
@@ -195,6 +233,24 @@ C Cloern:  chl:c = chl2cmin + A*exp(B*T)*exp(-C*PARday)*limit
       READ(UNIT=iUnit,NML=DIC_FORCING)
 #endif
 
+#if defined(WAVEBANDS) || defined(OASIM)
+      READ(UNIT=iUnit,NML=DARWIN_SPECTRAL_PARM,IOSTAT=errIO)
+      IF ( errIO .LT. 0 ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'S/R DARWIN_READPARMS'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A)')
+     &  'Error reading darwin package'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A)')
+     &  'parameter file "data.darwin"'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A)')
+     &  'Problem in namelist DARWIN_SPECTRAL_PARM'
+       CALL PRINT_ERROR( msgBuf , 1)
+       STOP 'ABNORMAL END: S/R DARWIN_READPARMS'
+      ENDIF
+#endif
 
       WRITE(msgBuf,'(A)')
      &  ' DARWIN_READPARMS: finished reading data.darwin'
@@ -204,7 +260,13 @@ C Cloern:  chl:c = chl2cmin + A*exp(B*T)*exp(-C*PARday)*limit
 C Close the open data file
       CLOSE(iUnit)
 
-#ifdef OASIM
+#ifdef WAVEBANDS
+      do ilam = 1,tlam
+        pwaves(ilam) = darwin_waves(ilam)
+      enddo
+#endif
+
+#if defined(WAVEBANDS) || defined(OASIM)
 c   Quanta conversion
       planck = 6.6256 _d -34   !Plancks constant J sec
       c = 2.998 _d 8                 !speed of light m/sec
@@ -212,10 +274,73 @@ c   Quanta conversion
       oavo = 1.0/6.023 _d 23   ! 1/Avogadros number
       hcoavo = hc*oavo
       do ilam = 1,tlam
-       rlamm = darwin_oasim_waves(ilam)*1 _d -9  !lambda in m
+       rlamm = darwin_waves(ilam)*1 _d -9  !lambda in m
        WtouEins(ilam) = 1 _d 6*rlamm*hcoavo      !Watts to uEin/s conversion
       enddo
 #endif
+
+C--   Print a summary of parameter values:
+      iUnit = standardMessageUnit
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A)') '// darwin parameters '
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
+      CALL WRITE_0D_I( darwin_seed, INDEX_NONE,
+     &   'darwin_seed =',
+     &   ' /* seed for random number generator */')
+
+      WRITE(msgBuf,'(A)') ' -----------------------------------'
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+
+      CALL WRITE_1D_I( darwin_waves, tlam, 0,
+     &   'darwin_waves =',
+     &'   /* "central" wavelengths of wavebands */')
+#ifdef WAVEBANDS
+#ifdef DAR_CALC_ACDOM
+      CALL WRITE_0D_RL( darwin_Sdom, INDEX_NONE,
+     &   'darwin_Sdom =',
+     &'   /* spectral slope for aCDOM */')
+#endif
+#ifdef DAR_DIAG_ACDOM
+      CALL WRITE_0D_I( darwin_diag_acdom_ilam, INDEX_NONE,
+     &   'darwin_diag_acdom_ilam =',
+     &'   /* waveband to use for aCDOM diagnostic */')
+#endif
+#ifdef DAR_RADTRANS
+      CALL WRITE_0D_I( darwin_PAR_ilamLo, INDEX_NONE,
+     &   'darwin_PAR_ilamLo =',
+     &'   /* waveband index of PAR lower bound */')
+      CALL WRITE_0D_I( darwin_PAR_ilamHi, INDEX_NONE,
+     &   'darwin_PAR_ilamHi =',
+     &'   /* waveband index of PAR upper bound */')
+      CALL WRITE_0D_RL( darwin_radmodThresh, INDEX_NONE,
+     &   'darwin_radmodThresh =',
+     &'   /* threshold for calling radmod (W/m2/waveband) */')
+      CALL WRITE_0D_RL( darwin_Dmax, INDEX_NONE,
+     &   'darwin_Dmax =',
+     &'   /* depth at which Ed is assumed zero */')
+      CALL WRITE_0D_RL( darwin_rmus, INDEX_NONE,
+     &   'darwin_rmus =',
+     &'   /* inverse average cosine of downward diffuse irradiance */')
+      CALL WRITE_0D_RL( darwin_rmuu, INDEX_NONE,
+     &   'darwin_rmuu =',
+     &'   /* inverse average cosine of upward diffuse irradiance */')
+      CALL WRITE_0D_RL( darwin_bbw, INDEX_NONE,
+     &   'darwin_bbw =',
+     &'   /* backscattering to forward scattering ratio for water */')
+      CALL WRITE_0D_RL( darwin_bbmin, INDEX_NONE,
+     &   'darwin_bbmin =',
+     &'   /* minimum backscattering coefficient (1/m) */')
+      CALL WRITE_1D_RL( darwin_bbphy, tnabp, 0,
+     &   'darwin_bbphy =',
+     &'   /* backscattering to forward scattering ratio for phyto */')
+#endif /* DAR_RADTRANS */
+#endif /* WAVEBANDS */
+
+      WRITE(msgBuf,'(A)') ' ==================================='
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
 

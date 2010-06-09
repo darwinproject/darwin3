@@ -87,4 +87,56 @@ c         PARAMETER (tnabp=4)
          INTEGER darwin_diag_acdom_ilam    ! waveband to write to diagnostic
 #endif
 
+#ifdef DAR_RADTRANS
+C runtime parameters:
+C
+C     darwin_PAR_ilamLo   :: starting waveband index of PAR range (default 1)
+C     darwin_PAR_ilamHi   :: end waveband index of PAR range (default tlam)
+C     darwin_radmodThresh :: threshold for calling radmod (default 1E-4)
+C     darwin_Dmax         :: depth at which Ed is zero (default 500 m)
+C     darwin_rmus         :: inverse average cosine of downward diffuse radiation
+C     darwin_rmuu         :: inverse average cosine of upward diffuse radiation
+C     darwin_bbw          :: backscattering to forward scattering ratio for water
+C     darwin_bbphy        :: backscattering to forward scattering ratio for Chlorophyll
+C     darwin_bbmin        :: minimum backscattering coefficient (not ratio)
+C
+      COMMON /DARWIN_RADTRANS_PARM_I/
+     &       darwin_PAR_ilamLo, darwin_PAR_ilamHi
+
+      INTEGER darwin_PAR_ilamLo, darwin_PAR_ilamHi
+
+      COMMON /DARWIN_RADTRANS_PARM_R/
+     &       darwin_radmodThresh, darwin_Dmax,
+     &       darwin_rmus, darwin_rmuu,
+     &       darwin_bbw,
+     &       darwin_bbphy,
+     &       darwin_bbmin
+
+      _RL darwin_radmodThresh
+      _RL darwin_Dmax
+      _RL darwin_rmus, darwin_rmuu
+      _RL darwin_bbw
+      _RL darwin_bbphy(tnabp)
+      _RL darwin_bbmin
+
+C dependent/hardcoded parameters:
+C
+C     pid        :: pi
+C     rad        :: conversion factor from radians to degree, 180/pi
+C     bphy_chl   :: Chl-specific scattering coefficient for phyto
+C
+      COMMON/DARWIN_RADTRANS_R/
+     &        pid,rad     !radias and pi - use these rather than darwin versions for simplicity.
+     &       ,bphy_chl    !scat coef for phyto
+     &       ,bbphy       !backscattering to forward scattering ratio for phyto
+
+c not sure if some of these are necessary 
+c SOME OF THESE parameter names are the same as WAVEBANDS, but have an added k dimension....
+c the params aw, bw are only temporary in wavebands_1d .:. CHANGE THEM in WAVEBANDS_1D to something else
+c this list mostly from light.F
+c      _RL rod(tlam),ros(tlam)   !surface direct and diffuse reflectance !not here
+      _RL pid,rad             !radias and pi - use these rather than darwin versions for simplicity.
+      _RL bphy_chl(npmax,tlam) !scat coef for phyto
+      _RL bbphy(npmax)         !scat ratio for phyto
+#endif /* DAR_RADTRANS */
 

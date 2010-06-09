@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.19 2010/06/09 15:03:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.20 2010/06/09 16:00:20 jahn Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -279,3 +279,10 @@ c     &         Smallalphachl, Smallalphachlrange,
          _RL Kpremin_C
          _RL Kdissc
 #endif
+
+#if defined(WAVEBANDS) || defined(OASIM)
+c WtouEins     = W to uEin/s conversion factor
+      COMMON/darwin_oasim/ WtouEins
+      _RL WtouEins(tlam)
+#endif
+

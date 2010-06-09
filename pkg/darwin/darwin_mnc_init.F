@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.11 2010/05/22 19:30:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.12 2010/06/09 16:00:20 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -75,6 +75,57 @@ C     Functions
      &     'dar_aCDOM_ave','units','--', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('dar_aCDOM_ave','description',
      &     '', myThid)
+#endif
+
+#ifdef DAR_DIAG_IRR
+      do ii=1,tlam
+          DO jj = 1,MAX_LEN_FNAM
+             name(jj:jj) = ' '
+          ENDDO
+          WRITE(name,'(a,i2.2)') 'dar_Ed',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+          WRITE(name,'(a,i2.2)') 'dar_Es',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+          WRITE(name,'(a,i2.2)') 'dar_Eu',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+          WRITE(name,'(a,i2.2)') 'dar_Eutop',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+      enddo
+#endif
+
+#ifdef DAR_DIAG_ABSORP
+      do ii=1,tlam
+          DO jj = 1,MAX_LEN_FNAM
+             name(jj:jj) = ' '
+          ENDDO
+          WRITE(name,'(a,i2.2)') 'dar_a',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+      enddo
+#endif
+#ifdef DAR_DIAG_SCATTER
+      do ii=1,tlam
+          DO jj = 1,MAX_LEN_FNAM
+             name(jj:jj) = ' '
+          ENDDO
+          WRITE(name,'(a,i2.2)') 'dar_bt',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+          WRITE(name,'(a,i2.2)') 'dar_bb',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+      enddo
 #endif
 
 c ANNA_TAVE
