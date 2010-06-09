@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.56 2010/06/09 15:55:54 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.57 2010/06/09 16:01:02 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o add full radiative transfer code
 
 ctrb_darwin_ckpt61g_20100609
 o change default inhibcoef_geid_val back to zero
