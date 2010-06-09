@@ -1,0 +1,20 @@
+Radiative transfer routines
+===========================
+
+radtrans_sfcsolz            computes solar zenith angle at surface given location and time
++- radtrans_localvec        creates arrays of up, north, and east vectors for fixed locations
++- radtrans_sunmod          computes solar zenith angle from date, time and location vector
+   +- radtrans_sun2000      computes the Sun vector in geocentric inertial 
+   |  +- radtrans_jd        converts calendar date to Julian day
+   |  +- radtrans_ephparms  computes ephemeris parameters used by other Mission
+   |  +- radtrans_nutate    computes the nutation in longitude and the obliquity
+   +- radtrans_gha2000      computes the Greenwich hour angle in degrees for the
+      +- radtrans_jd        ./.
+      +- radtrans_ephparms  ./.
+      +- radtrans_nutate    ./.
+
+radtrans_sfcirr    computes transmitted part of irradiance just below sea surface
+radtrans_sfcrmud   computes average cosine for direct irradiance
+
+radtrans_radmod    Aas/Ackleson radiative transfer model for one grid cell/wave band
+
