@@ -44,7 +44,7 @@ c         PARAMETER (tnabp=4)
      &         ,aphy_chl_ps
      &         ,alphachl_nl
      &         ,aw,bw,ap,bp,ap_ps
-     &         ,wb_width
+     &         ,wb_width,wb_totalWidth
 #ifndef OASIM
      &         ,sf
 #endif
@@ -72,6 +72,7 @@ c         PARAMETER (tnabp=4)
          _RL ap(tnabp,tlam),ap_ps(tnabp,tlam),bp(tnabp,tlam)
          _RL aw(tlam),bw(tlam)
          _RL wb_width(tlam)
+         _RL wb_totalWidth
 #ifndef OASIM
          _RL sf(tlam)
 #endif

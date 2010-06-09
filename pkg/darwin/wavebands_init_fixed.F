@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.12 2010/05/22 19:30:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.13 2010/06/09 15:03:29 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -127,6 +127,10 @@ C but first and last boundary are at first and last "central" value
         wb_width(i) = .5*(pwaves(i+1)-pwaves(i-1))
       enddo
       wb_width(tlam) = .5*(pwaves(tlam)-pwaves(tlam-1))
+      wb_totalWidth = 0.0
+      do i=1,tlam
+        wb_totalWidth = wb_totalWidth + wb_width(i)
+      enddo
 
 #ifndef OASIM
 c QQ NEED IN HERE ifndef OASIM

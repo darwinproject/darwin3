@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.28 2010/05/21 20:24:26 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.29 2010/06/09 15:03:29 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -392,12 +392,12 @@ c ANNA local variables for WAVEBANDS
 
 c ANNA for interpolation
          _RL cu_area
-         _RL waves_diff
-         _RL light_diff
-         _RL alphaI_diff
-         _RL squ_part
-         _RL tri_part
-         _RL seg_area
+C         _RL waves_diff
+C         _RL light_diff
+C         _RL alphaI_diff
+C         _RL squ_part
+C         _RL tri_part
+C         _RL seg_area
 
 c ANNA inportant but local variables that can be fogotten
          _RL PARwdn(tlam)         !light at bottom of local gridcell
@@ -411,8 +411,6 @@ c ANNA endif
 c ANNA - for inhib
          _RL Ek
          _RL EkoverE
-         _RL alpha_mean(npmax)
-         _RL alpha_diff
 
 c.................................................................
 
@@ -786,41 +784,19 @@ c Now Check Against General Nutrient Limiting Tendency
 c ANNA if wavebands then uses spectral alphachl derived from spectral alpha * I
 c so first get value for alphachl_nl * PARwlocal
 c value will depend on matchup between spectra of alphachl_nl (ie. aphy_chl) and PARwlocal
+c integrate alpha*PAR over wavebands
           do np = 1,npmax
+           cu_area = 0. _d 0
            do nl = 1,tlam
             alpha_I_local_nl(nl) = alphachl_nl(np,nl) * PARwlocal(nl)
+            cu_area = cu_area + wb_width(nl)*alpha_I_local_nl(nl)
            end do
-
-c interpolate for sum of alphachl_nl * PARwlocal
-           cu_area = 0.d0
-           do nl = 1,(tlam-1)
-            waves_diff = pwaves(nl+1)-pwaves(nl)
-            alphaI_diff = alpha_I_local_nl(nl+1)-alpha_I_local_nl(nl)
-            squ_part = waves_diff * alpha_I_local_nl(nl+1)
-            tri_part = waves_diff * alphaI_diff * 5.D-1
-            seg_area = squ_part - tri_part
-            cu_area = cu_area + seg_area
-           end do
-
-c           alpha_I_local(np) = cu_area / (pwaves(tlam) - pwaves(1))
            alpha_I_local(np) = cu_area
            alpha_I_tmp(np) = alpha_I_local(np)
           end do
 c Geider growth (and chl2c) now depends on this (sinlge) value of alpha_chl * I
 
-c ANNA_INHIB photoinhibition for wavebands requires mean alphachl_nl and PARwlocal
-          do np = 1,npmax
-           cu_area = 0.d0
-           do nl = 1,(tlam-1)
-            waves_diff = pwaves(nl+1)-pwaves(nl)
-            alpha_diff = alphachl_nl(np,nl+1)-alphachl_nl(np,nl)
-            squ_part = waves_diff * alphachl_nl(np,nl+1)
-            tri_part = waves_diff * alpha_diff * 5.D-1
-            seg_area = squ_part - tri_part
-            cu_area = cu_area + seg_area
-           end do
-           alpha_mean(np) = cu_area / (pwaves(tlam) - pwaves(1))
-          end do
+c alpha_mean now precomputed in darwin_init_vari
 #else
 c ANNA if not wavebands uses alphachl derived from mQyield * aphy_chl_ave
 c for use with generic geider equation need to use alpha_I_tmp (ie. alphachl*PARlocal)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.26 2010/05/22 19:30:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.27 2010/06/09 15:03:29 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -62,17 +62,7 @@ c ANNA need nl for wavebands
 #ifdef WAVEBANDS
         integer ilam
         integer nl
-
-c ANNA for interpolation
-         _RL cu_area
-         _RL waves_diff
-         _RL light_diff
-         _RL alpha_diff
-         _RL squ_part
-         _RL tri_part
-         _RL seg_area
-         _RL alpha_mean(npmax)
-
+        _RL cu_area
 #endif
 
 CEOP
@@ -164,15 +154,10 @@ c ANNA value is mean of vals for big and small.
           end do
 c find mean 
           cu_area = 0.d0
-          do nl = 1,(tlam-1)
-            waves_diff = pwaves(nl+1)-pwaves(nl)
-            alpha_diff = alphachl_nl(np,nl+1)-alphachl_nl(np,nl)
-            squ_part = waves_diff * alphachl_nl(np,nl+1)
-            tri_part = waves_diff * alpha_diff * 5.D-1
-            seg_area = squ_part - tri_part
-            cu_area = cu_area + seg_area
+          do nl = 1,tlam
+            cu_area = cu_area + wb_width(nl)*alphachl_nl(np,nl)
           end do
-          alpha_mean(np) = cu_area / (pwaves(tlam) - pwaves(1))
+          alpha_mean(np) = cu_area / wb_totalWidth
 
           chl2cmin(np)=chl2cmax(np)/
      &            (1+(chl2cmax(np)* alpha_mean(np) *2000. _d 0)/
