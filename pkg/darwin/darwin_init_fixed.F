@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.22 2010/06/09 15:55:19 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.23 2010/07/07 16:57:16 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -196,7 +196,7 @@ c set phosphate half stauration constants .. small or big organism
        SmallPsatrange=0.02 _d 0
        BigPsatrange=0.02 _d 0
        ProcPsatrange=0.005 _d 0
-       UniDzPsat=0.02 _d 0
+       UniDzPsatrange=0.02 _d 0
 c set NH4/NO2 frac, so that NH4/NO2 can be preferred nitrogen source
        ksatNH4fac=.50 _d 0
        ksatNO2fac=1.0 _d 0
