@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.58 2010/06/10 17:51:30 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.59 2010/07/07 16:04:16 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt62h_20100707
 o add full radiative transfer code
 
 ctrb_darwin_ckpt62g_20100609
