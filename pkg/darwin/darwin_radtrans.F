@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_radtrans.F,v 1.1 2010/06/09 22:51:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_radtrans.F,v 1.2 2010/07/08 20:49:08 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -108,11 +108,21 @@ C       zirr = 0.0
      &        Estop(nl) .ge. darwin_radmodThresh) then
 c           print*,'pre',zd,Edtop(nl),Estop(nl),
 c    &                    rmud,rmus,rmuu,a,bt,bb,Dmax
+#ifdef DAR_RADTRANS_DECREASING
+C      truncation to decreasing modes a la Aas
+            call radtrans_radmod_decr(
+     I              zd,Edtop(nl),Estop(nl),
+     I              rmud,darwin_rmus,darwin_rmuu,
+     I              a_k(k,nl),bt_k(k,nl),bb_k(k,nl),darwin_Dmax,
+     O              Edz(nl,k),Esz(nl,k),Euz(nl,k),Eutop(nl,k))
+#else
+C      Watson Gregg's original
             call radtrans_radmod(
      I              zd,Edtop(nl),Estop(nl),
      I              rmud,darwin_rmus,darwin_rmuu,
      I              a_k(k,nl),bt_k(k,nl),bb_k(k,nl),darwin_Dmax,
      O              Edz(nl,k),Esz(nl,k),Euz(nl,k),Eutop(nl,k))
+#endif
 c           print*,'radmod',Edz(nl,k),Esz(nl,k),Euz(nl,k)
           endif
 C  cycle

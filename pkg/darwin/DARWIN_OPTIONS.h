@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.9 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.10 2010/07/08 20:49:08 jahn Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -34,6 +34,8 @@ CEOP
 #undef  DAR_CALC_ACDOM
 #undef  DAR_RADTRANS
 #undef  DAR_RADTRANS_USE_MODEL_CALENDAR
+C truncation to 2 downward decreasing modes a la Aas
+#undef  DAR_RADTRANS_DECREASING
 
 #undef  RELAX_NUTS
 #undef  FLUX_NUTS
