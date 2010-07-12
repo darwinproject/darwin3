@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.36 2010/07/12 19:14:26 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.37 2010/07/12 19:17:28 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1082,10 +1082,10 @@ c now update main tracer arrays
            if (np.eq.1) Chl=0. _d 0
            Ptr(i,j,k,bi,bj,iChl+np-1) = Ptr(i,j,k,bi,bj,iChl+np-1) +
      &                                       dtplankton*dphychl(np)
-           chltmp=Ptr(i,j,k,bi,bj,iChl+np-1)
-           phytmp=Ptr(i,j,k,bi,bj,iPhy+np-1)
-           Ptr(i,j,k,bi,bj,iChl+np-1)=
-     &         max(chltmp,phytmp*R_PC(np)*chl2cmin(np))
+c          chltmp=Ptr(i,j,k,bi,bj,iChl+np-1)
+c          phytmp=Ptr(i,j,k,bi,bj,iPhy+np-1)
+c          Ptr(i,j,k,bi,bj,iChl+np-1)=
+c    &         max(chltmp,phytmp*R_PC(np)*chl2cmin(np))
 c          if (np.eq.1.and.i.eq.1.and.j.eq.1.and.k.eq.1)
 c    &     print*,chltmp,phytmp,phytmp*R_PC(np)*chl2cmin(np),
 c    &                   phytmp*R_PC(np)*chl2cmax(np)

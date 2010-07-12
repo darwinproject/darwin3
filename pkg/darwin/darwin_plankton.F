@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.29 2010/06/09 15:03:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.30 2010/07/12 19:17:29 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -866,6 +866,8 @@ c (eq A14 in Geider et al 1997)
           acclim(np)=chl2cmax(np)/
      &            (1+(chl2cmax(np)*alpha_I_tmp(np))/
      &               (2*pcm(np)))
+          acclim(np)=min(acclim(np),chl2cmax(np))
+c         acclim(np)=max(acclim(np),chl2cmin(np))
 #else
            phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
 #endif
