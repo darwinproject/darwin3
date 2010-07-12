@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.23 2010/07/07 16:57:16 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.24 2010/07/12 19:58:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -176,6 +176,9 @@ c ANNA value of aphy_chl_ave = 0.02 - its the mean of all spectras used as input
 c inhib for Prochl?
 C       inhibcoef_geid_val = 1.2 _d 0 !DUMMY VAL
        inhibcoef_geid_val = 0 _d 0 !DUMMY VAL
+#ifdef DYNAMIC_CHL
+       acclimtimescl = 1./(60. _d 0 *60. _d 0 *24. _d 0 * 20. _d 0)
+#endif
 #endif
 c
 

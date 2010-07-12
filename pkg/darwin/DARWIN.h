@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.20 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.21 2010/07/12 19:58:30 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -235,6 +235,9 @@ c ANNA geider by mQyield instead of alpha
 #ifdef WAVEBANDS
      &         alpha_mean,
 #endif
+#ifdef DYNAMIC_CHL
+     &         acclimtimescl,
+#endif
 c     &         Bigalphachl, Bigalphachlrange,
 c     &         Smallalphachl, Smallalphachlrange,
      &         BigmQyield, BigmQyieldrange,
@@ -252,6 +255,11 @@ c        _RL phychl(npmax)
 #ifdef WAVEBANDS
          _RL alpha_mean(npmax)
 #endif
+#ifdef DYNAMIC_CHL
+         _RL acclimtimescl
+#endif
+
+
 c         _RL Bigalphachl, Bigalphachlrange,
 c     &         Smallalphachl, Smallalphachlrange,
          _RL BigmQyield, BigmQyieldrange,

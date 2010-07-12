@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.30 2010/07/12 19:17:29 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.31 2010/07/12 19:58:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1292,6 +1292,8 @@ c phytoplankton
 #ifdef GEIDER
 #ifdef DYNAMIC_CHL
               dphychl(np) = acclim(np)*PspecificPO4(np)*R_PC(np)
+     &                     + acclimtimescl *
+     &                      (acclim(np)-chl2c(np))*phyto(np)*R_PC(np)
      &                     +(
 #ifdef OLD_GRAZE
      &                        - grazing_phyto(np)*
