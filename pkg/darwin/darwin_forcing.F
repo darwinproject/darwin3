@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.35 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.36 2010/07/12 19:14:26 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -469,7 +469,11 @@ c first, retrieve profiles of phy and phychl to pass to acdom (and edeu)
          DO k=1,Nr
           DO np = 1,npmax
             Phy_k(np,k) = max(Ptr(i,j,k,bi,bj,iPhy+np-1),0. _d 0)
-            phychl_k(np,k) = max(Chl_phy(i,j,k,bi,bj,np), 0. _d 0)
+#ifdef DYNAMIC_CHL
+              phychl_k(np,k) = max(Ptr(i,j,k,bi,bj,iChl+np-1),0. _d 0)
+#else
+              phychl_k(np,k) = max(Chl_phy(i,j,k,bi,bj,np), 0. _d 0)
+#endif
           ENDDO
 c set acdom to zero
           DO ilam = 1,tlam
@@ -509,7 +513,7 @@ c         enddo
 c compute 1/cos(zenith) for direct light below surface
          call radtrans_sfcrmud(rad,solz,
      O                         rmud)
-         print*,'rmud',rmud
+c        print*,'rmud',rmud
 
 C compute absorption/scattering coefficients for radtrans
          DO k=1,Nr
@@ -539,7 +543,7 @@ c dzlocal ?????
      O                Edz,Esz,Euz,Eutop,
      O                tirrq,tirrwq,
      I                myThid)
-         print*,'tirrq',tirrq(1),tirrwq(6,1)
+c        print*,'tirrq',tirrq(1),tirrwq(6,1)
 c uses chl from prev timestep (as wavebands does)
 c but has its own depth loop
 c pass phyto and chl into this call

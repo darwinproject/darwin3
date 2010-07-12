@@ -45,6 +45,8 @@ C     msgBuf    - Informational/error meesage buffer
  
         INTEGER np
 
+        INTEGER ilam
+
         _RL phytmp, chltmp, chl2ctmp, pcm
         _RL PARlocal, lite
         _RL atten
