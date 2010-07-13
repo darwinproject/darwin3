@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.10 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.11 2010/07/13 22:41:07 stephd Exp $
 C $Name:  $
 
 c ANNA wavebands_init_vari.F assigns actual values to choices made by coin-flips in darwin_generate_phyto.F
@@ -41,7 +41,7 @@ C     == Local variables ==
        _RL outfile(npmax,tlam)
        _RL outfile_ps(npmax,tlam)
 
-       INTEGER np,nl,i,ilam
+       INTEGER np,nl,i,ilam, nap
        INTEGER IniUnit1, IniUnit2, IniUnit3
        INTEGER IniUnit4, IniUnit5, IniUnit6
        INTEGER IniUnit7
@@ -51,57 +51,20 @@ c ANNA associate the pigment / abs choices for phytoplankton with actual absorpt
 c make sure pigment types and actual spectra match - here keep 1-4 in same order as datafile
          do np = 1, npmax
 
-          if (ap_type(np).eq.1) then
+          do nap=1, tnabp
+          if (ap_type(np).eq.nap) then
            do i = 1,tlam
-           aphy_chl(np,i) = ap(1,i)
-           aphy_chl_ps(np,i) = ap_ps(1,i)
+           aphy_chl(np,i) = ap(nap,i)
+           aphy_chl_ps(np,i) = ap_ps(nap,i)
 #ifdef DAR_RADTRANS
-           bphy_chl(np,i) = bp(1,i)
+           bphy_chl(np,i) = bp(nap,i)
 #endif
            enddo
 #ifdef DAR_RADTRANS
-           bbphy(np) = darwin_bbphy(1)
+           bbphy(np) = darwin_bbphy(nap)
 #endif
           endif
-
-          if (ap_type(np).eq.2) then
-           do i=1,tlam
-           aphy_chl(np,i) = ap(2,i)
-           aphy_chl_ps(np,i) = ap_ps(2,i)
-#ifdef DAR_RADTRANS
-           bphy_chl(np,i) = bp(2,i)
-#endif
-           enddo
-#ifdef DAR_RADTRANS
-           bbphy(np) = darwin_bbphy(2)
-#endif
-          endif
-
-          if (ap_type(np).eq.3) then
-           do i=1,tlam
-           aphy_chl(np,i) = ap(3,i)
-           aphy_chl_ps(np,i) = ap_ps(3,i)
-#ifdef DAR_RADTRANS
-           bphy_chl(np,i) = bp(3,i)
-#endif
-           enddo
-#ifdef DAR_RADTRANS
-           bbphy(np) = darwin_bbphy(3)
-#endif
-          endif
-
-          if (ap_type(np).eq.4) then
-           do i=1,tlam
-           aphy_chl(np,i) = ap(4,i)
-           aphy_chl_ps(np,i) = ap_ps(4,i)
-#ifdef DAR_RADTRANS
-           bphy_chl(np,i) = bp(4,i)
-#endif
-           enddo
-#ifdef DAR_RADTRANS
-           bbphy(np) = darwin_bbphy(4)
-#endif
-          endif
+         enddo
 
 c checking the output .dat file will reveal this
           if(ap_type(np).eq.0) then
