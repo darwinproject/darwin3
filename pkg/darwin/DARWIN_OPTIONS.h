@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.10 2010/07/08 20:49:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.11 2010/07/13 19:16:37 jahn Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -36,6 +36,11 @@ CEOP
 #undef  DAR_RADTRANS_USE_MODEL_CALENDAR
 C truncation to 2 downward decreasing modes a la Aas
 #undef  DAR_RADTRANS_DECREASING
+C iterative solution
+#undef  DAR_RADTRANS_ITERATIVE
+C use rmus for all components to convert to scalar irradiance
+C (not recommended)
+#undef  DAR_RADTRANS_RMUS_PAR
 
 #undef  RELAX_NUTS
 #undef  FLUX_NUTS

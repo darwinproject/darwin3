@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.37 2010/07/12 19:17:28 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.38 2010/07/13 19:16:37 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -194,6 +194,7 @@ c some local variables
        _RL NO2l
        _RL PARl
        _RL dzlocal
+       _RL dz_k(Nr)
        _RL dtplankton
        _RL bottom
        _RL PP
@@ -517,6 +518,7 @@ c        print*,'rmud',rmud
 
 C compute absorption/scattering coefficients for radtrans
          DO k=1,Nr
+          dz_k(k) = drF(k)*HFacC(i,j,k,bi,bj)
           DO ilam = 1,tlam
 c           absorption by phyto
             actot = 0.0
@@ -538,11 +540,20 @@ c           add water and CDOM
          ENDDO
 
 c dzlocal ?????
+#ifdef DAR_RADTRANS_ITERATIVE
+         call darwin_radtrans_iter(
+     I                dz_k,rmud,Edwsf,Eswsf,a_k,bt_k,bb_k,
+     I                darwin_radtrans_kmax,darwin_radtrans_niter,
+     O                Edz,Esz,Euz,Eutop,
+     O                tirrq,tirrwq,
+     I                myThid)
+#else
          call darwin_radtrans(
      I                drF,rmud,Edwsf,Eswsf,a_k,bt_k,bb_k,
      O                Edz,Esz,Euz,Eutop,
      O                tirrq,tirrwq,
      I                myThid)
+#endif
 c        print*,'tirrq',tirrq(1),tirrwq(6,1)
 c uses chl from prev timestep (as wavebands does)
 c but has its own depth loop

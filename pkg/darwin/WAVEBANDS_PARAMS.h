@@ -30,6 +30,7 @@ c aphy_chl_ps  = as above but absorption spectra given is that by photosynthetic
 c                aphy_chl and aphy_chl_psc assigned in wavebands_init_vari.F
 c alphachl_nl  = slope of PI curve calulated in darwin_init_vari.F
 c                one value for each wavelength (same units as non-wavebands alphachl)
+c darwin_diag_acdom_ilam :: waveband to write to diagnostics
 c
 c
 c n.b. some info about input data is in the headers inside the input files.
@@ -99,11 +100,17 @@ C     darwin_rmuu         :: inverse average cosine of upward diffuse radiation
 C     darwin_bbw          :: backscattering to forward scattering ratio for water
 C     darwin_bbphy        :: backscattering to forward scattering ratio for Chlorophyll
 C     darwin_bbmin        :: minimum backscattering coefficient (not ratio)
+c     darwin_radtrans_kmax  :: deepest layer to compute irradiances in
+c     darwin_radtrans_niter :: number of iterations for iterative improvement of radmod solution
 C
       COMMON /DARWIN_RADTRANS_PARM_I/
      &       darwin_PAR_ilamLo, darwin_PAR_ilamHi
+     &      ,darwin_radtrans_kmax
+     &      ,darwin_radtrans_niter
 
       INTEGER darwin_PAR_ilamLo, darwin_PAR_ilamHi
+      INTEGER darwin_radtrans_kmax
+      INTEGER darwin_radtrans_niter
 
       COMMON /DARWIN_RADTRANS_PARM_R/
      &       darwin_radmodThresh, darwin_Dmax,

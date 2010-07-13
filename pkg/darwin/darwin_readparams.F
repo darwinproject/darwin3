@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.15 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.16 2010/07/13 19:16:37 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -89,6 +89,8 @@ CEOP
      &          ,darwin_bbw 
      &          ,darwin_bbphy
      &          ,darwin_bbmin
+     &          ,darwin_radtrans_kmax
+     &          ,darwin_radtrans_niter
 #endif
 #endif /* WAVEBANDS */
 
@@ -187,6 +189,8 @@ c value >= 100 will be converted to index in wavebands_init_fixed
       do i=1,tnabp
         darwin_bbphy(i) = 0 _d 0
       enddo
+      darwin_radtrans_kmax = Nr
+      darwin_radtrans_niter = 1
 #endif
 #endif /* WAVEBANDS */
 
@@ -336,6 +340,12 @@ C--   Print a summary of parameter values:
       CALL WRITE_1D_RL( darwin_bbphy, tnabp, 0,
      &   'darwin_bbphy =',
      &'   /* backscattering to forward scattering ratio for phyto */')
+      CALL WRITE_0D_I( darwin_radtrans_kmax, INDEX_NONE,
+     &   'darwin_radtrans_kmax =',
+     &'   /* deepest level in which to compute irradiances */')
+      CALL WRITE_0D_I( darwin_radtrans_niter, INDEX_NONE,
+     &   'darwin_radtrans_niter =',
+     &'   /* number of "radtrans improvement" iterations */')
 #endif /* DAR_RADTRANS */
 #endif /* WAVEBANDS */
 
