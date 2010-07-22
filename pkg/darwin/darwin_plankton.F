@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.31 2010/07/12 19:58:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.32 2010/07/22 22:04:13 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -73,9 +73,9 @@ c ANNA pass extra variables if WAVEBANDS
      O                       dALKdt, dO2dt, dZOOCdt,
 #endif
 #ifdef GEIDER
-     I                       phychl,
+     I                       phychl, 
 #ifdef DYNAMIC_CHL
-     O                       dphychl,
+     O                       dphychl, Chlup,
 #endif
 #ifdef WAVEBANDS
      I                       PARwlocal,
@@ -198,6 +198,7 @@ c zoo   = zooplankton
          _RL phychl(npmax)
 #ifdef DYNAMIC_CHL
          _RL dphychl(npmax)
+         _RL Chlup(npmax)
 #endif
 #endif
 #ifdef ALLOW_PAR_DAY
@@ -295,6 +296,8 @@ c  variables for zooplankton grazing rates
         _RL chl2c(npmax)
 #ifdef DYNAMIC_CHL
         _RL acclim(npmax)
+        _RL psinkchl(npmax)
+        _RL rhochl(npmax)
 #endif
 #endif
 
@@ -471,6 +474,7 @@ c energetic disadvantage of using NO2/No3: off=0, on=1
            chl2c(np)=0. _d 0
 #ifdef DYNAMIC_CHL
            acclim(np)=0. _d 0
+           psinkChl(np)=0. _d 0
 #endif
          enddo
 #endif
@@ -808,15 +812,11 @@ c ANNA endif
 
           do np = 1, npmax
            pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
-#ifdef DYNAMICAL_CHL
+#ifdef DYNAMIC_CHL
              chl2c(np)=phychl(np)/(phyto(np)*R_PC(np))
-c            if (chl2c(np).gt.chl2cmax(np))
-c    &         print*,'PROBLEM chl2c>chl2cmax',chl2c(np),chl2cmax(np)
-c            if (chl2c(np).lt.chl2cmin(np))
-c    &         print*,'PROBLEM chl2c<chl2cmin',chl2c(np),chl2cmin(np)
 #endif
            if (pcm(np).gt.0.d0) then
-#ifndef DYNAMICAL_CHL
+#ifndef DYNAMIC_CHL
 c assumes balanced growth, eq A14 in Geider et al 1997
              chl2c(np)=chl2cmax(np)/
      &            (1+(chl2cmax(np)*alpha_I_tmp(np))/
@@ -861,7 +861,7 @@ c end inhib
              ilimit(np)=0.d0
            endif
 #ifdef DYNAMIC_CHL
-c new growth will be acclimated to current conditions 
+c Chl:C acclimated to current conditions 
 c (eq A14 in Geider et al 1997)
           acclim(np)=chl2cmax(np)/
      &            (1+(chl2cmax(np)*alpha_I_tmp(np))/
@@ -1162,7 +1162,14 @@ c phospate uptake by each phytoplankton
 #endif
 #ifdef GEIDER
                grow(np)=ngrow(np)*pcarbon(np)
-               if (debug.eq.1) print*,'grow', grow(np)
+               if (debug.eq.1) print*,'grow', grow(np), pcarbon(np)
+               if (debug.eq.14) print*,'grow', grow(np), pcarbon(np)
+#ifdef DYNAMIC_CHL
+c geider 97 for dChl/dt (source part) Eq. 3
+               rhochl(np)=chl2cmax(np) * 
+     &                      (grow(np)/(alpha_I_tmp(np)*acclim(np)) )
+               if (debug.eq.14) print*,'rhochl',rhochl(np)
+#endif
 #endif
                PspecificPO4(np) = grow(np)*phyto(np)
 c        write(6,*)'np =',np, ' PspecificPO4 ='
@@ -1224,6 +1231,12 @@ c sinking phytoplankton and POM
                psinkPhy(np) =
      &                     (wsink(np)*Phytoup(np))/(dzlocal)
               enddo
+#ifdef DYNAMIC_CHL
+              do np=1,npmax
+               psinkChl(np) =
+     &                     (wsink(np)*Chlup(np))/(dzlocal)
+              enddo
+#endif
 #ifdef ALLOW_CARBON
               psinkC  = (wc_sink*POCuplocal)/(dzlocal)
               psinkPIC = (wpic_sink*PICuplocal)/(dzlocal)
@@ -1237,6 +1250,12 @@ c sinking phytoplankton and POM
                psinkPhy(np) =
      &                  (wsink(np))*(Phytoup(np)-Phyto(np))/(dzlocal)
               enddo
+#ifdef DYNAMIC_CHL
+              do np=1,npmax
+               psinkChl(np) =
+     &                  (wsink(np))*(Chlup(np)-phychl(np))/(dzlocal)
+              enddo
+#endif
 #ifdef ALLOW_CARBON
               psinkC  = (wc_sink*(POCuplocal-POClocal))/(dzlocal)
               psinkPIC  = (wpic_sink*(PICuplocal-PIClocal))/(dzlocal)
@@ -1292,6 +1311,7 @@ c phytoplankton
 #ifdef GEIDER
 #ifdef DYNAMIC_CHL
               dphychl(np) = acclim(np)*PspecificPO4(np)*R_PC(np)
+c             dphychl(np) = rhochl(np)*PspecificPO4(np)*R_PC(np) 
      &                     + acclimtimescl *
      &                      (acclim(np)-chl2c(np))*phyto(np)*R_PC(np)
      &                     +(
@@ -1299,10 +1319,10 @@ c phytoplankton
      &                        - grazing_phyto(np)*
      &              (phytomin(np)/(phytomin(np) + kgrazesat))
 #else
-     &                        - sumgrazphy(np)
+     &                   - sumgrazphy(np)
 #endif
-     &                        - mortphy(np)*phytomin(np)
-     &                        + psinkphy(np) )*chl2c(np)*R_PC(np)
+     &                   - mortphy(np)*phytomin(np)) *chl2c(np)*R_PC(np)
+     &                        + psinkChl(np) 
 #endif
               Chl=Chl + phychl(np)
 #endif

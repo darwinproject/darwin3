@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.38 2010/07/13 19:16:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.39 2010/07/22 22:04:13 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -126,6 +126,7 @@ C      always need for diagnostics
       _RL phychl(npmax)
 #ifdef DYNAMIC_CHL
       _RL dphychl(npmax)
+      _RL chlup(npmax)
 #endif
 #endif
 
@@ -756,6 +757,9 @@ c for explicit sinking of particulate matter and phytoplankton
                 psiupl = 0. _d 0
                 do np=1,npmax
                   Phyup(np)=0. _d 0
+#ifdef DYNAMIC_CHL
+                  chlup(np)=0. _d 0
+#endif
                 enddo
 #ifdef ALLOW_CARBON
                 pocupl = 0. _d 0
@@ -911,6 +915,7 @@ c ANNA pass extra variables if WAVEBANDS
      O                       phychl,
 #ifdef DYNAMIC_CHL
      I                       dphychl,
+     I                       chlup,
 #endif
 #ifdef WAVEBANDS
      I                       PARwl,
@@ -960,6 +965,9 @@ c convert to dPOCl
              psiupl = PSil
              do np=1,npmax
                Phyup(np) = Phy(np) 
+#ifdef DYNAMIC_CHL
+               chlup(np) = phychl(np)
+#endif
              enddo
 
 
