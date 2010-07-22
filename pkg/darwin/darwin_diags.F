@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.11 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.12 2010/07/22 21:58:38 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -356,7 +356,7 @@ c
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
          do np=1,npmax
-            ii=PTRACERS_numInUse-npmax+np
+            ii=iPhy+np-1
             DO jj = 1,MAX_LEN_FNAM
               name(jj:jj) = ' '
             ENDDO
@@ -369,7 +369,7 @@ c ANNA_TAVE
 c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
          do np=1,npmax
-            ii=PTRACERS_numInUse-npmax+np
+            ii=iPhy+np-1
             DO jj = 1,MAX_LEN_FNAM
               name(jj:jj) = ' '
             ENDDO
@@ -379,7 +379,7 @@ c ANNA end TAVE
      &           Rstarave(1-OLx,1-OLy,1,1,1,np),myThid)
          enddo
          do np=1,npmax
-            ii=PTRACERS_numInUse-npmax+np
+            ii=iPhy+np-1
             DO jj = 1,MAX_LEN_FNAM
               name(jj:jj) = ' '
             ENDDO
@@ -402,7 +402,7 @@ c ANNA end TAVE
 c
 #ifdef DAR_DIAG_GROW
          do np=1,npmax
-            ii=PTRACERS_numInUse-npmax+np
+            ii=iPhy+np-1
             DO jj = 1,MAX_LEN_FNAM
               name(jj:jj) = ' '
             ENDDO
@@ -412,7 +412,7 @@ c
      &           Growave(1-OLx,1-OLy,1,1,1,np),myThid)
          enddo
          do np=1,npmax
-            ii=PTRACERS_numInUse-npmax+np
+            ii=iPhy+np-1
             DO jj = 1,MAX_LEN_FNAM
               name(jj:jj) = ' '
             ENDDO
@@ -426,7 +426,7 @@ c
 #ifdef ALLOW_DIAZ
 #ifdef DAR_DIAG_NFIXP
          do np=1,npmax
-            ii=PTRACERS_numInUse-npmax+np
+            ii=iPhy+np-1
             DO jj = 1,MAX_LEN_FNAM
               name(jj:jj) = ' '
             ENDDO
