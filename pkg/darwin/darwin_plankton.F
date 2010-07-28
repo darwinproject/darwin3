@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.32 2010/07/22 22:04:13 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.33 2010/07/28 14:23:56 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -813,7 +813,11 @@ c ANNA endif
           do np = 1, npmax
            pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
 #ifdef DYNAMIC_CHL
+           if (phyto(np).gt. 0. _d 0) then
              chl2c(np)=phychl(np)/(phyto(np)*R_PC(np))
+           else
+             chl2c(np)= 0. _d 0
+           endif
 #endif
            if (pcm(np).gt.0.d0) then
 #ifndef DYNAMIC_CHL
@@ -1166,8 +1170,12 @@ c phospate uptake by each phytoplankton
                if (debug.eq.14) print*,'grow', grow(np), pcarbon(np)
 #ifdef DYNAMIC_CHL
 c geider 97 for dChl/dt (source part) Eq. 3
-               rhochl(np)=chl2cmax(np) * 
+               if (acclim(np).gt. 0. _d 0) then
+                rhochl(np)=chl2cmax(np) *
      &                      (grow(np)/(alpha_I_tmp(np)*acclim(np)) )
+               else
+                rhochl(np)= 0. _d 0
+               endif
                if (debug.eq.14) print*,'rhochl',rhochl(np)
 #endif
 #endif
