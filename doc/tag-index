@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.59 2010/07/07 16:04:16 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.60 2010/07/29 18:40:42 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt62i_20100729
+o dynamic Chlorophyll works
 
 ctrb_darwin_ckpt62h_20100707
 o add full radiative transfer code
