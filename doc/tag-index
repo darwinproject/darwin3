@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.60 2010/07/29 18:40:42 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.61 2010/09/01 13:44:13 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt62j_20100901
 
 ctrb_darwin_ckpt62i_20100729
 o dynamic Chlorophyll works
