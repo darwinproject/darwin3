@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.28 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.29 2010/09/14 21:39:19 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -400,11 +400,11 @@ coj find unused units for darwin_cons output
         open(DAR_cons_unit4,file='darwin_cons_Si.txt',status='unknown')
 #ifdef ALLOW_CARBON
         CALL MDSFINDUNIT( DAR_cons_unit5, mythid )
-        open(DAR_cons_unit1,file='darwin_cons_C.txt',status='unknown')
+        open(DAR_cons_unit5,file='darwin_cons_C.txt',status='unknown')
         CALL MDSFINDUNIT( DAR_cons_unit6, mythid )
-        open(DAR_cons_unit2,file='darwin_cons_A.txt',status='unknown')
+        open(DAR_cons_unit6,file='darwin_cons_A.txt',status='unknown')
         CALL MDSFINDUNIT( DAR_cons_unit7, mythid )
-        open(DAR_cons_unit3,file='darwin_cons_O.txt',status='unknown')
+        open(DAR_cons_unit7,file='darwin_cons_O.txt',status='unknown')
 #endif
 #endif
          _END_MASTER(myThid)
