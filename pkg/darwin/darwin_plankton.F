@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.33 2010/07/28 14:23:56 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.34 2010/09/15 21:41:43 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -340,6 +340,7 @@ c for sinking matter
          _RL totphy_poc
          _RL totzoo_poc
          _RL totphy_pic
+         _RL totzoo_pic
          _RL psinkC
          _RL psinkPIC
          _RL disscPIC
@@ -349,6 +350,7 @@ c for sinking matter
 c  variables for zooplankton grazing rates
          _RL sumgrazzooC(nzmax)
          _RL sumgrazlossC(nzmax)
+         _RL sumgrazlossPIC(nzmax)
 #endif
 
 #endif
@@ -510,6 +512,7 @@ c set sum totals to zero
          totphy_pic = 0. _d 0
          totzoo_doc = 0. _d 0
          totzoo_poc = 0. _d 0
+         totzoo_pic = 0. _d 0
          consumpDIC = 0.0 _d 0
          consumpDIC_PIC = 0.0 _d 0
 #endif
@@ -981,6 +984,7 @@ c sum over phy for impact on zoo, and all remainder to go to POM
 #ifdef ALLOW_CARBON
            sumgrazzooC(nz)=0. _d 0
            sumgrazlossC(nz)=0. _d 0
+           sumgrazlossPIC(nz)=0. _d 0
 #endif
            do np=1,npmax
               sumgrazzoo(nz)=sumgrazzoo(nz)+
@@ -1010,6 +1014,9 @@ c sum over phy for impact on zoo, and all remainder to go to POM
               sumgrazlossC(nz)=sumgrazlossC(nz)+
      &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
      &                                      zooP(nz)*R_PC(np)
+              sumgrazlossPIC(nz)=sumgrazlossPIC(nz)+
+     &             (1. _d 0)*grazphy(np,nz)*
+     &                           zooP(nz)*R_PC(np)*R_PICPOC(np)
 #endif
            enddo
           enddo
@@ -1143,6 +1150,8 @@ c accumulate particulate and dissolved detritus
      &                    ExportFracGraz(nz)*sumgrazlossC(nz)
                totzoo_doc=totzoo_doc+
      &                 (1. _d 0-ExportFracGraz(nz))*sumgrazlossC(nz)
+               totzoo_pic=totzoo_pic+
+     &                    sumgrazlossPIC(nz)
 #endif
             enddo
 #endif
@@ -1456,7 +1465,7 @@ c tendency of particulate detritus pools
      &                                         + disscPIC
             dDOCdt  = totphy_doc  + totzoo_doc  - DOCremin
             dPOCdt  = totphy_poc  + totzoo_poc  - preminC + psinkC
-            dPICdt  = totphy_pic                - disscPIC + psinkPIC
+            dPICdt  = totphy_pic  + totzoo_pic  - disscPIC + psinkPIC
             dALKdt  = - dNO3dt    - 2.d0 * dPICdt
 c should be = O2prod - preminP - DOPremin?
             dO2dt   = - R_OP*dPO4dt
