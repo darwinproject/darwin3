@@ -64,6 +64,7 @@ C local variables for carbon chem
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_OLD_VIRTUALFLUX
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
@@ -87,14 +88,15 @@ C =================================================================
 C determine inorganic carbon chem coefficients
         DO j=jmin,jmax
          DO i=imin,imax
-             surfdic(i,j) = PTR_DIC(i,j)*1e-3
-     &                          * maskC(i,j,kLev,bi,bj)
-             surfalk(i,j) = PTR_ALK(i,j)*1e-3
-     &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = PTR_PO4(i,j)*1e-3
-     &                          * maskC(i,j,kLev,bi,bj)
-             surfsi(i,j)   = PTR_SIL(i,j) *1e-3
-     &                          * maskC(i,j,kLev,bi,bj)
+             surfdic(i,j) = max(10. _d 0 , PTR_DIC(i,j)*1e-3
+     &                          * maskC(i,j,kLev,bi,bj))
+             surfalk(i,j) = max(10. _d 0 , PTR_ALK(i,j)*1e-3
+     &                          * maskC(i,j,kLev,bi,bj))
+             surfphos(i,j)  = max(1. _d -10, PTR_PO4(i,j)*1e-3
+     &                          * maskC(i,j,kLev,bi,bj))
+             surfsi(i,j)   = max(1. _d -8, PTR_SIL(i,j) *1e-3
+     &                          * maskC(i,j,kLev,bi,bj))
+             surfsalt(i,j) = max(4. _d 0, salt(i,j,kLev,bi,bj))
          ENDDO
         ENDDO
 
@@ -133,7 +135,7 @@ C$TAF LOOP = parallel
 
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
             CALL CALC_PCO2_APPROX(
-     I        theta(i,j,kLev,bi,bj),salt(i,j,kLev,bi,bj),
+     I        theta(i,j,kLev,bi,bj),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
      I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),

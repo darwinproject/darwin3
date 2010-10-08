@@ -983,7 +983,7 @@ cmick....................................................
          do j=jmin,jmax
           if (hFacC(i,j,Klevel,bi,bj).gt.0.d0) then
            t = ttemp(i,j,Klevel,bi,bj)
-           s = stemp(i,j,Klevel,bi,bj)
+           s = max(4. _d 0, stemp(i,j,Klevel,bi,bj))
 C terms used more than once
            tk = 273.15 + t
            tk100 = tk/100.0
