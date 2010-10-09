@@ -216,13 +216,17 @@ C determine inorganic carbon chem coefficients
          DO i=iMin,iMax
 
 c use surface layer values and convert to mol/m3
-             surfdic(i,j) = max(10. _d 0 , PTR_DIC(i,j)*1e-3
+             surfdic(i,j) = max(10. _d 0 , 
+     &                            Ptracer(i,j,1,bi,bj,iDIC)*1e-3
      &                          * maskC(i,j,kLev,bi,bj))
-             surfalk(i,j) = max(10. _d 0 , PTR_ALK(i,j)*1e-3
+             surfalk(i,j) = max(10. _d 0 , 
+     &                            Ptracer(i,j,1,bi,bj,iALK)*1e-3
      &                          * maskC(i,j,kLev,bi,bj))
-             surfphos(i,j)  = max(1. _d -10, PTR_PO4(i,j)*1e-3
+             surfphos(i,j)  = max(1. _d -10, 
+     &                            Ptracer(i,j,1,bi,bj,iPO4)*1e-3
      &                          * maskC(i,j,kLev,bi,bj))
-             surfsi(i,j)   = max(1. _d -8, PTR_SIL(i,j) *1e-3
+             surfsi(i,j)   = max(1. _d -8,
+     &                            Ptracer(i,j,1,bi,bj,iSi) *1e-3
      &                          * maskC(i,j,kLev,bi,bj))
              surfsalt(i,j) = max(4. _d 0, salt(i,j,kLev,bi,bj))
 c
