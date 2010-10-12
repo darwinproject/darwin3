@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.63 2010/10/06 16:08:52 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.64 2010/10/12 17:56:02 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o update darwin_baltic_76x72x24 results after seaice_growth changes
 
 ctrb_darwin_ckpt62l_20101006
 
