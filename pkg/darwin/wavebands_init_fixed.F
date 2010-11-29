@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.14 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.15 2010/11/29 15:25:41 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -240,6 +240,11 @@ c     find waveband index for acdom diagnostic
      &      pwaves(darwin_diag_acdom_ilam)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, 1 )
+#endif
+
+#ifdef DAR_RADTRANS
+      pid = DACOS(-1.0D0)
+      rad = 180.0D0/pid
 #endif
 
 #endif /* WAVEBANDS */
