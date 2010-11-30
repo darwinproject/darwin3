@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.67 2010/11/25 17:27:45 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.68 2010/11/30 19:26:14 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o phyto spectra now include backscattering coefficients.
+  To revert to previous behaviour and use darwin_bbphy,
+  #define DAR_NONSPECTRAL_BACKSCATTERING_RATIO
 
 ctrb_darwin_ckpt62o_20101125
 
