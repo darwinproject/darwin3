@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.16 2010/07/13 19:16:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.17 2010/11/30 18:50:18 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -235,6 +235,22 @@ C Cloern:  chl:c = chl2cmin + A*exp(B*T)*exp(-C*PARday)*limit
 
 #ifdef ALLOW_CARBON
       READ(UNIT=iUnit,NML=DIC_FORCING)
+#endif
+
+#ifndef DAR_NONSPECTRAL_BACKSCATTERING_RATIO
+      DO i=1,tnabp
+       IF ( darwin_bbphy(i) .NE. 0 _d 0 ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R DARWIN_READPARMS:',
+     &   'darwin_bbphy is obsolete.'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(2A)') 'S/R DARWIN_READPARMS:',
+     &   'Backscattering coefficients are now read from'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(2A)') 'S/R DARWIN_READPARMS:',
+     &   'darwin_phytoabsorbFile.'
+        CALL PRINT_ERROR( msgBuf , 1)
+       ENDIF
+      ENDDO
 #endif
 
 #if defined(WAVEBANDS) || defined(OASIM)

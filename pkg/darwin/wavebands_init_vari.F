@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.11 2010/07/13 22:41:07 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.12 2010/11/30 18:50:18 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_vari.F assigns actual values to choices made by coin-flips in darwin_generate_phyto.F
@@ -58,11 +58,13 @@ c make sure pigment types and actual spectra match - here keep 1-4 in same order
            aphy_chl_ps(np,i) = ap_ps(nap,i)
 #ifdef DAR_RADTRANS
            bphy_chl(np,i) = bp(nap,i)
+#ifdef DAR_NONSPECTRAL_BACKSCATTERING_RATIO
+           bbphy_chl(np,i) = bp(nap,i)*darwin_bbphy(nap)
+#else
+           bbphy_chl(np,i) = bbp(nap,i)
+#endif
 #endif
            enddo
-#ifdef DAR_RADTRANS
-           bbphy(np) = darwin_bbphy(nap)
-#endif
           endif
          enddo
 
@@ -73,11 +75,9 @@ c checking the output .dat file will reveal this
            aphy_chl_ps(np,i) = 9.9d2
 #ifdef DAR_RADTRANS
            bphy_chl(np,i) = 9.9d2
+           bbphy_chl(np,i) = 9.9d2
 #endif
            enddo
-#ifdef DAR_RADTRANS
-           bbphy(np) = 9.9d2
-#endif
           endif
 
          enddo

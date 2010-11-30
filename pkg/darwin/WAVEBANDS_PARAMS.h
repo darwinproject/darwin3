@@ -44,7 +44,7 @@ c         PARAMETER (tnabp=4)
          COMMON/wavebands_params/aphy_chl
      &         ,aphy_chl_ps
      &         ,alphachl_nl
-     &         ,aw,bw,ap,bp,ap_ps
+     &         ,aw,bw,ap,bp,ap_ps,bbp
      &         ,wb_width,wb_totalWidth
 #ifndef OASIM
      &         ,sf
@@ -71,6 +71,7 @@ c         PARAMETER (tnabp=4)
          _RL aphy_chl(npmax,tlam),aphy_chl_ps(npmax,tlam)
          _RL alphachl_nl(npmax,tlam)
          _RL ap(tnabp,tlam),ap_ps(tnabp,tlam),bp(tnabp,tlam)
+         _RL bbp(tnabp,tlam)
          _RL aw(tlam),bw(tlam)
          _RL wb_width(tlam)
          _RL wb_totalWidth
@@ -135,7 +136,7 @@ C
       COMMON/DARWIN_RADTRANS_R/
      &        pid,rad     !radias and pi - use these rather than darwin versions for simplicity.
      &       ,bphy_chl    !scat coef for phyto
-     &       ,bbphy       !backscattering to forward scattering ratio for phyto
+     &       ,bbphy_chl   !backscat coef for phyto
 
 c not sure if some of these are necessary 
 c SOME OF THESE parameter names are the same as WAVEBANDS, but have an added k dimension....
@@ -144,6 +145,6 @@ c this list mostly from light.F
 c      _RL rod(tlam),ros(tlam)   !surface direct and diffuse reflectance !not here
       _RL pid,rad             !radias and pi - use these rather than darwin versions for simplicity.
       _RL bphy_chl(npmax,tlam) !scat coef for phyto
-      _RL bbphy(npmax)         !scat ratio for phyto
+      _RL bbphy_chl(npmax,tlam) !backscat coef for phyto
 #endif /* DAR_RADTRANS */
 

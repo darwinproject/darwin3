@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.15 2010/11/29 15:25:41 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.16 2010/11/30 18:50:18 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -44,7 +44,7 @@ c local variables
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       character*80 title
       integer swlambda,splambda,ssflambda
-      _RL sap,sap_ps,sbp
+      _RL sap,sap_ps,sbp,sbbp
       _RL saw,sbw
       _RL ssf
 c      _RL planck, c, hc, oavo, hcoavo, rlamm
@@ -116,10 +116,15 @@ c ANNA easiest way to 'turn off' PS for growth is to put same values in both abs
         do i = 1,6               ! six lines of text for the header
          read(16,'(a50)')title    
         enddo        
+        sbbp = 0. _d 0
         do nabp = 1,tnabp        
          read(16,'(a50)')title   ! reads one line of text for the phytoplankton type header
          do ilam  = 1,tlam         
+#ifdef DAR_NONSPECTRAL_BACKSCATTERING_RATIO
           read(16,30)splambda,sap,sap_ps,sbp
+#else
+          read(16,'(i4,3f10.0,f20.0)')splambda,sap,sap_ps,sbp,sbbp
+#endif
           if (splambda.NE.pwaves(ilam)) then
            WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: ',
      &     "wavelength for phyto spectrum doesn't match darwin_waves:"
@@ -132,6 +137,7 @@ c ANNA easiest way to 'turn off' PS for growth is to put same values in both abs
           ap(nabp,ilam) = sap
           ap_ps(nabp,ilam) = sap_ps
           bp(nabp,ilam) = sbp
+          bbp(nabp,ilam) = sbbp
         enddo
         enddo
         close(16)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.11 2010/07/13 19:16:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.12 2010/11/30 18:50:17 jahn Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -41,6 +41,7 @@ C iterative solution
 C use rmus for all components to convert to scalar irradiance
 C (not recommended)
 #undef  DAR_RADTRANS_RMUS_PAR
+#define DAR_NONSPECTRAL_BACKSCATTERING_RATIO
 
 #undef  RELAX_NUTS
 #undef  FLUX_NUTS

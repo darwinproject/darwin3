@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.39 2010/07/22 22:04:13 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.40 2010/11/30 18:50:17 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -528,8 +528,7 @@ c           absorption by phyto
             DO np = 1,npmax
              actot  = actot  + phychl_k(np,k)*aphy_chl(np,ilam)
              bctot  = bctot  + phychl_k(np,k)*bphy_chl(np,ilam)
-             bbctot = bbctot
-     &         + phychl_k(np,k)*bbphy(np)*bphy_chl(np,ilam)
+             bbctot = bbctot + phychl_k(np,k)*bbphy_chl(np,ilam)
             ENDDO
 c           add water and CDOM
             a_k(k,ilam)  = aw(ilam) + acdom_k(k,ilam) + actot
