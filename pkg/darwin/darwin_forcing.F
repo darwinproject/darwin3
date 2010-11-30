@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.40 2010/11/30 18:50:17 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.41 2010/11/30 23:19:28 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -66,6 +66,7 @@ c plankton arrays
       _RL  ZooFe(nzmax)
       _RL  ZooSi(nzmax)
       _RL  Phy(npmax)
+      _RL  Phy_k(npmax,Nr)
       _RL  Phyup(npmax)
 c iron partitioning
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -83,15 +84,9 @@ c light variables
 c ANNA define variables for wavebands 
 #ifdef WAVEBANDS
        integer ilam
-       _RL sfPAR(tlam)
-       _RL PARwl(tlam)
+       _RL PARw_k(tlam,Nr)
        _RL PARwup(tlam)
-#ifdef DAR_CALC_ACDOM
-       _RL Phy_k(npmax,Nr)
-       _RL phychl_k(npmax,Nr)
        _RL acdom_k(Nr,tlam)
-#endif
-       _RL acdoml(tlam)
 #ifdef DAR_RADTRANS
        integer iday,iyr,imon,isec,lp,wd,mydate(4)
        _RL Edwsf(tlam),Eswsf(tlam)
@@ -104,8 +99,6 @@ c ANNA define variables for wavebands
        _RL bt_k(Nr,tlam), bb_k(Nr,tlam)
 #else
        _RL PARwdn(tlam)
-       _RL attenwl(tlam)        !attenuation (m-1)
-       _RL sumaphy_nl(tlam)     !total phyto absorption at each wavelength
 #endif
 C      always need for diagnostics
        _RL a_k(Nr,tlam)
@@ -124,6 +117,7 @@ C      always need for diagnostics
 
 #ifdef GEIDER
       _RL phychl(npmax)
+      _RL phychl_k(npmax,Nr)
 #ifdef DYNAMIC_CHL
       _RL dphychl(npmax)
       _RL chlup(npmax)
@@ -355,31 +349,12 @@ c dilusion of alkalinity
 c find light in each grid cell
 c ---------------------------
 c determine incident light
-#ifndef  READ_PAR
-#ifdef USE_QSW
-         DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-#ifdef ALLOW_LONGSTEP
-           Qswlocal=LS_Qsw(i,j,bi,bj)
-#else
-           Qswlocal=Qsw(i,j,bi,bj)
-#endif
-           sur_par(i,j,bi,bj)=-parfrac*Qswlocal*
-     &                         parconv*maskC(i,j,1,bi,bj)
-         ENDDO
-         ENDDO
-#else /* not USE_QSW */
+#ifndef READ_PAR
+#ifndef USE_QSW
          DO j=1-OLy,sNy+OLy
           sfac(j)=0. _d 0
          ENDDO
          call darwin_insol(newTime,sfac,bj)
-         DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-           sur_par(i,j,bi,bj)=sfac(j)*maskC(i,j,1,bi,bj)/86400*1 _d 6
-c          if (i.eq.1.and.j.ge.1.and.j.le.sNy) 
-c    &                write(24,*) sur_par(i,j,bi,bj)
-         ENDDO
-         ENDDO
 #endif /* not USE_QSW */
 #endif /* not READ_PAR */
 
@@ -425,77 +400,153 @@ C ========================== i,j loops =================================
        DO j=1,sNy 
         DO i=1,sNx
 
-c surface PAR
-c take ice coverage into account
-#if (defined (ALLOW_SEAICE) && defined (USE_QSW))
-COJ ice coverage already taken into account by seaice package
-           lite=sur_par(i,j,bi,bj)
+c ------------ these are convenient ------------------------------------
+         DO k=1,Nr
+          DO np = 1,npmax
+            Phy_k(np,k) = max(Ptr(i,j,k,bi,bj,iPhy+np-1),0. _d 0)
+#ifdef GEIDER
+#ifdef DYNAMIC_CHL
+            phychl_k(np,k) = max(Ptr(i,j,k,bi,bj,iChl+np-1),0. _d 0)
 #else
-#if (defined (ALLOW_SEAICE) && defined (USE_QSW))
-c if using Qsw and seaice, then ice fraction is already
-c taken into account
-           lite=sur_par(i,j,bi,bj)
-#else
-           lite=sur_par(i,j,bi,bj)*(1. _d 0-fice(i,j,bi,bj))
+            phychl_k(np,k) = max(Chl_phy(i,j,k,bi,bj,np), 0. _d 0)
 #endif
 #endif
-           atten=0. _d 0
-           sumpy = 0.0 _d 0
+          ENDDO
+         ENDDO
 
-c ANNA split surface PAR into wavebands
+c ------------ GET CDOM_k FOR WAVEBANDS_3D and RADTRANS ----------------
 #ifdef WAVEBANDS
-#ifdef DAR_RADTRANS
+#if defined(DAR_CALC_ACDOM) || defined(DAR_RADTRANS)
+         call darwin_acdom(phychl_k,aphy_chl,aw,
+     O                     acdom_k,
+     I                     myThid)
+#else
+         DO k=1,Nr
+          DO ilam = 1,tlam
+            acdom_k(k,ilam) = acdom(ilam)
+          ENDDO
+         ENDDO
+#endif /* DAR_CALC_ACDOM or DAR_RADTRANS */
+#endif /* WAVEBANDS */
+
+c ------------ GET INCIDENT NON-SPECTRAL LIGHT -------------------------
+#if !(defined(WAVEBANDS) && defined(OASIM))
+#ifdef  READ_PAR
+
+         lite = sur_par(i,j,bi,bj)
+
+#else /* not READ_PAR */
+#ifdef USE_QSW
+
+#ifdef ALLOW_LONGSTEP
+         Qswlocal=LS_Qsw(i,j,bi,bj)
+#else
+         Qswlocal=Qsw(i,j,bi,bj)
+#endif
+         lite = -parfrac*Qswlocal*parconv*maskC(i,j,1,bi,bj)
+
+#else /* not USE_QSW */
+
+         lite = sfac(j)*maskC(i,j,1,bi,bj)/86400*1 _d 6
+
+#endif /* not USE_QSW */
+#endif /* not READ_PAR */
+
+c take ice coverage into account
+c unless already done in seaice package
+#if !(defined (ALLOW_SEAICE) && defined (USE_QSW))
+         lite = lite*(1. _d 0-fice(i,j,bi,bj))
+#endif
+#endif /* not(WAVEBANDS and OASIM) */
+
+c ------------ LIGHT ATTENUATION: --------------------------------------
+#ifndef WAVEBANDS
+c ------------ SINGLE-BAND ATTENUATION ---------------------------------
+         atten=0. _d 0
+         do k=1,Nr
+          if (HFacC(i,j,k,bi,bj).gt.0. _d 0) then
+             sumpyup = sumpy
+             sumpy = 0. _d 0
+             do np=1,npmax
+#ifdef GEIDER
+                sumpy = sumpy + phychl_k(np,k)
+#else
+                sumpy = sumpy + Phy_k(np,k)
+#endif
+             enddo
+             atten= atten + (k0 + kc*sumpy)*5. _d -1*drF(k)
+             if (k.gt.1)then
+               atten = atten + (k0+kc*sumpyup)*5. _d -1*drF(k-1)
+             endif
+             PAR(i,j,k) = lite*exp(-atten)
+          endif
+         enddo
+
+#else /* WAVEBANDS */
+#ifndef DAR_RADTRANS
+c ------------ WAVEBANDS W/O RADTRANS ----------------------------------
+         do ilam = 1,tlam
+#ifdef OASIM
+c add direct and diffuse, convert to uEin/m2/s/nm
+          PARwup(ilam) = WtouEins(ilam)*(oasim_ed(i,j,ilam,bi,bj)+
+     &                      oasim_es(i,j,ilam,bi,bj))/wb_width(ilam)
+c and take ice fraction into account
+c         PARwup(ilam) = PARwup(ilam)*(1 _d 0 - fice(i,j,bi,bj))
+#else
+          PARwup(ilam) = sf(ilam)*lite
+#endif
+         enddo
+
+         do k=1,Nr
+           if (HFacC(i,j,k,bi,bj).gt.0. _d 0) then
+             do ilam = 1,tlam
+              sumpy = 0.
+              do np = 1,npmax
+c get total attenuation (absorption) by phyto at each wavelength
+               sumpy = sumpy + (phychl_k(np,k)*aphy_chl(np,ilam))
+              enddo
+c             for diagnostic
+              a_k(k,ilam) = aw(ilam) + sumpy + acdom_k(k,ilam)
+              atten = a_k(k,ilam)*drF(k)
+              PARwdn(ilam) = PARwup(ilam)*exp(-atten)
+             enddo
+
+c find for the midpoint of the gridcell (gridcell mean)
+             do ilam = 1,tlam
+C             PARw_k(ilam,k)=exp((log(PARwup(ilam))+log(PARwdn(ilam)))*0.5)
+              PARw_k(ilam,k)=sqrt(PARwup(ilam)*PARwdn(ilam))
+             enddo
+
+c cycle
+             do ilam=1,tlam
+              PARwup(ilam) = PARwdn(ilam)
+             enddo
+           else
+             do ilam=1,tlam
+              PARw_k(ilam,k) = 0. _d 0
+             enddo
+           endif
+
+c sum wavebands for total PAR at the mid point of the gridcell (PARl)
+           PAR(i,j,k) = 0.
+           do ilam = 1,tlam
+             PAR(i,j,k) = PAR(i,j,k) + wb_width(ilam)*PARw_k(ilam,k)
+           enddo
+         enddo
+
+#else /* DAR_RADTRANS */
+c ------------ FULL RADIATIVE TRANSFER CODE ----------------------------
          do ilam = 1,tlam
           Edwsf(ilam) = oasim_ed(i,j,ilam,bi,bj)
           Eswsf(ilam) = oasim_es(i,j,ilam,bi,bj)
          enddo
-#else /* not DAR_RADTRANS */
-         do ilam = 1,tlam
-#ifdef OASIM
-c add direct and diffuse, convert to uEin/m2/s/nm
-          sfPAR(ilam) = WtouEins(ilam)*(oasim_ed(i,j,ilam,bi,bj)+
-     &                      oasim_es(i,j,ilam,bi,bj))/wb_width(ilam)
-c and take ice fraction into account
-c         sfPAR(ilam) = sfPAR(ilam)*(1 _d 0 - fice(i,j,bi,bj))
-#else
-          sfPAR(ilam) = sf(ilam)*lite
-#endif
-          PARwup(ilam) = sfPAR(ilam)
-          PARwl(ilam) = 0. _d 0
-         enddo
-#endif /* not DAR_RADTRANS */
 
-c ------------ GET CDOM_k FOR WAVEBANDS_3D and RADTRANS ----------------
-#if defined(DAR_CALC_ACDOM) || defined(DAR_RADTRANS)
-c first, retrieve profiles of phy and phychl to pass to acdom (and edeu)
-         DO k=1,Nr
-          DO np = 1,npmax
-            Phy_k(np,k) = max(Ptr(i,j,k,bi,bj,iPhy+np-1),0. _d 0)
-#ifdef DYNAMIC_CHL
-              phychl_k(np,k) = max(Ptr(i,j,k,bi,bj,iChl+np-1),0. _d 0)
-#else
-              phychl_k(np,k) = max(Chl_phy(i,j,k,bi,bj,np), 0. _d 0)
-#endif
-          ENDDO
-c set acdom to zero
-          DO ilam = 1,tlam
-            acdom_k(k,ilam) = 0.0 _d 0
-          ENDDO
-         ENDDO
-
-c call acdom code
-         call darwin_acdom(phychl_k,aphy_chl,aw,acdom_k,myThid)
-c acdom has its own depth loop
-c so now have acdom_k profile for use in RADTRANS and WAVEBANDS_3D
-#endif /* DAR_CALC_ACDOM or DAR_RADTRANS */
-
-c ------------ FULL RADIATIVE TRANSFER CODE ----------------------------
-#ifdef DAR_RADTRANS
 #ifdef DAR_RADTRANS_USE_MODEL_CALENDAR
 C simplified solar zenith angle for 360-day year and daily averaged light
 C cos(solz) is average over daylight period
          call darwin_solz360(newtime, YC(i,j,bi,bj),
      O                       solz)
+
 #else /* not DAR_RADTRANS_USE_MODEL_CALENDAR */
 C use calendar date for full solar zenith angle computation
 C oj: average light effective at noon?
@@ -535,7 +586,6 @@ c           add water and CDOM
             bt_k(k,ilam) = bw(ilam) + bctot
             bb_k(k,ilam) = darwin_bbw*bw(ilam) + bbctot
             bb_k(k,ilam) = MAX(darwin_bbmin, bb_k(k,ilam))
-
           ENDDO
          ENDDO
 
@@ -563,6 +613,15 @@ c need to make sure biomass is positive or zero (inside do np=1,npmax, actot450.
 c covert Es and Ed to Watts m-3 when read in (init_fixed.F)
 c keep like this in case need to consider upwelling irradiance as affecting the grid box above
 c will pass to plankton: PARwl only, but will be for this timestep for RT and prev timestep for WAVBANDS
+c
+c now copy and convert to appropriate units
+         DO k=1,Nr
+           PAR(i,j,k) = tirrq(k)
+           DO ilam = 1,tlam
+C            tirrwl is uEin/m^2/s per waveband, PARwl will be /nm
+             PARw_k(ilam,k) = tirrwq(ilam,k)/wb_width(ilam)
+           ENDDO
+         ENDDO
 #endif /* DAR_RADTRANS */
 
 c oj: ???
@@ -591,16 +650,6 @@ c brute force...
                ZooFe(nz) = max(Ptr(i,j,k,bi,bj,iZooFe(nz)),0. _d 0)
                ZooSi(nz) = max(Ptr(i,j,k,bi,bj,iZooSi(nz)),0. _d 0)
              ENDDO
-             DO np = 1,npmax
-               Phy(np) = max(Ptr(i,j,k,bi,bj,iPhy+np-1),0. _d 0)
-#ifdef GEIDER
-#ifdef DYNAMIC_CHL
-               phychl(np) = max(Ptr(i,j,k,bi,bj,iChl+np-1),0. _d 0)
-#else
-               phychl(np) = max(Chl_phy(i,j,k,bi,bj,np), 0. _d 0)
-#endif
-#endif
-             ENDDO
              popl  = max(Ptr(i,j,k,bi,bj,iPOP  ),0. _d 0)
              ponl  = max(Ptr(i,j,k,bi,bj,iPON  ),0. _d 0)
              pofel = max(Ptr(i,j,k,bi,bj,iPOFe ),0. _d 0)
@@ -622,6 +671,13 @@ c brute force...
              totphyC = 0. _d 0
              DO np=1,npmax
               totphyC = totphyC + R_PC(np)*Ptr(i,j,k,bi,bj,iPhy+np-1)
+             ENDDO
+
+             DO np = 1,npmax
+               Phy(np) = Phy_k(np,k)
+#ifdef GEIDER
+               phychl(np) = phychl_k(np,k)
+#endif
              ENDDO
 
 #ifdef DAR_DIAG_DIVER
@@ -676,76 +732,8 @@ c ratio of maximum species
 c..........................................................
 c find local light
 c..........................................................
-C-- copy acdom for diagnostic and non-radtrans attenuation
-#ifdef WAVEBANDS
-             do ilam = 1,tlam
-#ifdef DAR_CALC_ACDOM
-               acdoml(ilam) = acdom_k(k,ilam)
-#else
-               acdoml(ilam) = acdom(ilam)
-#endif
-             enddo
-#endif /* WAVEBANDS */
 
-C-- now compute PARl and PARwl
-#ifdef WAVEBANDS
-#ifdef DAR_RADTRANS
-C just copy what was computed outside k loop
-             PARl = tirrq(k)
-             do ilam = 1,tlam
-C             tirrwl is uEin/m^2/s per waveband, PARwl will be /nm
-              PARwl(ilam) = tirrwq(ilam,k)/wb_width(ilam)
-             enddo
-#else /* not DAR_RADTRANS */
-             do ilam = 1,tlam
-              sumaphy_nl(ilam) = 0.
-              do np = 1,npmax
-c get total attenuation (absorption) by phyto at each wavelength
-               sumaphy_nl(ilam) = sumaphy_nl(ilam) +
-     &                            (phychl(np)*aphy_chl(np,ilam))
-              enddo
-c             for diagnostic              
-              a_k(k,ilam) = aw(ilam)+sumaphy_nl(ilam)+acdoml(ilam)
-              attenwl(ilam) = a_k(k,ilam)*drF(k)
-              PARwdn(ilam) = PARwup(ilam)*exp(-attenwl(ilam))
-             enddo
-
-c find for the midpoint of the gridcell (gridcell mean)
-             do ilam = 1,tlam
-C             PARwl(ilam)=exp((log(PARwup(ilam))+log(PARwdn(ilam)))*0.5)
-              PARwl(ilam)=sqrt(PARwup(ilam)*PARwdn(ilam))
-             enddo
-
-c cycle
-             do ilam=1,tlam
-              PARwup(ilam) = PARwdn(ilam)
-             enddo
-
-c sum wavebands for total PAR at the mid point of the gridcell (PARl)
-             PARl = 0.
-             do ilam = 1,tlam
-              PARl = PARl + wb_width(ilam)*PARwl(ilam)
-             enddo
-#endif /* not DAR_RADTRANS */
-#else /* not WAVEBANDS */
-             sumpyup = sumpy
-             sumpy = 0. _d 0
-             do np=1,npmax
-#ifdef GEIDER
-                sumpy = sumpy + phychl(np)
-#else
-                sumpy = sumpy + Phy(np)
-#endif
-             enddo
-             atten= atten + (k0 + kc*sumpy)*5. _d -1*drF(k)
-             if (k.gt.1)then
-               atten = atten + (k0+kc*sumpyup)*5. _d -1*drF(k-1)
-             endif
-             PARl = lite*exp(-atten)
-#endif /* not WAVEBANDS */
-
-C-- copy for diagnostics
-             PAR(i,j,k) = PARl
+             PARl = PAR(i,j,k)
 c..........................................................
 
 c for explicit sinking of particulate matter and phytoplankton
@@ -917,7 +905,7 @@ c ANNA pass extra variables if WAVEBANDS
      I                       chlup,
 #endif
 #ifdef WAVEBANDS
-     I                       PARwl,
+     I                       PARw_k(1,k),
 #endif
 #endif
 #ifdef ALLOW_PAR_DAY
@@ -1243,9 +1231,9 @@ c    &                       deltaTclock/float(nsubtime)
              enddo
 #endif
 #ifdef DAR_DIAG_ACDOM
-             print*,'acdoml',k,acdoml(darwin_diag_acdom_ilam)
+             print*,'acdom',k,acdom_k(k,darwin_diag_acdom_ilam)
              aCDOMave(i,j,k,bi,bj)=aCDOMave(i,j,k,bi,bj)+
-     &                       acdoml(darwin_diag_acdom_ilam)*dtplankton
+     &                    acdom_k(k,darwin_diag_acdom_ilam)*dtplankton
 #endif
 #ifdef DAR_DIAG_IRR
              do ilam = 1,tlam
