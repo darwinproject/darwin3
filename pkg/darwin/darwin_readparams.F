@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.17 2010/11/30 18:50:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.18 2010/11/30 19:08:35 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -237,6 +237,7 @@ C Cloern:  chl:c = chl2cmin + A*exp(B*T)*exp(-C*PARday)*limit
       READ(UNIT=iUnit,NML=DIC_FORCING)
 #endif
 
+#ifdef DAR_RADTRANS
 #ifndef DAR_NONSPECTRAL_BACKSCATTERING_RATIO
       DO i=1,tnabp
        IF ( darwin_bbphy(i) .NE. 0 _d 0 ) THEN
@@ -251,6 +252,7 @@ C Cloern:  chl:c = chl2cmin + A*exp(B*T)*exp(-C*PARday)*limit
         CALL PRINT_ERROR( msgBuf , 1)
        ENDIF
       ENDDO
+#endif
 #endif
 
 #if defined(WAVEBANDS) || defined(OASIM)
