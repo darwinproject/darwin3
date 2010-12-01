@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.36 2010/12/01 15:47:13 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.37 2010/12/01 16:05:14 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -835,7 +835,7 @@ c for inhibition
 #ifdef WAVEBANDS 
                  Ek = pcm(np)/(chl2c(np)*alpha_mean(np))
 #else
-                 Ek = pcm(np)/(chl2c(np)*(alpha_I(np)*PARlocal))
+                 Ek = pcm(np)/(chl2c(np)*alphachl(np))
 #endif
                  EkoverE = Ek / PARlocal
                  if (PARlocal .ge. Ek) then !photoinhibition begins
