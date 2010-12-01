@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.35 2010/12/01 15:46:59 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.36 2010/12/01 15:47:13 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -290,7 +290,7 @@ c  variables for zooplankton grazing rates
 #endif
 
 #ifdef GEIDER
-        _RL alpha_I_tmp(npmax)
+        _RL alpha_I(npmax)
         _RL pcarbon(npmax)
         _RL pcm(npmax)
         _RL chl2c(npmax)
@@ -408,8 +408,6 @@ c ANNA inportant but local variables that can be fogotten
          _RL PARwdn(tlam)         !light at bottom of local gridcell
          _RL attenwl(tlam)        !attenuation (m-1)
          _RL sumaphy_nl(tlam)     !total phyto absorption at each wavelength
-         _RL alpha_I_local_nl(tlam) !temporary variable
-         _RL alpha_I_local(npmax)   !value of alpha * PARlocal for use in Geider growth
 #endif
 c ANNA endif
 
@@ -793,22 +791,19 @@ c so first get value for alphachl_nl * PARwlocal
 c value will depend on matchup between spectra of alphachl_nl (ie. aphy_chl) and PARwlocal
 c integrate alpha*PAR over wavebands
           do np = 1,npmax
-           cu_area = 0. _d 0
+           alpha_I(np) = 0 _d 0
            do nl = 1,tlam
-            alpha_I_local_nl(nl) = alphachl_nl(np,nl) * PARwlocal(nl)
-            cu_area = cu_area + alpha_I_local_nl(nl)
+            alpha_I(np) = alpha_I(np) + alphachl_nl(np,nl)*PARwlocal(nl)
            end do
-           alpha_I_local(np) = cu_area
-           alpha_I_tmp(np) = alpha_I_local(np)
           end do
 c Geider growth (and chl2c) now depends on this (sinlge) value of alpha_chl * I
 
 c alpha_mean now precomputed in darwin_init_vari
 #else
 c ANNA if not wavebands uses alphachl derived from mQyield * aphy_chl_ave
-c for use with generic geider equation need to use alpha_I_tmp (ie. alphachl*PARlocal)
+c for use with generic geider equation need to use alpha_I (ie. alphachl*PARlocal)
           do np = 1, npmax
-            alpha_I_tmp(np)=alphachl(np)*PARlocal
+            alpha_I(np)=alphachl(np)*PARlocal
           enddo
 c ANNA endif
 #endif
@@ -826,7 +821,7 @@ c ANNA endif
 #ifndef DYNAMIC_CHL
 c assumes balanced growth, eq A14 in Geider et al 1997
              chl2c(np)=chl2cmax(np)/
-     &            (1+(chl2cmax(np)*alpha_I_tmp(np))/
+     &            (1+(chl2cmax(np)*alpha_I(np))/
      &               (2*pcm(np)))
              chl2c(np)=min(chl2c(np),chl2cmax(np))
              chl2c(np)=max(chl2c(np),chl2cmin(np))
@@ -834,13 +829,13 @@ c assumes balanced growth, eq A14 in Geider et al 1997
              if (PARlocal.gt.1. _d -1) then
 c Eq A1 in Geider et al 1997
                pcarbon(np)=pcm(np)*( 1 -
-     &          exp((-alpha_I_tmp(np)*chl2c(np))/(pcm(np))) )
+     &          exp((-alpha_I(np)*chl2c(np))/(pcm(np))) )
 c for inhibition
                if (inhibcoef_geid(np).gt.0. _d 0) then
 #ifdef WAVEBANDS 
                  Ek = pcm(np)/(chl2c(np)*alpha_mean(np))
 #else
-                 Ek = pcm(np)/(chl2c(np)*(alpha_I_tmp(np)*PARlocal))
+                 Ek = pcm(np)/(chl2c(np)*(alpha_I(np)*PARlocal))
 #endif
                  EkoverE = Ek / PARlocal
                  if (PARlocal .ge. Ek) then !photoinhibition begins
@@ -871,7 +866,7 @@ c end inhib
 c Chl:C acclimated to current conditions 
 c (eq A14 in Geider et al 1997)
           acclim(np)=chl2cmax(np)/
-     &            (1+(chl2cmax(np)*alpha_I_tmp(np))/
+     &            (1+(chl2cmax(np)*alpha_I(np))/
      &               (2*pcm(np)))
           acclim(np)=min(acclim(np),chl2cmax(np))
 c         acclim(np)=max(acclim(np),chl2cmin(np))
@@ -1181,7 +1176,7 @@ c phospate uptake by each phytoplankton
 c geider 97 for dChl/dt (source part) Eq. 3
                if (acclim(np).gt. 0. _d 0) then
                 rhochl(np)=chl2cmax(np) *
-     &                      (grow(np)/(alpha_I_tmp(np)*acclim(np)) )
+     &                      (grow(np)/(alpha_I(np)*acclim(np)) )
                else
                 rhochl(np)= 0. _d 0
                endif
