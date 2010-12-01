@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.34 2010/09/15 21:41:43 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.35 2010/12/01 15:46:59 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -796,7 +796,7 @@ c integrate alpha*PAR over wavebands
            cu_area = 0. _d 0
            do nl = 1,tlam
             alpha_I_local_nl(nl) = alphachl_nl(np,nl) * PARwlocal(nl)
-            cu_area = cu_area + wb_width(nl)*alpha_I_local_nl(nl)
+            cu_area = cu_area + alpha_I_local_nl(nl)
            end do
            alpha_I_local(np) = cu_area
            alpha_I_tmp(np) = alpha_I_local(np)

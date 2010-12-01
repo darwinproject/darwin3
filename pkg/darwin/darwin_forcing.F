@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.41 2010/11/30 23:19:28 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.42 2010/12/01 15:46:59 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -489,11 +489,12 @@ c ------------ WAVEBANDS W/O RADTRANS ----------------------------------
 #ifdef OASIM
 c add direct and diffuse, convert to uEin/m2/s/nm
           PARwup(ilam) = WtouEins(ilam)*(oasim_ed(i,j,ilam,bi,bj)+
-     &                      oasim_es(i,j,ilam,bi,bj))/wb_width(ilam)
+     &                      oasim_es(i,j,ilam,bi,bj))
 c and take ice fraction into account
 c         PARwup(ilam) = PARwup(ilam)*(1 _d 0 - fice(i,j,bi,bj))
 #else
-          PARwup(ilam) = sf(ilam)*lite
+c sf is per nm; convert to per waveband
+          PARwup(ilam) = wb_width(ilam)*sf(ilam)*lite
 #endif
          enddo
 
@@ -530,7 +531,7 @@ c cycle
 c sum wavebands for total PAR at the mid point of the gridcell (PARl)
            PAR(i,j,k) = 0.
            do ilam = 1,tlam
-             PAR(i,j,k) = PAR(i,j,k) + wb_width(ilam)*PARw_k(ilam,k)
+             PAR(i,j,k) = PAR(i,j,k) + PARw_k(ilam,k)
            enddo
          enddo
 
@@ -566,7 +567,6 @@ c         enddo
 c compute 1/cos(zenith) for direct light below surface
          call radtrans_sfcrmud(rad,solz,
      O                         rmud)
-c        print*,'rmud',rmud
 
 C compute absorption/scattering coefficients for radtrans
          DO k=1,Nr
@@ -589,7 +589,6 @@ c           add water and CDOM
           ENDDO
          ENDDO
 
-c dzlocal ?????
 #ifdef DAR_RADTRANS_ITERATIVE
          call darwin_radtrans_iter(
      I                dz_k,rmud,Edwsf,Eswsf,a_k,bt_k,bb_k,
@@ -598,35 +597,30 @@ c dzlocal ?????
      O                tirrq,tirrwq,
      I                myThid)
 #else
+c dzlocal ?????
          call darwin_radtrans(
      I                drF,rmud,Edwsf,Eswsf,a_k,bt_k,bb_k,
      O                Edz,Esz,Euz,Eutop,
      O                tirrq,tirrwq,
      I                myThid)
 #endif
-c        print*,'tirrq',tirrq(1),tirrwq(6,1)
-c uses chl from prev timestep (as wavebands does)
-c but has its own depth loop
-c pass phyto and chl into this call
-c cdom from phyto biomass here too (move from light.F)
-c need to make sure biomass is positive or zero (inside do np=1,npmax, actot450.... max(phy,0))
-c covert Es and Ed to Watts m-3 when read in (init_fixed.F)
-c keep like this in case need to consider upwelling irradiance as affecting the grid box above
-c will pass to plankton: PARwl only, but will be for this timestep for RT and prev timestep for WAVBANDS
 c
-c now copy and convert to appropriate units
+c uses chl from prev timestep (as wavebands does)
+c keep like this in case need to consider upwelling irradiance as affecting the grid box above
+c will pass to plankton: PARw only, but will be for this timestep for RT and prev timestep for WAVBANDS
+c
+c now copy
          DO k=1,Nr
            PAR(i,j,k) = tirrq(k)
            DO ilam = 1,tlam
-C            tirrwl is uEin/m^2/s per waveband, PARwl will be /nm
-             PARw_k(ilam,k) = tirrwq(ilam,k)/wb_width(ilam)
+             PARw_k(ilam,k) = tirrwq(ilam,k)
            ENDDO
          ENDDO
 #endif /* DAR_RADTRANS */
 
 c oj: ???
-c so PARwl and PARwupl from WAVEBANDS_1D are from previous timestep (attenuation done in plankton)
-c but PARwl and PARwupl from WAVEBANDS_3D and RADTRANS are for the current timestep
+c so PARw and PARwup from WAVEBANDS_1D are from previous timestep (attenuation done in plankton)
+c but PARw and PARwup from WAVEBANDS_3D and RADTRANS are for the current timestep
 
 #endif /* WAVEBANDS */
 
