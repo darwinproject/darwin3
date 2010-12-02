@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.16 2010/11/30 18:50:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.17 2010/12/02 18:33:29 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -43,6 +43,7 @@ C     == Local variables ==
 c local variables      
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       character*80 title
+      integer iUnit
       integer swlambda,splambda,ssflambda
       _RL sap,sap_ps,sbp,sbbp
       _RL saw,sbw
@@ -77,14 +78,15 @@ C but first and last boundary are at first and last "central" value
 
 
 c  Water data files
-       if (darwin_waterabsorbFile .NE. ' '  ) THEN
-        open(14,file=darwin_waterabsorbFile,
+      if (darwin_waterabsorbFile .NE. ' '  ) THEN
+        CALL MDSFINDUNIT( iUnit, myThid )
+        open(iUnit,file=darwin_waterabsorbFile,
      &                           status='old',form='formatted')  
         do i = 1,6                 ! six lines of text for the header
-         read(14,'(a50)')title     ! trucates or pads (with spaces) to 50 characters length  
+         read(iUnit,'(a50)')title     ! trucates or pads (with spaces) to 50 characters length
         enddo
         do ilam = 1,tlam           
-         read(14,20)swlambda,saw,sbw  
+         read(iUnit,20)swlambda,saw,sbw
          if (swlambda.NE.pwaves(ilam)) then
            WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: ',
      &     "wavelength for water spectrum doesn't match darwin_waves:"
@@ -97,33 +99,34 @@ c  Water data files
          aw(ilam) = saw
          bw(ilam) = sbw
         enddo
-        close(14)
+        close(iUnit)
 20      format(i5,f15.4,f10.4)
-       else
+      else
         WRITE(msgBuf,'(A)')
      &      ' WAVEBANDS_INIT_FIXED: need to specify water absorption'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
-       endif
-       
+      endif
+      
 
 c phyto data files
 c ANNA phyto input data files must have a column for absorption by PS pigs
 c ANNA easiest way to 'turn off' PS for growth is to put same values in both abs columns
-       if (darwin_phytoabsorbFile.NE. ' '  ) THEN
-        open(16,file=darwin_phytoabsorbFile,
+      if (darwin_phytoabsorbFile.NE. ' '  ) THEN
+        CALL MDSFINDUNIT( iUnit, myThid )
+        open(iUnit,file=darwin_phytoabsorbFile,
      &                                   status='old',form='formatted')
         do i = 1,6               ! six lines of text for the header
-         read(16,'(a50)')title    
+         read(iUnit,'(a50)')title
         enddo        
         sbbp = 0. _d 0
         do nabp = 1,tnabp        
-         read(16,'(a50)')title   ! reads one line of text for the phytoplankton type header
+         read(iUnit,'(a50)')title   ! reads one line of text for the phytoplankton type header
          do ilam  = 1,tlam         
 #ifdef DAR_NONSPECTRAL_BACKSCATTERING_RATIO
-          read(16,30)splambda,sap,sap_ps,sbp
+          read(iUnit,30)splambda,sap,sap_ps,sbp
 #else
-          read(16,'(i4,3f10.0,f20.0)')splambda,sap,sap_ps,sbp,sbbp
+          read(iUnit,'(i4,3f10.0,f20.0)')splambda,sap,sap_ps,sbp,sbbp
 #endif
           if (splambda.NE.pwaves(ilam)) then
            WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: ',
@@ -138,29 +141,30 @@ c ANNA easiest way to 'turn off' PS for growth is to put same values in both abs
           ap_ps(nabp,ilam) = sap_ps
           bp(nabp,ilam) = sbp
           bbp(nabp,ilam) = sbbp
+         enddo
         enddo
-        enddo
-        close(16)
+        close(iUnit)
 30      format(i4,3f10.4)
-       else
+      else
         WRITE(msgBuf,'(A)')
      &      ' WAVEBANDS_INIT_FIXED: need to specify phyto absorption'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
-       endif
+      endif
 
 
 #ifndef OASIM
 c QQ NEED IN HERE ifndef OASIM
 c surface spectrum for initial use
-       if (darwin_surfacespecFile .NE. ' '  ) THEN
-        open(18,file=darwin_surfacespecFile,
+      if (darwin_surfacespecFile .NE. ' '  ) THEN
+       CALL MDSFINDUNIT( iUnit, myThid )
+       open(iUnit,file=darwin_surfacespecFile,
      &                             status='old',form='formatted')
        do i = 1,3             ! three lines of text for the header
-        read(18,'(a50)')title 
+        read(iUnit,'(a50)')title
        enddo
        do ilam = 1,tlam
-        read(18,40)ssflambda,ssf
+        read(iUnit,40)ssflambda,ssf
         if (ssflambda.NE.pwaves(ilam)) then
            WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: ',
      &     "wavelength for surface spectrum doesn't match darwin_waves:"
@@ -172,31 +176,32 @@ c surface spectrum for initial use
         endif
         sf(ilam) = ssf
        enddo
-       close(18)
+       close(iUnit)
 40     format(i5,f15.6)  
       else
         WRITE(msgBuf,'(A)')
      &      ' WAVEBANDS_INIT_FIXED: need surface spectrum'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
-       endif
+      endif
 #endif /* not OASIM */
 
 
 c absorption by cdom
 #ifndef DAR_CALC_ACDOM
 c if no file given then CDOM is zero
-       if (darwin_acdomFile.NE. ' '  ) THEN 
-        open(19,file=darwin_acdomFile,
+      if (darwin_acdomFile.NE. ' '  ) THEN
+        CALL MDSFINDUNIT( iUnit, myThid )
+        open(iUnit,file=darwin_acdomFile,
      &                        status='old',form='formatted')
         do i = 1,6            ! six lines of text for the header
-         read(19,'(a50)')title
+         read(iUnit,'(a50)')title
         enddo
         do i = 1,tlam
-         read(19,50)sacdom
+         read(iUnit,50)sacdom
          acdom(i) = sacdom
         enddo
-        close(19)
+        close(iUnit)
 50      format(f10.4)
       else
         WRITE(msgBuf,'(A)')
