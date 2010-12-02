@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.68 2010/11/30 19:26:14 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.69 2010/12/02 18:56:27 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
@@ -7,6 +7,8 @@ $Name:  $
 o phyto spectra now include backscattering coefficients.
   To revert to previous behaviour and use darwin_bbphy,
   #define DAR_NONSPECTRAL_BACKSCATTERING_RATIO
+o new verification experiment darwin_1d_radtrans
+o new output for darwin_baltic_76x72x24 after seaice changes
 
 ctrb_darwin_ckpt62o_20101125
 
