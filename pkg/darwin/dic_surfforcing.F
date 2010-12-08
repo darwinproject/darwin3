@@ -88,14 +88,14 @@ C =================================================================
 C determine inorganic carbon chem coefficients
         DO j=jmin,jmax
          DO i=imin,imax
-             surfdic(i,j) = max(10. _d 0 , PTR_DIC(i,j)*1e-3
-     &                          * maskC(i,j,kLev,bi,bj))
-             surfalk(i,j) = max(10. _d 0 , PTR_ALK(i,j)*1e-3
-     &                          * maskC(i,j,kLev,bi,bj))
-             surfphos(i,j)  = max(1. _d -10, PTR_PO4(i,j)*1e-3
-     &                          * maskC(i,j,kLev,bi,bj))
-             surfsi(i,j)   = max(1. _d -8, PTR_SIL(i,j) *1e-3
-     &                          * maskC(i,j,kLev,bi,bj))
+             surfdic(i,j) = max(10. _d 0 , PTR_DIC(i,j))*1e-3
+     &                          * maskC(i,j,kLev,bi,bj)
+             surfalk(i,j) = max(10. _d 0 , PTR_ALK(i,j))*1e-3
+     &                          * maskC(i,j,kLev,bi,bj)
+             surfphos(i,j)  = max(1. _d -10, PTR_PO4(i,j))*1e-3
+     &                          * maskC(i,j,kLev,bi,bj)
+             surfsi(i,j)   = max(1. _d -8, PTR_SIL(i,j))*1e-3
+     &                          * maskC(i,j,kLev,bi,bj)
              surfsalt(i,j) = max(4. _d 0, salt(i,j,kLev,bi,bj))
          ENDDO
         ENDDO
