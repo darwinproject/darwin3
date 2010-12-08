@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.29 2010/09/14 21:39:19 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.30 2010/12/08 22:16:11 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -166,9 +166,11 @@ c find mean
 #endif
 #ifdef DYNAMIC_CHL
 c check Chl fields are reasonable
-           chl2cmin(np)=chl2cmax(np)/
+           do np=1,npmax
+             chl2cmin(np)=chl2cmax(np)/
      &            (1+(chl2cmax(np)* alpha_mean(np) *2000. _d 0)/
      &               (2*pcmax(np)))
+           enddo
            call DARWIN_CHECK_CHL(myThid)
 #endif
 #endif
