@@ -152,9 +152,15 @@ c diatoms even less palatible
              if (diacoc(np).eq.1. _d 0) then
                palat(np,nz)= palat(np,nz)*diatomgraz
              endif
+c coccolithophes less palatible
              if (diacoc(np).eq.2. _d 0) then
                palat(np,nz)= palat(np,nz)*coccograz
              endif
+c other large phyto less palatible
+             if (diacoc(np).eq.0.and.physize(np).eq.1) then
+               palat(np,nz)= palat(np,nz)*olargegraz
+             endif
+c need something in here for tricho
            enddo
           enddo
 #endif 
