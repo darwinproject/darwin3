@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.42 2010/12/01 15:46:59 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.43 2010/12/08 22:54:25 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1225,7 +1225,7 @@ c    &                       deltaTclock/float(nsubtime)
              enddo
 #endif
 #ifdef DAR_DIAG_ACDOM
-             print*,'acdom',k,acdom_k(k,darwin_diag_acdom_ilam)
+c            print*,'acdom',k,acdom_k(k,darwin_diag_acdom_ilam)
              aCDOMave(i,j,k,bi,bj)=aCDOMave(i,j,k,bi,bj)+
      &                    acdom_k(k,darwin_diag_acdom_ilam)*dtplankton
 #endif
