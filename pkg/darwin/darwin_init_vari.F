@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.30 2010/12/08 22:16:11 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.31 2010/12/08 22:19:56 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -145,10 +145,6 @@ c    &               (2*pcmax(np)))
          enddo
 #else
          do np = 1,npmax
-c ANNA for wavebands only, re-set mQyield to be constant for all np's
-c ANNA i.e. let alpha vary only with aphy_chl_ps
-c ANNA value is mean of vals for big and small.
-          mQyield(np) = 4.0 _d -5
           do nl = 1,tlam
            alphachl_nl(np,nl) = mQyield(np) * aphy_chl_ps(np,nl)
           end do

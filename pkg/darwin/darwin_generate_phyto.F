@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.21 2010/05/05 18:17:07 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.22 2010/12/08 22:19:56 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -504,6 +504,13 @@ c big/small phyto Maximum Quantum Yield
         else
           mQyield(np) = SmallmQyield
         end if
+#endif
+
+#ifdef WAVEBANDS
+c ANNA for wavebands only, re-set mQyield to be constant for all np's
+c ANNA i.e. let alpha vary only with aphy_chl_ps
+c ANNA value is mean of vals for big and small.
+          mQyield(np) = 4.0 _d -5
 #endif
 
         RandNo = darwin_random(myThid)
