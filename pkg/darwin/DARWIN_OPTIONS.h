@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.12 2010/11/30 18:50:17 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.13 2010/12/14 18:31:43 jahn Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -41,7 +41,9 @@ C iterative solution
 C use rmus for all components to convert to scalar irradiance
 C (not recommended)
 #undef  DAR_RADTRANS_RMUS_PAR
-#define DAR_NONSPECTRAL_BACKSCATTERING_RATIO
+C define this to turn of reading of phyto backscattering spectra
+C and revert to fixed backscat ratios darwin_bbphy(nabp) set in data.darwin
+#undef  DAR_NONSPECTRAL_BACKSCATTERING_RATIO
 
 #undef  RELAX_NUTS
 #undef  FLUX_NUTS
