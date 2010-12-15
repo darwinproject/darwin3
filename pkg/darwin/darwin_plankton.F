@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.37 2010/12/01 16:05:14 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.38 2010/12/15 16:43:39 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1461,7 +1461,7 @@ c tendency of particulate detritus pools
             dDOCdt  = totphy_doc  + totzoo_doc  - DOCremin
             dPOCdt  = totphy_poc  + totzoo_poc  - preminC + psinkC
             dPICdt  = totphy_pic  + totzoo_pic  - disscPIC + psinkPIC
-            dALKdt  = - dNO3dt    - 2.d0 * dPICdt
+            dALKdt  = - dNO3dt    - 2.d0 * (consumpDIC_PIC - disscPIC)
 c should be = O2prod - preminP - DOPremin?
             dO2dt   = - R_OP*dPO4dt
 #ifdef OLD_GRAZE
