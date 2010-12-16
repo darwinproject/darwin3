@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.22 2010/12/08 22:19:56 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.23 2010/12/16 21:13:28 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -15,6 +15,11 @@ c using a "Monte Carlo" approach
 c         Mick Follows, Scott Grant Fall/Winter 2005
 c         Stephanie Dutkiewicz Spring/Summer 2005
 c         Anna Hickman Summer 2008
+c TWO_SPECIES_SETUP
+c  1=large, 2=small
+c NINE_SPECIES_SETUP
+c  1=diatom, 2=other large, 3=syn, 4=hl pro, 5=ll pro, 6=trich, 
+c  7=uni diaz, 8=small euk, 9=cocco
 c ==========================================================
         SUBROUTINE DARWIN_GENERATE_PHYTO(myThid, np)
 
@@ -87,6 +92,13 @@ c at this point independent of whether diatom or coccolithophor or not
         if (np.eq.1) physize(np) = 1.0 _d 0
         if (np.eq.2) physize(np) = 0.0 _d 0
 #endif
+#ifdef NINE_SPECIES_SETUP
+        if (np.lt.3.or.np.eq.6.or.np.eq.9) then
+          physize(np) = 1.0 _d 0
+        else
+          physize(np) = 0.0 _d 0
+        end if
+#endif
 
 c size of phytoplankton
         if(physize(np).eq. 1.0 _d 0)then
@@ -126,6 +138,16 @@ c         endif
 #ifdef TWO_SPECIES_SETUP
         diacoc(np) = 0.0 _d 0
 #endif
+#ifdef NINE_SPECIES_SETUP
+        if (np.eq.1) then
+          diacoc(np) = 1.0 _d 0
+        else
+          diacoc(np) = 0.0 _d 0
+        endif
+        if (np.eq.9) then
+          diacoc(np) = 2.0 _d 0
+        endif
+#endif
 c TEST ...........................................
 c       diacoc(np) = 0.0 _d 0
 c       write(msgBuf,'(A,I4,A)')
@@ -155,6 +177,13 @@ c TEST ...........................................
 #ifdef TWO_SPECIES_SETUP
         diazotroph(np) = 0.0 _d 0
 #endif
+#ifdef NINE_SPECIES_SETUP
+        if (np.gt.5.and.np.lt.8) then
+           diazotroph(np) = 1.0 _d 0
+        else
+           diazotroph(np) = 0.0 _d 0
+        end if
+#endif
 
 
 c growth rates
@@ -172,6 +201,13 @@ c but diazotrophs always slower due to energetics
 #ifdef TWO_SPECIES_SETUP
         if(physize(np) .eq. 1.0 _d 0)then
           growthdays = Biggrow 
+        else
+          growthdays = Smallgrow
+        end if
+#endif
+#ifdef NINE_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          growthdays = Biggrow
         else
           growthdays = Smallgrow
         end if
@@ -200,6 +236,14 @@ c big/small phyto mortality rates..
           mortdays = Smallmort
         end if
 #endif
+#ifdef NINE_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          mortdays = Bigmort
+        else
+          mortdays = Smallmort
+        end if
+#endif
+
 c now convert to a mortality rate
         if (mortdays.gt.0. _d 0) then
           mortphy(np) = 1.0 _d 0/(mortdays*pday)
@@ -239,6 +283,19 @@ c           endif
 #ifdef TWO_SPECIES_SETUP
         nsource(np) = 3
 #endif
+#ifdef NINE_SPECIES_SETUP
+        if (np.lt.4) then
+          nsource(np) = 3
+        end if
+        nsource(4)=2
+        nsource(5)=1
+        if (np.gt.5.and.np.lt.8) then
+          nsource(np) = 0
+        end if
+        if (np.gt.7) then
+          nsource(np) = 3
+        end if
+#endif
 
 c.....................................................
 c ANNA make selections for WAVEBANDS 
@@ -253,6 +310,7 @@ c each 'type', once assigned, gets given actual values in wavebands_init_vari.F
 c ANNA_Q could use tricho abs and scattering spectra (Subramanian et al. 1999)
 c ANNA_Q think diaz is turned off for now
 c Diaz will be 0 if not defined, and will have nsource = 0. 
+       if (tnabp.eq.4) then
          if (nsource(np).eq.0) then   !if diazotroph
           if (physize(np).eq.1.0d0) then !if BIG
           ap_type(np) = 1                !euk (assume diatom association)
@@ -291,6 +349,65 @@ c Diaz will be 0 if not defined, and will have nsource = 0.
           ap_type(np) = 4               !Pro LL                 
           end if
          end if
+        endif
+c
+        if (tnabp.eq.12) then
+        if (nsource(np).eq.0) then   !if diazotroph
+          if (physize(np).eq.1.0d0) then !if BIG
+           if (diacoc(np).eq.1.0d0) then
+             ap_type(np) = 5                !diatom association
+           endif
+           if (diacoc(np).eq.0.0d0) then
+             ap_type(np) = 7                !tricho
+           endif
+           if (diacoc(np).eq.2.0d0) then
+             ap_type(np) = 6                !coccolithopher(?)
+           endif
+          else                           !or
+           ap_type(np) = 1                !unicellular (whould be 8 -
+                                          !but currently zero)
+          end if
+         end if
+
+         RandNo = darwin_random(myThid)
+         if (nsource(np).eq.3) then !if all three sources (NO3)
+          if (physize(np).eq.1.0d0) then !if BIG
+           if (diacoc(np).eq.1.0d0) then
+             ap_type(np) = 5                !diatom
+           endif
+           if (diacoc(np).eq.0.0d0) then
+             ap_type(np) = 9                !Lg Euk
+           endif
+           if (diacoc(np).eq.2.0d0) then
+             ap_type(np) = 6                !coccolithopher
+           endif
+          else                           !if SMALL
+           if (RandNo.gt.0.500d0) then
+           ap_type(np) = 1               !euk
+           else                          !or
+           ap_type(np) = 2               !Syn
+           end if
+          end if
+         endif
+        endif
+
+#ifdef TWO_SPECIES_SETUP
+         if (np.eq.1) ap_type(np) = 11
+         if (np.eq.2) ap_type(np) = 11
+#endif
+#ifdef NINE_SPECIES_SETUP
+         if (np.eq.1) ap_type(np) = 5
+         if (np.eq.2) ap_type(np) = 9
+         if (np.eq.3) ap_type(np) = 2
+         if (np.eq.4) ap_type(np) = 3
+         if (np.eq.5) ap_type(np) = 4
+         if (np.eq.6) ap_type(np) = 7
+         if (np.eq.7) ap_type(np) = 8
+         if (np.eq.8) ap_type(np) = 1
+         if (np.eq.9) ap_type(np) = 6
+         ap_type(np) = 10
+#endif
+
 
 #else
 c ANNA number of RandNo's carreid out MUST MATCH regardless of wavebands or not.
@@ -316,9 +433,14 @@ c.......................................................
         endif
 
         RandNo = darwin_random(myThid)
+c#ifdef TEMP_RANGE
 cswd    phytoTempOptimum(np) = 30.0 _d 0 - RandNo*28.0 _d 0 
         phytoTempOptimum(np) = tempmax - RandNo*temprange
         phytoDecayPower(np) = tempdecay
+c#else
+c        phytoTempOptimum(np) = 0. _d 0
+c        phytoDecayPower(np) = 0. _d 0
+c#endif
         
         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
      &     'generate Phyto: np = ',np,' Topt       =',
@@ -390,6 +512,20 @@ c            ksatPO4(np) = SmallPsat + RandNo*SmallPsatrange
            ksatPO4(np) = SmallPsat
         endif
 #endif
+#ifdef NINE_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+           ksatPO4(np) = BigPsat
+        else
+           ksatPO4(np) = SmallPsat
+        endif
+        if (nsource(np).eq.2.or.nsource(np).eq.1) then
+           ksatPO4(np) = ProcPsat 
+        endif
+        if (diacoc(np) .eq. 2.0 _d 0) then
+           ksatPO4(np) = ksatPO4(np)/0.8 _d 0 
+        endif
+#endif
+
         ksatNO3(np) = ksatPO4(np)*R_NP(np)
         ksatNO2(np) = ksatNO3(np)*ksatNO2fac 
 c Made ksatNH4 smaller since it is the preferred source
@@ -429,6 +565,21 @@ c Low Light Groups for Small size:
                  kinhib(np) = abs(smallkinhib)
               endif
 #endif
+#ifdef NINE_SPECIES_SETUP
+              if(physize(np) .eq. 1.0 _d 0)then
+                 ksatPAR(np) = abs(Bigksatpar)
+                 kinhib(np) = abs(Bigkinhib)
+              else
+                 ksatPAR(np) = abs(smallksatpar)
+                 kinhib(np) = abs(smallkinhib)
+              endif
+              if (np.eq.5) then
+                kinhib(np) = 6.0 _d 0
+              endif
+              if (np.eq.9) then
+                kinhib(np) = 0.5 _d 0
+              endif
+#endif
          write(msgBuf,'(A,I4,A,1P1G24.15E3)')
      &     'generate Phyto: np = ',np,' ksatPAR    =', ksatPAR(np)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -451,12 +602,35 @@ c but diazotrophs always slower due to energetics
         if(diazotroph(np) .eq. 1.0 _d 0) then
             growthdays = growthdays * diaz_growfac
         endif
+c cocco have slower growth than diatom
+        if (diacoc(np).eq.2. _d 0) then
+           growthdays= growthdays * 1.3 _d 0
+        endif
 #ifdef TWO_SPECIES_SETUP
         if(physize(np) .eq. 1.0 _d 0)then
           growthdays = Biggrow 
         else
           growthdays = Smallgrow 
         end if
+#endif
+#ifdef NINE_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          growthdays = Biggrow
+        else
+          growthdays = Smallgrow
+        end if
+c but diazotrophs always slower due to energetics
+        if(diazotroph(np) .eq. 1.0 _d 0) then
+            growthdays = growthdays * diaz_growfac
+        endif
+c cocco have slower growth than other large
+        if (diacoc(np).eq.2. _d 0) then
+           growthdays= growthdays * 1.3 _d 0
+        endif
+c diatom has faster thatn other large
+        if (diacoc(np).eq.2. _d 0) then
+           growthdays= growthdays * 0.95 _d 0
+        endif
 #endif
 c now convert to a growth rate
         if (growthdays.gt.0. _d 0) then
@@ -505,7 +679,13 @@ c big/small phyto Maximum Quantum Yield
           mQyield(np) = SmallmQyield
         end if
 #endif
-
+#ifdef NINE_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          mQyield(np) = BigmQyield
+        else
+          mQyield(np) = SmallmQyield
+        end if
+#endif
 #ifdef WAVEBANDS
 c ANNA for wavebands only, re-set mQyield to be constant for all np's
 c ANNA i.e. let alpha vary only with aphy_chl_ps
@@ -525,6 +705,13 @@ c big/small phyto C:Chl max
           chl2cmax(np) = Bigchl2cmax 
         else
           chl2cmax(np) = Smallchl2cmax 
+        end if
+#endif
+#ifdef NINE_SPECIES_SETUP
+        if(physize(np) .eq. 1.0 _d 0)then
+          chl2cmax(np) = Bigchl2cmax
+        else
+          chl2cmax(np) = Smallchl2cmax
         end if
 #endif
 c ANNA chl2cmin added
