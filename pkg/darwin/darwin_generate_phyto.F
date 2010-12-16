@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.23 2010/12/16 21:13:28 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.24 2010/12/16 22:06:19 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -392,8 +392,8 @@ c
         endif
 
 #ifdef TWO_SPECIES_SETUP
-         if (np.eq.1) ap_type(np) = 11
-         if (np.eq.2) ap_type(np) = 11
+         if (np.eq.1) ap_type(np) = 10
+         if (np.eq.2) ap_type(np) = 10
 #endif
 #ifdef NINE_SPECIES_SETUP
          if (np.eq.1) ap_type(np) = 5
