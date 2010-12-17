@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.18 2010/12/17 20:43:13 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.19 2010/12/17 22:20:23 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -103,7 +103,7 @@ c  Water data files
 20      format(i5,f15.4,f10.4)
       else
         WRITE(msgBuf,'(A)')
-     &      ' WAVEBANDS_INIT_FIXED: need to specify water absorption'
+     &      'WAVEBANDS_INIT_FIXED: need to specify water absorption'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
       endif
@@ -147,7 +147,7 @@ c ANNA easiest way to 'turn off' PS for growth is to put same values in both abs
 30      format(i4,3f10.4)
       else
         WRITE(msgBuf,'(A)')
-     &      ' WAVEBANDS_INIT_FIXED: need to specify phyto absorption'
+     &      'WAVEBANDS_INIT_FIXED: need to specify phyto absorption'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
       endif
@@ -180,7 +180,7 @@ c surface spectrum for initial use
 40     format(i5,f15.6)  
       else
         WRITE(msgBuf,'(A)')
-     &      ' WAVEBANDS_INIT_FIXED: need surface spectrum'
+     &      'WAVEBANDS_INIT_FIXED: need surface spectrum'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
       endif
@@ -205,7 +205,7 @@ c if no file given then CDOM is zero
 50      format(f10.4)
       else
         WRITE(msgBuf,'(A)')
-     &      ' WAVEBANDS_INIT_FIXED: no aCDOM'
+     &      'WAVEBANDS_INIT_FIXED: no aCDOM'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1 )
 
@@ -224,11 +224,11 @@ c   CDOM absorption exponent
       enddo
 
       WRITE(msgBuf,'(A,1P1E20.12)')
-     &      ' WAVEBANDS_INIT_FIXED: darwin_Sdom = ', darwin_Sdom
+     &      'WAVEBANDS_INIT_FIXED: darwin_Sdom = ', darwin_Sdom
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, 1 )
       WRITE(msgBuf,'(A,I3)')
-     &      ' WAVEBANDS_INIT_FIXED: nl450 = ', nl450
+     &      'WAVEBANDS_INIT_FIXED: nl450 = ', nl450
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, 1 )
 #endif /* DAR_CALC_ACDOM */
@@ -246,7 +246,7 @@ c     find waveband index for acdom diagnostic
       endif
 
       WRITE(msgBuf,'(A,I3,A,I4)')
-     &      ' WAVEBANDS_INIT_FIXED: aCDOM diag ilam = ',
+     &      'WAVEBANDS_INIT_FIXED: aCDOM diag ilam = ',
      &      darwin_diag_acdom_ilam, ', lambda = ',
      &      pwaves(darwin_diag_acdom_ilam)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -292,6 +292,138 @@ c  absorption and scattering by particles
         enddo
       endif
 
+c     print a summary
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED: waveband widths:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     ' lam width'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      do ilam = 1,tlam           
+        WRITE(msgBuf,'(A,I4,F15.6)') 'WAVEBANDS_INIT_FIXED: ',
+     &     pwaves(ilam), wb_width(ilam)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      enddo
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+c
+#ifndef OASIM
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED: surface spectrum:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     ' lam sf'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      do ilam = 1,tlam           
+        WRITE(msgBuf,'(A,I4,F15.6)') 'WAVEBANDS_INIT_FIXED: ',
+     &     pwaves(ilam), sf(ilam)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      enddo
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+#endif
+c
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED: water spectra:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     ' lam aw             bw'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      do ilam = 1,tlam           
+        WRITE(msgBuf,'(A,I4,F15.4,F10.4)') 'WAVEBANDS_INIT_FIXED: ',
+     &     pwaves(ilam), aw(ilam), bw(ilam)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      enddo
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+c
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED: phyto spectra:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      do nabp = 1,tnabp        
+        WRITE(msgBuf,'(A,I4)') 'WAVEBANDS_INIT_FIXED: type ',nabp
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+        WRITE(msgBuf,'(A,A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     ' lam ap        ap_ps     bp        bbp'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+        do ilam = 1,tlam           
+          WRITE(msgBuf,'(A,I4,3F10.4,F20.9)') 'WAVEBANDS_INIT_FIXED: ',
+     &     pwaves(ilam), ap(nabp,ilam), ap_ps(nabp,ilam),
+     &     bp(nabp,ilam), bbp(nabp,ilam)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+        enddo
+        WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED:'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      enddo
+c
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED: particulate spectra:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     ' lam apart          bpart          bbpart'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      do ilam = 1,tlam           
+        WRITE(msgBuf,'(A,I4,1P3G15.6)')'WAVEBANDS_INIT_FIXED: ',
+     &     pwaves(ilam), apart(ilam), bpart(ilam), bbpart(ilam)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      enddo
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+c
+      WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: particulate spectra ',
+     &                    'in phosphorus units:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     ' lam apart_P        bpart_P        bbpart_P'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      do ilam = 1,tlam           
+        WRITE(msgBuf,'(A,I4,2F15.9,F15.12)') 'WAVEBANDS_INIT_FIXED: ',
+     &     pwaves(ilam), apart_P(ilam), bpart_P(ilam), bbpart_P(ilam)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      enddo
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+c
+#ifndef DAR_CALC_ACDOM
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED: CDOM spectrum:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,A)') 'WAVEBANDS_INIT_FIXED: ',
+     &     ' lam aCDOM'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      do ilam = 1,tlam           
+        WRITE(msgBuf,'(A,I4,F10.4)') 'WAVEBANDS_INIT_FIXED: ',
+     &     pwaves(ilam), acdom(ilam)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      enddo
+      WRITE(msgBuf,'(A)') 'WAVEBANDS_INIT_FIXED:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+#endif
+
+c     constants
       pid = DACOS(-1.0D0)
       rad = 180.0D0/pid
 #endif
