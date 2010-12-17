@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.12 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.13 2010/12/17 21:20:29 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -122,6 +122,25 @@ C     Functions
           CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
           CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
           WRITE(name,'(a,i2.2)') 'dar_bb',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+      enddo
+#endif
+#ifdef DAR_DIAG_PART_SCATTER
+      do ii=1,tlam
+          DO jj = 1,MAX_LEN_FNAM
+             name(jj:jj) = ' '
+          ENDDO
+          WRITE(name,'(a,i2.2)') 'dar_apart',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+          WRITE(name,'(a,i2.2)') 'dar_btpart',ii
+          CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)
+          WRITE(name,'(a,i2.2)') 'dar_bbpart',ii
           CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__C__t',4,5,myThid)
           CALL MNC_CW_ADD_VATTR_TEXT(name,'units','--', myThid)
           CALL MNC_CW_ADD_VATTR_TEXT(name,'description','', myThid)

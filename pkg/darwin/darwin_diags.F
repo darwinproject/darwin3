@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.12 2010/07/22 21:58:38 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.13 2010/12/17 21:20:29 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -97,6 +97,16 @@ C      Normalize by integrated time
           CALL TIMEAVE_NORMALIZ(btave(1-Olx,1-Oly,1,1,1,ii),
      &                          DAR_timeave,nR,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(bbave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_PART_SCATTER
+         do ii = 1,tlam
+          CALL TIMEAVE_NORMALIZ(apartave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(btpartave(1-Olx,1-Oly,1,1,1,ii),
+     &                          DAR_timeave,nR,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(bbpartave(1-Olx,1-Oly,1,1,1,ii),
      &                          DAR_timeave,nR,bi,bj,myThid)
          enddo
 #endif
@@ -220,6 +230,25 @@ c
      &           ii,'.',myIter
            CALL WRITE_FLD_XYZ_RL(suff,' ',
      &           bbave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_PART_SCATTER
+         do ii = 1,tlam
+           WRITE(suff,'(A8,I2.2,A1,I10.10)') 'apartave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           apartave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+           WRITE(suff,'(A9,I2.2,A1,I10.10)') 'btpartave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           btpartave(1-Olx,1-Oly,1,1,1,ii),
+     &           myIter,myThid)
+           WRITE(suff,'(A9,I2.2,A1,I10.10)') 'bbpartave',
+     &           ii,'.',myIter
+           CALL WRITE_FLD_XYZ_RL(suff,' ',
+     &           bbpartave(1-Olx,1-Oly,1,1,1,ii),
      &           myIter,myThid)
          enddo
 #endif
@@ -353,6 +382,22 @@ c
      &           bbave(1-OLx,1-OLy,1,1,1,ii),myThid)
          enddo
 #endif
+#ifdef DAR_DIAG_PART_SCATTER
+         do ii = 1,tlam
+            DO jj = 1,MAX_LEN_FNAM
+              name(jj:jj) = ' '
+            ENDDO
+            WRITE(name,'(a,i2.2)') 'dar_apart',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           apartave(1-OLx,1-OLy,1,1,1,ii),myThid)
+            WRITE(name,'(a,i2.2)') 'dar_btpart',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           btpartave(1-OLx,1-OLy,1,1,1,ii),myThid)
+            WRITE(name,'(a,i2.2)') 'dar_bbpart',ii
+            CALL MNC_CW_RL_W(pf,'dar_tave',0,0,name,
+     &           bbpartave(1-OLx,1-OLy,1,1,1,ii),myThid)
+         enddo
+#endif
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
          do np=1,npmax
@@ -473,6 +518,16 @@ C      Reset averages to zero
            CALL TIMEAVE_RESET(btave(1-OLx,1-OLy,1,1,1,ii),
      &                                    Nr,bi,bj,myThid)
            CALL TIMEAVE_RESET(bbave(1-OLx,1-OLy,1,1,1,ii),
+     &                                    Nr,bi,bj,myThid)
+         enddo
+#endif
+#ifdef DAR_DIAG_PART_SCATTER
+         do ii = 1,tlam
+           CALL TIMEAVE_RESET(apartave(1-OLx,1-OLy,1,1,1,ii),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(btpartave(1-OLx,1-OLy,1,1,1,ii),
+     &                                    Nr,bi,bj,myThid)
+           CALL TIMEAVE_RESET(bbpartave(1-OLx,1-OLy,1,1,1,ii),
      &                                    Nr,bi,bj,myThid)
          enddo
 #endif

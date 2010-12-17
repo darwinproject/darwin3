@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.14 2010/12/17 00:35:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.15 2010/12/17 21:20:29 jahn Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -62,6 +62,7 @@ C and revert to fixed backscat ratios darwin_bbphy(nabp) set in data.darwin
 #undef  DAR_DIAG_ACDOM
 #undef  DAR_DIAG_ABSORP
 #undef  DAR_DIAG_SCATTER
+#undef  DAR_DIAG_PART_SCATTER
 #undef  DAR_DIAG_IRR
 
 C diagnostic chlorophyll

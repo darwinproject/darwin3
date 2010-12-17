@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.44 2010/12/17 20:43:13 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.45 2010/12/17 21:20:29 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1268,6 +1268,16 @@ Coj            no Eu at surface (yet)
      &                                 bt_k(k,ilam)*dtplankton
                bbave(i,j,k,bi,bj,ilam)=bbave(i,j,k,bi,bj,ilam)+
      &                                 bb_k(k,ilam)*dtplankton
+             enddo
+#endif
+#ifdef DAR_DIAG_PART_SCATTER
+             do ilam = 1,tlam
+               apartave(i,j,k,bi,bj,ilam)=apartave(i,j,k,bi,bj,ilam)+
+     &                                apart_k(k,ilam)*dtplankton
+               btpartave(i,j,k,bi,bj,ilam)=btpartave(i,j,k,bi,bj,ilam)+
+     &                                 bpart_k(k,ilam)*dtplankton
+               bbpartave(i,j,k,bi,bj,ilam)=bbpartave(i,j,k,bi,bj,ilam)+
+     &                                 bbpart_k(k,ilam)*dtplankton
              enddo
 #endif
 #ifdef DAR_DIAG_RSTAR
