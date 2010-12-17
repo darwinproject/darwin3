@@ -103,6 +103,7 @@ C     darwin_bbphy        :: backscattering to forward scattering ratio for Chlo
 C     darwin_bbmin        :: minimum backscattering coefficient (not ratio)
 c     darwin_radtrans_kmax  :: deepest layer to compute irradiances in
 c     darwin_radtrans_niter :: number of iterations for iterative improvement of radmod solution
+c     darwin_part_size_P    :: phosphorus content of one particle. used to compute number of particles
 C
       COMMON /DARWIN_RADTRANS_PARM_I/
      &       darwin_PAR_ilamLo, darwin_PAR_ilamHi
@@ -118,7 +119,8 @@ C
      &       darwin_rmus, darwin_rmuu,
      &       darwin_bbw,
      &       darwin_bbphy,
-     &       darwin_bbmin
+     &       darwin_bbmin,
+     &       darwin_part_size_P
 
       _RL darwin_radmodThresh
       _RL darwin_Dmax
@@ -126,17 +128,27 @@ C
       _RL darwin_bbw
       _RL darwin_bbphy(tnabp)
       _RL darwin_bbmin
+      _RL darwin_part_size_P
 
 C dependent/hardcoded parameters:
 C
 C     pid        :: pi
 C     rad        :: conversion factor from radians to degree, 180/pi
 C     bphy_chl   :: Chl-specific scattering coefficient for phyto
+C     bbphy_chl  :: Chl-specific backscattering coefficient for phyto
+C     apart      :: number-specific absorption coefficient for particles
+C     bpart      :: number-specific scattering coefficient for particles
+C     bbpart     :: number-specific backscattering coefficient for particles
+C     apart_P    :: P-specific absorption coefficient for particles
+C     bpart_P    :: P-specific scattering coefficient for particles
+C     bbpart_P   :: P-specific backscattering coefficient for particles
 C
       COMMON/DARWIN_RADTRANS_R/
      &        pid,rad     !radias and pi - use these rather than darwin versions for simplicity.
      &       ,bphy_chl    !scat coef for phyto
      &       ,bbphy_chl   !backscat coef for phyto
+     &       ,apart, bpart, bbpart
+     &       ,apart_P, bpart_P, bbpart_P
 
 c not sure if some of these are necessary 
 c SOME OF THESE parameter names are the same as WAVEBANDS, but have an added k dimension....
@@ -146,5 +158,11 @@ c      _RL rod(tlam),ros(tlam)   !surface direct and diffuse reflectance !not he
       _RL pid,rad             !radias and pi - use these rather than darwin versions for simplicity.
       _RL bphy_chl(npmax,tlam) !scat coef for phyto
       _RL bbphy_chl(npmax,tlam) !backscat coef for phyto
+      _RL apart(tlam)
+      _RL bpart(tlam)
+      _RL bbpart(tlam)
+      _RL apart_P(tlam)
+      _RL bpart_P(tlam)
+      _RL bbpart_P(tlam)
 #endif /* DAR_RADTRANS */
 

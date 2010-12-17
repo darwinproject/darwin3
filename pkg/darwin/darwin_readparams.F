@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.18 2010/11/30 19:08:35 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.19 2010/12/17 20:43:13 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -60,6 +60,7 @@ CEOP
      &           darwin_FeT_fluxFile, darwin_Si_fluxFile,
      &           darwin_waterabsorbFile, darwin_phytoabsorbFile,
      &           darwin_surfacespecFile, darwin_acdomFile,
+     &           darwin_particleabsorbFile,
 #ifdef OASIM
      &           darwin_oasim_edFile, darwin_oasim_esFile,
 #endif
@@ -91,6 +92,7 @@ CEOP
      &          ,darwin_bbmin
      &          ,darwin_radtrans_kmax
      &          ,darwin_radtrans_niter
+     &          ,darwin_part_size_P
 #endif
 #endif /* WAVEBANDS */
 
@@ -124,6 +126,7 @@ C Set defaults values for parameters in DARWIN_IO.h
       darwin_Si_fluxFile=' '
       darwin_waterabsorbFile=' '
       darwin_phytoabsorbFile=' '
+      darwin_particleabsorbFile=' '
       darwin_surfacespecFile=' '
       darwin_acdomFile=' '
       darwin_oasim_edFile=' '
@@ -191,6 +194,7 @@ c value >= 100 will be converted to index in wavebands_init_fixed
       enddo
       darwin_radtrans_kmax = Nr
       darwin_radtrans_niter = 1
+      darwin_part_size_P = 1 _d -15   ! mmol P per particle
 #endif
 #endif /* WAVEBANDS */
 

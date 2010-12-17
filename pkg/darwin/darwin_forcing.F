@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.43 2010/12/08 22:54:25 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.44 2010/12/17 20:43:13 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -68,6 +68,7 @@ c plankton arrays
       _RL  Phy(npmax)
       _RL  Phy_k(npmax,Nr)
       _RL  Phyup(npmax)
+      _RL  part_k(Nr)
 c iron partitioning
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 c some working variables
@@ -96,6 +97,7 @@ c ANNA define variables for wavebands
        _RL solz
        _RL rmud
        _RL actot,bctot,bbctot
+       _RL apart_k(Nr,tlam),bpart_k(Nr,tlam),bbpart_k(Nr,tlam)
        _RL bt_k(Nr,tlam), bb_k(Nr,tlam)
 #else
        _RL PARwdn(tlam)
@@ -402,6 +404,7 @@ C ========================== i,j loops =================================
 
 c ------------ these are convenient ------------------------------------
          DO k=1,Nr
+          part_k(k)  = max(Ptr(i,j,k,bi,bj,iPOP),0. _d 0)
           DO np = 1,npmax
             Phy_k(np,k) = max(Ptr(i,j,k,bi,bj,iPhy+np-1),0. _d 0)
 #ifdef GEIDER
@@ -581,10 +584,14 @@ c           absorption by phyto
              bctot  = bctot  + phychl_k(np,k)*bphy_chl(np,ilam)
              bbctot = bbctot + phychl_k(np,k)*bbphy_chl(np,ilam)
             ENDDO
+c           particulate
+            apart_k(k,ilam) = part_k(k)*apart_P(ilam)
+            bpart_k(k,ilam) = part_k(k)*bpart_P(ilam)
+            bbpart_k(k,ilam) = part_k(k)*bbpart_P(ilam)
 c           add water and CDOM
-            a_k(k,ilam)  = aw(ilam) + acdom_k(k,ilam) + actot
-            bt_k(k,ilam) = bw(ilam) + bctot
-            bb_k(k,ilam) = darwin_bbw*bw(ilam) + bbctot
+            a_k(k,ilam) = aw(ilam)+acdom_k(k,ilam)+actot+apart_k(k,ilam)
+            bt_k(k,ilam) = bw(ilam) + bctot + bpart_k(k,ilam)
+            bb_k(k,ilam) = darwin_bbw*bw(ilam)+bbctot+bbpart_k(k,ilam)
             bb_k(k,ilam) = MAX(darwin_bbmin, bb_k(k,ilam))
           ENDDO
          ENDDO

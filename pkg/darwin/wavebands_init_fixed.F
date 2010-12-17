@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.17 2010/12/02 18:33:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.18 2010/12/17 20:43:13 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -254,6 +254,44 @@ c     find waveband index for acdom diagnostic
 #endif
 
 #ifdef DAR_RADTRANS
+c  absorption and scattering by particles
+      if (darwin_particleabsorbFile .NE. ' '  ) THEN
+        CALL MDSFINDUNIT( iUnit, myThid )
+        open(iUnit,file=darwin_particleabsorbFile,
+     &                           status='old',form='formatted')  
+        do i = 1,6                 ! six lines of text for the header
+         read(iUnit,'(a50)')title     ! trucates or pads (with spaces) to 50 characters length  
+        enddo
+        do ilam = 1,tlam           
+         read(iUnit,'(I4,3F15.0)')splambda,sap,sbp,sbbp  
+         if (splambda.NE.pwaves(ilam)) then
+           WRITE(msgBuf,'(2A)') 'WAVEBANDS_INIT_FIXED: ',
+     &    "wavelength for particle spectrum doesn't match darwin_waves:"
+           CALL PRINT_ERROR( msgBuf, myThid )
+           WRITE(msgBuf,'(2A,I3,A,I4,A,F4.0)') 'WAVEBANDS_INIT_FIXED: ',
+     &     'ilam', ilam, ': ', splambda, ' versus ', pwaves(ilam)
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R WAVEBANDS_INIT_FIXED'
+         endif
+         apart(ilam) = sap
+         bpart(ilam) = sbp
+         bbpart(ilam) = sbbp
+         apart_P(ilam) = sap/darwin_part_size_P
+         bpart_P(ilam) = sbp/darwin_part_size_P
+         bbpart_P(ilam) = sbbp/darwin_part_size_P
+        enddo
+        close(iUnit)
+      else
+        do ilam = 1,tlam           
+         apart(ilam) = 0. _d 0
+         bpart(ilam) = 0. _d 0
+         bbpart(ilam) = 0. _d 0
+         apart_P(ilam) = 0. _d 0
+         bpart_P(ilam) = 0. _d 0
+         bbpart_P(ilam) = 0. _d 0
+        enddo
+      endif
+
       pid = DACOS(-1.0D0)
       rad = 180.0D0/pid
 #endif

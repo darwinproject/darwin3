@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.21 2010/06/09 16:00:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.22 2010/12/17 20:43:13 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -15,6 +15,11 @@ C  darwin_iceFile       :: file name of seaice fraction
 C  darwin_ironFile      :: file name of aeolian iron flux
 C  darwin_PARFile       :: file name of Photosynthetically Active Radiation at surface
 C  darwin_nutWVelFile   :: file name of nutrient wvel
+C  darwin_waterabsorbFile    :: file name of water absorption/scattering spectra
+C  darwin_phytoabsorbFile    :: file name of phyto absorption/scattering spectra
+C  darwin_particleabsorbFile :: file name of particle absorption/scattering spectra
+C  darwin_surfacespecFile    :: file name of spectrum of incident light
+C  darwin_acdomFile          :: file name of CDOM absorption spectrum
 C  darwin_forcingPeriod :: perioDARWIN forcing parameter specific for DARWIN (seconds)
 C  darwin_forcingCycle  :: perioDARWIN forcing parameter specific for DARWIN (seconds)
 C  darwin_seed          :: seed for the random number generator
@@ -32,6 +37,7 @@ C  darwin_seed          :: seed for the random number generator
      &        darwin_oasim_edFile, darwin_oasim_esFile,
      &        darwin_waterabsorbFile, darwin_phytoabsorbFile,
      &        darwin_surfacespecFile, darwin_acdomFile,
+     &        darwin_particleabsorbFile,
      &        darwin_forcingPeriod, darwin_forcingCycle,
      &        darwin_seed
 
@@ -51,6 +57,7 @@ C  darwin_seed          :: seed for the random number generator
       CHARACTER*(MAX_LEN_FNAM) darwin_oasim_esFile
       CHARACTER*(MAX_LEN_FNAM) darwin_waterabsorbFile
       CHARACTER*(MAX_LEN_FNAM) darwin_phytoabsorbFile
+      CHARACTER*(MAX_LEN_FNAM) darwin_particleabsorbFile
       CHARACTER*(MAX_LEN_FNAM) darwin_surfacespecFile
       CHARACTER*(MAX_LEN_FNAM) darwin_acdomFile
 
