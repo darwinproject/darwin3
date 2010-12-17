@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.70 2010/12/17 20:43:13 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.71 2010/12/17 21:15:59 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
 o add particle absorption and scattering based on POP
+
+ctrb_darwin_ckpt62p_20101217
 o phyto spectra now include backscattering coefficients.
   To revert to previous behaviour and use darwin_bbphy,
   #define DAR_NONSPECTRAL_BACKSCATTERING_RATIO
