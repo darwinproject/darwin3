@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.24 2010/12/16 22:06:19 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.25 2010/12/17 00:35:52 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -433,14 +433,14 @@ c.......................................................
         endif
 
         RandNo = darwin_random(myThid)
-c#ifdef TEMP_RANGE
+#ifdef TEMP_RANGE
 cswd    phytoTempOptimum(np) = 30.0 _d 0 - RandNo*28.0 _d 0 
         phytoTempOptimum(np) = tempmax - RandNo*temprange
         phytoDecayPower(np) = tempdecay
-c#else
-c        phytoTempOptimum(np) = 0. _d 0
-c        phytoDecayPower(np) = 0. _d 0
-c#endif
+#else
+        phytoTempOptimum(np) = 0. _d 0
+        phytoDecayPower(np) = 0. _d 0
+#endif
         
         write(msgBuf,'(A,I4,A,1P1G24.15E3)')
      &     'generate Phyto: np = ',np,' Topt       =',
