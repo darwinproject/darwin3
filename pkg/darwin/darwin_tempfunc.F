@@ -44,26 +44,16 @@ c local
        _RL TempAe, Tempref, TempCoeff
        INTEGER np, nz
 
-c OLDVERSION used in Follows et al (2007) - without max of 1
-c OLDVERSION used in Dutkiewicz et al (2009), Hickman et al, 
-c                    Monteiro etal, Barton et al
+c TEMP_VERSION 1 used in Follows et al (2007) - without max of 1
+c TEMP_VERSION 1 used in Dutkiewicz et al (2009), Hickman et al, 
+c                        Monteiro etal, Barton et al
 c TEMP_RANGE gives all phyto a  specific temperature range
 c            if undefined, then full Eppley/Arrenhius curve used
-
-#undef NOTEMP
-#define TEMP_RANGE
-#define OLDVERSION   
-#undef  VERSION2
-
-c if two species setup we don't want specific temperature ranges
-#ifdef  TWO_SPECIES_SETUP
-#undef TEMP_RANGE 
-#endif
 c
+#if TEMP_VERSION == 1
 c ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 c +++++++++++++++++++ VERSION 1 +++++++++++++++++++++++++++++++++++++++
 c steph's version 1 (pseudo-Eppley)
-#ifdef OLDVERSION
 c plankton growth function (unitless)
           do np=1, npmax
 cswd -- this gives Eppley curve only
@@ -89,14 +79,12 @@ c    &             zooTempExp(nz)*(Tlocal - zooTempOptimum(nz)))
           end do
 #endif
           reminTempFunction = 1.0 _d 0
-#endif
 c ++++++++++++++ END VERSION 1 +++++++++++++++++++++++++++++++++++++++
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-c
+#elif TEMP_VERSION == 2
 c ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 c +++++++++++++++++++ VERSION 2 +++++++++++++++++++++++++++++++++++++++
 c steph's version 2 (pseudo-Arrenhius)
-#ifdef VERSION2
           Tkel=273.15 _d 0
           TempAe=-4000. _d 0
           Tempref=293.15 _d 0
@@ -136,9 +124,11 @@ c              zooTempFunction(nz) = 1. _d 0
          reminTempFunction = TempCoeff*
      &                  max(reminTempFunction, 1. _d -10)
 c        reminTempFunction = 1. _d 0
-#endif
 c ++++++++++++++ END VERSION 2 +++++++++++++++++++++++++++++++++++++++
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#else
+#error "TEMP_VERSION must be 1 or 2.  Define in DARWIN_OPTIONS.h"
+#endif
 c
 c ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 c +++++++++++++++++++  NO TEMP LIMITATION +++++++++++++++++++++++++++++

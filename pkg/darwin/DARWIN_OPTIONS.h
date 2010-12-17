@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.13 2010/12/14 18:31:43 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.14 2010/12/17 00:35:08 jahn Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -27,6 +27,13 @@ CEOP
 #undef  ALLOW_MUTANTS
 #define PORT_RAND
 #undef  OLDSEED
+
+#undef NOTEMP
+#define TEMP_VERSION 1
+#define TEMP_RANGE
+
+#undef TWO_SPECIES_SETUP
+#undef NINE_SPECIES_SETUP
 
 #undef  GEIDER
 #undef  OASIM
@@ -63,10 +70,25 @@ C diagnostic chlorophyll
 C average PAR daily and store previous day
 #undef  ALLOW_PAR_DAY
 
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C dependencies
+c if two or nine species setup we don't want specific temperature ranges
+#ifdef  TWO_SPECIES_SETUP
+#undef TEMP_RANGE
+#endif
+#ifdef  NINE_SPECIES_SETUP
+#undef TEMP_RANGE
+#endif
+
 #ifdef DAR_DIAG_CHL
 #define ALLOW_PAR_DAY
 #endif
+
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C overrides
+C if you want to override dependent options, do it here:
+C
+C #define TEMP_RANGE
 
 #endif /* ALLOW_DARWIN */
 #endif /* DARWIN_OPTIONS_H */
