@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.71 2010/12/17 21:15:59 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.72 2011/01/24 15:07:37 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt62q_20110124
 o add particle absorption and scattering based on POP
 
 ctrb_darwin_ckpt62p_20101217
