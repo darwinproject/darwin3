@@ -1,17 +1,25 @@
 o Directories
 
   pkg/darwin    darwin package code
-  pkg/gchem     modified gchem package
+  pkg/radtrans  modified radtrans package
   verification/ standard reference/test experiments
+
+  The gchem package from MITgcm no longer needs to be modified
 
 o To check out
 
-[cnh@localhost]$ cvs co -d foo -r checkpoint61d MITgcm
+[cnh@localhost]$ cvs co -d foo MITgcm
 [cnh@localhost]$ cd foo/pkg
-[cnh@localhost]$ mv gchem gchem_main
-[cnh@localhost]$ cvs co -d gchem MITgcm_contrib/darwin/pkg/gchem
 [cnh@localhost]$ cvs co -d darwin MITgcm_contrib/darwin/pkg/darwin
+[cnh@localhost]$ cvs co -d radtrans MITgcm_contrib/darwin/pkg/radtrans
+
+  and if you want verification experiments:
+
 [cnh@localhost]$ cd ../verification
+[cnh@localhost]$ cvs co -d darwin_1d_geider MITgcm_contrib/darwin/verification/darwin_1d_geider
+[cnh@localhost]$ cvs co -d darwin_1d_radtrans MITgcm_contrib/darwin/verification/darwin_1d_radtrans
+[cnh@localhost]$ cvs co -d darwin_1d_twospecies MITgcm_contrib/darwin/verification/darwin_1d_twospecies
+[cnh@localhost]$ cvs co -d darwin_1d_wavebands MITgcm_contrib/darwin/verification/darwin_1d_wavebands
 [cnh@localhost]$ cvs co -d darwin_global_128x64x15 MITgcm_contrib/darwin/verification/darwin_global_128x64x15
 [cnh@localhost]$ cvs co -d darwin_baltic_76x72x24 MITgcm_contrib/darwin/verification/darwin_baltic_76x72x24
 
