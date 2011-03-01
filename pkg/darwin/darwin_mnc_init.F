@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.13 2010/12/17 21:20:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.14 2011/03/01 17:04:33 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -66,6 +66,13 @@ C     Functions
       CALL MNC_CW_ADD_VATTR_TEXT(
      &     'dar_Nfix_ave','units','--', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('dar_Nfix_ave','description',
+     &     '', myThid)
+
+      CALL MNC_CW_ADD_VNAME(
+     &     'dar_Denit_ave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT(
+     &     'dar_Denit_ave','units','--', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('dar_Denit_ave','description',
      &     '', myThid)
 
 #ifdef DAR_DIAG_ACDOM

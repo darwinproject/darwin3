@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.13 2010/12/17 21:20:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.14 2011/03/01 17:04:33 stephd Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -44,6 +44,7 @@ C     == Local variables ==
 C     Functions
       INTEGER ILNBLNK
 
+      _RL Nfixtot, PPtot, Denittot
 
 #ifdef ALLOW_DARWIN
 
@@ -70,6 +71,9 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(Nfixave, DAR_timeave, nR ,
      &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(Denitave, DAR_timeave, nR ,
+     &                 bi,bj,myThid)
+
 #ifdef DAR_DIAG_ACDOM
          CALL TIMEAVE_NORMALIZ(aCDOMave, DAR_timeave, nR ,
      &                 bi,bj,myThid)
@@ -171,6 +175,25 @@ c
 #endif
         ENDDO
        ENDDO
+
+#ifdef CALC_RATE_TOTALS
+       call tracer_sumvol(
+     &             PPave, nR, PPtot, myThid )
+       PPtot=PPtot*120. _d 0 * 12. _d 0* 1. _d -3* 31536000. _d 0
+     &                      *1. _d-15
+       call tracer_sumvol(
+     &             Nfixave, nR, Nfixtot, myThid )
+       Nfixtot=Nfixtot*14. _d 0 *1. _d -3* 31536000. _d 0
+     &                      *1 _d -12
+       call tracer_sumvol(
+     &             Denitave, nR, Denittot, myThid )
+       Denittot=Denittot*14. _d 0 *1. _d -3* 31536000. _d 0
+     &                      *1 _d -12
+       write(30,*) 'PPtot', PPtot
+       write(30,*) 'Nfixtot', Nfixtot
+       write(30,*) 'Denittot', Denittot
+#endif
+
        
        IF ( PTRACERS_timeave_mdsio )  THEN
          WRITE(suff,'(I10.10)') myIter
@@ -181,6 +204,8 @@ c
          CALL WRITE_FLD_XYZ_RL('DAR_Chltave.',suff,Chlave,
      &        myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('DAR_Nfixtave.',suff,Nfixave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XYZ_RL('DAR_Denittave.',suff,Denitave,
      &        myIter,myThid)
 #ifdef DAR_DIAG_ACDOM
          CALL WRITE_FLD_XYZ_RL('DAR_aCDOMtave',suff,aCDOMave,
@@ -336,6 +361,8 @@ c
      &        pf,'dar_tave',0,0,'dar_Chl_ave',Chlave,myThid)
          CALL MNC_CW_RL_W(
      &        pf,'dar_tave',0,0,'dar_Nfix_ave',Nfixave,myThid)
+         CALL MNC_CW_RL_W(
+     &        pf,'dar_tave',0,0,'dar_Denit_ave',Denitave,myThid)
 #ifdef DAR_DIAG_ACDOM
          CALL MNC_CW_RL_W(
      &        pf,'dar_tave',0,0,'dar_aCDOM_ave',aCDOMave,myThid)
@@ -492,6 +519,7 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(PPave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(Chlave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(Nfixave,Nr,bi,bj,myThid)
+         CALL TIMEAVE_RESET(Denitave,Nr,bi,bj,myThid)
 #ifdef DAR_DIAG_ACDOM
          CALL TIMEAVE_RESET(aCDOMave,Nr,bi,bj,myThid)
 #endif

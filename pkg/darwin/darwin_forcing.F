@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.45 2010/12/17 21:20:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.46 2011/03/01 17:04:33 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -196,6 +196,7 @@ c some local variables
        _RL bottom
        _RL PP
        _RL Nfix
+       _RL Denit
        _RL Chl
        _RL Rstarl(npmax)
        _RL RNstarl(npmax)
@@ -982,7 +983,8 @@ c only works for two layer model
 #endif
 #ifdef RELAX_NUTS
 #ifdef DENIT_RELAX
-           if (rF(k).gt.depthdenit) then
+           denit=0. _d 0
+           if (rF(k).lt.-depthdenit) then
             if (darwin_relaxscale.gt.0. _d 0) then
              IF ( darwin_NO3_RelaxFile .NE. ' '  ) THEN
 c Fanny's formulation
@@ -990,6 +992,10 @@ c Fanny's formulation
               if (tmp.gt.0. _d 0) then
                 dno3l=dno3l-(tmp/
      &                      darwin_relaxscale)
+                denit=tmp/
+     &                      darwin_relaxscale
+              else
+                denit=0. _d 0
               endif
 c --- end fanny's formulation
              ENDIF
@@ -999,6 +1005,10 @@ c    &                16. _d 0 * Ptr(i,j,k,bi,bj,iPO4 ))
 c            if (tmp.gt.0. _d 0) then
 c               dno3l=dno3l-(tmp/
 c    &                      darwin_relaxscale)
+c               denit=tmp/
+c    &                      darwin_relaxscale
+c             else
+c               denit=0. _d 0
 c             endif
 c ---- end steph's alternative
             endif
@@ -1225,6 +1235,8 @@ c    &                       deltaTclock/float(nsubtime)
      &                           PP*dtplankton
              Nfixave(i,j,k,bi,bj)=Nfixave(i,j,k,bi,bj)+
      &                           Nfix*dtplankton
+             Denitave(i,j,k,bi,bj)=Denitave(i,j,k,bi,bj)+
+     &                           denit*dtplankton
 #ifdef WAVES_DIAG_PCHL
              do np=1,npmax
                Pchlave(i,j,k,bi,bj,np)=Pchlave(i,j,k,bi,bj,np)+
