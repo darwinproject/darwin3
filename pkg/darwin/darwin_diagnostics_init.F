@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.11 2011/03/01 17:04:33 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.12 2011/03/02 16:25:16 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -78,7 +78,7 @@ C--   Add diagnostic PAR, PP and Nfix
       diagUnits = 'mmol N/m^3/s    '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 c ANNA_TAVE 
 #ifdef WAVES_DIAG_PCHL
