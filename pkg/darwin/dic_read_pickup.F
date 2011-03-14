@@ -35,7 +35,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn, filNam
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL fileExist
+      LOGICAL useCurrentDir, fileExist
       INTEGER fp, ioUnit
 CEOP
 
@@ -51,10 +51,15 @@ C--   pickup file name :
       fp = precFloat64
 
 C--   First check if pickup file exist
+#ifdef ALLOW_MDSIO
+      useCurrentDir = .FALSE.
       CALL MDS_CHECK4FILE(
      I                     fn, '.data', 'DIC_READ_PICKUP',
      O                     filNam, fileExist,
-     I                     myThid )
+     I                     useCurrentDir, myThid )
+#else
+      STOP 'ABNORMAL END: S/R DIC_READ_PICKUP: Needs MDSIO pkg'
+#endif
 
       IF ( fileExist ) THEN
 C--   Read pickup file
