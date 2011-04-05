@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.77 2011/03/14 15:20:30 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.78 2011/04/05 13:26:57 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt62u_20110405
 o fix restart from pickup_dic with mdsioLocalDir in darwin
 
 ctrb_darwin_ckpt62t_20110305
