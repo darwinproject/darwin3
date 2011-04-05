@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.26 2010/12/09 21:08:57 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.27 2011/04/05 22:56:39 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -104,6 +104,10 @@ c                                            mmol POC/m3/s
 c depth for denitrification to start
       depthdenit=185.0 _d 0
 
+c critical oxygen for O2/NO3 remineralization
+      O2crit = 6.0 _d 0    !(Lipschultz et al 1990, DSR 37, 1513-1541)
+c ratio of no3 to p in denitrification process
+      denit_np = 120.0 _d 0
 
 c
 c oxidation rates for ammonium and nitrite

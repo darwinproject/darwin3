@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.16 2011/03/01 17:04:33 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.17 2011/04/05 22:56:39 stephd Exp $
 C $Name:  $
 
 #ifndef DARWIN_OPTIONS_H
@@ -23,6 +23,7 @@ CEOP
 #undef  CONS_SUPP
 #undef  OLD_GRAZE
 #undef  ALLOW_DIAZ
+#undef  ALLOW_DENIT
 #undef  DENIT_RELAX
 #undef  OLD_NSCHEME
 #undef  ALLOW_MUTANTS
@@ -81,6 +82,11 @@ c if two or nine species setup we don't want specific temperature ranges
 #endif
 #ifdef  NINE_SPECIES_SETUP
 #undef TEMP_RANGE
+#endif
+
+c can use either denit_relax or allow_denit but not both
+#ifdef ALLOW_DENIT
+#undef DENIT_RELAX
 #endif
 
 #ifdef DAR_DIAG_CHL

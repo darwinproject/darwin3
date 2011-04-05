@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.38 2010/12/15 16:43:39 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.39 2011/04/05 22:56:39 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,7 +40,7 @@ c ANNA pass extra variables if WAVEBANDS
          SUBROUTINE DARWIN_PLANKTON(
      U                       phyto,
      I                       zooP, zooN, zooFe, zooSi,
-     O                       PP, Chl, Nfix,
+     O                       PP, Chl, Nfix, denit,
      I                       PO4local, NO3local, FeTlocal, Silocal,
      I                       NO2local, NH4local, 
      I                       DOPlocal, DONlocal, DOFelocal,
@@ -67,7 +67,7 @@ c ANNA pass extra variables if WAVEBANDS
      O                       dPOPdt, dPONdt, dPOFedt, dPSidt,
 #ifdef ALLOW_CARBON
      I                       DIClocal, DOClocal, POClocal, PIClocal,
-     I                       ALKlocal, ZooClocal,
+     I                       ALKlocal, O2local, ZooClocal,
      I                       POCuplocal, PICuplocal,
      O                       dDICdt, dDOCdt, dPOCdt, dPICdt,
      O                       dALKdt, dO2dt, dZOOCdt,
@@ -120,6 +120,7 @@ c zoo   = zooplankton
          _RL zooSi(nzmax)
          _RL PP
          _RL Nfix
+         _RL denit
          _RL Chl
          _RL PO4local
          _RL NO3local
@@ -518,6 +519,7 @@ c set sum totals to zero
 c zeros for diagnostics
         PP=0. _d 0
         Nfix=0. _d 0
+        denit=0. _d 0
         Chl=0. _d 0
 
 c set up phtyoplankton array to be used for grazing and mortality
@@ -1436,6 +1438,13 @@ c sum contributions to inorganic nutrient tendencies
             dNO3dt =  - consumpNO3             
      &                                   + NO3prod
 c-ONLYNO3   dNO3dt =  - consumpNO3 +  preminN  + DONremin
+#ifdef ALLOW_DENIT
+            if (O2local.le.O2crit) then
+              denit =  denit_np*(preminP  + DOPremin)
+              dNO3dt = dNO3dt - denit
+              dNH4dt = dNH4dt -  (preminN  + DONremin)
+            endif
+#endif
             dFeTdt =  - consumpFeT +  preminFe + DOFeremin
 #ifdef PART_SCAV
      &                 - scav_part*freefelocal +
@@ -1463,7 +1472,14 @@ c tendency of particulate detritus pools
             dPICdt  = totphy_pic  + totzoo_pic  - disscPIC + psinkPIC
             dALKdt  = - dNO3dt    - 2.d0 * (consumpDIC_PIC - disscPIC)
 c should be = O2prod - preminP - DOPremin?
-            dO2dt   = - R_OP*dPO4dt
+c OLD WAY
+c            dO2dt   = - R_OP*dPO4dt
+c production of O2 by photosynthesis
+             dO2dt   = R_OP*consumpPO4
+c loss of O2 by remineralization
+             if (O2local.gt.O2crit) then
+               dO2dt   = dO2dt - R_OP*(preminP  + DOPremin)
+             endif
 #ifdef OLD_GRAZE
             do nz=1,nzmax
               dzooCdt(nz)  = grazingC(nz)*zooClocal(nz)

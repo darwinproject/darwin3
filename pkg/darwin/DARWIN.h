@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.21 2010/07/12 19:58:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN.h,v 1.22 2011/04/05 22:56:39 stephd Exp $
 C $Name:  $
 
 c DARWIN.h 
@@ -57,7 +57,8 @@ c           have been tried
      &          SmallPsat, BigPsat, ProcPsat,
      &          SmallPsatrange, BigPsatrange, ProcPsatrange,
      &          prochlPsat,
-     &          UniDzPsat, UniDzPsatrange, depthdenit,
+     &          UniDzPsat, UniDzPsatrange, 
+     &          depthdenit, o2crit, denit_np,
 #ifdef OLD_GRAZE
      &          graze,
      &          kgrazesat,
@@ -142,6 +143,8 @@ c           have been tried
          _RL prochlPsat
          _RL UniDzPsat, UniDzPsatrange
          _RL depthdenit
+         _RL o2crit
+         _RL denit_np
          _RL ksatNH4fac, ksatNO2fac
          _RL sig1,sig2,sig3
          _RL val_ksatsi

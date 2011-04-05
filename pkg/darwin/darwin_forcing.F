@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.46 2011/03/01 17:04:33 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.47 2011/04/05 22:56:39 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -196,7 +196,7 @@ c some local variables
        _RL bottom
        _RL PP
        _RL Nfix
-       _RL Denit
+       _RL denit
        _RL Chl
        _RL Rstarl(npmax)
        _RL RNstarl(npmax)
@@ -822,6 +822,7 @@ c set tendencies to 0
 c set other arguments to zero
              PP=0. _d 0
              Nfix=0. _d 0
+             denit=0. _d 0
              do np=1,npmax
                 Rstarl(np)=0. _d 0
                 RNstarl(np)=0. _d 0
@@ -867,7 +868,7 @@ c ANNA pass extra variables if WAVEBANDS
              CALL DARWIN_PLANKTON(
      U                       Phy,
      I                       zooP, zooN, zooFe, zooSi,
-     O                       PP, Chl, Nfix,
+     O                       PP, Chl, Nfix, denit, 
      I                       PO4l, NO3l, FeTl, Sil,
      I                       NO2l, NH4l, 
      I                       DOPl, DONl, DOFel,
@@ -895,7 +896,7 @@ c ANNA pass extra variables if WAVEBANDS
      O                       dPOPl, dPONl, dPOFel, dPSil,
 #ifdef ALLOW_CARBON
      I                       dicl, docl, pocl, picl,
-     I                       alkl, zoocl,
+     I                       alkl, o2l, zoocl,
      I                       pocupl, picupl,
      O                       ddicl, ddocl, dpocl, dpicl,
      O                       dalkl, do2l, dzoocl,
@@ -983,7 +984,6 @@ c only works for two layer model
 #endif
 #ifdef RELAX_NUTS
 #ifdef DENIT_RELAX
-           denit=0. _d 0
            if (rF(k).lt.-depthdenit) then
             if (darwin_relaxscale.gt.0. _d 0) then
              IF ( darwin_NO3_RelaxFile .NE. ' '  ) THEN
