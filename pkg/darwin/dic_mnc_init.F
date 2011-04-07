@@ -6,6 +6,7 @@
 #ifdef ALLOW_DARWIN
 
 #ifdef ALLOW_CARBON
+#ifdef ALLOW_MNC
 
 CBOP
 C     !ROUTINE: DIC_MNC_INIT
@@ -65,6 +66,7 @@ CEOP
       ENDIF
         RETURN
         END
+#endif  /*ALLOW_MNC*/
 #endif  /*ALLOW_CARBON*/
 
 #endif  /*DARWIN*/
