@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.47 2011/04/05 22:56:39 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.48 2011/04/07 20:33:04 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -934,7 +934,7 @@ c
 c only above minimum depth (continental shelf)
              if (rF(k).lt.depthfesed) then
 c only if bottom layer
-               if (HFacC(i,j,k+1,bi,bj).eq.0. _d 0) then
+               if (bottom.eq.1.0 _d 0) then
 #ifdef IRON_SED_SOURCE_VARIABLE
 c calculate sink of POP into bottom layer
                 tmp=(wp_sink*POPupl)/(dzlocal)
