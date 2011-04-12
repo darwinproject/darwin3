@@ -21,6 +21,7 @@ c
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DARWIN_SIZE.h"
+#include "SPECTRAL_SIZE.h"
 #include "DARWIN.h"
 #include "DARWIN_IO.h"
 #include "PTRACERS_SIZE.h"

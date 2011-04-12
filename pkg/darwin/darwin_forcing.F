@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.50 2011/04/12 19:22:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.51 2011/04/12 19:25:09 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,10 +38,9 @@ C==============================================================
 
 c ANNA include wavebands_params.h
 #ifdef WAVEBANDS
-#include "WAVEBANDS_PARAMS.h"
-#ifdef OASIM
+#include "SPECTRAL_SIZE.h"
 #include "SPECTRAL.h"
-#endif
+#include "WAVEBANDS_PARAMS.h"
 #endif
 
 

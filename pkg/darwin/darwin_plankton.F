@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.39 2011/04/05 22:56:39 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.40 2011/04/12 19:25:09 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,6 +95,7 @@ c ANNA pass extra variables if WAVEBANDS
 
          implicit none
 #include "DARWIN_SIZE.h"
+#include "SPECTRAL_SIZE.h"
 #include "DARWIN.h"
 #include "DARWIN_PARAMS.h"
 

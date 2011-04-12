@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.15 2011/04/12 19:21:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_mnc_init.F,v 1.16 2011/04/12 19:25:09 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -21,6 +21,7 @@ C     !USES:
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
+#include "SPECTRAL_SIZE.h"
 
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number

@@ -8,9 +8,13 @@ c Set parameters:
 c tlam = number of wavebands
 c        must match number of wavebands in input datafiles
 c        must be the same for all data types (water, phyto, CDOM, surface spectra)
+C        (set in SPECTRAL_SIZE.h)
 c tnabp = number of types of absorption spectra for phyto
 c         must match number of types in input data file for phyto absorption spectra
-c
+
+         INTEGER tnabp
+         PARAMETER (tnabp=4)
+
 c Input and assigned data:
 c pwaves       = actual values of wavebands (nm)
 c aw           = absoprtion spectra for water (m-1)
@@ -32,14 +36,9 @@ c alphachl_nl  = slope of PI curve calulated in darwin_init_vari.F
 c                one value for each wavelength (same units as non-wavebands alphachl)
 c darwin_diag_acdom_ilam :: waveband to write to diagnostics
 c
-c
 c n.b. some info about input data is in the headers inside the input files.
 c n.b. final column in input fles reserved for backscatter coeffs. Currently 0.
 c n.b. local PARwl and PARwupl are assigned in darwin_forcing.F and darwin_plankton.F
-
-c         integer tlam,tnabp
-c         PARAMETER (tlam=13)
-c         PARAMETER (tnabp=4) 
  
          COMMON/wavebands_params/aphy_chl
      &         ,aphy_chl_ps

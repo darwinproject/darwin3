@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.20 2011/04/12 19:23:39 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.21 2011/04/12 19:25:09 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -22,6 +22,7 @@ C !USES: ===============================================================
 #include "DARWIN_IO.h"
 #include "DARWIN_PARAMS.h"
 #ifdef WAVEBANDS
+#include "SPECTRAL_SIZE.h"
 #include "SPECTRAL.h"
 #include "WAVEBANDS_PARAMS.h"
 #endif
@@ -36,8 +37,8 @@ C  none
 #ifdef ALLOW_DARWIN
 
 C !LOCAL VARIABLES: ====================================================
-C  iUnit		:: unit number for I/O
-C  msgBuf		:: message buffer
+C  iUnit   :: unit number for I/O
+C  msgBuf  :: message buffer
       INTEGER iUnit,errIO
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #if defined(WAVEBANDS) || defined(OASIM)

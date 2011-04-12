@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.25 2010/12/17 00:35:52 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.26 2011/04/12 19:25:09 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,6 +32,7 @@ c ==========================================================
 
 c ANNA define WAVEBANDS variables
 #ifdef WAVEBANDS
+#include "SPECTRAL_SIZE.h"
 #include "WAVEBANDS_PARAMS.h"
 #endif
 

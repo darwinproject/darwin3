@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.7 2010/05/23 14:37:42 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_SIZE.h,v 1.8 2011/04/12 19:25:09 jahn Exp $
 C $Name:  $
 
 c DARWIN_SIZE.h 
@@ -15,16 +15,6 @@ c
          INTEGER npmax
          INTEGER nzmax
          PARAMETER(npmax=78,nzmax=2)
-
-C always need these for declaration of subroutine parameters
-C#if defined(WAVEBANDS) || defined(OASIM)
-         INTEGER tlam
-         PARAMETER (tlam=13)
-C#endif
-C#ifdef WAVEBANDS
-         INTEGER tnabp
-         PARAMETER (tnabp=4)
-C#endif
 
 C iPO4          :: index of PO4  in Ptracer
 C iNO3          :: index of NO3  in Ptracer
