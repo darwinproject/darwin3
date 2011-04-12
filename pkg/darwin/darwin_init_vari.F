@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.33 2011/03/01 17:04:33 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.34 2011/04/12 19:24:21 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -30,6 +30,7 @@ c#include "GCHEM.h"
 
 c ANNA define params for WAVEBANDS
 #ifdef WAVEBANDS
+#include "SPECTRAL.h"
 #include "WAVEBANDS_PARAMS.h"
 #endif
 

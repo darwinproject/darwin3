@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.25 2011/04/12 19:22:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.26 2011/04/12 19:24:20 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -119,21 +119,6 @@ c ANNA_TAVE
 #ifdef DAR_DIAG_ACDOM
      &      aCDOMave,
 #endif
-#ifdef DAR_DIAG_IRR
-     &      Edave,Esave,Euave,Eutave,
-#endif
-#ifdef DAR_DIAG_ABSORP
-     &      aave,
-#endif
-#ifdef DAR_DIAG_SCATTER
-     &      btave,
-     &      bbave,
-#endif
-#ifdef DAR_DIAG_PART_SCATTER
-     &      apartave,
-     &      btpartave,
-     &      bbpartave,
-#endif
 c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR
      &      Rstarave, RNstarave,
@@ -163,24 +148,6 @@ c ANNA_TAVE
 #endif
 #ifdef DAR_DIAG_ACDOM
        _RL  aCDOMave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-#endif
-#ifdef DAR_DIAG_IRR
-       _RL  Edave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
-       _RL  Esave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
-       _RL  Euave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
-       _RL  Eutave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
-#endif
-#ifdef DAR_DIAG_ABSORP
-       _RL  aave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
-#endif
-#ifdef DAR_DIAG_SCATTER
-       _RL  btave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
-       _RL  bbave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
-#endif
-#ifdef DAR_DIAG_PART_SCATTER
-       _RL  apartave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
-       _RL  bbpartave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
-       _RL  btpartave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy,tlam)
 #endif
 c ANNA end TAVE
 #ifdef DAR_DIAG_RSTAR

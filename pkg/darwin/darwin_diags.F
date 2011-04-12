@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.15 2011/04/12 19:21:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.16 2011/04/12 19:24:21 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -19,6 +19,7 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
+#include "SPECTRAL.h"
 #include "DARWIN_IO.h"
 
 C     == Routine arguments ==
