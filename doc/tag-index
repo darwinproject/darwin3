@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.79 2011/04/06 15:07:54 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.80 2011/04/12 21:47:22 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt62v_20110412
+o baseline for darwin2
+o clean up headers (add SPECTRAL_SIZE.h, DARWIN_FIELDS.h)
 
 ctrb_darwin_ckpt62v_20110406
 o add explicit denitrification (and tidy up flx arrays)
