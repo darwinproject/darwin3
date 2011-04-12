@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.19 2010/12/17 20:43:13 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_readparams.F,v 1.20 2011/04/12 19:23:39 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -19,10 +19,10 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
 #include "DARWIN_IO.h"
 #include "DARWIN_PARAMS.h"
 #ifdef WAVEBANDS
+#include "SPECTRAL.h"
 #include "WAVEBANDS_PARAMS.h"
 #endif
 
@@ -38,11 +38,8 @@ C  none
 C !LOCAL VARIABLES: ====================================================
 C  iUnit		:: unit number for I/O
 C  msgBuf		:: message buffer
-C  darwin_waves         :: 'central' wavelengths of wavebands (nm)
-C                          for OASIM and WAVEBANDS
       INTEGER iUnit,errIO
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER darwin_waves(tlam)
 #if defined(WAVEBANDS) || defined(OASIM)
       INTEGER ilam,i
       _RL planck, c, hc, oavo, hcoavo, rlamm
@@ -71,6 +68,7 @@ CEOP
 #endif
      &           darwin_seed
 
+#if defined(WAVEBANDS) || defined(OASIM)
       NAMELIST /DARWIN_SPECTRAL_PARM/
      &           darwin_waves
 #ifdef WAVEBANDS
@@ -95,6 +93,7 @@ CEOP
      &          ,darwin_part_size_P
 #endif
 #endif /* WAVEBANDS */
+#endif /* WAVEBANDS || OASIM */
 
 #ifdef DAR_DIAG_CHL
       NAMELIST /DARWIN_CHL/
@@ -286,12 +285,6 @@ C Cloern:  chl:c = chl2cmin + A*exp(B*T)*exp(-C*PARday)*limit
 C Close the open data file
       CLOSE(iUnit)
 
-#ifdef WAVEBANDS
-      do ilam = 1,tlam
-        pwaves(ilam) = darwin_waves(ilam)
-      enddo
-#endif
-
 #if defined(WAVEBANDS) || defined(OASIM)
 c   Quanta conversion
       planck = 6.6256 _d -34   !Plancks constant J sec
@@ -320,9 +313,11 @@ C--   Print a summary of parameter values:
       WRITE(msgBuf,'(A)') ' -----------------------------------'
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
+#if defined(WAVEBANDS) || defined(OASIM)
       CALL WRITE_1D_I( darwin_waves, tlam, 0,
      &   'darwin_waves =',
      &'   /* "central" wavelengths of wavebands */')
+#endif
 #ifdef WAVEBANDS
 #ifdef DAR_CALC_ACDOM
       CALL WRITE_0D_RL( darwin_Sdom, INDEX_NONE,

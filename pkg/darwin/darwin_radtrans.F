@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_radtrans.F,v 1.2 2010/07/08 20:49:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_radtrans.F,v 1.3 2011/04/12 19:23:39 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -32,7 +32,7 @@ C !USES: ===============================================================
 #include "SIZE.h"             /* Nr */
 C#include "EEPARAMS.h"
 #include "DARWIN_SIZE.h"      /* tlam */
-#include "DARWIN.h"           /* WtouEin */
+#include "SPECTRAL.h"         /* WtouEin */
 #include "WAVEBANDS_PARAMS.h" /* darwin_PAR_ilamLo/Hi 
                                  darwin_radmodThresh
                                  darwin_Dmax darwin_rmus darwin_rmuu */

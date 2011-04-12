@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.20 2011/04/12 19:21:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_fixed.F,v 1.21 2011/04/12 19:23:39 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_fixed.F reads-in and assigns input paramters for WAVEBANDS. 
@@ -25,6 +25,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DARWIN_SIZE.h"
 #ifdef WAVEBANDS
+#include "SPECTRAL.h"
 #include "WAVEBANDS_PARAMS.h"
 #endif
 #include "DARWIN_IO.h"
@@ -55,6 +56,10 @@ c      _RL planck, c, hc, oavo, hcoavo, rlamm
 #endif
 c local indeces
       integer nabp,i,ilam
+
+      do i = 1,tlam
+        pwaves(i) = darwin_waves(i)
+      enddo
 
 C band widths used to convert OASIM data to irradiation per nm
 C put boundaries half-way between central values
