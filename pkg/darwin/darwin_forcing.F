@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.49 2011/04/12 19:21:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.50 2011/04/12 19:22:51 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -34,6 +34,7 @@ C==============================================================
 #include "DARWIN.h"
 #include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
+#include "DARWIN_FIELDS.h"
 
 c ANNA include wavebands_params.h
 #ifdef WAVEBANDS

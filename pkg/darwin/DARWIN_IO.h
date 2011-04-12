@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.24 2011/03/01 17:04:33 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_IO.h,v 1.25 2011/04/12 19:22:51 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -217,14 +217,6 @@ c ANNA end TAVE
        INTEGER DAR_cons_unit5
        INTEGER DAR_cons_unit6
        INTEGER DAR_cons_unit7
-#endif
-
-#ifndef DYNAMIC_CHL
-#ifdef GEIDER
-      COMMON /DARWIN_CHL/
-     &      Chl_phy          
-         _RL Chl_phy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx, nSy,npmax)
-#endif
 #endif
 
 #ifdef ALLOW_PAR_DAY
