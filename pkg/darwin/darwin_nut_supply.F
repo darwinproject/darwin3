@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.8 2009/06/27 01:00:57 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_nut_supply.F,v 1.9 2011/04/12 19:21:36 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -23,7 +23,6 @@ C==============================================================
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
 #include "DARWIN_IO.h"
 #include "DYNVARS.h"
 

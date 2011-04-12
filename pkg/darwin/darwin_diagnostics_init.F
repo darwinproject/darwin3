@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.12 2011/03/02 16:25:16 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.13 2011/04/12 19:21:36 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -24,8 +24,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
-#include "DARWIN_IO.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===

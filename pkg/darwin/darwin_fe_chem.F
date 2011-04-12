@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.7 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fe_chem.F,v 1.8 2011/04/12 19:21:36 jahn Exp $
 C $Name:  $
 
 c#include "DIC_OPTIONS.h"
@@ -27,7 +27,6 @@ C     == GLobal variables ==
 #include "GRID.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
-#include "DARWIN_IO.h"
 
 C     == Routine arguments ==                
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation

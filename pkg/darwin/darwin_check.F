@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_check.F,v 1.4 2010/05/03 17:21:09 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_check.F,v 1.5 2011/04/12 19:21:36 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,8 +25,6 @@ C     === Global variables ===
 #include "PTRACERS_PARAMS.h"
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
-#include "DARWIN_IO.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instances

@@ -29,7 +29,6 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "FFIELDS.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
 #include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 #include "PTRACERS_SIZE.h"

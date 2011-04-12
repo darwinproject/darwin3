@@ -36,8 +36,6 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 
 C     == Routine arguments ==
@@ -365,8 +363,6 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 
 C     == Routine arguments ==
@@ -505,8 +501,6 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 
 C     == Routine arguments ==
@@ -657,8 +651,6 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
@@ -889,8 +881,6 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays

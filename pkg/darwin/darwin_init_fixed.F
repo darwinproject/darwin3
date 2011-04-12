@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.27 2011/04/05 22:56:39 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.28 2011/04/12 19:21:36 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -23,7 +23,6 @@ C     === Global variables ===
 #include "GCHEM.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 
         INTEGER myThid

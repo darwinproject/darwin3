@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.12 2010/11/30 18:50:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/wavebands_init_vari.F,v 1.13 2011/04/12 19:21:36 jahn Exp $
 C $Name:  $
 
 c ANNA wavebands_init_vari.F assigns actual values to choices made by coin-flips in darwin_generate_phyto.F
@@ -23,7 +23,6 @@ C     !USES:
        implicit none
 C     == Global variables ===
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
 #ifdef WAVEBANDS
 #include "WAVEBANDS_PARAMS.h"
 #endif

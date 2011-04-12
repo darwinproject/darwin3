@@ -29,7 +29,6 @@ C !USES: ===============================================================
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
 #include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 #include "DIC_ATMOS.h"

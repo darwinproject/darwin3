@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_acdom.F,v 1.1 2010/05/22 19:34:07 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_acdom.F,v 1.2 2011/04/12 19:21:36 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -47,7 +47,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #ifdef WAVEBANDS
 #include "WAVEBANDS_PARAMS.h"
 #endif

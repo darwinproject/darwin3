@@ -27,8 +27,6 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 
 C !INPUT PARAMETERS: ===================================================

@@ -21,8 +21,6 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 
 c!INPUT PARAMETERS: ===================================================

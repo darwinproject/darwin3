@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.48 2011/04/07 20:33:04 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.49 2011/04/12 19:21:36 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,13 +20,6 @@ C==============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
-#include "GCHEM.h"
-#include "DARWIN_SIZE.h"
-#include "DARWIN.h"
-#include "DARWIN_IO.h"
-#include "DARWIN_FLUX.h"
 #include "DYNVARS.h"
 #ifdef USE_QSW
 #include "FFIELDS.h"
@@ -34,6 +27,13 @@ C==============================================================
 #ifdef ALLOW_LONGSTEP
 #include "LONGSTEP.h"
 #endif
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
+#include "GCHEM.h"
+#include "DARWIN_SIZE.h"
+#include "DARWIN.h"
+#include "DARWIN_IO.h"
+#include "DARWIN_FLUX.h"
 
 c ANNA include wavebands_params.h
 #ifdef WAVEBANDS

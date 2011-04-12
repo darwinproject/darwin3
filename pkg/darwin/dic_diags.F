@@ -21,8 +21,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
