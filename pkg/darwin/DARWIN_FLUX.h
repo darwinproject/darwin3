@@ -32,7 +32,7 @@ C          when coming from atmospheric model
 
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
-     &                     ak1p,ak2p,ak3p,aksi,
+     &                     ak1p,ak2p,ak3p,aksi, fugf,
      &                     ff,ft,st,bt, Ksp_TP_Calc
       _RL  ak0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -45,6 +45,8 @@ C          when coming from atmospheric model
       _RL  ak2p(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak3p(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  aksi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C Fugacity Factor added following Val Bennington 
+      _RL  fugf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ft(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  st(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

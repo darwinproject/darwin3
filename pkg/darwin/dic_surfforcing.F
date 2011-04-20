@@ -140,7 +140,9 @@ C$TAF LOOP = parallel
      I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
      I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
      I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
+     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),
+     I        ak0(i,j,bi,bj), fugf(i,j,bi,bj),
+     I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),
      I        myThid )
@@ -173,6 +175,7 @@ C then account for Schmidt number
      &                    / sqrt(SchmidtNoDIC(i,j)/660.0 _d 0)
 
 
+#ifdef WATERVAP_BUG
 C Calculate flux in terms of DIC units using K0, solubility
 C Flux = Vp * ([CO2sat] - [CO2])
 C CO2sat = K0*pCO2atmos*P/P0
@@ -182,6 +185,17 @@ C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
      &         ak0(i,j,bi,bj)*pCO2sat(i,j) - 
      &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj) 
      &         ) 
+#else
+C Corrected by Val Bennington Nov 2010 per G.A. McKinley's finding
+C of error in application of water vapor correction
+c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
+               FluxCO2(i,j,bi,bj) =
+     &          Kwexch(i,j)*(
+     &            ff(i,j,bi,bj)*pCO2sat(i,j) -
+     &            pCO2(i,j,bi,bj)*fugf(i,j,bi,bj)
+     &            *ak0(i,j,bi,bj) )
+     &
+#endif
           ELSE
               FluxCO2(i,j,bi,bj) = 0. _d 0
           ENDIF

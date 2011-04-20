@@ -190,6 +190,7 @@ C =================================================================
           ak2p(i,j,bi,bj)=0. _d 0
           ak3p(i,j,bi,bj)=0. _d 0
           aksi(i,j,bi,bj)=0. _d 0
+          fugf(i,j,bi,bj)=0. _d 0
           ff(i,j,bi,bj)=0. _d 0
           ft(i,j,bi,bj)=0. _d 0
           st(i,j,bi,bj)=0. _d 0
@@ -261,7 +262,9 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
      I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
      I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
+     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),
+     I        ak0(i,j,bi,bj), fugf(i,j,bi,bj),
+     I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),
      I        myThid )
