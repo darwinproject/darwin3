@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.80 2011/04/12 21:47:22 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.81 2011/04/27 01:55:09 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt62w_20110426
+o add fix to two bugs in handling of water vapour pressure in carbonate chemistry
+  and air-sea fluxes. Found by Val Bennington and Galen McKinley.
+  Changes output of darwin_1d_carbon
 
 ctrb_darwin_ckpt62v_20110412
 o baseline for darwin2
