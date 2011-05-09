@@ -34,6 +34,9 @@ C !USES: ===============================================================
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_FIELDS.h"
 #include "DIC_ATMOS.h"
+#ifdef USE_EXFWIND
+#include "EXF_FIELDS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -78,6 +81,13 @@ C     Problem with I/O and global-sum for multi-threaded execution
 C     Needs to be fixed before using this S/R in multi-threaded run
         STOP 'S/R DIC_ATMOS: multi-threaded not right'
       ENDIF
+#ifdef USE_EXFCO2
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+               AtmospCO2(i,j,bi,bj)=apco2(i,j,bi,bj)
+             ENDDO
+            ENDDO
+#else
 
 c default - set only once
       if (dic_int1.eq.0.and.istate.eq.0) then
@@ -281,6 +291,7 @@ c     _END_MASTER(myThid)
 
       endif
 
+#endif
 #endif
 
       RETURN

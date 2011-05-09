@@ -678,8 +678,8 @@ C ttemp and stemp are local theta and salt arrays
 C dont really need to pass T and S in, could use theta, salt in
 C common block in DYNVARS.h, but this way keeps subroutine more
 C general
-        _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-        _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+        _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         INTEGER bi,bj,iMin,iMax,jMin,jMax
         INTEGER myThid
 CEndOfInterface
@@ -730,8 +730,8 @@ C....................................................................
         do i=imin,imax
          do j=jmin,jmax
           if (hFacC(i,j,1,bi,bj).gt.0. _d 0) then
-           t = ttemp(i,j,1,bi,bj)
-           s = stemp(i,j,1,bi,bj)
+           t = ttemp(i,j)
+           s = stemp(i,j)
 C terms used more than once
            tk = 273.15 _d 0 + t
            tk100 = tk/100. _d 0

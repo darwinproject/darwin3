@@ -31,6 +31,9 @@ C !USES: ===============================================================
 #include "DARWIN_SIZE.h"
 #include "DARWIN_IO.h"
 #include "DARWIN_FLUX.h"
+#ifdef USE_EXFWIND
+#include "EXF_FIELDS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -64,6 +67,7 @@ C local variables for carbon chem
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surftemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_OLD_VIRTUALFLUX
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
@@ -87,20 +91,28 @@ C =================================================================
 C determine inorganic carbon chem coefficients
         DO j=jmin,jmax
          DO i=imin,imax
-             surfdic(i,j) = max(10. _d 0 , PTR_DIC(i,j))*1e-3
+c put bounds on tracers so pH solver doesn't blow up
+             surfdic(i,j) = 
+     &           max(400. _d 0 , min(4000. _d 0, PTR_DIC(i,j)))*1e-3
      &                          * maskC(i,j,kLev,bi,bj)
-             surfalk(i,j) = max(10. _d 0 , PTR_ALK(i,j))*1e-3
+             surfalk(i,j) = 
+     &           max(400. _d 0 , min(4000. _d 0, PTR_ALK(i,j)))*1e-3
      &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = max(1. _d -10, PTR_PO4(i,j))*1e-3
+             surfphos(i,j)  = 
+     &           max(1. _d -10, min(10. _d 0, PTR_PO4(i,j)))*1e-3
      &                          * maskC(i,j,kLev,bi,bj)
-             surfsi(i,j)   = max(1. _d -8, PTR_SIL(i,j))*1e-3
+             surfsi(i,j)   = 
+     &           max(1. _d -8, min(500. _d 0, PTR_SIL(i,j)))*1e-3
      &                          * maskC(i,j,kLev,bi,bj)
-             surfsalt(i,j) = max(4. _d 0, salt(i,j,kLev,bi,bj))
+             surfsalt(i,j) = 
+     &           max(4. _d 0, min(50. _d 0, salt(i,j,kLev,bi,bj)))
+             surftemp(i,j) =
+     &            max(-4. _d 0, min(39. _d 0, theta(i,j,kLev,bi,bj)))
          ENDDO
         ENDDO
 
          CALL CARBON_COEFFS(
-     I                       theta,salt,
+     I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 C====================================================================
 
@@ -119,7 +131,11 @@ C       average AtmosP is about 1 Atm.
 
 C Pre-compute part of exchange coefficient: pisvel*(1-fice)
 C Schmidt number is accounted for later
+#ifdef USE_EXFWIND
+              pisvel(i,j)=0.337 _d 0 *wspeed(i,j,bi,bj)**2/3.6 _d 5
+#else
               pisvel(i,j)=0.337 _d 0 *wind(i,j,bi,bj)**2/3.6 _d 5
+#endif
               Kwexch_Pre(i,j,bi,bj) = pisvel(i,j)
      &                              * (1. _d 0 - FIce(i,j,bi,bj))
 
@@ -134,7 +150,7 @@ C$TAF LOOP = parallel
 
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
             CALL CALC_PCO2_APPROX(
-     I        theta(i,j,kLev,bi,bj),surfsalt(i,j),
+     I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
      I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
@@ -160,10 +176,12 @@ C$TAF LOOP = parallel
 C calculate SCHMIDT NO. for CO2
               SchmidtNoDIC(i,j) = 
      &            sca1 
-     &          + sca2 * theta(i,j,kLev,bi,bj)
-     &          + sca3 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)  
-     &          + sca4 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj) 
-     &                *theta(i,j,kLev,bi,bj)
+     &          + sca2 * surftemp(i,j)
+     &          + sca3 * surftemp(i,j)*surftemp(i,j)
+     &          + sca4 * surftemp(i,j)*surftemp(i,j)
+     &                *surftemp(i,j)
+c put positive bound on SCHMIT number (will go negative for temp>40)
+              SchmidtNoDIC(i,j) = max(1. _d -2, SchmidtNoDIC(i,j))
 
 C Determine surface flux (FDIC)
 C first correct pCO2at for surface atmos pressure
@@ -171,9 +189,8 @@ C first correct pCO2at for surface atmos pressure
      &          AtmosP(i,j,bi,bj)*AtmospCO2(i,j,bi,bj)
 
 C then account for Schmidt number
-              Kwexch(i,j) = Kwexch_Pre(i,j,bi,bj)
+                Kwexch(i,j) = Kwexch_Pre(i,j,bi,bj)
      &                    / sqrt(SchmidtNoDIC(i,j)/660.0 _d 0)
-
 
 #ifdef WATERVAP_BUG
 C Calculate flux in terms of DIC units using K0, solubility
