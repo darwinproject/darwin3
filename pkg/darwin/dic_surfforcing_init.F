@@ -268,7 +268,6 @@ C$TAF STORE pH(i,j,bi,bj), PTR_CO2(i,j,kLev)           = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
               CALL CALC_PCO2_APPROX(
      I        surftemp(i,j),surfsalt(i,j),
-     I        theta(i,j,kLev,bi,bj),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
      I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
