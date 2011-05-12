@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.8 2009/02/27 19:04:27 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.9 2011/05/12 16:13:40 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -214,9 +214,7 @@ C     == Functions ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-#ifdef PORT_RAND
-      real*8 Dseed
-#else
+#ifndef PORT_RAND
       INTEGER Iseed
       real*8 uniform
       real*8 normal
@@ -230,8 +228,7 @@ CEOP
       END IF
 
 #ifdef PORT_RAND
-      Dseed = -1.d0
-      darwin_random_normal = port_rand_norm(Dseed)
+      darwin_random_normal = port_rand_norm()
 #else
       Iseed = 0
       uniform = rand(Iseed)
