@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.81 2011/04/27 01:55:09 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.82 2011/05/13 15:00:02 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt62x_20110513
+o change darwin_baltic_76x72x24 output after obcs changes
+o additional bounds to temp/salt/dic for cases where pH solver blows up
+o fix so DYNCHL can work without WAVEBAND
 
 ctrb_darwin_ckpt62w_20110426
 o add fix to two bugs in handling of water vapour pressure in carbonate chemistry
