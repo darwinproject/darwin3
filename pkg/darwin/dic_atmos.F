@@ -81,13 +81,17 @@ C     Problem with I/O and global-sum for multi-threaded execution
 C     Needs to be fixed before using this S/R in multi-threaded run
         STOP 'S/R DIC_ATMOS: multi-threaded not right'
       ENDIF
-#ifdef USE_EXFCO2
+# ifdef USE_EXFCO2
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
                AtmospCO2(i,j,bi,bj)=apco2(i,j,bi,bj)
              ENDDO
             ENDDO
-#else
+           ENDDO
+          ENDDO
+# else
 
 c default - set only once
       if (dic_int1.eq.0.and.istate.eq.0) then
@@ -291,7 +295,7 @@ c     _END_MASTER(myThid)
 
       endif
 
-#endif
+# endif  /*USE_EXFCO2*/
 #endif
 
       RETURN
