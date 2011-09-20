@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.40 2011/04/12 19:25:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.41 2011/09/20 15:54:09 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -857,23 +857,27 @@ c end inhib
                ilimit(np)=0. _d 0
                pcarbon(np)=0. _d 0
              endif
-           else ! if pcm 0
-             pcm(np)=0.d0
-#ifndef DYNAMIC_CHL
-             chl2c(np)=chl2cmin(np)
-#endif
-             pcarbon(np)=0.d0
-             ilimit(np)=0.d0
-           endif
 #ifdef DYNAMIC_CHL
 c Chl:C acclimated to current conditions 
 c (eq A14 in Geider et al 1997)
-          acclim(np)=chl2cmax(np)/
-     &            (1+(chl2cmax(np)*alpha_I(np))/
-     &               (2*pcm(np)))
-          acclim(np)=min(acclim(np),chl2cmax(np))
-c         acclim(np)=max(acclim(np),chl2cmin(np))
+             acclim(np)=chl2cmax(np)/
+     &               (1+(chl2cmax(np)*alpha_I(np))/
+     &                  (2*pcm(np)))
+             acclim(np)=min(acclim(np),chl2cmax(np))
+c            acclim(np)=max(acclim(np),chl2cmin(np))
+#endif
+           else ! if pcm 0
+             pcm(np)=0. _d 0
+#ifdef DYNAMIC_CHL
+             acclim(np)=0. _d 0
+c            acclim(np)=max(acclim(np),chl2cmin(np))
 #else
+             chl2c(np)=chl2cmin(np)
+#endif
+             pcarbon(np)=0. _d 0
+             ilimit(np)=0. _d 0
+           endif
+#ifndef DYNAMIC_CHL
            phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
 #endif
           enddo
