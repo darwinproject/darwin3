@@ -71,6 +71,12 @@ c
             ENDIF
           ENDDO
          ENDDO
+#else
+         DO j=jmin,jmax
+          DO i=imin,imax
+             GALK(i,j)=0. _d 0
+          ENDDO
+         ENDDO 
 #endif /* ALLOW_OLD_VIRTUALFLUX */
 
         RETURN
