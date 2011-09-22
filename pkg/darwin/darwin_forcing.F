@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.51 2011/04/12 19:25:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.52 2011/09/22 15:55:07 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -249,9 +249,9 @@ c tendencies
        _RL do2l
        _RL dZooCl(nzmax)
 c air-sea fluxes
-       _RL flxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-       _RL flxALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-       _RL flxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL flxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+       _RL flxALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+       _RL flxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 
        _RL tot_Nfix
@@ -967,9 +967,9 @@ c
              picupl = PICl
 c include surface forcing
              if (k.eq.1) then
-              ddicl  =  ddicl  + flxCO2(i,j,bi,bj)
-              dalkl  =  dalkl  + flxALK(i,j,bi,bj)
-              do2l   =  do2l   + flxO2(i,j,bi,bj)
+              ddicl  =  ddicl  + flxCO2(i,j)
+              dalkl  =  dalkl  + flxALK(i,j)
+              do2l   =  do2l   + flxO2(i,j)
              endif
 #endif
 c
@@ -1332,11 +1332,11 @@ Coj            no Eu at surface (yet)
 #ifdef ALLOW_CARBON
              if (k.eq.1) then
               SURave(i,j,bi,bj)    =SURave(i,j,bi,bj)+
-     &                              flxCO2(i,j,bi,bj)*dtplankton
+     &                              flxCO2(i,j)*dtplankton
               SURCave(i,j,bi,bj)    =SURCave(i,j,bi,bj)+
      &                              FluxCO2(i,j,bi,bj)*dtplankton
               SUROave(i,j,bi,bj)   =SUROave(i,j,bi,bj)+
-     &                              flxO2(i,j,bi,bj)*dtplankton
+     &                              flxO2(i,j)*dtplankton
               pCO2ave(i,j,bi,bj)   =pCO2ave(i,j,bi,bj)+
      &                              pCO2(i,j,bi,bj)*dtplankton
               pHave(i,j,bi,bj)     =pHave(i,j,bi,bj)+
@@ -1464,11 +1464,11 @@ c ANNA end TAVE
      &                         0,Nr,2,bi,bj,myThid )
 #endif
 #ifdef ALLOW_CARBON
-        CALL DIAGNOSTICS_FILL( flxCO2(1-Olx,1-Oly,bi,bj), 'DICTFLX ',
+        CALL DIAGNOSTICS_FILL( flxCO2(1-Olx,1-Oly), 'DICTFLX ',
      &                         0,1,2,bi,bj,myThid )
         CALL DIAGNOSTICS_FILL( FluxCO2(1-Olx,1-Oly,bi,bj), 'DICCFLX ',
      &                         0,1,2,bi,bj,myThid )
-        CALL DIAGNOSTICS_FILL( flxO2(1-Olx,1-Oly,bi,bj), 'DICOFLX ',
+        CALL DIAGNOSTICS_FILL( flxO2(1-Olx,1-Oly), 'DICOFLX ',
      &                         0,1,2,bi,bj,myThid )
         CALL DIAGNOSTICS_FILL( pCO2(1-Olx,1-Oly,bi,bj), 'DICPCO2 ',
      &                         0,1,2,bi,bj,myThid )
