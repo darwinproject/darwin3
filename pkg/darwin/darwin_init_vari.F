@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.36 2011/05/02 17:58:25 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.37 2011/09/22 16:00:42 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -185,7 +185,7 @@ c  no temp/nutrient limitation
 #endif
 c ANNA endif
 
-         _BEGIN_MASTER(myThid)
+         IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
 c write out initial phyto characteristics
 #ifndef GEIDER
          CALL MDSFINDUNIT( IniUnit1, mythid )
@@ -280,6 +280,8 @@ c ANNA outputs mQyield as 10^(4) mmol C (uEin)-1
          close(IniUnit1)
  110     format(3f4.0,f6.2,4f4.0,f5.1,4f7.3,2e11.2,2f9.4,f6.1,2i5)
  111     format(3f4.0,f6.2,4f4.0,f5.1,4f7.3,2f6.1,2f9.4,f6.1,2i5)
+c       myProcId and myThid
+        ENDIF
 
          CALL LEF_ZERO( fice,myThid )
          CALL LEF_ZERO( inputFe,myThid )
@@ -411,6 +413,7 @@ c         CALL TIMEAVE_RESET(SURave,   1,  bi, bj, myThid)
 #endif /* ALLOW_TIMEAVE */
 
 #ifdef CHECK_CONS
+       IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
 coj find unused units for darwin_cons output
         CALL MDSFINDUNIT( DAR_cons_unit1, mythid )
         open(DAR_cons_unit1,file='darwin_cons_P.txt',status='unknown')
@@ -428,8 +431,9 @@ coj find unused units for darwin_cons output
         CALL MDSFINDUNIT( DAR_cons_unit7, mythid )
         open(DAR_cons_unit7,file='darwin_cons_O.txt',status='unknown')
 #endif
+c      myProcId and myThid
+       ENDIF
 #endif
-         _END_MASTER(myThid)
 
 c test....................
 c       write(6,*)'finishing darwin_init_vari '
