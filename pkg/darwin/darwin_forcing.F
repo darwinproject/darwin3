@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.52 2011/09/22 15:55:07 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.53 2011/10/11 17:52:46 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -932,7 +932,7 @@ c            endif
 c
 #ifdef IRON_SED_SOURCE
 c only above minimum depth (continental shelf)
-             if (rF(k).lt.depthfesed) then
+             if (rF(k).gt.-depthfesed) then
 c only if bottom layer
                if (bottom.eq.1.0 _d 0) then
 #ifdef IRON_SED_SOURCE_VARIABLE
