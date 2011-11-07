@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.53 2011/10/11 17:52:46 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.54 2011/11/07 21:56:04 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -284,6 +284,14 @@ c
 COJ for diagnostics
            PParr(i,j,k) = 0. _d 0
            Nfixarr(i,j,k) = 0. _d 0
+#ifdef DAR_DIAG_CHL
+           GeiderChlarr(i,j,k) = 0. _d 0
+           GeiderChl2Carr(i,j,k) = 0. _d 0
+           DoneyChlarr(i,j,k) = 0. _d 0
+           DoneyChl2Carr(i,j,k) = 0. _d 0
+           CloernChlarr(i,j,k) = 0. _d 0
+           CloernChl2Carr(i,j,k) = 0. _d 0
+#endif
 c ANNA_TAVE
 #ifdef WAVES_DIAG_PCHL
            DO np=1,npmax
