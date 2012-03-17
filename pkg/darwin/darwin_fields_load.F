@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.20 2011/04/12 19:25:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.21 2012/03/17 22:19:34 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,6 +31,7 @@ C     == GLobal variables ==
 #include "DARWIN_FLUX.h"
 c#include "GCHEM.h"
 #ifdef ALLOW_SEAICE
+#include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 #endif
 #ifdef ALLOW_THSICE
