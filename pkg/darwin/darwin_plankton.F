@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.42 2012/07/24 17:54:01 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.43 2012/08/01 22:29:45 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1442,10 +1442,10 @@ c sum contributions to inorganic nutrient tendencies
      &                                   + NO2prod - NO3prod
             dNO3dt =  - consumpNO3             
      &                                   + NO3prod
-c-ONLYNO3   dNO3dt =  - consumpNO3 +  preminN  + DONremin
+c-ONLYNO3   dNO3dt =  C consumpNO3 +  preminN  + DONremin
 #ifdef ALLOW_DENIT
             if (O2local.le.O2crit) then
-              if (NO3local.gt.1. _d -3) then
+              if (NO3local.gt.1. _d -2) then
                denit =  denit_np*(preminP  + DOPremin)
                dNO3dt = dNO3dt -
      &                   (104. _d 0/denit_np)*denit
@@ -1458,6 +1458,12 @@ c-ONLYNO3   dNO3dt =  - consumpNO3 +  preminN  + DONremin
                preminP = 0. _d 0
                DONremin = 0. _d 0
                preminN = 0. _d 0
+               DOFeremin = 0. _d 0
+               preminFe = 0. _d 0
+#ifdef ALLOW_CARBON
+               DOCremin = 0. _d 0
+               preminC = 0. _d 0
+#endif
               endif
             endif
 #endif
