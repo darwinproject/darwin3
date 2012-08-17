@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.102 2012/07/31 19:59:46 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.103 2012/08/17 12:40:34 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt63r_20120817
+o more fixes for denit bug
 
 ctrb_darwin_ckpt63q_20120731
 o bug fix, so denitrification will stop when NO3 below critical value
