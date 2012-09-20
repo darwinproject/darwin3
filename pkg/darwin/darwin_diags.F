@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.17 2011/04/12 19:25:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diags.F,v 1.18 2012/09/20 14:12:28 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -181,7 +181,7 @@ c
        call tracer_sumvol(
      &             PPave, nR, PPtot, myThid )
        PPtot=PPtot*120. _d 0 * 12. _d 0* 1. _d -3* 31536000. _d 0
-     &                      *1. _d-15
+     &                      *1. _d -15
        call tracer_sumvol(
      &             Nfixave, nR, Nfixtot, myThid )
        Nfixtot=Nfixtot*14. _d 0 *1. _d -3* 31536000. _d 0
