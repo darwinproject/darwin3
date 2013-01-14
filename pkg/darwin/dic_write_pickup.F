@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/dic_write_pickup.F,v 1.3 2013/01/14 16:51:23 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 #include "DARWIN_OPTIONS.h"
@@ -42,6 +45,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       LOGICAL glf
+      _RL     timList(1)
       INTEGER prec, j, nj
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 2 )
@@ -86,10 +90,11 @@ C     files
           nj = nWrFlds
         ENDIF
         glf  = globalFiles
+        timList(1) = myTime
         CALL MDS_WR_METAFILES( fn, prec, glf, .FALSE.,
      &                         0, 0, j, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, myTime,
+     &                         1, timList, oneRL,
      &                         nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------
