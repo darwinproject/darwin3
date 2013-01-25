@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.26 2011/04/12 19:25:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_generate_phyto.F,v 1.27 2013/01/25 22:03:52 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -629,7 +629,7 @@ c cocco have slower growth than other large
            growthdays= growthdays * 1.3 _d 0
         endif
 c diatom has faster thatn other large
-        if (diacoc(np).eq.2. _d 0) then
+        if (diacoc(np).eq.1. _d 0) then
            growthdays= growthdays * 0.95 _d 0
         endif
 #endif
