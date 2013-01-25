@@ -88,6 +88,11 @@ c if spectral use wavebands to give a single surface PAR
 
              DO k=1,nR
               if (HFacC(i,j,k,bi,bj).gt.0. _d 0) then
+               atten= atten + (k0 )*5. _d -1*drF(k)
+               if (k.gt.1)then
+                atten = atten + (k0)*5. _d -1*drF(k-1)
+               endif
+               PARlocal = lite*exp(-atten)
                DO np=1,npmax
                 chltmp=Ptracer(i,j,k,bi,bj,iChl+np-1)
                 phytmp=Ptracer(i,j,k,bi,bj,iPhy+np-1)
@@ -95,11 +100,6 @@ c if initialized to zero, set to balanced growth
 c with no nutrient or temperature limitation
 c (Eq. A15 Geider et al 1997)
                 if (chltmp.eq.0. _d 0) then
-                     atten= atten + (k0 )*5. _d -1*drF(k)
-                     if (k.gt.1)then
-                      atten = atten + (k0)*5. _d -1*drF(k-1)
-                     endif
-                     PARlocal = lite*exp(-atten)
                      pcm=pcmax(np)  !*limit(np)*phytoTempFunction(np)
                      chl2ctmp=chl2cmax(np)/
      &                       (1+(chl2cmax(np)*alphachl(np)*PARlocal)/
