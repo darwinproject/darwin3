@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.108 2013/01/20 15:52:40 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.109 2013/02/19 13:48:03 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt64d_20130219
+o fixes for attenuation with dynamic chlorophyll and ninespecies initializaion
+
 ctrb_darwin_ckpt64c_20130120
+o switch baltic verification exp to labsea seaice settings
 
 ctrb_darwin_ckpt64b_20121224
 
