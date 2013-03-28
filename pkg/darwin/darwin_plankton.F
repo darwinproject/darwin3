@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.43 2012/08/01 22:29:45 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.44 2013/03/28 18:16:21 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -956,7 +956,7 @@ c sum all palatability*phyto and find phyto specific grazing rate
            if (allphyto(nz).le.0. _d 0) allphyto(nz)=phygrazmin
            do np=1,npmax
             tmpz=max(0. _d 0,(allphyto(nz)-phygrazmin) )
-            grazphy(np,nz)=grazemax(nz)*
+            grazphy(np,nz)=grazemax(nz)*zooTempFunction(nz)*
      &           (palat(np,nz)*phyto(np)/allphyto(nz))*
      &           ( tmpz/
      &             (tmpz+kgrazesat) )
@@ -1181,7 +1181,8 @@ c phospate uptake by each phytoplankton
                if (debug.eq.14) print*,'grow', grow(np), pcarbon(np)
 #ifdef DYNAMIC_CHL
 c geider 97 for dChl/dt (source part) Eq. 3
-               if (acclim(np).gt. 0. _d 0) then
+               if (acclim(np).gt. 0. _d 0.and. 
+     &                                   alpha_I(np).gt 0. _d 0) then
                 rhochl(np)=chl2cmax(np) *
      &                      (grow(np)/(alpha_I(np)*acclim(np)) )
                else
