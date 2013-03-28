@@ -109,13 +109,13 @@ cswd -- temperature range
          enddo
 #ifndef QUOTA
          do nz = 1,nzmax
-              zooTempFunction(nz) = 
-     &                  exp(TempAe*(1/(Tlocal+Tkel) -
-     &                                   1/(Tempref) ) )
-              zooTempFunction(nz) = zooTempFunction(nz) - tempnorm
-              zooTempFunction(nz) = TempCoeff*
-     &                  max(zooTempFunction(nz), 1. _d -10)
-c              zooTempFunction(nz) = 1. _d 0
+c              zooTempFunction(nz) = 
+c     &                  exp(TempAe*(1/(Tlocal+Tkel) -
+c     &                                   1/(Tempref) ) )
+c              zooTempFunction(nz) = zooTempFunction(nz) - tempnorm
+c              zooTempFunction(nz) = TempCoeff*
+c     &                  max(zooTempFunction(nz), 1. _d -10)
+              zooTempFunction(nz) = 1. _d 0
          end do
 #endif
          reminTempFunction = exp(TempAe*(1/(Tlocal+Tkel) -
