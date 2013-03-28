@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.28 2011/04/12 19:21:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.29 2013/03/28 20:29:15 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -266,6 +266,8 @@ c set faction graz to POM
 c set zoo mortality
        ZoomortSmall = 1.0 _d 0/(30.0 _d 0*pday)
        ZoomortBig = 1.0 _d 0/(30.0 _d 0*pday)
+       ZoomortSmall2 = 0. _d 0
+       ZoomortBig2 = 0. _d 0
 c set zoo exportfrac
        ZooexfacSmall = 0.2 _d 0
        ZooexfacBig = 0.7 _d 0

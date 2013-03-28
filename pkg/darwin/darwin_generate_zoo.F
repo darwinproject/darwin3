@@ -90,9 +90,11 @@ c small zooplankton (zoosize = 0.) lower export fraction
            if(zoosize(nz) .eq. 0.0)then
              ExportFracZ(nz) = ZooexfacSmall
              mortzoo(nz) = ZoomortSmall
+             mortzoo2(nz) = ZoomortSmall2
            else
              ExportFracZ(nz) = ZooexfacBig
              mortzoo(nz) = ZoomortBig
+             mortzoo2(nz) = ZoomortBig2
            endif
          end do
 #endif
@@ -109,6 +111,8 @@ c assume zoo(1) = small, zoo(2) = big
          ExportFracZ(2)=ZooexfacBig
          mortzoo(1) = ZoomortSmall
          mortzoo(2) = ZoomortBig
+         mortzoo2(1) = ZoomortSmall2
+         mortzoo2(2) = ZoomortBig2
          ExportFracGraz(1)=ExGrazFracbig
          ExportFracGraz(2)=ExGrazFracsmall
          IF ( nzmax.GT.2 ) THEN

@@ -17,6 +17,9 @@ c ====================================================================
      O                    zooTempFunction,
 #endif
      O                    reminTempFunction,
+     O                    mortPTempFunction, 
+     O                    mortZTempFunction,
+     O                    mortZ2TempFunction,
      I                    myThid)
 
          implicit none
@@ -37,6 +40,9 @@ C  myThid               :: thread number
        _RL zooTempFunction(nzmax)
 #endif
        _RL reminTempFunction
+       _RL mortPTempFunction
+       _RL mortZTempFunction
+       _RL mortZ2TempFunction
        _RL Tlocal
 
 c local
@@ -79,6 +85,9 @@ c    &             zooTempExp(nz)*(Tlocal - zooTempOptimum(nz)))
           end do
 #endif
           reminTempFunction = 1.0 _d 0
+          mortPTempFunction = 1.0 _d 0
+          mortZTempFunction = 1.0 _d 0
+          mortZ2TempFunction = 1.0 _d 0
 c ++++++++++++++ END VERSION 1 +++++++++++++++++++++++++++++++++++++++
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #elif TEMP_VERSION == 2
@@ -124,6 +133,12 @@ c     &                  max(zooTempFunction(nz), 1. _d -10)
          reminTempFunction = TempCoeff*
      &                  max(reminTempFunction, 1. _d -10)
 c        reminTempFunction = 1. _d 0
+c        mortPTempFunction = reminTempFunction
+c        mortZTempFunction = reminTempFunction
+c        mortZ2TempFunction = reminTempFunction
+         mortPTempFunction = 1.0 _d 0
+         mortZTempFunction = 1.0 _d 0
+         mortZ2TempFunction = 1.0 _d 0
 c ++++++++++++++ END VERSION 2 +++++++++++++++++++++++++++++++++++++++
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #else
@@ -142,6 +157,8 @@ c +++++++++++++++++++  NO TEMP LIMITATION +++++++++++++++++++++++++++++
          end do
 #endif
          reminTempFunction = 1.0 _d 0
+         mortTempFunction = 1.0 _d 0
+         mort2TempFunction = 1.0 _d 0
 #endif
 c +++++++++++++  END NO TEMP LIMITATION +++++++++++++++++++++++++++++
 c ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
