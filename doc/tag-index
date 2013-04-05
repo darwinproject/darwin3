@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.110 2013/03/05 18:14:32 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.111 2013/04/05 15:17:33 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt64f_20130405
+o add quadratic zooplankton mortality and make mortalities temperature dependent
+o make sure not to divide by zero in calculation of rhochl
+o add temperature function to zooplankton grazing (was only in OLD_GRAZE)
 
 ctrb_darwin_ckpt64e_20130305
 o new baltic exp output after bug fix with noslip in seaice package
