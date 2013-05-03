@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.38 2013/05/02 19:38:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.39 2013/05/03 19:24:47 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -101,9 +101,9 @@ c initialize total number of functional groups tried
 #endif
          end do
 
-       IF (nIter0.EQ.PTRACERS_Iter0) THEN
 c reduce amount of diaz 
 #ifdef ALLOW_DIAZ
+       IF (nIter0.EQ.PTRACERS_Iter0) THEN
         do np = 1, npmax
          if (diazotroph(np) .eq. 1. _d 0) then
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -120,8 +120,8 @@ c reduce amount of diaz
          ENDDO
          endif
         enddo
-#endif
        ENDIF
+#endif
 
 c initialize zooplankton
          call darwin_generate_zoo(MyThid)
