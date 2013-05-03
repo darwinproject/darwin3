@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.111 2013/04/05 15:17:33 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.112 2013/05/03 20:27:05 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt64g_20130503
+o fix bug, diaz biomass should only be made smaller when initialized
 
 ctrb_darwin_ckpt64f_20130405
 o add quadratic zooplankton mortality and make mortalities temperature dependent
