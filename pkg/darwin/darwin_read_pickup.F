@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_read_pickup.F,v 1.1 2009/03/04 20:40:42 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_read_pickup.F,v 1.2 2013/05/24 20:15:48 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -18,8 +18,11 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN_IO.h"
+#include "DARWIN_FIELDS.h"
 
 C     !INPUT PARAMETERS:
 C     myIter            :: time-step number
@@ -29,7 +32,7 @@ C     myThid            :: thread number
 
 #ifdef ALLOW_DARWIN
 C add more ALLOWs here for other fields in pickup
-#ifdef ALLOW_PAR_DAY
+#if defined(ALLOW_PAR_DAY) || (defined(GEIDER) && !defined(DYNAMIC_CHL))
 
 C     !LOCAL VARIABLES:
 C     fn          :: character buffer for creating filename
@@ -46,9 +49,10 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER fp
       INTEGER filePrec, nbFields
       INTEGER missFldDim, nMissing
-      INTEGER j, nj, ioUnit
+      INTEGER j, nj, ioUnit, np
       PARAMETER( missFldDim = 12 )
       CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(8) fldName
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -128,6 +132,14 @@ C---    read DARWIN 3-D fields for restart
         CALL READ_MFLDS_3D_RL( 'PARday2 ', PARday(1-OLx,1-OLy,1,1,1,2),
      &                                 nj, fp, Nr, myIter, myThid )
 #endif /* ALLOW_PAR_DAY */
+#if defined(GEIDER) && !defined(DYNAMIC_CHL)
+        DO np = 1, npmax
+         fldName(1:6) = 'ChlPhy'
+         fldName(7:8) = PTRACERS_ioLabel(np)
+         CALL READ_MFLDS_3D_RL( fldName, Chl_phy(1-OLx,1-OLy,1,1,1,np),
+     &                                  nj, fp, Nr, myIter, myThid )
+        ENDDO
+#endif
 C--    end: new way to read pickup file
        ENDIF
 
@@ -158,6 +170,11 @@ C--    Update overlap regions:
         CALL EXCH_3D_RL( PARday(1-OLx,1-OLy,1,1,1,1), Nr, myThid )
         CALL EXCH_3D_RL( PARday(1-OLx,1-OLy,1,1,1,2), Nr, myThid )
 #endif /* ALLOW_PAR_DAY */
+#if defined(GEIDER) && !defined(DYNAMIC_CHL)
+        DO np = 1, npmax
+         CALL EXCH_3D_RL( Chl_phy(1-OLx,1-OLy,1,1,1,np), Nr, myThid )
+        ENDDO
+#endif
 
 #endif /* ALLOW_PAR_DAY */
 #endif /* ALLOW_DARWIN */

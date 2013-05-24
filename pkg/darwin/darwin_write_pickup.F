@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_write_pickup.F,v 1.3 2013/01/14 16:51:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_write_pickup.F,v 1.4 2013/05/24 20:15:48 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -19,8 +19,11 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN_IO.h"
+#include "DARWIN_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C     permPickup :: write a permanent pickup
@@ -37,16 +40,16 @@ CEOP
 
 #ifdef ALLOW_DARWIN
 C add more ALLOWs here for other fields in pickup
-#ifdef ALLOW_PAR_DAY
+#if defined(ALLOW_PAR_DAY) || (defined(GEIDER) && !defined(DYNAMIC_CHL))
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       LOGICAL glf
       _RL     timList(1)
-      INTEGER prec, irec, ifld
+      INTEGER prec, irec, ifld, np
       INTEGER listDim, nWrFlds
-      PARAMETER( listDim = 2 )
+      PARAMETER( listDim = 2+npmax )
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -73,6 +76,21 @@ C     record number < 0 : a hack not to write meta files now:
         IF (ifld.LE.listDim) wrFldList(ifld) = 'PARday2 '
 #endif
 
+#if defined(GEIDER) && !defined(DYNAMIC_CHL)
+        DO np = 1, npmax
+        ifld = ifld + 1
+        irec = irec - 1
+        print*,'prec',np,prec
+        CALL WRITE_REC_3D_RL( fn, prec, nR,
+     &                        Chl_phy(1-OLx,1-OLy,1,1,1,np),
+     &                        irec, myIter, myThid )
+        IF (ifld.LE.listDim) THEN
+         wrFldList(ifld)(1:6) = 'ChlPhy'
+         wrFldList(ifld)(7:8) = PTRACERS_ioLabel(np)
+        ENDIF
+        ENDDO
+#endif
+
 C--------------------------
         nWrFlds = ifld
         IF ( nWrFlds.GT.listDim ) THEN
@@ -91,6 +109,7 @@ C     files
         glf  = globalFiles
         timList(1) = myTime
         irec = ABS(irec)
+        print*,'prec',irec,prec
         CALL MDS_WR_METAFILES( fn, prec, glf, .FALSE.,
      &                         0, 0, nR, ' ',
      &                         nWrFlds, wrFldList,
