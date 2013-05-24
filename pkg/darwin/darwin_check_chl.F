@@ -24,6 +24,7 @@ c
 #include "SPECTRAL_SIZE.h"
 #include "DARWIN.h"
 #include "DARWIN_IO.h"
+#include "DARWIN_FIELDS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
@@ -53,7 +54,7 @@ C     msgBuf    - Informational/error meesage buffer
         _RL atten
 CEOP
 
-#ifdef DYNAMIC_CHL
+#ifdef GEIDER
 
         WRITE(msgBuf,'(A)')
      &  '// ======================================================='
@@ -66,6 +67,9 @@ CEOP
      &  '// ======================================================='
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
+
+C     do not overwrite pickup
+      IF (nIter0 .EQ. PTRACERS_Iter0) THEN
 
        call DARWIN_FIELDS_LOAD(0,0. _d 0,myThid)
 
@@ -94,7 +98,11 @@ c if spectral use wavebands to give a single surface PAR
                endif
                PARlocal = lite*exp(-atten)
                DO np=1,npmax
+#ifdef DYNAMIC_CHL
                 chltmp=Ptracer(i,j,k,bi,bj,iChl+np-1)
+#else
+                chltmp=0.0 _d 0
+#endif
                 phytmp=Ptracer(i,j,k,bi,bj,iPhy+np-1)
 c if initialized to zero, set to balanced growth
 c with no nutrient or temperature limitation
@@ -104,18 +112,18 @@ c (Eq. A15 Geider et al 1997)
                      chl2ctmp=chl2cmax(np)/
      &                       (1+(chl2cmax(np)*alphachl(np)*PARlocal)/
      &                       (2*pcm))
-                     Ptracer(i,j,k,bi,bj,iChl+np-1)=
-     &                                  phytmp*R_PC(np)*chl2ctmp
+                     chltmp=phytmp*R_PC(np)*chl2ctmp
                 endif
 c check not too high or too low
-                Ptracer(i,j,k,bi,bj,iChl+np-1)=
-     &                      max(Ptracer(i,j,k,bi,bj,iChl+np-1),
-     &                          phytmp*R_PC(np)*chl2cmin(np))
-                Ptracer(i,j,k,bi,bj,iChl+np-1)=
-     &                      min(Ptracer(i,j,k,bi,bj,iChl+np-1),
-     &                          phytmp*R_PC(np)*chl2cmax(np))
+                chltmp=max(chltmp, phytmp*R_PC(np)*chl2cmin(np))
+                chltmp=min(chltmp, phytmp*R_PC(np)*chl2cmax(np))
+#ifdef DYNAMIC_CHL
+                Ptracer(i,j,k,bi,bj,iChl+np-1)=chltmp
+#else
+                Chl_phy(i,j,k,bi,bj,np)=chltmp
+#endif
                 if (k.eq.1.and.i.eq.1.and.j.eq.1) print*,'initial Chl',
-     &                        Ptracer(i,j,k,bi,bj,iChl+np-1), phytmp
+     &                        chltmp, phytmp
                ENDDO
               endif 
              ENDDO
@@ -124,6 +132,8 @@ c check not too high or too low
           ENDDO
           ENDDO
 
+C     nIter0
+      ENDIF
 #endif
 
         WRITE(msgBuf,'(A)')

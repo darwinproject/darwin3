@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.40 2013/05/24 20:15:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.41 2013/05/24 20:16:08 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -182,6 +182,8 @@ c  no temp/nutrient limitation
      &               (2*pcmax(np)))
            enddo
 #endif
+#endif
+#ifdef GEIDER
            call DARWIN_CHECK_CHL(myThid)
 #endif
 #endif
