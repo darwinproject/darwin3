@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.113 2013/05/24 20:17:08 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.114 2013/05/28 20:32:50 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt64h_20130528
 o initialize non-dynamic Chlorophyll like dynamic Chlorophyll
 o fix bug, write chlorophyll to pickup when using GEIDER without DYNAMIC_CHL
 
