@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.21 2012/03/17 22:19:34 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_fields_load.F,v 1.22 2013/11/22 21:05:00 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -445,7 +445,7 @@ C
        CALL EXCH_3D_RS   (oasim_ed0, tlam, myThid)
        CALL EXCH_3D_RS   (oasim_ed1, tlam, myThid)
        CALL EXCH_3D_RS   (oasim_es0, tlam, myThid)
-       CALL EXCH_3D_RS   (oasim_es0, tlam, myThid)
+       CALL EXCH_3D_RS   (oasim_es1, tlam, myThid)
 #endif
 
 
