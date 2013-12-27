@@ -56,15 +56,15 @@ C     Dump files and restart average computation if needed
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(SURave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZE(SURave,dic_timeave, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(SURCave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZE(SURCave,dic_timeave, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(SUROave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZE(SUROave,dic_timeave, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(pCO2ave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZE(pCO2ave,dic_timeave, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(pHave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZE(pHave,dic_timeave, 1 ,
      &                 bi,bj,myThid)
         ENDDO
        ENDDO
@@ -110,9 +110,7 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(SUROave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(pCO2ave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(pHave,1,bi,bj,myThid)
-         do k=1,Nr
-           DIC_TimeAve(bi,bj,k)=0.d0
-         enddo
+         DIC_TimeAve(bi,bj) = 0.d0
         ENDDO
        ENDDO
 

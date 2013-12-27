@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.125 2013/12/10 17:03:23 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.126 2013/12/27 17:37:51 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o use simpler (no level index) cumulative-time counter for timeave
 
 ctrb_darwin_ckpt64r_20131210
 

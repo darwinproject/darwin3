@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.41 2013/05/24 20:16:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_vari.F,v 1.42 2013/12/27 17:37:51 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -410,9 +410,7 @@ c         CALL TIMEAVE_RESET(SURave,   1,  bi, bj, myThid)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , mythid)
 
-          do k=1,Nr
-            DAR_TimeAve(bi,bj,k)=0. _d 0
-          enddo
+          DAR_TimeAve(bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 #endif /* ALLOW_TIMEAVE */

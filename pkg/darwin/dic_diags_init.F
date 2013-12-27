@@ -43,9 +43,7 @@ c set arrays to zero if first timestep
           CALL TIMEAVE_RESET(pCO2ave,   1,  bi, bj, myThid)
           CALL TIMEAVE_RESET(pHave,   1,  bi, bj, myThid)
           print*,'QQ start timeave'
-          do k=1,Nr
-            DIC_TimeAve(bi,bj,k)=0.d0
-          enddo
+          DIC_TimeAve(bi,bj) = 0.d0
          ENDDO
         ENDDO
 #endif /* ALLOW_TIMEAVE */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.55 2012/10/25 15:59:44 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.56 2013/12/27 17:37:51 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1495,14 +1495,10 @@ c determine iron partitioning  - solve for free iron
 c
 #ifdef ALLOW_TIMEAVE
 c save averages
-       do k=1,nR
-         dar_timeave(bi,bj,k)=dar_timeave(bi,bj,k)
-     &                         +dtplankton
+         dar_timeave(bi,bj) = dar_timeave(bi,bj) + dtplankton
 #ifdef ALLOW_CARBON
-         dic_timeave(bi,bj,k)=dic_timeave(bi,bj,k)
-     &                         +dtplankton
+         dic_timeave(bi,bj) = dic_timeave(bi,bj) + dtplankton
 #endif
-       enddo
 #endif
 c
 c -----------------------------------------------------
