@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.137 2014/08/12 16:37:04 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.138 2014/08/30 15:08:34 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+ctrb_darwin_ckpt65c_20140830
+o new output for baltic exp after obcs fixes to gchem_forcing_sep
 
 ctrb_darwin_ckpt65b_20140812
 
