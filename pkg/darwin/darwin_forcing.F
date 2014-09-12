@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.56 2013/12/27 17:37:51 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_forcing.F,v 1.57 2014/09/12 16:23:24 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1061,7 +1061,50 @@ c ---- end steph's alternative
                 dfetl=dfetl+fet_flx(i,j,k,bi,bj)
                 dsil=dsil+si_flx(i,j,k,bi,bj)
 #endif
-c
+
+#ifdef ALLOW_OBCS
+          IF (useOBCS) THEN
+            dpo4l  = dpo4l *maskInC(i,j,bi,bj)
+            dno3l  = dno3l *maskInC(i,j,bi,bj)
+            dfetl  = dfetl *maskInC(i,j,bi,bj)
+            dsil   = dsil  *maskInC(i,j,bi,bj)
+            ddopl  = ddopl *maskInC(i,j,bi,bj)
+            ddonl  = ddonl *maskInC(i,j,bi,bj)
+            ddofel = ddofel*maskInC(i,j,bi,bj)
+            dpopl  = dpopl *maskInC(i,j,bi,bj)
+            dponl  = dponl *maskInC(i,j,bi,bj)
+            dpofel = dpofel*maskInC(i,j,bi,bj)
+            dpsil  = dpsil *maskInC(i,j,bi,bj)
+            dnh4l  = dnh4l *maskInC(i,j,bi,bj)
+            dno2l  = dno2l *maskInC(i,j,bi,bj)
+            DO nz = 1,nzmax
+             dzoop (nz) = dzoop (nz)*maskInC(i,j,bi,bj)
+             dzoon (nz) = dzoon (nz)*maskInC(i,j,bi,bj)
+             dzoofe(nz) = dzoofe(nz)*maskInC(i,j,bi,bj)
+             dzoosi(nz) = dzoosi(nz)*maskInC(i,j,bi,bj)
+            ENDDO
+            DO np = 1,npmax
+             dPhy(np) = dPhy(np)*maskInC(i,j,bi,bj)
+#ifdef GEIDER
+#ifdef DYNAMIC_CHL
+             dphychl(np) = dphychl(np)*maskInC(i,j,bi,bj)
+#endif
+#endif
+            ENDDO
+#ifdef ALLOW_CARBON
+            ddicl = ddicl*maskInC(i,j,bi,bj)
+            ddocl = ddocl*maskInC(i,j,bi,bj)
+            dpocl = dpocl*maskInC(i,j,bi,bj)
+            dpicl = dpicl*maskInC(i,j,bi,bj)
+            dalkl = dalkl*maskInC(i,j,bi,bj)
+            do2l  = do2l *maskInC(i,j,bi,bj)
+            DO nz = 1,nzmax
+             dzoocl(nz) = dzoocl(nz)*maskInC(i,j,bi,bj)
+            ENDDO
+#endif
+          ENDIF
+#endif
+
 c now update main tracer arrays
           dtplankton = PTRACERS_dTLev(k)/float(nsubtime)
           Ptr(i,j,k,bi,bj,iPO4 ) = Ptr(i,j,k,bi,bj,iPO4) +
