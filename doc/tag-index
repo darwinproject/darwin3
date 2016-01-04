@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.153 2015/12/21 18:31:22 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.154 2016/01/04 17:08:12 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
+
+o fix bug in radtrans sun model that broke zenith angle calculations;
+  not relevant if defined DAR_RADTRANS_USE_MODEL_CALENDAR
 
 ctrb_darwin_ckpt65r_20151221
 
