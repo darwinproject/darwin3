@@ -113,8 +113,8 @@ c assume zoo(1) = small, zoo(2) = big
          mortzoo(2) = ZoomortBig
          mortzoo2(1) = ZoomortSmall2
          mortzoo2(2) = ZoomortBig2
-         ExportFracGraz(1)=ExGrazFracbig
-         ExportFracGraz(2)=ExGrazFracsmall
+         ExportFracGraz(1)=ExGrazFracSmall
+         ExportFracGraz(2)=ExGrazFracBig
          IF ( nzmax.GT.2 ) THEN
            WRITE(msgBuf,'(2A,I5)') 'DARWIN_GENERATE_PHYTO: ',
      &       'nzmax = ', nzmax
