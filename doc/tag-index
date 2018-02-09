@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.179 2018/01/19 22:15:20 jahn Exp $
+$Header: /u/gcmpack/MITgcm_contrib/darwin/doc/tag-index,v 1.180 2018/02/09 21:47:12 jahn Exp $
 $Name:  $
 
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt66o_20180209
 o add S/R darwin_tr_register, so darwin can be run together with package cfc
 
 ctrb_darwin_ckpt66n_20180118
