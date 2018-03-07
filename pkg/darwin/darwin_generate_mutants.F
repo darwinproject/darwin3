@@ -300,8 +300,8 @@ c assume zoo(1) = small, zoo(2) = big
          ExportFracZ(2)=ZooexfacBig
          mortzoo(1) = ZoomortSmall
          mortzoo(2) = ZoomortBig
-         ExportFracGraz(1)=ExGrazFracbig
-         ExportFracGraz(2)=ExGrazFracsmall
+         ExportFracGraz(1)=ExGrazFracSmall
+         ExportFracGraz(2)=ExGrazFracBig
          IF ( nzmax.GT.2 ) THEN
            WRITE(msgBuf,'(2A,I5)') 'DARWIN_GENERATE_MUTANTS: ',
      &       'nzmax = ', nzmax
