@@ -4,6 +4,9 @@ $Name:  $
     Notes on tags used in darwin
     ============================
 
+ctrb_darwin_ckpt67_20180312
+o fix bug swapping ExGrazFracSmall and Big in darwin_generate_mutants
+
 ctrb_darwin_ckpt66o_20180209
 o add S/R darwin_tr_register, so darwin can be run together with package cfc
 
