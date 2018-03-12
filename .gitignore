@@ -1,8 +1,4 @@
 # CVS default ignores begin
-tags
-TAGS
-.make.state
-.nse_depinfo
 *~
 \#*
 .#*
@@ -14,15 +10,22 @@ _$*
 *.BAK
 *.orig
 *.rej
-.del-*
 *.a
-*.olb
 *.o
-*.obj
 *.so
-*.exe
 *.Z
 *.elc
 *.ln
 core
 # CVS default ignores end
+*.pyc
+# OSX system files
+.DS_store
+
+/verification/*.log
+/verification/tr_*
+/verification/rs_*
+/verification/tst_2+2_out.txt
+/verification/tmp_*
+
+/verification/*/tr_run.*
