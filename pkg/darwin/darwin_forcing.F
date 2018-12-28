@@ -1525,6 +1525,8 @@ c ANNA end TAVE
      &                         0,1,2,bi,bj,myThid )
         CALL DIAGNOSTICS_FILL( flxO2(1-Olx,1-Oly), 'DICOFLX ',
      &                         0,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( fugf(1-Olx,1-Oly,bi,bj), 'DICFGCO2',
+     &                         0,1,2,bi,bj,myThid )
         CALL DIAGNOSTICS_FILL( pCO2(1-Olx,1-Oly,bi,bj), 'DICPCO2 ',
      &                         0,1,2,bi,bj,myThid )
         CALL DIAGNOSTICS_FILL( pH(1-Olx,1-Oly,bi,bj), 'DICPHAV ',

@@ -55,6 +55,13 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'DICFGCO2'
+      diagTitle = 'Fugacity factor of CO2 (atm)'
+      diagUnits = 'atm             '
+      diagCode  = 'SM P    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'DICPCO2 '
       diagTitle = 'Partial Pressure of CO2 (atm)'
       diagUnits = 'atm             '
