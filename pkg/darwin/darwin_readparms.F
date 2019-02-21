@@ -14,7 +14,13 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#ifdef ALLOW_RADTRANS
+#include "RADTRANS_SIZE.h"
+#include "RADTRANS_PARAMS.h"
+#endif
 #include "DARWIN_SIZE.h"
+#include "DARWIN_PARAMS.h"
+#include "DARWIN_EXF_PARAMS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -66,6 +72,14 @@ C Open and read the data.darwin file
 #else
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
+
+C ======================================================================
+C     compute dependent parameters
+      darwin_loadFieldsEarly = darwin_chlInitBalanced .AND.
+     &                         nIter0 .EQ. darwin_chlIter0
+#ifdef ALLOW_RADTRANS
+      RT_loadFieldsEarly=RT_loadFieldsEarly .OR. darwin_loadFieldsEarly
+#endif
 
       WRITE(msgBuf,'(A)') ' ==================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
