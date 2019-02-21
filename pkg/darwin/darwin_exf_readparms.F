@@ -57,8 +57,6 @@ C !LOCAL VARIABLES: ====================================================
 
       NAMELIST/darwin_forcing_params/
      &    useDarwinYearlyFields,
-     &    darwin_chlInitBalanced,
-     &    darwin_chlIter0,
 C
      &    PARfile,
      &    PARperiod,
@@ -162,8 +160,6 @@ C
 C Open and read the data.darwin file
 
       useDarwinYearlyFields = useExfYearlyFields
-      darwin_chlInitBalanced = .FALSE.
-      darwin_chlIter0 = 0
 
       PARfile = ' '
       PARperiod             = 0.0 _d 0
@@ -369,14 +365,6 @@ C last preference: constant value of 5 m/s
      &                      SQUEEZE_RIGHT, myThid )
 #endif
       ENDIF
-
-C ======================================================================
-C     compute dependent parameters
-      darwin_loadFieldsEarly = darwin_chlInitBalanced .AND.
-     &                      nIter0 .EQ. darwin_chlIter0
-#ifdef ALLOW_RADTRANS
-      RT_loadFieldsEarly=RT_loadFieldsEarly .OR. darwin_loadFIeldsEarly
-#endif
 
       IF (oUnit .GE. 0) THEN
        WRITE(UNIT=oUnit, NML=DARWIN_FORCING_PARAMS)
