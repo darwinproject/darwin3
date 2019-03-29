@@ -1,6 +1,37 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67h (2019/03/21)
+o tools/genmake2:
+  - fix option "-nocat4ad" for latest version of TAF: now needs to add TAF
+    option "-fixed" to process *.flowdir files with newer (after 4.1.1) version
+    of TAF (otherwise assumed now to be in free format).
+o model/src:
+  - remove argument tFld & dFld from S/R CALC_PHI_HYD and from 2 related S/R
+o tools/genmake2:
+  - allow to skip "check_fortran_compiler" part (as, e.g., in opt-file:
+     tools/build_options/linux_ia64_cray_archer).
+o verification/tutorial_barotropic_gyre:
+  - add 1rst tutorial documentation to new manual and update corresponding setup
+o pkg/atm_phys:
+  - add 3-D input file for stratospheric ozone
+  - add code from Matt Kasoar for SW absorption by stratospheric ozone,
+    based on following papers:
+    Lacis and Hansen (JAS, 1974) and Forster and Shine (JGR, 1997).
+  - turned on using 2 local run-time parameter: ozone_in_SW (downward)
+    and two_stream_SW (also in upward); default are off.
+  - clean up S/R "radiation_up": rename "net" to "flux_lw" (better name)
+    and remove un-used local (dyn-allocated) arrays.
+  - also avoid division by zero in Rel-Humid diagnostics (atm_phys_driver.F)
+o pkg/seaice:
+  - fix missing update of sIceLoad in the case usePW79thermodynamics=F.
+o pkg/dic:
+  - Adjust unit conversions for dissociation coefficients aks, aksi, and akf
+    (#define CARBONCHEM_TOTALPHSCALE).
+o tools/genmake2:
+  - improve Fortran Compiler check, section: running MPI executable ; also
+    refine the "conclusion" printed message.
+
 checkpoint67g (2019/01/03)
 o doc:
   - add documentation for pkg/streamice
