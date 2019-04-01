@@ -135,8 +135,6 @@
      &    PARmin,
      &    chl2nmax,
      &    synthcost,
-     &    expPref,
-     &    expPalat,
      &    palat_min,
      &    inhib_graz,
      &    inhib_graz_exp,
@@ -368,8 +366,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       PARmin = 0.1 _d 0
       chl2nmax = 3.00 _d 0
       synthcost = 0.0 _d 0
-      expPref = 1.0 _d 0
-      expPalat = 1.0 _d 0
       palat_min = 0 _d 0
       inhib_graz = 1.0 _d 0
       inhib_graz_exp = 0.0 _d 0

@@ -177,8 +177,6 @@ C Requires: DARWIN_SIZE.h
      &    PARmin,
      &    chl2nmax,
      &    synthcost,
-     &    expPref,
-     &    expPalat,
      &    palat_min,
      &    inhib_graz,
      &    inhib_graz_exp,
@@ -284,8 +282,6 @@ C Requires: DARWIN_SIZE.h
       _RL PARmin
       _RL chl2nmax
       _RL synthcost
-      _RL expPref
-      _RL expPalat
       _RL palat_min
       _RL inhib_graz
       _RL inhib_graz_exp
