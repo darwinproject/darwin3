@@ -6,9 +6,19 @@ C !INTERFACE: ==========================================================
       SUBROUTINE DARWIN_INIT_CHL( bi, bj, myTime, myIter, myThid )
 
 C !DESCRIPTION:
-C     If darwin_chlInitBalanced is true, initialize Chl from c
-C     assuming balanced growth at PAR.
-C     In any case, make sure Chl/C is between chl2cmin and chl2cmax.
+C     Make sure Chl/C is bounded by chl2cmin and chl2cmax.
+C     If not DARWIN_ALLOW_CHLQUOTA, assign ChlPrev.
+C     If darwin_chlInitBalanced is true, initialize Chl from c assuming
+C     balanced growth following Geider, Macintyre, Kana 1997.
+C     If DARWIN_CHL_INIT_LEGACY,
+C     - with radtrans, use zero light for backwards compatibility
+C       (code for using radtrans lite is included).
+C     - without radtrans, use PARfile if given, else use 200 uEin/m2 and
+C       attenuate assuming pure water (no orgamic matter)
+C     If not DARWIN_CHL_INIT_LEGACY, compute light using initial Chl
+C     (usually 0 if darwin_chlInitBalanced).
+C     For backwards compatibility, ice is taken into account only
+C     without radtrans and without DARWIN_CHL_INIT_LEGACY.
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -33,8 +43,6 @@ C !USES: ===============================================================
 #include "DARWIN_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid :: thread number
-C  PAR    :: photosynthetically available radiation for balanced growth
       _RL myTime
       INTEGER bi, bj, myIter, myThid
 CEOP
@@ -48,11 +56,12 @@ C!LOCAL VARIABLES: ====================================================
       _RL lite, atten
 
 C ======================================================================
-C     compute PAR from current Chl
-C     (usually initialized to 0 if darwin_chlInitBalanced)
+C compute light
       IF (darwin_chlInitBalanced) THEN
-#ifdef ALLOW_RADTRANS
+
 #ifdef DARWIN_CHL_INIT_LEGACY
+
+# ifdef ALLOW_RADTRANS
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          lite = 0 _d 0
@@ -72,57 +81,73 @@ C     (usually initialized to 0 if darwin_chlInitBalanced)
          ENDDO
         ENDDO
        ENDDO
-#else
+# else
+C!!!!!  do not take ice into account for backwards compatibility
        j = -1
+       CALL DARWIN_LIGHT(PAR,myTime,bi,bj,1-OLx,sNx+OLx,1-OLy,sNy+OLy,
+     &                   myTime,j,myThid)
+# endif
+
+#else /* not DARWIN_CHL_INIT_LEGACY */
+
+C      compute PAR from current Chl
+C      (usually initialized to 0 if darwin_chlInitBalanced)
+C      do not fill diagnostics (and no ice if radtrans)
+       j = -1
+# ifdef ALLOW_RADTRANS
        CALL DARWIN_LIGHT_RADTRANS(PAR,myTime,bi,bj,1-OLx,sNx+OLx,
      &                         1-OLy,sNy+OLy,myTime,j,myThid)
-#endif
-#else
-C!!!!! do not take ice into account for backwards compatibility
-       j = -1 
+# else
        CALL DARWIN_LIGHT(PAR,myTime,bi,bj,1-OLx,sNx+OLx,1-OLy,sNy+OLy,
-     &                myTime,j,myThid)
-#endif
+     &                   myTime,j,myThid)
+# endif
+
+#endif /* not DARWIN_CHL_INIT_LEGACY */
+
+C     endif not darwin_chlInitBalanced
       ENDIF
 
+C ======================================================================
+C compute Chlorophyll
+
       DO jp=1,nPhoto
-      DO k=1,Nr
-      DO j=1-OLy,sNy+OLy
-      DO i=1-OLx,sNx+OLx
+       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 #ifdef DARWIN_ALLOW_CHLQUOTA
-       chltmp = Ptracer(i,j,k,bi,bj,iChl+jp-1)
+          chltmp = Ptracer(i,j,k,bi,bj,iChl+jp-1)
 #else
-       chltmp = 0.0 _d 0
+          chltmp = 0.0 _d 0
 #endif
-       IF (darwin_chlInitBalanced) THEN
+          IF (darwin_chlInitBalanced) THEN
 #if defined(ALLOW_RADTRANS) && defined(DARWIN_CHL_INIT_LEGACY)
-        alpha_I = alpha_mean(jp) * PAR(i,j,k,1)
-        alpha_I = 0 _d 0
+           alpha_I = alpha_mean(jp) * PAR(i,j,k,1)
+           alpha_I = 0 _d 0
 #else
-        alpha_I = 0.0
-        DO l = 1, nlam
-         alpha_I = alpha_I + alphachl(jp,l) * PAR(i,j,k,l)
-        ENDDO
+           alpha_I = 0.0
+           DO l = 1, nlam
+            alpha_I = alpha_I + alphachl(jp,l) * PAR(i,j,k,l)
+           ENDDO
 #endif
-        chltmp = Ptracer(i,j,k,bi,bj,ic+jp-1)*
-     &           chl2cmax(jp)/(1+chl2cmax(jp)*alpha_I/(2*PCmax(jp)))
-       ENDIF
-       chltmp = MAX(Ptracer(i,j,k,bi,bj,ic+jp-1)*chl2cmin(jp),
-     &              chltmp)
-       chltmp = MIN(Ptracer(i,j,k,bi,bj,ic+jp-1)*chl2cmax(jp),
-     &              chltmp)
+           chltmp = Ptracer(i,j,k,bi,bj,ic+jp-1)*
+     &              chl2cmax(jp)/(1+chl2cmax(jp)*alpha_I/(2*PCmax(jp)))
+          ENDIF
+          chltmp = MAX(Ptracer(i,j,k,bi,bj,ic+jp-1)*chl2cmin(jp),
+     &                 chltmp)
+          chltmp = MIN(Ptracer(i,j,k,bi,bj,ic+jp-1)*chl2cmax(jp),
+     &                 chltmp)
 #ifdef DARWIN_ALLOW_CHLQUOTA
-       Ptracer(i,j,k,bi,bj,iChl+jp-1) = chltmp
+          Ptracer(i,j,k,bi,bj,iChl+jp-1) = chltmp
 #else
-#ifdef ALLOW_RADTRANS
-       ChlPrev(i,j,k,bi,bj,jp) = chltmp
-#else
-       ChlPrev(i,j,k,bi,bj)=ChlPrev(i,j,k,bi,bj)+chltmp
+# ifdef ALLOW_RADTRANS
+          ChlPrev(i,j,k,bi,bj,jp) = chltmp
+# else
+          ChlPrev(i,j,k,bi,bj)=ChlPrev(i,j,k,bi,bj)+chltmp
+# endif
 #endif
-#endif
-      ENDDO
-      ENDDO
-      ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
       ENDDO
 
 #endif /* ALLOW_DARWIN */
