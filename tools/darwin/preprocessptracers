@@ -138,7 +138,7 @@ ends = OrderedDict((k[1:], v) for k,v in p.items() if k.startswith('e'))
 starts = OrderedDict((k[1:], v) for k,v in p.items() if k.startswith('i') and k[1:4] not in ['Min', 'Max'])
 if 'CDOM' in ends and 'CDOM' not in starts or ends['CDOM'] == starts['CDOM']:
     del ends['CDOM']
-cellnames = ends.keys()
+cellnames = list(ends)
 for k in starts:
     if k not in ends:
         ends[k] = starts[k]
