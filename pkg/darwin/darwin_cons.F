@@ -174,8 +174,8 @@ c oxygem budget !!!!!!!! NOT FULL BUDGET !!!!!!!!!!!
       IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
         WRITE(DAR_cons_C_unit,*), myIter, tmptotC, tmptotC/voltot
         WRITE(DAR_cons_P_unit,*), myIter, tmptotP, tmptotP/voltot
-        WRITE(DAR_cons_N_unit,*), myIter, tmptotN, tmptotN/voltot,
-     &                 tmptotNfix/voltot, tmptotNdenit/voltot
+        WRITE(DAR_cons_N_unit,'(I12,4E24.16)'), myIter, tmptotN,
+     &        tmptotN/voltot, tmptotNfix/voltot, tmptotNdenit/voltot
         WRITE(DAR_cons_Fe_unit,*), myIter, tmptotFe, tmptotFe/voltot
         WRITE(DAR_cons_Si_unit,*), myIter, tmptotSi, tmptotSi/voltot
 #ifdef DARWIN_ALLOW_CARBON
