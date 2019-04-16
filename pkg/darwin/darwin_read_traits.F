@@ -130,9 +130,7 @@
      &    qcarbon,
      &    biovol_bygroup,
      &    alpha_mean,
-     &    chl2cmin,
-     &    mortTempFuncMin,
-     &    mort2TempFuncMin
+     &    chl2cmin
 
 
 #ifdef ALLOW_RADTRANS
@@ -191,9 +189,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
         IF (hasPIC(jp) .EQ. 0) THEN
           R_PICPOC(jp) = 0.0 _d 0
         ENDIF
-      
-        mortTempFuncMin(jp)  = MIN(1.0, 1.0 - tempMort(jp))
-        mort2TempFuncMin(jp) = MIN(1.0, 1.0 - tempMort2(jp))
       
       ENDDO
       

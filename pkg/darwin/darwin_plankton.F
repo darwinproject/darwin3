@@ -1275,8 +1275,8 @@ C==== mortality ========================================================
 
       DO jp = 1, nplank
         Xe = MAX(0 _d 0, X(jp) - Xmin(jp))
-        mortX = mort(jp)*Xe*MAX(mortTempFuncMin(jp), mortTempFunc)
-        mortX2= mort2(jp)*Xe*Xe*MAX(mort2TempFuncMin(jp), mort2TempFunc)
+        mortX = mort(jp)*Xe*mortTempFunc**tempMort(jp)
+        mortX2= mort2(jp)*Xe*Xe*mort2TempFunc**tempMort2(jp)
 
         mort_c(jp) = mortX + mortX2
 

@@ -209,9 +209,7 @@ C Requires: DARWIN_SIZE.h
      &    qcarbon,
      &    biovol_bygroup,
      &    alpha_mean,
-     &    chl2cmin,
-     &    mortTempFuncMin,
-     &    mort2TempFuncMin
+     &    chl2cmin
 #ifndef DARWIN_ALLOW_GEIDER
       _RL normI(nplank)
 #endif
@@ -220,8 +218,6 @@ C Requires: DARWIN_SIZE.h
       _RL biovol_bygroup(nplank,ngroup)
       _RL alpha_mean(nplank)
       _RL chl2cmin(nplank)
-      _RL mortTempFuncMin(nplank)
-      _RL mort2TempFuncMin(nplank)
 
 
 #endif /* ALLOW_DARWIN */
