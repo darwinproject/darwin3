@@ -80,7 +80,7 @@ C        convert W/m2 to uEin/s/m2
       ENDIF
 #endif
 
-      IF (myiter .gt. -99) THEN
+      IF (myiter .gt. -99 .AND. .NOT.DARWIN_useQsw) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          PARF(i,j) = PARF(i,j) * (1.0 _d 0 - iceFrac(i,j,bi,bj))

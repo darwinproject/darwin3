@@ -273,13 +273,6 @@ C check exf is compiled and used
       ENDIF
 #endif
 
-      IF (DARWIN_haveIce .AND. DARWIN_useQsw) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** DARWIN_EXF_READPARMS: ',
-     &    'iceFile or iceconst set with DARWIN_useQsw'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-      ENDIF
-
 #ifdef ALLOW_SEAICE
       DARWIN_useSEAICE = .NOT. DARWIN_haveIce .AND. .NOT. DARWIN_useQsw
       IF (DARWIN_useSEAICE) THEN
