@@ -185,7 +185,7 @@ C     scavenging
         scv = scav
 #endif
         gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) -
-     &                           scv*freefe(i,j,k)
+     &                     scv*MAX(0 _d 0, freefe(i,j,k))
       ENDDO
       ENDDO
       ENDDO
