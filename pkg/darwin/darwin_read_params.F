@@ -51,6 +51,7 @@
      &    iDEBUG,
      &    jDEBUG,
      &    kDEBUG,
+     &    darwin_pickupSuff,
      &    darwin_linFSConserve,
      &    darwin_read_phos,
      &    darwin_chlInitBalanced,
@@ -280,6 +281,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       iDEBUG = 1
       jDEBUG = 1
       kDEBUG = 1
+      darwin_pickupSuff = pickupSuff
       darwin_linFSConserve = .FALSE.
       darwin_read_phos = .FALSE.
       darwin_chlInitBalanced = .FALSE.

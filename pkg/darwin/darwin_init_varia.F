@@ -132,7 +132,7 @@ C     !LOCAL VARIABLES:
       ENDIF
  
       IF ( nIter0.GT.PTRACERS_Iter0 .OR.
-     &    (nIter0.EQ.PTRACERS_Iter0 .AND. pickupSuff.NE.' ')
+     &    (nIter0.EQ.PTRACERS_Iter0 .AND. darwin_pickupSuff.NE.' ')
      &   ) THEN
        CALL DARWIN_READ_PICKUP(nIter0, myThid)
       ENDIF

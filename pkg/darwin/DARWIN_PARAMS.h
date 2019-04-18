@@ -79,6 +79,8 @@ C Requires: DARWIN_SIZE.h
       _RL oC0
 #endif
 
+      COMMON /DARWIN_PARAMS_c/ darwin_pickupSuff
+      CHARACTER*10 darwin_pickupSuff
       COMMON /DARWIN_PARAMS_l/
      &    darwin_strict_check,
      &    darwin_linFSConserve,

@@ -66,7 +66,7 @@ C =================================================================
       iMin=1
       iMax=sNx
 
-      IF (nIter0.EQ.PTRACERS_Iter0 .AND. .NOT. pickupSuff.NE.' ') THEN
+      IF (nIter0.EQ.PTRACERS_Iter0 .AND. darwin_pickupSuff.EQ.' ') THEN
 C set guess of pH for first step here
 
        DO bj=myByLo(myThid),myByHi(myThid)
