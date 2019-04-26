@@ -43,7 +43,7 @@ C     errCount  :: error counter
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START PAR',myThid)
 # endif
-       CALL EXF_GETFFIELD_START( useDarwinYearlyFields,
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
      I                           'darwin', 'PAR', PARperiod,
      I                           PARstartdate1, PARstartdate2,
      U                           PARStartTime, errCount,
@@ -54,7 +54,7 @@ C     errCount  :: error counter
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',myThid)
 # endif
-       CALL EXF_GETFFIELD_START( useDarwinYearlyFields,
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
      I                           'darwin', 'iron', ironperiod,
      I                           ironstartdate1, ironstartdate2,
      U                           ironStartTime, errCount,
@@ -65,7 +65,7 @@ C     errCount  :: error counter
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START ice',myThid)
 # endif
-       CALL EXF_GETFFIELD_START( useDarwinYearlyFields,
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
      I                           'darwin', 'ice', iceperiod,
      I                           icestartdate1, icestartdate2,
      U                           iceStartTime, errCount,
@@ -76,7 +76,7 @@ C     errCount  :: error counter
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START wind',myThid)
 # endif
-       CALL EXF_GETFFIELD_START( useDarwinYearlyFields,
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
      I                           'darwin', 'wind', windperiod,
      I                           windstartdate1, windstartdate2,
      U                           windStartTime, errCount,
@@ -87,7 +87,7 @@ C     errCount  :: error counter
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',myThid)
 # endif
-       CALL EXF_GETFFIELD_START( useDarwinYearlyFields,
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
      I                           'darwin', 'pCO2', pCO2period,
      I                           pCO2startdate1, pCO2startdate2,
      U                           pCO2StartTime, errCount,

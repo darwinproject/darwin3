@@ -56,7 +56,6 @@ C !LOCAL VARIABLES: ====================================================
       _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat, gridNx, gridNy
 
       NAMELIST/darwin_forcing_params/
-     &    useDarwinYearlyFields,
 C
      &    PARfile,
      &    PARperiod,
@@ -159,7 +158,6 @@ C
 
 C Open and read the data.darwin file
 
-      useDarwinYearlyFields = useExfYearlyFields
 
       PARfile = ' '
       PARperiod             = 0.0 _d 0

@@ -11,9 +11,7 @@ C
 C Requires: EXF_PARAM.h
 
       COMMON/darwin_forcing_exf_params_l/
-     &    usedarwinYearlyFields,
      &    darwin_loadFieldsEarly
-      LOGICAL usedarwinYearlyFields
       LOGICAL darwin_loadFieldsEarly
 
 
