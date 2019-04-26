@@ -25,13 +25,14 @@ C PAR forcing parameters for exf
      &    PARstartdate1, PARstartdate2
       COMMON/darwin_forcing_PAR_r/
      &    PARStartTime,
-     &    PARperiod, PARconst,
+     &    PARperiod, PARRepCycle, PARconst,
      &    PAR_exfremo_intercept, PAR_exfremo_slope,
      &    darwin_inscal_PAR
       CHARACTER*1 PARmask
       INTEGER PARstartdate1
       INTEGER PARstartdate2
       _RL PARperiod
+      _RL PARRepCycle
       _RL PARconst
       _RL PAR_exfremo_intercept
       _RL PAR_exfremo_slope
@@ -59,13 +60,14 @@ C iron forcing parameters for exf
      &    ironstartdate1, ironstartdate2
       COMMON/darwin_forcing_iron_r/
      &    ironStartTime,
-     &    ironperiod, ironconst,
+     &    ironperiod, ironRepCycle, ironconst,
      &    iron_exfremo_intercept, iron_exfremo_slope,
      &    darwin_inscal_iron
       CHARACTER*1 ironmask
       INTEGER ironstartdate1
       INTEGER ironstartdate2
       _RL ironperiod
+      _RL ironRepCycle
       _RL ironconst
       _RL iron_exfremo_intercept
       _RL iron_exfremo_slope
@@ -93,13 +95,14 @@ C ice forcing parameters for exf
      &    icestartdate1, icestartdate2
       COMMON/darwin_forcing_ice_r/
      &    iceStartTime,
-     &    iceperiod, iceconst,
+     &    iceperiod, iceRepCycle, iceconst,
      &    ice_exfremo_intercept, ice_exfremo_slope,
      &    darwin_inscal_ice
       CHARACTER*1 icemask
       INTEGER icestartdate1
       INTEGER icestartdate2
       _RL iceperiod
+      _RL iceRepCycle
       _RL iceconst
       _RL ice_exfremo_intercept
       _RL ice_exfremo_slope
@@ -127,13 +130,14 @@ C wind forcing parameters for exf
      &    windstartdate1, windstartdate2
       COMMON/darwin_forcing_wind_r/
      &    windStartTime,
-     &    windperiod, windconst,
+     &    windperiod, windRepCycle, windconst,
      &    wind_exfremo_intercept, wind_exfremo_slope,
      &    darwin_inscal_wind
       CHARACTER*1 windmask
       INTEGER windstartdate1
       INTEGER windstartdate2
       _RL windperiod
+      _RL windRepCycle
       _RL windconst
       _RL wind_exfremo_intercept
       _RL wind_exfremo_slope
@@ -161,13 +165,14 @@ C pCO2 forcing parameters for exf
      &    pCO2startdate1, pCO2startdate2
       COMMON/darwin_forcing_pCO2_r/
      &    pCO2StartTime,
-     &    pCO2period, pCO2const,
+     &    pCO2period, pCO2RepCycle, pCO2const,
      &    pCO2_exfremo_intercept, pCO2_exfremo_slope,
      &    darwin_inscal_pCO2
       CHARACTER*1 pCO2mask
       INTEGER pCO2startdate1
       INTEGER pCO2startdate2
       _RL pCO2period
+      _RL pCO2RepCycle
       _RL pCO2const
       _RL pCO2_exfremo_intercept
       _RL pCO2_exfremo_slope

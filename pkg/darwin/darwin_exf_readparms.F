@@ -52,7 +52,7 @@ CEOP
 
 C !LOCAL VARIABLES: ====================================================
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER j
+      INTEGER j, errCount
       _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat, gridNx, gridNy
 
       NAMELIST/darwin_forcing_params/
@@ -62,6 +62,7 @@ C !LOCAL VARIABLES: ====================================================
 C
      &    PARfile,
      &    PARperiod,
+     &    PARRepCycle,
      &    PARStartTime,
      &    PARstartdate1,
      &    PARstartdate2,
@@ -73,6 +74,7 @@ C
 C
      &    ironfile,
      &    ironperiod,
+     &    ironRepCycle,
      &    ironStartTime,
      &    ironstartdate1,
      &    ironstartdate2,
@@ -84,6 +86,7 @@ C
 C
      &    icefile,
      &    iceperiod,
+     &    iceRepCycle,
      &    iceStartTime,
      &    icestartdate1,
      &    icestartdate2,
@@ -95,6 +98,7 @@ C
 C
      &    windfile,
      &    windperiod,
+     &    windRepCycle,
      &    windStartTime,
      &    windstartdate1,
      &    windstartdate2,
@@ -106,6 +110,7 @@ C
 C
      &    pCO2file,
      &    pCO2period,
+     &    pCO2RepCycle,
      &    pCO2StartTime,
      &    pCO2startdate1,
      &    pCO2startdate2,
@@ -166,6 +171,7 @@ C Open and read the data.darwin file
 
       PARfile = ' '
       PARperiod             = 0.0 _d 0
+      PARRepCycle           = repeatPeriod
       PARStartTime          = UNSET_RL
       PARstartdate1         = 0
       PARstartdate2         = 0
@@ -178,6 +184,7 @@ C Open and read the data.darwin file
 
       ironfile = ' '
       ironperiod             = 0.0 _d 0
+      ironRepCycle           = repeatPeriod
       ironStartTime          = UNSET_RL
       ironstartdate1         = 0
       ironstartdate2         = 0
@@ -190,6 +197,7 @@ C Open and read the data.darwin file
 
       icefile = ' '
       iceperiod             = 0.0 _d 0
+      iceRepCycle           = repeatPeriod
       iceStartTime          = UNSET_RL
       icestartdate1         = 0
       icestartdate2         = 0
@@ -202,6 +210,7 @@ C Open and read the data.darwin file
 
       windfile = ' '
       windperiod             = 0.0 _d 0
+      windRepCycle           = repeatPeriod
       windStartTime          = UNSET_RL
       windstartdate1         = 0
       windstartdate2         = 0
@@ -214,6 +223,7 @@ C Open and read the data.darwin file
 
       pCO2file = ' '
       pCO2period             = 0.0 _d 0
+      pCO2RepCycle           = repeatPeriod
       pCO2StartTime          = UNSET_RL
       pCO2startdate1         = 0
       pCO2startdate2         = 0
@@ -388,6 +398,47 @@ C     warn if darwin and radtrans ice forcing are different
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 #endif
+
+      errCount = 0
+      IF ( useExfYearlyFields ) THEN
+       IF ( PARRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_EXF_READPARMS: The use of ',
+     &       'useExfYearlyFields AND PARRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( ironRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_EXF_READPARMS: The use of ',
+     &       'useExfYearlyFields AND ironRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( iceRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_EXF_READPARMS: The use of ',
+     &       'useExfYearlyFields AND iceRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( windRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_EXF_READPARMS: The use of ',
+     &       'useExfYearlyFields AND windRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( pCO2RepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_EXF_READPARMS: The use of ',
+     &       'useExfYearlyFields AND pCO2RepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+      ENDIF
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &     'DARWIN_EXF_READPARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R DARWIN_EXF_READPARMS'
+      ENDIF
 
       IF (oUnit .GE. 0) THEN
        WRITE(UNIT=oUnit, NML=DARWIN_FORCING_PARAMS)
