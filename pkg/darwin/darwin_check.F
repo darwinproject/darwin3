@@ -251,13 +251,6 @@ C check exf is compiled and used
       ENDIF
 
 #ifndef ALLOW_RADTRANS
-      IF (DARWIN_haveSurfPAR .AND. DARWIN_useQsw) THEN
-       WRITE(msgBuf,'(A,A)') 'DARWIN_EXF_READPARMS: ',
-     &  'Cannot set DARWIN_useQsw and provide a PARFile.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: DARWIN_EXF_READPARMS: DARWIN_useQsw+PARFile'
-      ENDIF
-
       IF (.NOT.DARWIN_haveSurfPAR .AND. .NOT.DARWIN_useQsw .AND.
      &    .NOT.usingSphericalPolarGrid) THEN
        WRITE(msgBuf,'(A,A)') 'DARWIN_EXF_READPARMS: ',
@@ -270,23 +263,6 @@ C check exf is compiled and used
      &  'Please provide PARFile or set DARWIN_useQsw.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: DARWIN_EXF_READPARMS: DARWIN_INSOL vs grid'
-      ENDIF
-#endif
-
-#ifdef ALLOW_SEAICE
-      DARWIN_useSEAICE = .NOT. DARWIN_haveIce .AND. .NOT. DARWIN_useQsw
-      IF (DARWIN_useSEAICE) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** DARWIN_EXF_READPARMS: ',
-     &    'iceFile and iceconst unset, using ice area from seaice pkg'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-      ELSE
-       IF (DARWIN_haveIce) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** DARWIN_EXF_READPARMS: ',
-     &    'iceFile or iceconst set, not using ice area from seaice pkg'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
       ENDIF
 #endif
 

@@ -17,12 +17,16 @@ C Requires: DARWIN_SIZE.h
      &    darwin_chlInitBalanced,
      &    darwin_haveSurfPAR,
      &    darwin_haveIce,
+     &    darwin_haveWind,
      &    darwin_useSEAICE,
+     &    darwin_useQsw,
      &    darwin_useEXFwind
       LOGICAL darwin_chlInitBalanced
       LOGICAL darwin_haveSurfPAR
       LOGICAL darwin_haveIce
+      LOGICAL darwin_haveWind
       LOGICAL darwin_useSEAICE
+      LOGICAL darwin_useQsw
       LOGICAL darwin_useEXFwind
 
       COMMON/darwin_forcing_params_i/
@@ -84,12 +88,10 @@ C Requires: DARWIN_SIZE.h
       COMMON /DARWIN_PARAMS_l/
      &    darwin_strict_check,
      &    darwin_linFSConserve,
-     &    darwin_read_phos,
-     &    DARWIN_useQsw
+     &    darwin_read_phos
       LOGICAL darwin_strict_check
       LOGICAL darwin_linFSConserve
       LOGICAL darwin_read_phos
-      LOGICAL DARWIN_useQsw
       COMMON /DARWIN_PARAMS_i/
      &    darwin_seed,
      &    iDEBUG,

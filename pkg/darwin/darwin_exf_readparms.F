@@ -56,6 +56,9 @@ C !LOCAL VARIABLES: ====================================================
       _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat, gridNx, gridNy
 
       NAMELIST/darwin_forcing_params/
+     &    darwin_useEXFwind,
+     &    darwin_useQsw,
+     &    darwin_useSEAICE,
 C
      &    PARfile,
      &    PARperiod,
@@ -158,13 +161,15 @@ C
 
 C Open and read the data.darwin file
 
+      darwin_useEXFwind = .FALSE.
+      darwin_useQsw = .FALSE.
 
       PARfile = ' '
       PARperiod             = 0.0 _d 0
       PARStartTime          = UNSET_RL
       PARstartdate1         = 0
       PARstartdate2         = 0
-      PARconst              = 0.0 _d 0
+      PARconst              = UNSET_RL
       PAR_exfremo_intercept = 0.0 _d 0
       PAR_exfremo_slope     = 0.0 _d 0
       PARmask = 'c'
@@ -188,7 +193,7 @@ C Open and read the data.darwin file
       iceStartTime          = UNSET_RL
       icestartdate1         = 0
       icestartdate2         = 0
-      iceconst              = 0.0 _d 0
+      iceconst              = UNSET_RL
       ice_exfremo_intercept = 0.0 _d 0
       ice_exfremo_slope     = 0.0 _d 0
       icemask = 'c'
@@ -200,7 +205,7 @@ C Open and read the data.darwin file
       windStartTime          = UNSET_RL
       windstartdate1         = 0
       windstartdate2         = 0
-      windconst              = 0.0 _d 0
+      windconst              = UNSET_RL
       wind_exfremo_intercept = 0.0 _d 0
       wind_exfremo_slope     = 0.0 _d 0
       windmask = 'c'
@@ -301,6 +306,54 @@ C set alternate forcing sources
       ENDIF
 
       DARWIN_haveIce = iceFile.NE.' ' .OR. iceconst.NE.UNSET_RL
+      IF (iceconst.EQ.UNSET_RL) THEN
+        iceconst = 0 _d 0
+      ENDIF
+
+      DARWIN_haveWind = windFile.NE.' ' .OR. windconst.NE.UNSET_RL
+      IF (windconst.EQ.UNSET_RL) THEN
+        windconst = 5 _d 0
+      ENDIF
+
+      IF (DARWIN_haveSurfPAR .AND. DARWIN_useQsw) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_EXF_READPARMS: ',
+     &    'cannot set both PARFile/PARconst and darwin_useQsw'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP'ABNORMAL END: DARWIN_EXF_READPARMS: inconsistent light forc'
+      ENDIF
+
+      IF (DARWIN_haveIce .AND. DARWIN_useSEAICE) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_EXF_READPARMS: ',
+     &    'cannot set both iceFile/iceconst and darwin_useSEAICE'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: DARWIN_EXF_READPARMS: inconsistent ice forc'
+      ENDIF
+
+#ifdef ALLOW_SEAICE
+      IF (useSEAICE .AND. .NOT. DARWIN_useSEAICE) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** DARWIN_EXF_READPARMS: ',
+     &    'iceFile or iceconst set, not using ice area from seaice pkg'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+#endif
+
+      IF (DARWIN_haveWind .AND. DARWIN_useEXFwind) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_EXF_READPARMS: ',
+     &    'cannot set both windFile/windconst and darwin_useEXFwind'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: DARWIN_EXF_READPARMS: inconsistent wind forc'
+      ENDIF
+
+#ifdef DARWIN_ALLOW_CARBON
+      IF (.NOT.DARWIN_haveWind .AND. .NOT.DARWIN_useEXFwind) THEN
+        WRITE(msgBuf,'(2A,F7.3,A)')
+     &    '** WARNING ** DARWIN_EXF_READPARMS: ',
+     &    'default constant wind speed ',windconst,' m/s is used'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_RADTRANS
 C     darwin iceFile is used for carbon air-sea exchanges while
@@ -317,10 +370,6 @@ C     If they are both set but different, we warn (see further below).
        STOP 'ABNORMAL END: DARWIN_EXF_READPARMS: ice inconsistency'
       ENDIF
 #endif
-
-      IF (iceconst.EQ.UNSET_RL) THEN
-        iceconst = 0 _d 0
-      ENDIF
 
 #ifdef ALLOW_RADTRANS
 C     warn if darwin and radtrans ice forcing are different
@@ -339,30 +388,6 @@ C     warn if darwin and radtrans ice forcing are different
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 #endif
-
-C first preference: darwin wind if given
-      IF (windFile.NE.' ' .OR. windconst.NE.UNSET_RL) THEN
-        DARWIN_useEXFwind = .FALSE.
-C second preference: exf wspeed if given
-      ELSEIF (wspeedfile.NE.' ' .OR. wspeedconst.NE.0 _d 0) THEN
-        DARWIN_useEXFwind = .TRUE.
-#ifdef DARWIN_ALLOW_CARBON
-        WRITE(msgBuf,'(2A)') '** WARNING ** DARWIN_EXF_READPARMS: ',
-     &    'wspeedFile and wspeedconst unset, using wspeed from exf'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-#endif
-      ELSE
-C last preference: constant value of 5 m/s
-        DARWIN_useEXFwind = .FALSE.
-        windconst = 5 _d 0
-#ifdef DARWIN_ALLOW_CARBON
-        WRITE(msgBuf,'(2A)') '** WARNING ** DARWIN_EXF_READPARMS: ',
-     &    'wspeedFile and wspeedconst unset, using default of 5 m/s'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-#endif
-      ENDIF
 
       IF (oUnit .GE. 0) THEN
        WRITE(UNIT=oUnit, NML=DARWIN_FORCING_PARAMS)

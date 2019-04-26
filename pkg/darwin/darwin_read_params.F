@@ -59,7 +59,6 @@
      &    phymin,
      &    katten_w,
      &    katten_chl,
-     &    DARWIN_useQsw,
      &    parfrac,
      &    parconv,
      &    tempnorm,
@@ -289,7 +288,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       phymin = 120 _d -20
       katten_w = 4. _d -2
       katten_chl = 4. _d -2
-      DARWIN_useQsw = .FALSE.
       parfrac = 0.4 _d 0
       parconv = 1. _d 0/0.2174 _d 0
       tempnorm = 0.3 _d 0
