@@ -1099,7 +1099,7 @@ C       regulate grazing near full quota
         ENDDO
         sumprey = MAX(0.0, sumprey - phygrazmin)
         sumpref = MAX(phygrazmin, sumpref)
-        tmp = grazemax(jz)*grazTempFunc(jz)*X(jz)*
+        tmp = grazemax(jz)*grazTempFunc(jz)**tempGraz(jz)*X(jz)*
      &    (sumprey**hollexp/(sumprey**hollexp+kgrazesat(jz)**hollexp))*
      &    (1.0 - EXP(-inhib_graz*sumprey))**inhib_graz_exp
 

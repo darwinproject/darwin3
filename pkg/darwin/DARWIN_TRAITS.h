@@ -26,7 +26,8 @@ C Requires: DARWIN_SIZE.h
      &    isPrey,
      &    isPred,
      &    tempMort,
-     &    tempMort2
+     &    tempMort2,
+     &    tempGraz
       INTEGER isPhoto(nplank)
       INTEGER bactType(nplank)
       INTEGER isAerobic(nplank)
@@ -42,6 +43,7 @@ C Requires: DARWIN_SIZE.h
       INTEGER isPred(nplank)
       INTEGER tempMort(nplank)
       INTEGER tempMort2(nplank)
+      INTEGER tempGraz(nplank)
       COMMON /DARWIN_TRAITS_r/
      &    Xmin,
      &    amminhib,

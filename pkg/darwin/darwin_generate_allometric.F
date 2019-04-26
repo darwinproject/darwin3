@@ -213,6 +213,7 @@ C flags
         combNO(jp)     = grp_combNO(g)
         tempMort(jp)   = grp_tempMort(g)
         tempMort2(jp)  = grp_tempMort2(g)
+        tempGraz(jp)   = grp_tempGraz(g)
 
 C traits
         Xmin(jp)       = a_Xmin(g)

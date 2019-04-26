@@ -1017,6 +1017,7 @@ c
 C zooplankton do have temperature-dependent mortality
         tempMort(nz) = 1
         tempMort2(nz) = 1
+        tempGraz(nz) = 1
 
         respRate(nz) = 0.0 _d 0
         biosink(nz) = 0.0 _d 0

@@ -239,7 +239,8 @@ C Requires: DARWIN_SIZE.h
      &    grp_combNO,
      &    grp_aptype,
      &    grp_tempMort,
-     &    grp_tempMort2
+     &    grp_tempMort2,
+     &    grp_tempGraz
       INTEGER darwin_select_kn_allom
       INTEGER logvol0ind(nGroup)
       INTEGER grp_nplank(nGroup)
@@ -259,6 +260,7 @@ C Requires: DARWIN_SIZE.h
       INTEGER grp_aptype(nGroup)
       INTEGER grp_tempMort(nGroup)
       INTEGER grp_tempMort2(nGroup)
+      INTEGER grp_tempGraz(nGroup)
       COMMON /DARWIN_TRAIT_PARAMS_r/
      &    logvolbase,
      &    logvolinc,

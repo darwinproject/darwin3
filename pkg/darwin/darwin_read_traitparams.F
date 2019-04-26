@@ -144,6 +144,7 @@
      &    grp_aptype,
      &    grp_tempMort,
      &    grp_tempMort2,
+     &    grp_tempGraz,
      &    a_Xmin,
      &    a_R_NC,
      &    a_R_PC,
@@ -406,6 +407,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       grp_aptype = 0
       grp_tempMort = 1
       grp_tempMort2 = 1
+      grp_tempGraz = 1
       a_Xmin = 0 _d 0
       a_R_NC = 16.0 _d 0/120.0 _d 0
       a_R_PC = 1 _d 0/120.0 _d 0

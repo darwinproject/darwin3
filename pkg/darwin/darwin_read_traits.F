@@ -48,6 +48,7 @@
      &    mort2,
      &    tempMort,
      &    tempMort2,
+     &    tempGraz,
      &    ExportFracMort,
      &    ExportFracMort2,
      &    ExportFracExude,
