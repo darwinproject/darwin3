@@ -120,6 +120,61 @@ c !LOCAL VARIABLES: ====================================================
        ENDDO
       ENDDO
 
+#ifdef DARWIN_BOTTOM_SINK
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         dzup = DRF(k)*hFacC(i,j,k,bi,bj)
+         IF (k.LT.Nr) THEN
+           dzdn = DRF(k+1)*hFacC(i,j,k+1,bi,bj)
+         ELSE
+           dzdn = 0. _d 0
+         ENDIF
+         IF (dzup .GT. 0 _d 0 .AND. dzdn .EQ. 0 _d 0) THEN
+          flux = wPIC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPIC))
+          gTr(i,j,k  ,iPIC ) = gTr(i,j,k  ,iPIC ) - flux/dzup
+          flux = wC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOC))
+          gTr(i,j,k  ,iPOC ) = gTr(i,j,k  ,iPOC ) - flux/dzup
+          flux = wN_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPON))
+          gTr(i,j,k  ,iPON ) = gTr(i,j,k  ,iPON ) - flux/dzup
+          flux = wP_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOP))
+          gTr(i,j,k  ,iPOP ) = gTr(i,j,k  ,iPOP ) - flux/dzup
+          flux = wSi_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOSi))
+          gTr(i,j,k  ,iPOSi) = gTr(i,j,k  ,iPOSi) - flux/dzup
+          flux = wFe_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOFe))
+          gTr(i,j,k  ,iPOFe) = gTr(i,j,k  ,iPOFe) - flux/dzup
+          DO l = 1, nplank
+           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ic+l-1))
+           gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) - flux/dzup
+#ifdef DARWIN_ALLOW_NQUOTA
+           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,in+l-1))
+           gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) - flux/dzup
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ip+l-1))
+           gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) - flux/dzup
+#endif
+#ifdef DARWIN_ALLOW_SIQUOTA
+           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,isi+l-1))
+           gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) - flux/dzup
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ife+l-1))
+           gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) - flux/dzup
+#endif
+          ENDDO
+#ifdef DARWIN_ALLOW_CHLQUOTA
+          DO l = 1, nPhoto
+           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,iChl+l-1))
+           gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)-flux/dzup
+          ENDDO
+#endif
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* DARWIN_BOTTOM_SINK */
+
 #endif /* ALLOW_DARWIN */
 
       RETURN
