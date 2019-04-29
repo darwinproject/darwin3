@@ -82,22 +82,42 @@ C compute light
         ENDDO
        ENDDO
 # else
+       IF (PARfile .NE. ' ') THEN
 C!!!!!  do not take ice into account for backwards compatibility
-       j = -1
-       CALL DARWIN_LIGHT(PAR,myTime,bi,bj,1-OLx,sNx+OLx,1-OLy,sNy+OLy,
-     &                   myTime,j,myThid)
+        j = -99
+        CALL DARWIN_LIGHT(PAR,myTime,bi,bj,1-OLx,sNx+OLx,1-OLy,sNy+OLy,
+     &                    myTime,j,myThid)
+       ELSE
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          lite = 200 _d 0
+          atten = 0 _d 0
+          DO k=1,nR
+           IF (HFacC(i,j,k,bi,bj).GT.0. _d 0) THEN
+            atten= atten + katten_w*5. _d -1*drF(k)
+            IF (k.gt.1)THEN
+             atten = atten + katten_w*5. _d -1*drF(k-1)
+            ENDIF
+            PAR(i,j,k,1) = lite*EXP(-atten)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
 # endif
 
 #else /* not DARWIN_CHL_INIT_LEGACY */
 
 C      compute PAR from current Chl
 C      (usually initialized to 0 if darwin_chlInitBalanced)
-C      do not fill diagnostics (and no ice if radtrans)
-       j = -1
+C      do not fill diagnostics,
+C      do not take ice into account for backwards compatibility
 # ifdef ALLOW_RADTRANS
+       j = -1
        CALL DARWIN_LIGHT_RADTRANS(PAR,myTime,bi,bj,1-OLx,sNx+OLx,
      &                         1-OLy,sNy+OLy,myTime,j,myThid)
 # else
+       j = -99
        CALL DARWIN_LIGHT(PAR,myTime,bi,bj,1-OLx,sNx+OLx,1-OLy,sNy+OLy,
      &                   myTime,j,myThid)
 # endif
