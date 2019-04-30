@@ -623,8 +623,8 @@ C non-quota elements are taken up with fixed stoichiometry
 
 C==== chlorophyll ======================================================
 #ifdef DARWIN_ALLOW_GEIDER
-#ifdef DARWIN_ALLOW_CHLQUOTA
-#ifdef DARWIN_ALLOW_NQUOTA
+# ifdef DARWIN_ALLOW_CHLQUOTA
+#  ifdef DARWIN_ALLOW_NQUOTA
 C       Geider 1998
         IF (PARtot .GT. PARmin) THEN
          IF (alpha_I*chl2c .GT. 0.0 _d 0) THEN
@@ -639,8 +639,8 @@ C          rhochl = Chl2Nmax/(alpha_I*chl2c)*ngrow ???
         ENDIF
 CTODO: this seems wrong!  Should only happen when PARtot.GT.PARmin
         uptakeDIC = uptakeDIC - synthcost*uptakeN
-#else
-#ifdef DARWIN_GEIDER_RHO_SYNTH
+#  else /* not DARWIN_ALLOW_NQUOTA */
+#   ifdef DARWIN_GEIDER_RHO_SYNTH
         IF (alpha_I .GT. 0.0 _d 0 .AND. acclim .GT. 0.0 _d 0) THEN
           rhochl = Chl2Cmax(j)*PC*ngrow/(alpha_I*acclim)
         ELSE
@@ -648,15 +648,15 @@ CTODO: this seems wrong!  Should only happen when PARtot.GT.PARmin
         ENDIF
         synthChl = rhochl*growth +
      &                      acclimtimescl(j)*(acclim-chl2c)*X(j)
-#else
+#   else
         synthChl = acclim*growth +
      &                      acclimtimescl(j)*(acclim-chl2c)*X(j)
-#endif
-#endif /* DARWIN_ALLOW_NQUOTA */
-#else /* DARWIN_ALLOW_CHLQUOTA */
+#   endif
+#  endif /* not DARWIN_ALLOW_NQUOTA */
+# else /* not DARWIN_ALLOW_CHLQUOTA */
         chlout(j) = X(j)*Qc(j)*chl2c
         synthChl = 0.0
-#endif /* DARWIN_ALLOW_CHLQUOTA */
+# endif /* DARWIN_ALLOW_CHLQUOTA */
 #endif /* DARWIN_ALLOW_GEIDER */
 C=======================================================================
         consumDIC_PIC = consumDIC_PIC + uptakeDIC*R_PICPOC(j)
