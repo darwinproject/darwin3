@@ -228,7 +228,7 @@ C === plankton =========================================================
          gtr(iTr) = gPtr(i, j, k, iTr)
         ENDDO
         DO l=1,nlam
-         PARl(l) = PAR(i, j, k, l)
+         PARl(l) = MAX(0 _d 0, PAR(i, j, k, l))
         ENDDO
         CALL DARWIN_PLANKTON(
      I                 ptr,
