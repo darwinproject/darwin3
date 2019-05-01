@@ -86,7 +86,6 @@ c !LOCAL VARIABLES: ====================================================
       _RL O2
 
       _RL X(nplank)
-      _RL Xi(nplank)
       _RL Qc(nplank)
       _RL Qn(nplank)
       _RL Qp(nplank)
@@ -280,10 +279,6 @@ C for grazing
       _RL graz2CDOM, exude_CDOM
 #endif
 
-      _RL EPS
-
-      PARAMETER (EPS=1D-38)
-
 C==== precompute a few things ==========================================
 
       PARtot = SUM(PAR)
@@ -294,9 +289,9 @@ C==== make all bio fields non-negative and compute quotas ==============
       NH4  = MAX(0., Ptr(iNH4))
       NO2  = MAX(0., Ptr(iNO2))
       NO3  = MAX(0., Ptr(iNO3))
-      PO4  = MAX(EPS, Ptr(iPO4))
-      SiO2 = MAX(EPS, Ptr(iSiO2))
-      FeT  = MAX(EPS, Ptr(iFeT))
+      PO4  = MAX(0., Ptr(iPO4))
+      SiO2 = MAX(0., Ptr(iSiO2))
+      FeT  = MAX(0., Ptr(iFeT))
 
       DOC  = MAX(0., Ptr(iDOC))
       DON  = MAX(0., Ptr(iDON))
@@ -324,31 +319,50 @@ C fixed carbon quota, for now 1.0 (may change later)
         X(j) = MAX(0., Ptr(ic+j-1))/Qc(j)
 C other elementsj get quota from corresponding ptracer or set to fixed
 c ratio if not variable.
-        Xi(j) = 1.0 _d 0/MAX(EPS, X(j))
 #ifdef DARWIN_ALLOW_NQUOTA
-        Qn(j) = MAX(EPS*R_NC(j), Ptr(in+j-1))*Xi(j)
+        IF (X(j) .GT. 0 _d 0) THEN
+          Qn(j) = MAX(0 _d 0, Ptr(in+j-1))/X(j)
+        ELSE
+          Qn(j) = Qnmax(j)
+        ENDIF
 #else
         Qn(j) = R_NC(j)
 #endif
 #ifdef DARWIN_ALLOW_PQUOTA
-        Qp(j) = MAX(EPS*R_PC(j), Ptr(ip+j-1))*Xi(j)
+        IF (X(j) .GT. 0 _d 0) THEN
+          Qp(j) = MAX(0 _d 0, Ptr(ip+j-1))/X(j)
+        ELSE
+          Qp(j) = Qpmax(j)
+        ENDIF
 #else
         Qp(j) = R_PC(j)
 #endif
 #ifdef DARWIN_ALLOW_SIQUOTA
-        Qsi(j) = MAX(EPS*R_SiC(j), Ptr(isi+j-1))*Xi(j)
+        IF (X(j) .GT. 0 _d 0) THEN
+          Qsi(j) = MAX(0 _d 0, Ptr(isi+j-1))/X(j)
+        ELSE
+          Qsi(j) = Qsimax(j)
+        ENDIF
 #else
         Qsi(j) = R_SiC(j)
 #endif
 #ifdef DARWIN_ALLOW_FEQUOTA
-        Qfe(j) = MAX(EPS*R_feC(j), Ptr(ife+j-1))*Xi(j)
+        IF (X(j) .GT. 0 _d 0) THEN
+          Qfe(j) = MAX(0 _d 0, Ptr(ife+j-1))/X(j)
+        ELSE
+          Qfe(j) = Qfemax(j)
+        ENDIF
 #else
         Qfe(j) = R_FeC(j)
 #endif
       ENDDO
 #ifdef DARWIN_ALLOW_CHLQUOTA
       DO j = 1, nPhoto
-        QChl(j) = MAX(EPS*R_ChlC(j), Ptr(ichl+j-1))*Xi(j)
+        IF (X(j) .GT. 0 _d 0) THEN
+          QChl(j) = MAX(0 _d 0, Ptr(iChl+j-1))/X(j)
+        ELSE
+          QChl(j) = chl2cmax(j)
+        ENDIF
       ENDDO
 #endif
 
@@ -412,7 +426,11 @@ C       or R_PC=0 (if not)
 C       the result will be limitp = 1, uptakePO4 = 0
 
 c phosphorus
-        limitp = PO4/(PO4 + ksatPO4(j))
+        IF (ksatPO4(j) .GT. 0 _d 0) THEN
+          limitp = PO4/(PO4 + ksatPO4(j))
+        ELSE
+          limitp = 1 _d 0
+        ENDIF
 #ifdef DARWIN_ALLOW_PQUOTA
         regQ = MAX(0., MIN(1., (Qpmax(j)-Qp(j))/
      &                         (Qpmax(j)-Qpmin(j)) ))
@@ -425,7 +443,11 @@ c       normalized Droop limitation
 #endif
 
 c silica
-        limitsi = SiO2/(SiO2 + ksatSiO2(j))
+        IF (ksatSiO2(j) .GT. 0 _d 0) THEN
+          limitsi = SiO2/(SiO2 + ksatSiO2(j))
+        ELSE
+          limitsi = 1 _d 0
+        ENDIF
 #ifdef DARWIN_ALLOW_SIQUOTA
         regQ = MAX(0., MIN(1., (Qsimax(j) - Qsi(j))/
      &                         (Qsimax(j) - Qsimin(j)) ))
@@ -439,7 +461,11 @@ c       linear limitation
 #endif
 
 c iron
-        limitfe = FeT/(FeT + ksatFeT(j))
+        IF (ksatFeT(j) .GT. 0 _d 0) THEN
+          limitfe = FeT/(FeT + ksatFeT(j))
+        ELSE
+          limitfe = 1 _d 0
+        ENDIF
 #ifdef DARWIN_ALLOW_FEQUOTA
         regQ = MAX(0., MIN(1., (Qfemax(j)-Qfe(j))/
      &                         (Qfemax(j)-Qfemin(j)) ))
@@ -485,10 +511,16 @@ c       linear limitation
         limitNO3 = useNO3(j)*NO3/
      &   (combNO(j)*NO2 + NO3 + ksatNO3(j))*inhibNH4
         limitn = limitNH4 + limitNO2 + limitNO3
-C       normalize to sum (approx) 1
-        fracNH4 = limitNH4/(limitn + EPS)
-        fracNO2 = limitNO2/(limitn + EPS)
-        fracNO3 = limitNO3/(limitn + EPS)
+C       normalize to sum 1
+        IF (limitn .GT. 0 _d 0) THEN
+          fracNH4 = limitNH4/limitn
+          fracNO2 = limitNO2/limitn
+          fracNO3 = limitNO3/limitn
+        ELSE
+          fracNH4 = 0 _d 0
+          fracNO2 = 0 _d 0
+          fracNO3 = 0 _d 0
+        ENDIF
 C if diazo, all fracN* == 0 but want no N limitation
         limitn = MIN(1.0, limitn + diazo(j))
 #endif /* DARWIN_ALLOW_NQUOTA */
