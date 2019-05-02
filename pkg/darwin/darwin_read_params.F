@@ -175,15 +175,13 @@
 #endif
 
       NAMELIST/DARWIN_DEPENDENT_PARAMS/
-     &    darwin_dependent_i_dummy,
 #ifdef ALLOW_RADTRANS
 #ifdef DARWIN_ALLOW_CDOM
 #else
      &    laCDOM,
 #endif
 #endif
-     &    kMinFeSed,
-     &    kMaxFeSed
+     &    darwin_dependent_i_dummy
 
 
 #ifdef ALLOW_RADTRANS
