@@ -227,7 +227,7 @@ C Open and read the data.darwin file
       pCO2StartTime          = UNSET_RL
       pCO2startdate1         = 0
       pCO2startdate2         = 0
-      pCO2const              = 0.0 _d 0
+      pCO2const              = 278 _d -6
       pCO2_exfremo_intercept = 0.0 _d 0
       pCO2_exfremo_slope     = 0.0 _d 0
       pCO2mask = 'c'

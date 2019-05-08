@@ -144,7 +144,6 @@ C Requires: DARWIN_SIZE.h
      &    wPIC_sink,
      &    Kdissc,
 #ifdef DARWIN_ALLOW_CARBON
-     &    darwin_atmos_pCO2,
      &    R_OP,
      &    R_OC,
      &    m3perkg,
@@ -249,7 +248,6 @@ C Requires: DARWIN_SIZE.h
       _RL wPIC_sink
       _RL Kdissc
 #ifdef DARWIN_ALLOW_CARBON
-      _RL darwin_atmos_pCO2
       _RL R_OP
       _RL R_OC
       _RL m3perkg

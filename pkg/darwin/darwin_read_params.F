@@ -98,7 +98,6 @@
      &    wPIC_sink,
      &    Kdissc,
 #ifdef DARWIN_ALLOW_CARBON
-     &    darwin_atmos_pCO2,
      &    R_OP,
      &    R_OC,
      &    m3perkg,
@@ -327,7 +326,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       wPIC_sink = 15.0 _d 0/pday
       Kdissc = 1.0 _d 0/(300.0 _d 0*pday)
 #ifdef DARWIN_ALLOW_CARBON
-      darwin_atmos_pCO2 = 278 _d -6
       R_OP = 170 _d 0
       R_OC = 170 _d 0/120.0 _d 0
       m3perkg = 1. _d 0 / 1024.5 _d 0
