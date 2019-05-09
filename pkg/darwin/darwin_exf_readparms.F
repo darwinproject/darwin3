@@ -52,6 +52,9 @@ CEOP
 
 C !LOCAL VARIABLES: ====================================================
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL darwin_haveIce
+      LOGICAL darwin_haveWind
+      LOGICAL darwin_havepCO2
       INTEGER j, errCount
       _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat, gridNx, gridNy
 
@@ -227,7 +230,7 @@ C Open and read the data.darwin file
       pCO2StartTime          = UNSET_RL
       pCO2startdate1         = 0
       pCO2startdate2         = 0
-      pCO2const              = 278 _d -6
+      pCO2const              = UNSET_RL
       pCO2_exfremo_intercept = 0.0 _d 0
       pCO2_exfremo_slope     = 0.0 _d 0
       pCO2mask = 'c'
@@ -325,6 +328,11 @@ C set alternate forcing sources
         windconst = 5 _d 0
       ENDIF
 
+      DARWIN_havepCO2 = pCO2File.NE.' ' .OR. pCO2const.NE.UNSET_RL
+      IF (pCO2const.EQ.UNSET_RL) THEN
+        pCO2const = 278 _d -6
+      ENDIF
+
       IF (DARWIN_haveSurfPAR .AND. DARWIN_useQsw) THEN
         WRITE(msgBuf,'(2A)') 'DARWIN_EXF_READPARMS: ',
      &    'cannot set both PARFile/PARconst and darwin_useQsw'
@@ -360,6 +368,14 @@ C set alternate forcing sources
         WRITE(msgBuf,'(2A,F7.3,A)')
      &    '** WARNING ** DARWIN_EXF_READPARMS: ',
      &    'default constant wind speed ',windconst,' m/s is used'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF (.NOT.DARWIN_havepCO2) THEN
+        WRITE(msgBuf,'(2A,E12.6,A)')
+     &    '** WARNING ** DARWIN_EXF_READPARMS: ',
+     &    'default pCO2 of ',pCO2const,' atm is used'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
