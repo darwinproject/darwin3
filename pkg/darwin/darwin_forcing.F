@@ -331,6 +331,8 @@ C === diagnostics ======================================================
      &       0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDenit),'Denit   ',
      &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDenitN),'DenitN  ',
+     &       0,Nr,2,bi,bj,myThid)
 
 C      nutrient consumption diagnostics
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsDIN),'C_DIN   ',

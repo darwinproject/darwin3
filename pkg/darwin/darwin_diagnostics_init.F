@@ -73,6 +73,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      WRITE(diagName,'(A)')'DenitN'
+      WRITE(diagTitle,'(A)')'Nitrogen loss due to denitrification'
+      diagUnits = 'mmol N/m^3/s    '
+      diagCode  = 'SMRP    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 #ifdef ALLOW_RADTRANS
       DO j = 1, nlam
         WRITE(diagName,'(A,I3.3)')'PAR',j
