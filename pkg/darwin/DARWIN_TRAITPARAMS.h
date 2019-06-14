@@ -307,9 +307,9 @@ C Requires: DARWIN_SIZE.h
      &    a_bioswim,
      &    a_bioswim_denom,
      &    b_bioswim,
-     &    a_pp_sig,
-     &    a_pp_opt,
-     &    b_pp_opt,
+     &    a_ppSig,
+     &    a_ppOpt,
+     &    b_ppOpt,
      &    a_PCmax,
      &    a_PCmax_denom,
      &    b_PCmax,
@@ -426,9 +426,9 @@ C Requires: DARWIN_SIZE.h
       _RL a_bioswim(nGroup)
       _RL a_bioswim_denom(nGroup)
       _RL b_bioswim(nGroup)
-      _RL a_pp_sig(nGroup)
-      _RL a_pp_opt(nGroup)
-      _RL b_pp_opt(nGroup)
+      _RL a_ppSig(nGroup)
+      _RL a_ppOpt(nGroup)
+      _RL b_ppOpt(nGroup)
       _RL a_PCmax(nGroup)
       _RL a_PCmax_denom(nGroup)
       _RL b_PCmax(nGroup)

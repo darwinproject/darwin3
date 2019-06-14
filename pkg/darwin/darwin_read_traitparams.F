@@ -184,9 +184,9 @@
      &    a_bioswim,
      &    a_bioswim_denom,
      &    b_bioswim,
-     &    a_pp_sig,
-     &    a_pp_opt,
-     &    b_pp_opt,
+     &    a_ppSig,
+     &    a_ppOpt,
+     &    b_ppOpt,
      &    a_PCmax,
      &    a_PCmax_denom,
      &    b_PCmax,
@@ -447,9 +447,9 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       a_bioswim = 0.00 _d 0 / pday
       a_bioswim_denom = 1. _d 0
       b_bioswim = 0.18 _d 0
-      a_pp_sig = 1.0 _d 0
-      a_pp_opt = 1024. _d 0
-      b_pp_opt = 0.00 _d 0
+      a_ppSig = 1.0 _d 0
+      a_ppOpt = 1024. _d 0
+      b_ppOpt = 0.00 _d 0
       a_PCmax = 1.00 _d 0 / pday
       a_PCmax_denom = 1. _d 0
       b_PCmax = -0.15 _d 0

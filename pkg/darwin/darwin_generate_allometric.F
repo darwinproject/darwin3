@@ -450,7 +450,7 @@ C assign grazing preference according to predator/prey radius ratio
 C           grazing size preference ratio
             pp_opt = a_ppOpt(gz) * biovol(jz)**b_ppOpt(gz)
 C           standard deviation of size preference
-            pp_sig = a_pp_sig(gz)
+            pp_sig = a_ppSig(gz)
             prd_pry = biovol(jz) / biovol(jp)
             palat(jp,jz) =
      &        EXP(-(LOG(prd_pry/pp_opt)**2) / (2*pp_sig**2))
