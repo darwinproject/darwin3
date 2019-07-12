@@ -29,6 +29,8 @@ C Requires: DARWIN_SIZE.h
      &    darwin_lambda_aCDOM,
      &    darwin_Sdom,
      &    darwin_aCDOM_fac,
+     &    darwin_rCDOM,
+     &    darwin_RPOC,
      &    darwin_aCarCell,
      &    darwin_bCarCell,
      &    darwin_absorpSlope,
@@ -42,6 +44,8 @@ C Requires: DARWIN_SIZE.h
       _RL darwin_lambda_aCDOM
       _RL darwin_Sdom
       _RL darwin_aCDOM_fac
+      _RL darwin_rCDOM
+      _RL darwin_RPOC
       _RL darwin_aCarCell
       _RL darwin_bCarCell
       _RL darwin_absorpSlope

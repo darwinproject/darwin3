@@ -194,6 +194,8 @@
      &    darwin_lambda_aCDOM,
      &    darwin_Sdom,
      &    darwin_aCDOM_fac,
+     &    darwin_rCDOM,
+     &    darwin_RPOC,
      &    darwin_allomSpectra,
      &    darwin_aCarCell,
      &    darwin_bCarCell,
@@ -436,6 +438,8 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       darwin_lambda_aCDOM = 450.0 _d 0
       darwin_Sdom = 0.014 _d 0
       darwin_aCDOM_fac = 0.2 _d 0
+      darwin_rCDOM = 0.0 _d 0
+      darwin_RPOC = 0.0 _d 0
       darwin_allomSpectra = .FALSE.
       darwin_aCarCell = 0.109 _d -9
       darwin_bCarCell = 0.991 _d 0
