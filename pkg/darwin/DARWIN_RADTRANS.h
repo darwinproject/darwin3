@@ -22,6 +22,22 @@ C Requires: DARWIN_SIZE.h
       CHARACTER*256 darwin_waterAbsorbFile
       CHARACTER*256 darwin_phytoAbsorbFile
       CHARACTER*256 darwin_particleAbsorbFile
+C     COMMON /DARWIN_RADTRANS_PARAMS_r/
+C     darwin_part_size_P       :: [mmol P/particle]
+C     darwin_bbmin             :: [1/m]
+C     darwin_bbw               :: [1]
+C     darwin_lambda_aCDOM      :: [nm]
+C     darwin_Sdom              :: [1/nm]
+C     darwin_aCDOM_fac         :: [1]
+C     darwin_rCDOM             :: recalcitrant CDOM concentration [mmol P/m3]
+C     darwin_RPOC              :: recalcitrant POC concentration [mmol C/m3]
+C     darwin_aCarCell          :: [mg C/cell]
+C     darwin_bCarCell          :: [1/log(m3)]
+C     darwin_absorpSlope       :: slope for scaled absorption spectra [1]
+C     darwin_bbbSlope          :: [1]
+C     darwin_scatSwitchSizeLog :: [1]
+C     darwin_scatSlopeSmall    :: [1]
+C     darwin_scatSlopeLarge    :: [1]
       COMMON /DARWIN_RADTRANS_PARAMS_r/
      &    darwin_part_size_P,
      &    darwin_bbmin,
