@@ -255,7 +255,9 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
         ENDIF
 #endif
        ELSE
-        PCmax(jp) = 0 _d 0
+        IF (bacttype(jp) .EQ. 0) THEN
+         PCmax(jp) = 0 _d 0
+        ENDIF
         vmaxPO4(jp) = 0 _d 0
         vmaxNO3(jp) = 0 _d 0
         vmaxNO2(jp) = 0 _d 0
@@ -367,7 +369,6 @@ C re-compute isPrey and isPred to speed up grazing loops
         combNO(jp) = DARWIN_UNUSED
         amminhib(jp) = DARWIN_UNUSED
         acclimtimescl(jp) = DARWIN_UNUSED
-        PCmax(jp) = DARWIN_UNUSED
 
         phytoTempCoeff(jp) = DARWIN_UNUSED
         phytoTempExp1(jp) = DARWIN_UNUSED

@@ -141,8 +141,6 @@
      &    hillnumGraz,
      &    hollexp,
      &    phygrazmin,
-     &    pmaxPON,
-     &    pmaxDON,
      &    pcoefO2,
      &    pmaxDIN,
      &    ksatPOM,
@@ -371,8 +369,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       hillnumGraz = 1.0 _d 0
       hollexp = 1.0 _d 0
       phygrazmin = 120 _d -10
-      pmaxPON = 5/pday
-      pmaxDON = 5/pday
       pcoefO2 = 290.820 _d 0/pday
       pmaxDIN = 20/pday
       ksatPOM = 1 _d 0

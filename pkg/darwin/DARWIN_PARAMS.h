@@ -183,8 +183,6 @@ C Requires: DARWIN_SIZE.h
      &    hillnumGraz,
      &    hollexp,
      &    phygrazmin,
-     &    pmaxPON,
-     &    pmaxDON,
      &    pcoefO2,
      &    pmaxDIN,
      &    ksatPOM,
@@ -287,8 +285,6 @@ C Requires: DARWIN_SIZE.h
       _RL hillnumGraz
       _RL hollexp
       _RL phygrazmin
-      _RL pmaxPON
-      _RL pmaxDON
       _RL pcoefO2
       _RL pmaxDIN
       _RL ksatPOM

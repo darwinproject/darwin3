@@ -753,7 +753,7 @@ C==== bacteria =========================================================
 C       POM-consuming (particle-associated)
         IF (bactType(j) .EQ. 1) THEN
 
-          PCm = yield(j)*pmaxPON*reminTempFunc
+          PCm = yield(j)*PCmax(j)*reminTempFunc
           muPON  = PCm*PON/(PON + ksatPON(j))
           muPOC  = PCm*POC/(POC + ksatPOC(j))
           muPOP  = PCm*POP/(POP + ksatPOP(j))
@@ -785,7 +785,7 @@ C         These are the bacteria products for remineralization of POM:
 C       DOM-consuming (free-living):
         ELSEIF (bactType(j) .EQ. 2) THEN
 
-          PCm = yield(j)*pmaxDON*reminTempFunc
+          PCm = yield(j)*PCmax(j)*reminTempFunc
           muDON  = PCm*DON/(DON + ksatDON(j))
           muDOC  = PCm*DOC/(DOC + ksatDOC(j))
           muDOP  = PCm*DOP/(DOP + ksatDOP(j))
