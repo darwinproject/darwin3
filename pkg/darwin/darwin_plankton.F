@@ -438,8 +438,8 @@ c phosphorus
         uptakePO4 = vmaxPO4(j) * limitp * regQ *
      &                       uptakeTempFunc * X(j)
 c       normalized Droop limitation
-        limitp = MAX(0., MIN(1., (1.0-Qpmin(j)/Qp(j))/
-     &                            (1.0-Qpmin(j)/Qpmax(j))))
+        limitp = MIN(1., (1.0-Qpmin(j)/MAX(Qpmin(j), Qp(j)))/
+     &                   (1.0-Qpmin(j)/Qpmax(j)))
 #endif
 
 c silica
@@ -474,8 +474,8 @@ c iron
      &                       uptakeTempFunc * X(j)
 
 c       normalized Droop limitation
-        limitfe = MAX(0., MIN(1., (1.0-Qfemin(j)/Qfe(j))/
-     &                            (1.0-Qfemin(j)/Qfemax(j))))
+        limitfe = MIN(1., (1.0-Qfemin(j)/MAX(Qfemin(j), Qfe(j)))/
+     &                    (1.0-Qfemin(j)/Qfemax(j)))
 #endif
 
 c nitrogen
