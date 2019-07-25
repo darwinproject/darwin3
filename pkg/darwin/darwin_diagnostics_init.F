@@ -348,7 +348,7 @@ C-      use units & names from data.ptracers :
 
       WRITE(diagName,'(A)')'gO2surf'
       WRITE(diagTitle,'(A)')'Tendency of O2 due to air-sea exch'
-      diagUnits = 'mmol O/m3/s     '
+      diagUnits = 'mmol O2/m3/s    '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
