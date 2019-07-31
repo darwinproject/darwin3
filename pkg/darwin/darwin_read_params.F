@@ -56,7 +56,6 @@
      &    darwin_read_phos,
      &    darwin_chlInitBalanced,
      &    darwin_chlIter0,
-     &    phymin,
      &    katten_w,
      &    katten_chl,
      &    parfrac,
@@ -284,7 +283,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       darwin_read_phos = .FALSE.
       darwin_chlInitBalanced = .FALSE.
       darwin_chlIter0 = 0
-      phymin = 120 _d -20
       katten_w = 4. _d -2
       katten_chl = 4. _d -2
       parfrac = 0.4 _d 0

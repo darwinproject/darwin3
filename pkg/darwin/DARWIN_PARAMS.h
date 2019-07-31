@@ -98,7 +98,6 @@ C Requires: DARWIN_SIZE.h
       INTEGER jDEBUG
       INTEGER kDEBUG
       COMMON /DARWIN_PARAMS_r/
-     &    phymin,
      &    katten_w,
      &    katten_chl,
      &    parfrac,
@@ -200,7 +199,6 @@ C Requires: DARWIN_SIZE.h
      &    yno2,
      &    yono2,
      &    depthdenit
-      _RL phymin
       _RL katten_w
       _RL katten_chl
       _RL parfrac

@@ -15,6 +15,7 @@ C Requires: DARWIN_SIZE.h
      &    oldTwoGrazers
       LOGICAL oldTwoGrazers
       COMMON /DARWIN_RANDOM_PARAMS_r/
+     &    phymin,
      &    Smallgrow,
      &    Biggrow,
      &    Smallgrowrange,
@@ -113,6 +114,7 @@ C Requires: DARWIN_SIZE.h
      &    Zoomort2,
      &    Zooexfac,
      &    ZooDM
+      _RL phymin
       _RL Smallgrow
       _RL Biggrow
       _RL Smallgrowrange
