@@ -11,9 +11,13 @@ C the parameters in this file are used to generate traits
 C
 C Requires: DARWIN_SIZE.h
 
+C--   COMMON /DARWIN_RANDOM_PARAMS_l/ For darwin_allometric_random
+C     oldTwoGrazers :: old defaults for 2 grazers
       COMMON /DARWIN_RANDOM_PARAMS_l/
      &    oldTwoGrazers
       LOGICAL oldTwoGrazers
+
+C--   COMMON /DARWIN_RANDOM_PARAMS_r/ For darwin_allometric_random
       COMMON /DARWIN_RANDOM_PARAMS_r/
      &    phymin,
      &    Smallgrow,
@@ -214,14 +218,42 @@ C Requires: DARWIN_SIZE.h
       _RL Zooexfac
       _RL ZooDM
 
+C--   COMMON /DARWIN_TRAIT_PARAMS_l/ Used in darwin_generate_allometric
+C     darwin_sort_biovol    :: whether to sort type by volume rather than group first
+C     darwin_effective_ksat :: compute effective half-saturation for non-quota elements
       COMMON /DARWIN_TRAIT_PARAMS_l/
      &    darwin_sort_biovol,
-     &    DARWIN_effective_ksat
+     &    darwin_effective_ksat
       LOGICAL darwin_sort_biovol
-      LOGICAL DARWIN_effective_ksat
+      LOGICAL darwin_effective_ksat
+
+C--   COMMON /DARWIN_TRAIT_PARAMS_c/ Used in darwin_generate_allometric
+C     grp_names :: names of functional groups
       COMMON /DARWIN_TRAIT_PARAMS_c/
      &    grp_names
       CHARACTER*80 grp_names(nGroup)
+
+C--   COMMON /DARWIN_TRAIT_PARAMS_i/ Used in darwin_generate_allometric
+C     darwin_select_kn_allom :: 1: use Ward et al formulation, 2: use Follett et al
+C     logvol0ind             :: first index in volume list used by this group
+C     grp_nplank             :: number of plankton types in this group
+C     grp_photo              :: -> isPhoto
+C     grp_bacttype           :: -> bactType
+C     grp_aerobic            :: -> isAerobic
+C     grp_denit              :: -> isDenit
+C     grp_pred               :: -> isPred
+C     grp_prey               :: -> isPrey
+C     grp_hasSi              :: -> hasSi
+C     grp_hasPIC             :: -> hasPIC
+C     grp_diazo              :: -> diazo
+C     grp_useNH4             :: -> useNH4
+C     grp_useNO2             :: -> useNO2
+C     grp_useNO3             :: -> useNO3
+C     grp_combNO             :: -> combNO
+C     grp_aptype             :: -> aptype
+C     grp_tempMort           :: -> tempMort
+C     grp_tempMort2          :: -> tempMort2
+C     grp_tempGraz           :: -> tempGraz
       COMMON /DARWIN_TRAIT_PARAMS_i/
      &    darwin_select_kn_allom,
      &    logvol0ind,
@@ -263,6 +295,30 @@ C Requires: DARWIN_SIZE.h
       INTEGER grp_tempMort(nGroup)
       INTEGER grp_tempMort2(nGroup)
       INTEGER grp_tempGraz(nGroup)
+
+C--   COMMON /DARWIN_TRAIT_PARAMS_r/ Used in darwin_generate_allometric
+C     logvolbase             :: []    log-10 base for list of volumes
+C     logvolinc              :: []    log-10 increment for list of volumes
+C     biovol0                :: [um3] volume of smallest type in group
+C     biovolfac              :: []    factor by which each type is bigger than previous
+C     grp_logvolind          :: []    indices into volume list for type in this group
+C     grp_biovol             :: [um3] volumes of types in each group
+C
+C- Allometric parameters
+C     a_* b_* :: param = a_param*V^b_param
+C
+C- Predator prey preference distribution parameters
+C     a_pp_sig               :: standard deviation of predator-prey volume ratio for palatability
+C     a_pp_opt               :: a for optimal predator-prey volume ratio
+C     b_pp_opt               :: b for optimal predator-prey volume ratio
+C
+C     a_respRate_c           :: Note function of cellular C --> aC^b
+C     a_respRate_c_denom     :: Note function of cellular C --> aC^b
+C     b_respRate_c           :: Note function of cellular C --> aC^b
+C
+C     a_ksatNO2fac           :: only used for darwin_effective_ksat
+C     a_ksatNH4fac           :: only used for darwin_effective_ksat
+C
       COMMON /DARWIN_TRAIT_PARAMS_r/
      &    logvolbase,
      &    logvolinc,
@@ -502,7 +558,6 @@ C Requires: DARWIN_SIZE.h
       _RL b_kexcFe(nGroup)
       _RL grp_ExportFracPreyPred(nGroup,nGroup)
       _RL grp_ass_eff(nGroup,nGroup)
-
 
 #endif /* ALLOW_DARWIN */
 

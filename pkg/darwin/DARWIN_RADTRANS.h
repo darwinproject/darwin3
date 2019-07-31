@@ -12,9 +12,16 @@ C Requires: DARWIN_SIZE.h
 
 #ifdef ALLOW_RADTRANS
 
+C     COMMON /DARWIN_RADTRANS_PARAMS_l/ boolean parameters for using radtrans with darwin
+C     darwin_allomSpectra :: enable/disable allometric scaling of plankton absorption and scattering spectra
       COMMON /DARWIN_RADTRANS_PARAMS_l/
      &    darwin_allomSpectra
       LOGICAL darwin_allomSpectra
+
+C     COMMON /DARWIN_RADTRANS_PARAMS_c/ character parameters for using radtrans with darwin
+C     darwin_waterAbsorbFile    :: filename for reading water absorption and scattering spectra
+C     darwin_phytoAbsorbFile    :: filename for reading plankton absorption and scattering spectra
+C     darwin_particleAbsorbFile :: filename for reading particle absorption and scattering spectra
       COMMON /DARWIN_RADTRANS_PARAMS_c/
      &    darwin_waterAbsorbFile,
      &    darwin_phytoAbsorbFile,
@@ -22,22 +29,24 @@ C Requires: DARWIN_SIZE.h
       CHARACTER*256 darwin_waterAbsorbFile
       CHARACTER*256 darwin_phytoAbsorbFile
       CHARACTER*256 darwin_particleAbsorbFile
+
 C     COMMON /DARWIN_RADTRANS_PARAMS_r/
-C     darwin_part_size_P       :: [mmol P/particle]
-C     darwin_bbmin             :: [1/m]
-C     darwin_bbw               :: [1]
-C     darwin_lambda_aCDOM      :: [nm]
-C     darwin_Sdom              :: [1/nm]
-C     darwin_aCDOM_fac         :: [1]
-C     darwin_rCDOM             :: recalcitrant CDOM concentration [mmol P/m3]
-C     darwin_RPOC              :: recalcitrant POC concentration [mmol C/m3]
-C     darwin_aCarCell          :: [mg C/cell]
-C     darwin_bCarCell          :: [1/log(m3)]
-C     darwin_absorpSlope       :: slope for scaled absorption spectra [1]
-C     darwin_bbbSlope          :: [1]
-C     darwin_scatSwitchSizeLog :: [1]
-C     darwin_scatSlopeSmall    :: [1]
-C     darwin_scatSlopeLarge    :: [1]
+C     darwin_part_size_P       :: [mmol P/particle]  conversion factor for particle absorption and scattering spectra
+C     darwin_bbmin             :: [1/m]        minimum backscattering ratio
+C     darwin_bbw               :: []           backscattering ratio of water
+C     darwin_lambda_aCDOM      :: [nm]         reference wavelength for CDOM absorption spectra
+C     darwin_Sdom              :: [1/nm]       coefficient for CDOM absorption spectra
+C     darwin_aCDOM_fac         :: []           factor for computing aCDOM from water+Chlorophyll absorption
+C     darwin_rCDOM             :: [mmol P/m3]  recalcitrant CDOM concentration
+C     darwin_RPOC              :: [mmol C/m3]  recalcitrant POC concentration
+C-
+C     darwin_aCarCell          :: [mg C/cell]  coefficient coefficient for scaling plankton spectra
+C     darwin_bCarCell          :: []           coefficient coefficient for scaling plankton spectra
+C     darwin_absorpSlope       :: []           slope for scaled absorption spectra
+C     darwin_bbbSlope          :: []           slope for scaled backscattering ratio spectra
+C     darwin_scatSwitchSizeLog :: [log10(um)]  log of size for switching slopes
+C     darwin_scatSlopeSmall    :: []           slope for small plankton
+C     darwin_scatSlopeLarge    :: []           slope for large plankton
       COMMON /DARWIN_RADTRANS_PARAMS_r/
      &    darwin_part_size_P,
      &    darwin_bbmin,
@@ -106,7 +115,11 @@ C     darwin_scatSlopeLarge    :: [1]
       _RL bbpart_P(nlam)
       _RL exCDOM(nlam)
 
-
+C     COMMON /DARWIN_RADTRANS_TRAITS_r/
+C     aphy_chl    :: [m^-1 (mg Chl m^-3)^-1]  phytoplankton Chl-specific absorption coefficient
+C     aphy_chl_ps :: [m^-1 (mg Chl m^-3)^-1]  part of aphy_chl that is used in photosynthesis
+C     bphy_mgC    :: [m^-1 (mg C m^-3)^-1]    carbon-specific total scattering coefficient
+C     bbphy_mgC   :: [m^-1 (mg C m^-3)^-1]    carbon-specific backscattering coefficient
       COMMON /DARWIN_RADTRANS_TRAITS_r/
      &    aphy_chl,
      &    aphy_chl_ps,

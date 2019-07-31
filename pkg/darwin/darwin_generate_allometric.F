@@ -291,7 +291,7 @@ c EXCRETION
         kexcsi(jp) = a_kexcsi(g) * biovol(jp)**b_kexcsi(g)
         kexcfe(jp) = a_kexcfe(g) * biovol(jp)**b_kexcfe(g)
 
-        IF (DARWIN_effective_ksat) THEN
+        IF (darwin_effective_ksat) THEN
 c        compute effective half sat for uptake of non-quota elements
 C        we compute it for NO3 and scale for others
          IF (darwin_select_kn_allom.EQ.1) THEN
