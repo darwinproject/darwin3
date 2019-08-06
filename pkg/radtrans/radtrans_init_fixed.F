@@ -66,7 +66,7 @@ C     errCount  :: error counter
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START RT_E',myThid)
 # endif
-       CALL EXF_GETFFIELD_START( useRTYearlyFields,
+       CALL EXF_GETFFIELD_START( useEXFYearlyFields,
      I                           'radtrans', 'RT_E', RT_E_period,
      I                           RT_E_startdate1, RT_E_startdate2,
      U                           RT_E_StartTime, errCount,
@@ -78,7 +78,7 @@ C     errCount  :: error counter
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START RT_ice',myThid)
 # endif
-       CALL EXF_GETFFIELD_START( useRTYearlyFields,
+       CALL EXF_GETFFIELD_START( useEXFYearlyFields,
      I                           'RT', 'RT_ice', RT_iceperiod,
      I                           RT_icestartdate1, RT_icestartdate2,
      U                           RT_iceStartTime, errCount,

@@ -22,10 +22,8 @@ C   RT_iceFile :: fraction of the sea surface covered by ice
 C                 used to reduce incoming irradiances
 
       COMMON/radtrans_forcing_params_l/
-     &    useRTYearlyFields,
      &    RT_loadFieldsEarly
 
-      LOGICAL useRTYearlyFields
       LOGICAL RT_loadFieldsEarly
 
       COMMON/radtrans_forcing_c/
@@ -33,7 +31,7 @@ C                 used to reduce incoming irradiances
       COMMON/radtrans_forcing_i/
      &    RT_E_startdate1, RT_E_startdate2
       COMMON/radtrans_forcing_r/
-     &    RT_E_startTime, RT_E_period,
+     &    RT_E_startTime, RT_E_period, RT_E_RepCycle,
      &    RT_Ed_const, RT_Es_const,
      &    RT_Ed_exfremo_intercept, RT_Es_exfremo_intercept,
      &    RT_Ed_exfremo_slope, RT_Es_exfremo_slope,
@@ -45,6 +43,7 @@ C                 used to reduce incoming irradiances
       INTEGER RT_E_startdate2
       _RL RT_E_StartTime
       _RL RT_E_period
+      _RL RT_E_RepCycle
       _RL RT_Ed_const(nlam)
       _RL RT_Es_const(nlam)
       _RL RT_Ed_exfremo_intercept(nlam)
@@ -72,7 +71,7 @@ C                 used to reduce incoming irradiances
      &    RT_icestartdate1, RT_icestartdate2
       COMMON/RT_forcing_ice_r/
      &    RT_iceStartTime,
-     &    RT_iceperiod, RT_iceconst,
+     &    RT_iceperiod, RT_iceRepCycle, RT_iceconst,
      &    RT_ice_exfremo_intercept, RT_ice_exfremo_slope,
      &    RT_inscal_ice
       CHARACTER*128  RT_icefile
@@ -81,6 +80,7 @@ C                 used to reduce incoming irradiances
       INTEGER RT_icestartdate2
       _RL RT_iceStartTime
       _RL RT_iceperiod
+      _RL RT_iceRepCycle
       _RL RT_iceconst
       _RL RT_ice_exfremo_intercept
       _RL RT_ice_exfremo_slope
