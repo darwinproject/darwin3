@@ -342,8 +342,8 @@ C real parameters
           yieldNO3(jp) = yne
         ENDIF
 
-        ksatPON(jp)  = ksatPOM
-        ksatDON(jp)  = ksatDOM
+        ksatPON(jp)  = a_ksatPON(g)
+        ksatDON(jp)  = a_ksatDON(g)
         ksatPOC(jp)  = ksatPON(jp)/R_NC(jp)
         ksatPOP(jp)  = ksatPON(jp)/R_NC(jp)*R_PC(jp)
         ksatPOFe(jp) = ksatPON(jp)/R_NC(jp)*R_FeC(jp)

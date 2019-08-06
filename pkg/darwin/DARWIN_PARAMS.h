@@ -246,8 +246,6 @@ C
 C- Bacteria
 C     pmaxDIN           :: [1/s]           max DIN uptake rate for denitrifying bacteria
 C     pcoefO2           :: [m3/mmol O2/s]  max O2-specific O2 uptake rate for aerobic bacteria
-C     ksatPOM           :: [mmol C m-3]    half-saturation conc of particulate organic matter 
-C     ksatDOM           :: [mmol C m-3]    half-saturation conc of dissolved organic matter 
 C     ksatDIN           :: [mmol N m-3]    half-saturation conc of dissolved inorganic nitrogen
 C     alpha_hydrol      :: []              increase in POM needed due to hydrolysis
 C     yod               :: []              organic matter yield of aerobic bacteria
@@ -350,8 +348,6 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    phygrazmin,
      &    pcoefO2,
      &    pmaxDIN,
-     &    ksatPOM,
-     &    ksatDOM,
      &    ksatDIN,
      &    alpha_hydrol,
      &    yod,
@@ -451,8 +447,6 @@ C     &    yono2,
       _RL phygrazmin
       _RL pcoefO2
       _RL pmaxDIN
-      _RL ksatPOM
-      _RL ksatDOM
       _RL ksatDIN
       _RL alpha_hydrol
       _RL yod

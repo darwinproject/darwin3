@@ -354,6 +354,8 @@ C
      &    a_amminhib,
      &    a_acclimtimescl,
      &    a_acclimtimescl_denom,
+     &    a_ksatPON,
+     &    a_ksatDON,
      &    a_grazemax,
      &    a_grazemax_denom,
      &    b_grazemax,
@@ -473,6 +475,8 @@ C
       _RL a_amminhib(nGroup)
       _RL a_acclimtimescl(nGroup)
       _RL a_acclimtimescl_denom(nGroup)
+      _RL a_ksatPON(nGroup)
+      _RL a_ksatDON(nGroup)
       _RL a_grazemax(nGroup)
       _RL a_grazemax_denom(nGroup)
       _RL b_grazemax(nGroup)

@@ -140,10 +140,8 @@
      &    hillnumGraz,
      &    hollexp,
      &    phygrazmin,
-     &    pcoefO2,
      &    pmaxDIN,
-     &    ksatPOM,
-     &    ksatDOM,
+     &    pcoefO2,
      &    ksatDIN,
      &    alpha_hydrol,
      &    yod,
@@ -370,8 +368,6 @@ C     O2crit from Lipschultz et al 1990, DSR 37, 1513-1541:
       phygrazmin = 120 _d -10
       pcoefO2 = 290.82 _d 0/pday
       pmaxDIN = 20/pday
-      ksatPOM = 1 _d 0
-      ksatDOM = 1 _d 0
       ksatDIN = 0.01 _d 0
       alpha_hydrol = 2.0 _d 0
       yod = 0.2 _d 0
