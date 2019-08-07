@@ -130,3 +130,5 @@ Biogeochemistry Packages
 
    gchem.rst
    dic.rst
+   darwin.rst
+   radtrans.rst
