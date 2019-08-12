@@ -8,8 +8,15 @@ C #include RADTRANS_PARAMS.h
 C     !DESCRIPTION:
 C Contains parameters for the radtrans package
 C
-C Requires: EXF_PARAM.h
 C Requires: RADTRANS_SIZE.h
+
+C  RT_loadFieldsEarly :: whether forcing fields need to be read early
+C                        for initialization
+
+      COMMON/radtrans_forcing_params_l/
+     &    RT_loadFieldsEarly
+
+      LOGICAL RT_loadFieldsEarly
 
 C Radtrans forcing parameters work just like the parameters in the exf
 C package.  The forcing files are as follows:
@@ -20,11 +27,8 @@ C   RT_EsFile  :: downward diffuse irradiance below sea surface [W/m^2]
 C                 per waveband, not taking into account ice cover
 C   RT_iceFile :: fraction of the sea surface covered by ice
 C                 used to reduce incoming irradiances
-
-      COMMON/radtrans_forcing_params_l/
-     &    RT_loadFieldsEarly
-
-      LOGICAL RT_loadFieldsEarly
+C
+C Parameters for interpolation are in RADTRANS_EXF_PARAMS.h
 
       COMMON/radtrans_forcing_c/
      &    RT_E_mask, RT_EdFile, RT_EsFile
@@ -53,18 +57,6 @@ C                 used to reduce incoming irradiances
       _RL RT_inscal_Ed(nlam)
       _RL RT_inscal_Es(nlam)
 
-#ifdef USE_EXF_INTERPOLATION
-      COMMON/radtrans_interp_i/
-     &    RT_E_nlon, RT_E_nlat, RT_E_interpMethod
-      COMMON/radtrans_interp_r/
-     &    RT_E_lon0, RT_E_lat0, RT_E_lon_inc, RT_E_lat_inc
-      INTEGER RT_E_interpMethod, RT_E_nlon, RT_E_nlat
-      _RL  RT_E_lon0
-      _RL  RT_E_lat0
-      _RL  RT_E_lon_inc
-      _RL  RT_E_lat_inc(MAX_LAT_INC)
-#endif
-
       COMMON/RT_forcing_ice_c/
      &    RT_icemask, RT_icefile
       COMMON/RT_forcing_ice_i/
@@ -85,18 +77,6 @@ C                 used to reduce incoming irradiances
       _RL RT_ice_exfremo_intercept
       _RL RT_ice_exfremo_slope
       _RL RT_inscal_ice
-
-#ifdef USE_EXF_INTERPOLATION
-      COMMON/RT_interp_ice_i/
-     &    RT_ice_nlon, RT_ice_nlat, RT_ice_interpMethod
-      COMMON/RT_interp_ice_r/
-     &    RT_ice_lon0, RT_ice_lat0, RT_ice_lon_inc, RT_ice_lat_inc
-      INTEGER RT_ice_interpMethod, RT_ice_nlon, RT_ice_nlat
-      _RL  RT_ice_lon0
-      _RL  RT_ice_lat0
-      _RL  RT_ice_lon_inc
-      _RL  RT_ice_lat_inc(MAX_LAT_INC)
-#endif
 
 C other run-time parameters
 C

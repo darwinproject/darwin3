@@ -17,7 +17,6 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_EXF
-#include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_DARWIN

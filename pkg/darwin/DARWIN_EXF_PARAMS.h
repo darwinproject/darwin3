@@ -8,7 +8,8 @@ C #include DARWIN_EXF_PARAMS.h
 C     !DESCRIPTION:
 C Contains parameters for reading forcing for darwin package through exf
 C
-C Requires: EXF_PARAM.h
+C Requires: EXF_OPTIONS.h
+C Requires: EXF_INTERP_SIZE.h
 
       COMMON/darwin_forcing_exf_params_l/
      &    darwin_loadFieldsEarly

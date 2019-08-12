@@ -23,14 +23,13 @@ C !USES: ===============================================================
 #include "GCHEM.h"
 #endif
 #ifdef ALLOW_EXF
-#ifdef USE_EXF_INTERPOLATION
-#include "SET_GRID.h"
-#include "EXF_CONSTANTS.h"
-#endif
 #include "EXF_PARAM.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 #endif
 #include "RADTRANS_SIZE.h"
 #include "RADTRANS_PARAMS.h"
+#include "RADTRANS_EXF_PARAMS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -45,7 +44,6 @@ CEOP
 C !LOCAL VARIABLES: ====================================================
 C  iUnit   :: unit number for I/O
 C  msgBuf  :: message buffer
-      _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat, gridNx, gridNy
       integer iUnit, oUnit, l, errCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -160,34 +158,24 @@ C Open and read the data.radtrans file
       RT_inscal_ice    =  1.0 _d 0
 
 #ifdef USE_EXF_INTERPOLATION
-      inp_lon0 = xgOrigin + delX(1)*exf_half
-      inp_lat0 = ygOrigin + delY(1)*exf_half
-      inp_dLon = delX(1)
-      inp_dLat = delY(1)
-# ifdef ALLOW_EXCH2
-      gridNx = exch2_mydNx(1)
-      gridNy = exch2_mydNy(1)
-# else /* ALLOW_EXCH2 */
-      gridNx = Nx
-      gridNy = Ny
-# endif /* ALLOW_EXCH2 */
-
       RT_E_lon0 = inp_lon0
       RT_E_lat0 = inp_lat0
-      RT_E_nlon = gridNx
-      RT_E_nlat = gridNy
+      RT_E_nlon = inp_gNx
+      RT_E_nlat = inp_gNy
       RT_E_lon_inc = inp_dLon
       RT_E_interpMethod  = 1
-      RT_E_lat_inc(:) = inp_dLat
-
 
       RT_ice_lon0 = inp_lon0
       RT_ice_lat0 = inp_lat0
-      RT_ice_nlon = gridNx
-      RT_ice_nlat = gridNy
+      RT_ice_nlon = inp_gNx
+      RT_ice_nlat = inp_gNy
       RT_ice_lon_inc = inp_dLon
       RT_ice_interpMethod  = 1
-      RT_ice_lat_inc(:) = inp_dLat
+
+      DO l=1,MAX_LAT_INC
+        RT_E_lat_inc(l) = inp_dLat(l)
+        RT_ice_lat_inc(l) = inp_dLat(l)
+      ENDDO
 #endif /* USE_EXF_INTERPOLATION */
 
 C     these are taken from Ackleson, et al. 1994 (JGR)

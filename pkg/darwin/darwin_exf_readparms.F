@@ -23,11 +23,9 @@ C !USES: ===============================================================
 #include "GCHEM.h"
 #endif
 #ifdef ALLOW_EXF
-#ifdef USE_EXF_INTERPOLATION
-#include "SET_GRID.h"
-#include "EXF_CONSTANTS.h"
-#endif
 #include "EXF_PARAM.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 #endif
 #ifdef ALLOW_RADTRANS
 #include "RADTRANS_SIZE.h"
@@ -56,7 +54,6 @@ C !LOCAL VARIABLES: ====================================================
       LOGICAL darwin_haveWind
       LOGICAL darwin_havepCO2
       INTEGER j, errCount
-      _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat, gridNx, gridNy
 
       NAMELIST/darwin_forcing_params/
      &    darwin_useEXFwind,
@@ -238,64 +235,47 @@ C Open and read the data.darwin file
       darwin_inscal_pCO2    =  1. _d 0
 
 #ifdef USE_EXF_INTERPOLATION
-      inp_lon0 = xgOrigin + delX(1)*exf_half
-      inp_lat0 = ygOrigin + delY(1)*exf_half
-      inp_dLon = delX(1)
-# ifdef ALLOW_EXCH2
-      gridNx = exch2_mydNx(1)
-      gridNy = exch2_mydNy(1)
-# else /* ALLOW_EXCH2 */
-      gridNx = Nx
-      gridNy = Ny
-# endif /* ALLOW_EXCH2 */
-
-
       PAR_lon0 = inp_lon0
       PAR_lat0 = inp_lat0
-      PAR_nlon = gridNx
-      PAR_nlat = gridNy
+      PAR_nlon = inp_gNx
+      PAR_nlat = inp_gNy
       PAR_lon_inc = inp_dLon
       PAR_interpMethod  = 1
 
       iron_lon0 = inp_lon0
       iron_lat0 = inp_lat0
-      iron_nlon = gridNx
-      iron_nlat = gridNy
+      iron_nlon = inp_gNx
+      iron_nlat = inp_gNy
       iron_lon_inc = inp_dLon
       iron_interpMethod  = 1
 
       ice_lon0 = inp_lon0
       ice_lat0 = inp_lat0
-      ice_nlon = gridNx
-      ice_nlat = gridNy
+      ice_nlon = inp_gNx
+      ice_nlat = inp_gNy
       ice_lon_inc = inp_dLon
       ice_interpMethod  = 1
 
       wind_lon0 = inp_lon0
       wind_lat0 = inp_lat0
-      wind_nlon = gridNx
-      wind_nlat = gridNy
+      wind_nlon = inp_gNx
+      wind_nlat = inp_gNy
       wind_lon_inc = inp_dLon
       wind_interpMethod  = 1
 
       pCO2_lon0 = inp_lon0
       pCO2_lat0 = inp_lat0
-      pCO2_nlon = gridNx
-      pCO2_nlat = gridNy
+      pCO2_nlon = inp_gNx
+      pCO2_nlat = inp_gNy
       pCO2_lon_inc = inp_dLon
       pCO2_interpMethod  = 1
 
       DO j=1,MAX_LAT_INC
-        IF (j.LT.gridNy) THEN
-          inp_dLat = (delY(j) + delY(j+1))*exf_half
-        ELSE
-          inp_dLat = 0.
-        ENDIF
-        PAR_lat_inc(j) = inp_dLat
-        iron_lat_inc(j) = inp_dLat
-        ice_lat_inc(j) = inp_dLat
-        wind_lat_inc(j) = inp_dLat
-        pCO2_lat_inc(j) = inp_dLat
+        PAR_lat_inc(j) = inp_dLat(j)
+        iron_lat_inc(j) = inp_dLat(j)
+        ice_lat_inc(j) = inp_dLat(j)
+        wind_lat_inc(j) = inp_dLat(j)
+        pCO2_lat_inc(j) = inp_dLat(j)
       ENDDO
 #endif /* USE_EXF_INTERPOLATION */
 

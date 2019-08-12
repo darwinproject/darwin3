@@ -18,7 +18,6 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_RADTRANS
-#include "EXF_PARAM.h"
 #include "RADTRANS_SIZE.h"
 #include "RADTRANS_PARAMS.h"
 #endif

@@ -17,7 +17,6 @@ C     !USES:
 #include "SIZE.h"
 #include "GRID.h"
 #include "PARAMS.h"
-#include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"

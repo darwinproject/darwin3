@@ -17,6 +17,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "EXF_PARAM.h"
+#include "EXF_INTERP_SIZE.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN_EXF_PARAMS.h"
 #include "DARWIN_EXF_FIELDS.h"

@@ -1,3 +1,4 @@
+#include "EXF_OPTIONS.h"
 #include "DARWIN_OPTIONS.h"
 
 CBOP
@@ -14,6 +15,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "EXF_INTERP_SIZE.h"
 #ifdef ALLOW_RADTRANS
 #include "RADTRANS_SIZE.h"
 #include "RADTRANS_PARAMS.h"
