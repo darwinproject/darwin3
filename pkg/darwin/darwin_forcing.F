@@ -68,6 +68,7 @@ C  k                    :: vertical level
       _RL gDIC(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL gALK(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL gO2(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL surfFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
       _RL scv,scav_poc
       _RL flx
@@ -386,6 +387,18 @@ C      diags(iCons*) for convenience
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGRplank+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
        ENDDO
+       IF (DIAGNOSTICS_IS_ON('sfcSolFe', myThid)) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          IF (hFacC(i,j,1,bi,bj) .EQ. 0.) THEN
+           surfFe(i,j) = 0 _d 0
+          ELSE
+           surfFe(i,j) = alpfe * inputFe(i,j,bi,bj)
+          ENDIF
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(surfFe,'sfcSolFe',0,1,2,bi,bj,myThid)
+       ENDIF
 #ifdef DARWIN_ALLOW_CARBON
        CALL DIAGNOSTICS_FILL(pH,     'pH      ',0,Nr,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(pCO2,   'pCO2    ',0,Nr,1,bi,bj,myThid)

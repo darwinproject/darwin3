@@ -302,6 +302,13 @@ C-      use units & names from data.ptracers :
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
 
+      WRITE(diagName,'(A)')'sfcSolFe'
+      WRITE(diagTitle,'(A)')'Soluble iron input at sea surface'
+      diagUnits = 'mmol Fe/m2/s    '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 #ifdef DARWIN_ALLOW_CARBON
       WRITE(diagName,'(A)')'pH'
       WRITE(diagTitle,'(A)')'pH'
