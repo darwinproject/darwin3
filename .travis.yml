@@ -27,7 +27,7 @@ jobs:
         MITGCM_DECMD="docker exec -i openad-testing bash -lc"
         MITGCM_TROPT="-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
         MITGCM_INPUT_DIR_PAT='/input_oad.*'
-      script: . tools/ci/runtr.sh
+      script: travis_wait . tools/ci/runtr.sh
     - env:
       - MITGCM_EXP="offline_exf_seaice" MITGCM_PRECS="16 16 16 16 16"
       script: . tools/ci/runtr.sh
@@ -73,25 +73,11 @@ jobs:
     - stage: test documentation
       env:
       - BUILD="html"
-      python: "2.7"
-      script:
-        - tools/ci/install_doc_dependencies.sh > /dev/null
-        - cd doc
-        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
-    - env:
-      - BUILD="html"
       python: "3.6"
       script:
         - tools/ci/install_doc_dependencies.sh > /dev/null
         - cd doc
-        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
-    - env:
-      - BUILD="latexpdf"
-      python: "2.7"
-      script:
-        - tools/ci/install_doc_dependencies.sh > /dev/null
-        - cd doc
-        - make clean ${BUILD} LATEXOPTS="-interaction=nonstopmode -halt-on-error"
+        - sphinx-build -Wa -b ${BUILD} -d _build/doctrees . _build/html
     - env:
       - BUILD="latexpdf"
       python: "3.6"
