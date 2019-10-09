@@ -95,8 +95,18 @@ c !LOCAL VARIABLES: ====================================================
 #ifdef DARWIN_ALLOW_CHLQUOTA
       _RL QChl(nPhoto)
 #endif
+      _RL regQc
+      _RL regQn
+      _RL regQp
+      _RL regQfe
+      _RL regQsi
 
-      _RL regQ
+      _RL MM_PO4
+      _RL MM_SiO2
+      _RL MM_FeT
+      _RL MM_NH4
+      _RL MM_NO2
+      _RL MM_NO3
 
       _RL limitpCO2
       _RL limitNH4
@@ -231,7 +241,6 @@ c !LOCAL VARIABLES: ====================================================
 
 C for grazing
 
-      _RL regQc, regQn, regQp, regQfe
       _RL sumprey, sumpref, grazphy
 
       _RL preygraz   (nplank)
@@ -433,77 +442,79 @@ C       the result will be limitp = 1, uptakePO4 = 0
 
 c phosphorus
         IF (ksatPO4(j) .GT. 0 _d 0) THEN
-          limitp = PO4/(PO4 + ksatPO4(j))
+          MM_PO4 = PO4/(PO4 + ksatPO4(j))
         ELSE
-          limitp = 1 _d 0
+          MM_PO4 = 1 _d 0
         ENDIF
 #ifdef DARWIN_ALLOW_PQUOTA
-        regQ = MAX(0., MIN(1., (Qpmax(j)-Qp(j))/
-     &                         (Qpmax(j)-Qpmin(j)) ))
-        regQ = regQ**hillnumUptake
-        uptakePO4 = vmaxPO4(j) * limitp * regQ *
-     &                       uptakeTempFunc * X(j)
+        regQp = MAX(0., MIN(1., (Qpmax(j)-Qp(j))/
+     &                          (Qpmax(j)-Qpmin(j)) ))
+        regQp = regQp**hillnumUptake
+C       carbon-specific PO4 uptake rate
+        uptakePO4 = vmaxPO4(j)*MM_PO4*regQp*uptakeTempFunc*X(j)
 c       normalized Droop limitation
         limitp = MIN(1., (1.0-Qpmin(j)/MAX(Qpmin(j), Qp(j)))/
      &                   (1.0-Qpmin(j)/Qpmax(j)))
-#endif
+#else /* no PQUOTA */
+        limitp = MM_PO4
+#endif /* pquota */
 
 c silica
         IF (ksatSiO2(j) .GT. 0 _d 0) THEN
-          limitsi = SiO2/(SiO2 + ksatSiO2(j))
+          MM_SiO2 = SiO2/(SiO2 + ksatSiO2(j))
         ELSE
-          limitsi = 1 _d 0
+          MM_SiO2 = 1 _d 0
         ENDIF
 #ifdef DARWIN_ALLOW_SIQUOTA
-        regQ = MAX(0., MIN(1., (Qsimax(j) - Qsi(j))/
-     &                         (Qsimax(j) - Qsimin(j)) ))
-        regQ = regQ**hillnumUptake
-        uptakeSiO2 = vmaxSiO2(j) * limitsi * regQ *
-     &                                 uptakeTempFunc * X(j)
-
+        regQsi = MAX(0., MIN(1., (Qsimax(j) - Qsi(j))/
+     &                           (Qsimax(j) - Qsimin(j)) ))
+        regQsi = regQsi**hillnumUptake
+        uptakeSiO2 = vmaxSiO2(j)*MM_SiO2*regQsi*uptakeTempFunc*X(j)
 c       linear limitation
         limitsi = MAX(0., MIN(1., (Qsi(j) - Qsimin(j))/
      &                         (Qsimax(j) - Qsimin(j)) ))
+#else /* no SIQUOTA */
+        limitsi = MM_SiO2
 #endif
 
 c iron
         IF (ksatFeT(j) .GT. 0 _d 0) THEN
-          limitfe = FeT/(FeT + ksatFeT(j))
+          MM_FeT = FeT/(FeT + ksatFeT(j))
         ELSE
-          limitfe = 1 _d 0
+          MM_FeT = 1 _d 0
         ENDIF
 #ifdef DARWIN_ALLOW_FEQUOTA
-        regQ = MAX(0., MIN(1., (Qfemax(j)-Qfe(j))/
-     &                         (Qfemax(j)-Qfemin(j)) ))
-        regQ = regQ**hillnumUptake
-        uptakeFeT = vmaxFeT(j) * limitfe * regQ *
-     &                       uptakeTempFunc * X(j)
-
+        regQfe = MAX(0., MIN(1., (Qfemax(j)-Qfe(j))/
+     &                           (Qfemax(j)-Qfemin(j)) ))
+        regQfe = regQfe**hillnumUptake
+        uptakeFeT = vmaxFeT(j)*MM_FeT*regQfe*uptakeTempFunc*X(j)
 c       normalized Droop limitation
         limitfe = MIN(1., (1.0-Qfemin(j)/MAX(Qfemin(j), Qfe(j)))/
      &                    (1.0-Qfemin(j)/Qfemax(j)))
+#else /* no FEQUOTA */
+        limitfe = MM_FeT
 #endif
 
 c nitrogen
 #ifdef DARWIN_ALLOW_NQUOTA
 c       have nitrogen quota
         inhibNH4 = EXP(-amminhib(j)*NH4)
-        limitNH4 = NH4/(NH4 + ksatNH4(j))
-        limitNO2 = NO2/(NO2 + ksatNO2(j))*inhibNH4
-        limitNO3 = NO3/(NO3 + ksatNO3(j))*inhibNH4
-        regQ = MAX(0., MIN(1., (Qnmax(j)-Qn(j))/
-     &                         (Qnmax(j)-Qnmin(j)) ))
-        regQ = regQ**hillnumUptake
-        uptakeNH4 = vmaxNH4(j)*limitNH4*regQ*uptakeTempFunc*X(j)
-        uptakeNO2 = vmaxNO2(j)*limitNO2*regQ*uptakeTempFunc*X(j)
-        uptakeNO3 = vmaxNO3(j)*limitNO3*regQ*uptakeTempFunc*X(j)
+        MM_NH4 = NH4/(NH4 + ksatNH4(j))
+        MM_NO2 = NO2/(NO2 + ksatNO2(j))*inhibNH4
+        MM_NO3 = NO3/(NO3 + ksatNO3(j))*inhibNH4
+        regQn = MAX(0., MIN(1., (Qnmax(j)-Qn(j))/
+     &                          (Qnmax(j)-Qnmin(j)) ))
+        regQn = regQn**hillnumUptake
+        uptakeNH4 = vmaxNH4(j)*MM_NH4*regQn*uptakeTempFunc*X(j)
+        uptakeNO2 = vmaxNO2(j)*MM_NO2*regQn*uptakeTempFunc*X(j)
+        uptakeNO3 = vmaxNO3(j)*MM_NO3*regQn*uptakeTempFunc*X(j)
 #ifdef DARWIN_ALLOW_FEQUOTA
 #ifdef DARWIN_NITRATE_FELIMIT
         uptakeNO3 = uptakeNO3 * limitfe
 #endif
 #endif
         uptakeN = MAX(uptakeNH4 + uptakeNO2 + uptakeNO3,
-     &                vmaxN(j)*regQ*uptakeTempFunc*X(j)*diazo(j))
+     &                vmaxN(j)*regQn*uptakeTempFunc*X(j)*diazo(j))
 
 c       linear limitation
         limitn = MAX(0., MIN(1., (Qn(j) - Qnmin(j))/
@@ -528,7 +539,10 @@ C       normalize to sum 1
           fracNO3 = 0 _d 0
         ENDIF
 C if diazo, all fracN* == 0 but want no N limitation
-        limitn = MIN(1.0, limitn + diazo(j))
+        limitn = MIN(1 _d 0, limitn)
+        IF (diazo(j) .GT. 0) THEN
+          limitn = 1 _d 0
+        ENDIF
 #endif /* DARWIN_ALLOW_NQUOTA */
 
         limitnut = MIN(limitn, limitp, limitsi)
