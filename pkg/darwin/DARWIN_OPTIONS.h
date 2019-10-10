@@ -58,7 +58,7 @@ C allow organic matter to sink into bottom (sedimentize)
 C light
 
 C compute average PAR in layer, assuming exponential decay
-C (ignored if ALLOW_RADTRANS)
+C (ignored when radtrans package is used)
 #undef  DARWIN_AVPAR
 
 C enable GEIDER light code
@@ -67,10 +67,10 @@ C enable GEIDER light code
 C use rho instead of acclimated Chl:C for chlorophyll synthesis
 #undef  DARWIN_GEIDER_RHO_SYNTH
 
-C initialize chl as in darwin2 (if GUD_ALLOW_RADTRANS)
+C initialize chl as in darwin2 (with radtrans package)
 #undef  DARWIN_CHL_INIT_LEGACY
 
-C scattering coefficients are per Chlorophyll (if GUD_ALLOW_RADTRANS)
+C scattering coefficients are per Chlorophyll (with radtrans package)
 #undef  DARWIN_SCATTER_CHL
 
 C make diagnostics for instrinsic optical properties available
@@ -136,13 +136,13 @@ C random trait generation
 C assign traits based on random numbers as in darwin2
 #undef  DARWIN_RANDOM_TRAITS
 
-C set traits for darwin2 2-species setup (requires GUD_RANDOM_TRAITS)
+C set traits for darwin2 2-species setup (requires DARWIN_RANDOM_TRAITS)
 #undef  DARWIN_TWO_SPECIES_SETUP
 
-C set traits for darwin2 9-species setup (requires GUD_RANDOM_TRAITS)
+C set traits for darwin2 9-species setup (requires DARWIN_RANDOM_TRAITS)
 #undef  DARWIN_NINE_SPECIES_SETUP
 
-C enable diazotrophy when using (requires GUD_RANDOM_TRAITS)
+C enable diazotrophy when using (requires DARWIN_RANDOM_TRAITS)
 #undef  DARWIN_ALLOW_DIAZ
 
 
