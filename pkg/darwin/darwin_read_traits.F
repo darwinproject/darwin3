@@ -213,8 +213,12 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 #ifdef ALLOW_RADTRANS
       DO jp = 1, nplank
-       chl2cmin(jp)=chl2cmax(jp)/
-     &   (1+(chl2cmax(jp)* alpha_mean(jp) *2000. _d 0)/(2*pcmax(jp)))
+       IF (pcmax(jp) .GT. 0 _d 0) THEN
+         chl2cmin(jp)=chl2cmax(jp)/
+     &     (1+(chl2cmax(jp)* alpha_mean(jp) *2000. _d 0)/(2*pcmax(jp)))
+       ELSE
+         chl2cmin(jp) = 0 _d 0
+       ENDIF
       ENDDO
 #else
       DO jp = 1, nPhoto
