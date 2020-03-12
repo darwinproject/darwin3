@@ -14,6 +14,9 @@ iron, FeT.  Its source terms are
              + \delta_{\op{bottom}} \delta_{|r|\le\op{depthfesed}}
                \frac{1}{\Delta r_{\mathrm{F}}h_{\mathrm{C}}} F_{\op{Fe}}^{{\text{sed}}}- r_{{\text{scav}}}\op{Fe}'
 
+where :math:`\delta_{\op{bottom}}` selects the last ocean grid cell above the sea floor.
+
+
 Dust deposition
 '''''''''''''''
 
@@ -28,18 +31,28 @@ Sedimentation
 '''''''''''''
 
 The second term represents iron input from sediments at the ocean floor.
-It only occurs above :varlink:`depthfesed`.  The flux is
+It only occurs above :varlink:`depthfesed`.  The flux is either a fixed number,
+:varlink:`fesedflux` or, if :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE` is defined,
 
 .. math::
 
-   F_{\op{Fe}}^{{\text{sed}}}= \begin{cases}
-       F_{\op{Fe}}^{\op{sed pcm}} \cdot w^{\mathrm{P}}_{{{\text{sink}}}} R^{{\mathrm{C}}:{\mathrm{P}}}_{{\text{sed}}}\op{POP}
-       & \text{for variable sediment source,} \\
-       \op{fesedflux}
-       & \text{for fixed sediment source.}
-       \end{cases}
+   F_{\op{Fe}}^{{\text{sed}}}=
+       \left[
+       F_{\op{Fe}}^{\op{sed pcm}} w^{\mathrm{C}}_{{{\text{sink}}}} \op{POC}
+       - F_{\op{Fe}}^{\op{sed min}}
+       \right]_0
 
-To select the variable sediment source, #define :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`.
+For backwards compatibility, the variable sediment flux can be expressed in
+terms of POP if :varlink:`DARWIN_IRON_SED_SOURCE_POP` is defined:
+
+.. math::
+
+   F_{\op{Fe}}^{{\text{sed}}}=
+       F_{\op{Fe}}^{\op{sed pcm}} w^{\mathrm{P}}_{{{\text{sink}}}}
+       R^{{\mathrm{C}}:{\mathrm{P}}}_{{\text{sed}}}  \op{POP}^{\op{up}}
+
+where :math:`\op{POP}^{\op{up}}` is POP in the second-lowest wet grid cell
+of the water column.
 
 
 Scavenging
@@ -101,6 +114,7 @@ and after each biogeochemical subtimestep.
    :varlink:`depthfesed`    & depthfesed                           & -1.0        & m                      & depth above which to add sediment source
    :varlink:`fesedflux`     & fesedflux                            & 1D-3 / day  & mmol Fe /m\ :sup:`2`/s & fixed iron flux from sediment
    :varlink:`fesedflux_pcm` & :math:`F_{\op{Fe}}^{\op{sed pcm}}`   & 0.68D-3     & mmol Fe / mmol C       & iron input per POC sinking into bottom for :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`
+   :varlink:`fesedflux_min` & :math:`F_{\op{Fe}}^{\op{sed min}}`   & 0.5D-3 / day& mmol Fe /s             & minimum iron input rate subtracted from fesedflux_pcm*wc_sink*POC
    :varlink:`R_CP_fesed`    & :math:`R^{\op{C:P}}_{\op{sed}}`      & 106         & mmol C / mmol P        & POC:POP conversion for :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`
    :varlink:`scav`          & scav                                 & 0.4/year    & 1/s                    & fixed iron scavenging rate
    :varlink:`scav_rat`      & :math:`r_{\op{scav}}`                & 0.005 / day & 1/s                    & rate of POM-based iron scavenging
