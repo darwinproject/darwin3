@@ -170,7 +170,8 @@ C     scav_R_POPPOC     :: [mmol P / mmol C]  POP:POC ratio for DARWIN_PART_SCAV
 C     depthfesed        :: [m]                depth above which to add sediment source (was -1000)
 C     fesedflux         :: [mmol Fe /m2/s]    fixed iron flux from sediment
 C     fesedflux_pcm     :: [mmol Fe / mmol C] iron input per POC sinking into bottom for DARWIN_IRON_SED_SOURCE_VARIABLE
-C     R_CP_fesed        :: [mmol C / mmol P]  POC:POP conversion for DARWIN_IRON_SED_SOURCE_VARIABLE
+C     fesedflux_min     :: [mmol Fe /s]       min iron input rate subtracted from fesedflux_pcm*wc_sink*POC
+C     R_CP_fesed        :: [mmol C / mmol P]  POC:POP conversion for DARWIN_IRON_SED_SOURCE_POP
 C
 C     Knita             :: [1/s]              ammonia oxidation rate
 C     Knitb             :: [1/s]              nitrite oxidation rate
@@ -282,6 +283,7 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    depthfesed,
      &    fesedflux,
      &    fesedflux_pcm,
+     &    fesedflux_min,
      &    R_CP_fesed,
      &    Knita,
      &    Knitb,
@@ -381,6 +383,7 @@ C     &    yono2,
       _RL depthfesed
       _RL fesedflux
       _RL fesedflux_pcm
+      _RL fesedflux_min
       _RL R_CP_fesed
       _RL Knita
       _RL Knitb

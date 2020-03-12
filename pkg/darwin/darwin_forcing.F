@@ -71,7 +71,7 @@ C  k                    :: vertical level
       _RL surfFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
       _RL scv,scav_poc
-      _RL flx
+      _RL flx, POCl
       _RL ptr(nDarwin), gtr(nDarwin), PARl(nlam)
       _RL chlout(nPhoto)
       _RL diagsl(darwin_nDiag)
@@ -201,8 +201,14 @@ C     iron sediment source (in bottom grid cell above kMaxFeSed)
          IF (hFacC(i,j,k,bi,bj) .GT. 0. .AND.
      &       (hFacC(i,j,kdn,bi,bj) .EQ. 0. .OR. k .EQ. Nr)) THEN
 #ifdef DARWIN_IRON_SED_SOURCE_VARIABLE
+# ifdef DARWIN_IRON_SED_SOURCE_POP
           flx = fesedflux_pcm*wp_sink*R_CP_fesed*
      &            MAX(0 _d 0, Ptracer(i,j,k-1,bi,bj,iPOP))
+# else
+          POCl = MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOC))
+          flx = fesedflux_pcm*wc_sink*POCl - fesedflux_min
+          flx = MAX(0. _d 0, flx)
+# endif
 #else
           flx = fesedflux
 #endif

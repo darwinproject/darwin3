@@ -76,6 +76,7 @@
      &    depthfesed,
      &    fesedflux,
      &    fesedflux_pcm,
+     &    fesedflux_min,
      &    R_CP_fesed,
      &    Knita,
      &    Knitb,
@@ -301,6 +302,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       depthfesed = -1.0 _d 0
       fesedflux = 1 _d -3 / pday
       fesedflux_pcm = 0.68 _d -3
+      fesedflux_min = 0.5 _d -3 / pday
       R_CP_fesed = 106 _d 0
       Knita = 1 _d 0/(0.5 _d 0*pday)
       Knitb = 1 _d 0/(10 _d 0*pday)
