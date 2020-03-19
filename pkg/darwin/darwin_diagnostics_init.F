@@ -302,6 +302,15 @@ C-      use units & names from data.ptracers :
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
 
+      DO j = 1, nGrGn
+        WRITE(diagName,'(A,I4.4)')'GrGn',j
+        WRITE(diagTitle,'(A,I4)')'Grazing gain of plankton ',j
+        diagUnits = 'mmol C/m^3/s    '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      ENDDO
+
       WRITE(diagName,'(A)')'sfcSolFe'
       WRITE(diagTitle,'(A)')'Soluble iron input at sea surface'
       diagUnits = 'mmol Fe/m2/s    '

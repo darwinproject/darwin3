@@ -16,6 +16,7 @@ C nPhoto   :: number of phototrophs
 C             (will have Chl tracer if DARWIN_ALLOW_CHL is defined)
 C nPPplank :: number of primary production diagnostics to collect
 C nGRplank :: number of grazing loss diagnostics to collect
+C nGrGn    :: number of grazing gain diagnostics to collect
 C nlam     :: number of wavebands (set in radtrans package if compiled)
 
       integer nplank
@@ -24,12 +25,14 @@ C nlam     :: number of wavebands (set in radtrans package if compiled)
       integer nPhoto
       integer nPPplank
       integer nGRplank
+      integer nGrGn
       parameter(nplank=4)
       parameter(nGroup=5)
       parameter(nopt=1)
       parameter(nPhoto=2)
       parameter(nPPplank=0)
       parameter(nGRplank=0)
+      parameter(nGrGn=0)
 
 #ifndef ALLOW_RADTRANS
       integer nlam

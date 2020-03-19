@@ -14,6 +14,7 @@ C Contains indices into diagnostics array
       integer iDenitN
       integer iPPplank
       integer iGRplank
+      integer iGrGn
       integer iConsDIN
       integer iConsPO4
       integer iConsSi
@@ -29,7 +30,8 @@ C Contains indices into diagnostics array
       PARAMETER(iConsDIN=8)
       PARAMETER(iPPplank=9)
       PARAMETER(iGRplank=iPPplank+nPPplank)
-      PARAMETER(darwin_nDiag=iGRplank+nGRplank-1)
+      PARAMETER(iGrGn=iGRplank+nGRplank)
+      PARAMETER(darwin_nDiag=iGrGn+nGrGn-1)
 
 CEOP
 #endif /* ALLOW_DARWIN */

@@ -393,6 +393,11 @@ C      diags(iCons*) for convenience
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGRplank+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
        ENDDO
+       DO iTr=1,nGrGn
+        WRITE(diagname, '(A,I4.4)') 'GrGn', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGrGn+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+       ENDDO
        IF (DIAGNOSTICS_IS_ON('sfcSolFe', myThid)) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax

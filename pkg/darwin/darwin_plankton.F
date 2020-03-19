@@ -1260,6 +1260,10 @@ C==== tendencies =======================================================
         diags(iGRplank+jp-1) = preygraz(jp)
       ENDDO
 
+      DO jz = 1, nGrGn
+        diags(iGrGn+jz-1) = predgrazc(jz)
+      ENDDO
+
 C==== mortality ========================================================
       exude_DOC  = 0.0 _d 0
       exude_POC  = 0.0 _d 0
