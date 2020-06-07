@@ -155,6 +155,7 @@ To use spectral light, compile the radtrans package, see
    :varlink:`DARWIN_MINFE`                      & restrict maximum free iron (sic)
    :varlink:`DARWIN_PART_SCAV`                  & enable particle scavenging code
    :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`   & enable variable iron sediment source
+   :varlink:`DARWIN_DIAG_PERTYPE`               & enable per-type diagnostics PP####, GR####, GrGn####
    :varlink:`DARWIN_DEBUG`                      & turn on debugging output
    :varlink:`DARWIN_ALLOW_CONS`                 & compute and print global element totals
    :varlink:`DARWIN_UNUSED`                     & value for unused traits
@@ -914,6 +915,8 @@ Diagnostics
    | PP####     | ``SMRP____MR``   | mmol C/m\ :math:`^3`/s      | Primary Production plankton ####                     |
    +------------+------------------+-----------------------------+------------------------------------------------------+
    | GR####     | ``SMRP____MR``   | mmol C/m\ :math:`^3`/s      | Grazing loss of plankton ####                        |
+   +------------+------------------+-----------------------------+------------------------------------------------------+
+   | GrGn####   | ``SMRP____MR``   | mmol C/m\ :math:`^3`/s      | Grazing gain of plankton ####                        |
    +------------+------------------+-----------------------------+------------------------------------------------------+
    | sfcSolFe   | ``SM_P____MR``   | mmol Fe/m2/s                | Soluble iron input at sea surface                    |
    +------------+------------------+-----------------------------+------------------------------------------------------+
