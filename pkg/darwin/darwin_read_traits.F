@@ -180,13 +180,13 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
         IF (useNO3(jp).EQ.0 .OR. useNO2(jp).EQ.0) THEN
           combNO(jp)=0
         ENDIF
-      ! Silicate parameters to zero for non-diatoms
+C       Silicate parameters to zero for non-diatoms
         IF (hasSi(jp) .EQ. 0) THEN
           vmaxSiO2(jp) = 0.0 _d 0
           ksatSiO2(jp) = 0.0 _d 0
           R_SiC(jp) = 0.0 _d 0
         ENDIF
-      ! only Coccolithophores have PIC
+C       only Coccolithophores have PIC
         IF (hasPIC(jp) .EQ. 0) THEN
           R_PICPOC(jp) = 0.0 _d 0
         ENDIF
@@ -238,10 +238,11 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       ENDDO
 #endif
 
-      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      ! checks
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C     Checks
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-      ! check types are within type ranges
+C     check types are within type ranges
       DO jp=1,nplank
        IF (isPhoto(jp) .NE. 0) THEN
         IF (jp.GT.nPhoto) THEN
@@ -332,8 +333,9 @@ C re-compute isPrey and isPred to speed up grazing loops
        ENDDO
       ENDDO
 
-      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      ! zero out unused trait entries, so they do not mess up the traits file
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C zero out unused trait entries, so they do not mess up the traits file
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       DO jp=1,nplank
 #ifndef DARWIN_ALLOW_NQUOTA
        vmaxNH4(jp) = DARWIN_UNUSED
