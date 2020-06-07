@@ -383,21 +383,19 @@ C      diags(iCons*) for convenience
         CALL DIAGNOSTICS_FILL(gPtr(1-OLx,1-OLy,1,iTr), diagname,
      &          0,Nr,2,bi,bj,myThid)
        ENDDO
-       DO iTr=1,nPPplank
+#ifdef DARWIN_DIAG_PERTYPE
+       DO iTr=1,nplank
         WRITE(diagname, '(A,I4.4)') 'PP', iTr
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPPplank+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
-       ENDDO
-       DO iTr=1,nGRplank
         WRITE(diagname, '(A,I4.4)') 'GR', iTr
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGRplank+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
-       ENDDO
-       DO iTr=1,nGrGn
         WRITE(diagname, '(A,I4.4)') 'GrGn', iTr
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGrGn+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
        ENDDO
+#endif
        IF (DIAGNOSTICS_IS_ON('sfcSolFe', myThid)) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax

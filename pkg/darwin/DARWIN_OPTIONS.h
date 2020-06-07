@@ -116,6 +116,12 @@ C revert to old variable iron sediment source in terms of POP
 #undef  DARWIN_IRON_SED_SOURCE_POP
 
 
+C diagnostics
+
+C include code for per-type diagnostics
+#undef  DARWIN_DIAG_PERTYPE
+
+
 C debugging
 
 C turn on debugging output
