@@ -332,8 +332,8 @@ C-      use units & names from data.ptracers :
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'fugfCO2'
-      WRITE(diagTitle,'(A)')'Fugacity factor of CO2 (atm)'
-      diagUnits = 'atm             '
+      WRITE(diagTitle,'(A)')'Fugacity factor of CO2 at surface'
+      diagUnits = '1               '
       diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
