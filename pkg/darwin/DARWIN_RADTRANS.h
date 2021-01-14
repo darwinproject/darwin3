@@ -84,10 +84,12 @@ C     darwin_scatSlopeLarge    :: []           slope for large plankton
      &    bw,
      &    aphy_chl_type,
      &    aphy_chl_ps_type,
+     &    aphy_mgC_type,
      &    bphy_mgC_type,
      &    bbphy_mgC_type,
      &    asize,
      &    apsize,
+     &    asize_mgC,
      &    bsize,
      &    bbsize,
      &    apart,
@@ -101,10 +103,12 @@ C     darwin_scatSlopeLarge    :: []           slope for large plankton
       _RL bw(nlam)
       _RL aphy_chl_type(nopt,nlam)
       _RL aphy_chl_ps_type(nopt,nlam)
+      _RL aphy_mgC_type(nopt,nlam)
       _RL bphy_mgC_type(nopt,nlam)
       _RL bbphy_mgC_type(nopt,nlam)
       _RL asize(nopt)
       _RL apsize(nopt)
+      _RL asize_mgC(nopt)
       _RL bsize(nopt)
       _RL bbsize(nopt)
       _RL apart(nlam)
@@ -118,15 +122,18 @@ C     darwin_scatSlopeLarge    :: []           slope for large plankton
 C     COMMON /DARWIN_RADTRANS_TRAITS_r/
 C     aphy_chl    :: [m^-1 (mg Chl m^-3)^-1]  phytoplankton Chl-specific absorption coefficient
 C     aphy_chl_ps :: [m^-1 (mg Chl m^-3)^-1]  part of aphy_chl that is used in photosynthesis
+C     aphy_mgC    :: [m^-1 (mg C m^-3)^-1]    plankton carbon-specific absorption coefficient
 C     bphy_mgC    :: [m^-1 (mg C m^-3)^-1]    carbon-specific total scattering coefficient
 C     bbphy_mgC   :: [m^-1 (mg C m^-3)^-1]    carbon-specific backscattering coefficient
       COMMON /DARWIN_RADTRANS_TRAITS_r/
      &    aphy_chl,
      &    aphy_chl_ps,
+     &    aphy_mgC,
      &    bphy_mgC,
      &    bbphy_mgC
       _RL aphy_chl(nplank,nlam)
       _RL aphy_chl_ps(nplank,nlam)
+      _RL aphy_mgC(nplank,nlam)
       _RL bphy_mgC(nplank,nlam)
       _RL bbphy_mgC(nplank,nlam)
 

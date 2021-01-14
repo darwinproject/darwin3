@@ -376,6 +376,18 @@ c size specific absorption spectra
              aphy_chl_ps(jp,l) = aphy_chl_ps_type(iopt,l)*scalefac
            ENDDO
 
+c in terms of mg C
+           IF (asize_mgC(iopt).GT.0 _d 0)THEN
+            volmeas = PI / 6. _d 0 * asize_mgC(iopt)**3
+            scalefac = (biovol(jp)/volmeas)**darwin_absorpSlope
+           ELSE
+            scalefac = 1 _d 0
+           ENDIF
+c size specific absorption spectra
+           DO l = 1, nlam
+             aphy_mgC(jp,l) = aphy_mgC_type(iopt,l)*scalefac
+           ENDDO
+
 c TOTAL SCATTER
 c in terms of diameter
            volmeas = PI / 6. _d 0 * bsize(iopt)**3
@@ -419,6 +431,7 @@ c OR use read in absorbtion spectra
           DO l = 1, nlam
            aphy_chl(jp,l) = aphy_chl_type(iopt,l)
            aphy_chl_ps(jp,l) = aphy_chl_ps_type(iopt,l)
+           aphy_mgC(jp,l) = aphy_mgC_type(iopt,l)
            bphy_mgC(jp,l) = bphy_mgC_type(iopt,l)
            bbphy_mgC(jp,l) = bbphy_mgC_type(iopt,l)
           ENDDO

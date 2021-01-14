@@ -138,6 +138,7 @@
       NAMELIST/DARWIN_RADTRANS_TRAITS/
      &    aphy_chl,
      &    aphy_chl_ps,
+     &    aphy_mgC,
      &    bphy_mgC,
      &    bbphy_mgC
 #endif

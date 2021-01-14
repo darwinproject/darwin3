@@ -135,6 +135,7 @@ c         absorption by phyto
            actot  = actot  + phychl(jp)*aphy_chl(jp,l)
           ENDDO
           DO jp = 1, nPlank
+           actot  = actot  + plankcar(jp)*aphy_mgC(jp,l)*12
 #ifdef DARWIN_SCATTER_CHL
            bctot  = bctot  + phychl(jp)*bphy_mgC(jp,l)
            bbctot = bbctot + phychl(jp)*bbphy_mgC(jp,l)

@@ -550,6 +550,7 @@ Traits are generated from the parameters in ``&DARWIN_TRAIT_PARAMS``
 
    :varlink:`aphy_chl`    & :math:`a^{\op{chl}}_{\op{phy}}`       & m\ :sup:`-1` (mg Chl m\ :sup:`-3`)\ :sup:`-1` & phytoplankton Chl-specific absorption coefficient
    :varlink:`aphy_chl_ps` & :math:`a^{\op{chl}}_{\op{ps}}`        & m\ :sup:`-1` (mg Chl m\ :sup:`-3`)\ :sup:`-1` & part of :varlink:`aphy_chl` that is used in photosynthesis
+   :varlink:`aphy_mgC`    & :math:`a^{\op{mgC}}_{\op{phy}}`       & m\ :sup:`-1` (mg C m\ :sup:`-3`)\ :sup:`-1`   & plankton carbon-specific absorption coefficient
    :varlink:`bphy_mgC`    & :math:`b^{\op{mgC}}_{\op{phy}}`       & m\ :sup:`-1` (mg C m\ :sup:`-3`)\ :sup:`-1`   & carbon-specific total scattering coefficient
    :varlink:`bbphy_mgC`   & :math:`b^{\op{mgC}}_{\op{b}\op{phy}}` & m\ :sup:`-1` (mg C m\ :sup:`-3`)\ :sup:`-1`   & carbon-specific backscattering coefficient
 
@@ -698,6 +699,7 @@ traits and trait parameters. Where :math:`b` is not given, it is set to
    :varlink:`asseff`             & :varlink:`grp_ass_eff`            & 0.7           & *(nGroup* :math:`\times` *nGroup)*
    :varlink:`aphy_chl`           & :varlink:`aphy_chl_type`          & *read*        & *via* :varlink:`grp_aptype`
    :varlink:`aphy_chl_ps`        & :varlink:`aphy_chl_ps_type`       & *read*        & *via* :varlink:`grp_aptype`
+   :varlink:`aphy_mgC`           & :varlink:`aphy_mgC_type`          & *read*        & *via* :varlink:`grp_aptype`
    :varlink:`bphy_mgC`           & :varlink:`bphy_mgC_type`          & *read*        & *via* :varlink:`grp_aptype`
    :varlink:`bbphy_mgC`          & :varlink:`bbphy_mgC_type`         & *read*        & *via* :varlink:`grp_aptype`
 

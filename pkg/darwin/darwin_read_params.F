@@ -208,10 +208,12 @@ C     &    yono2,
      &    bw,
      &    aphy_chl_type,
      &    aphy_chl_ps_type,
+     &    aphy_mgC_type,
      &    bphy_mgC_type,
      &    bbphy_mgC_type,
      &    asize,
      &    apsize,
+     &    asize_mgC,
      &    bsize,
      &    bbsize,
      &    apart,
@@ -449,10 +451,12 @@ C     from Montagnes et al 1994:
       bw = -1
       aphy_chl_type = -1
       aphy_chl_ps_type = -1
+      aphy_mgC_type = -1
       bphy_mgC_type = -1
       bbphy_mgC_type = -1
       asize = -1
       apsize = -1
+      asize_mgC = -1
       bsize = -1
       bbsize = -1
       apart = -1

@@ -404,6 +404,7 @@ c
         DO l = 1, nlam
          aphy_chl(np,l) = aphy_chl_type(iopt,l)
          aphy_chl_ps(np,l) = aphy_chl_ps_type(iopt,l)
+         aphy_mgC(np,l) = aphy_mgC_type(iopt,l)
          bphy_mgC(np,l) = bphy_mgC_type(iopt,l)
          bbphy_mgC(np,l) = bbphy_mgC_type(iopt,l)
         ENDDO

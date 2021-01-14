@@ -43,7 +43,7 @@ C     !LOCAL VARIABLES:
 #ifdef ALLOW_RADTRANS
       character*80 title
       integer ios, i, l, ilambda
-      _RL lambdain, ain, apsin, bin, bbin
+      _RL lambdain, ain, apsin, bin, bbin, ain_mgC
 #endif
 
       CALL DARWIN_EXF_INIT_FIXED(myThid)
@@ -143,6 +143,7 @@ C   easiest way to 'turn off' PS for growth is to put same values in both abs co
        DO l = 1, nlam
         aphy_chl_type   (i,l) = -1.0 _d 0
         aphy_chl_ps_type(i,l) = -1.0 _d 0
+        aphy_mgC_type   (i,l) = -1.0 _d 0
         bphy_mgC_type   (i,l) = -1.0 _d 0
         bbphy_mgC_type  (i,l) = -1.0 _d 0
        ENDDO
@@ -160,12 +161,12 @@ C       phytoplanktontype header
         DO i = 1,nopt
          ios = 0
          IF (darwin_allomSpectra) THEN
-           READ(iUnit,'(I4,3F10.0,F20.0)')
-     &           idummy, asize(i), apsize(i), bsize(i), bbsize(i)
+           READ(iUnit,'(I4,3F10.0,F20.0,F10.0)')
+     &       idummy,asize(i),apsize(i),bsize(i),bbsize(i),asize_mgC(i)
          ENDIF
          DO WHILE (ios .EQ. 0)
-          READ(iUnit,'(I4,3F10.0,F20.0)',IOSTAT=ios)
-     &                ilambda,ain,apsin,bin,bbin
+          READ(iUnit,'(I4,3F10.0,F20.0,F10.0)',IOSTAT=ios)
+     &                ilambda,ain,apsin,bin,bbin,ain_mgC
 C         next phyto type header will trigger error and move on to next i
           IF (ios .EQ. 0) THEN
            lambdain = ilambda
@@ -176,6 +177,7 @@ C         next phyto type header will trigger error and move on to next i
              aphy_chl_ps_type(i,l) = apsin
              bphy_mgC_type   (i,l) = bin
              bbphy_mgC_type  (i,l) = bbin
+             aphy_mgC_type   (i,l) = ain_mgC
             ENDIF
            ENDDO
           ENDIF
@@ -184,7 +186,7 @@ C         next phyto type header will trigger error and move on to next i
         CLOSE(iUnit)
       ELSE
         WRITE(msgBuf,'(A)')
-     &   'DARWIN_INIT_FIXED: need to specify water absorption file'
+     &   'DARWIN_INIT_FIXED: need to specify plankton absorption file'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
       ENDIF
@@ -211,13 +213,14 @@ C     write summary
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, 1 )
         WRITE(msgBuf,'(A,A)') 'DARWIN_INIT_FIXED: ',
-     &     ' lam ap        ap_ps     bp        bbp'
+     &     ' lam ap        ap_ps     bp        bbp            ap_mgC'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, 1 )
         DO l = 1,nlam
-          WRITE(msgBuf,'(A,F4.0,3F10.4,F20.9)') 'DARWIN_INIT_FIXED: ',
+          WRITE(msgBuf,'(A,F4.0,3F10.4,F20.9,F10.6)')
+     &     'DARWIN_INIT_FIXED: ',
      &     RT_wbRefWLs(l), aphy_chl_type(i,l), aphy_chl_ps_type(i,l),
-     &     bphy_mgC_type(i,l), bbphy_mgC_type(i,l)
+     &     bphy_mgC_type(i,l), bbphy_mgC_type(i,l), aphy_mgC_type(i,l)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1 )
         ENDDO
@@ -263,7 +266,7 @@ C       skip header
         CLOSE(iUnit)
       ELSE
         WRITE(msgBuf,'(A)')
-     &   'DARWIN_INIT_FIXED: need to specify particle file'
+     &   'DARWIN_INIT_FIXED: need to specify particle absorption file'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
       ENDIF
@@ -433,7 +436,7 @@ C file for aptypes assigned via coin flips
 c file of total absorption spectra
 c rows = pwaves, columns = jp      
       open(oUnit1,file='p-ini-char-apspec.dat',status='unknown')
-      open(oUnit2,file='p_ini_char_aspec_nohead.dat',status='unknown')
+      open(oUnit2,file='p_ini_char_apspec_nohead.dat',status='unknown')
       write(oUnit1,*)'Rows = pwaves. Columns = jp'
       write(oUnit1,*)'pwaves found in pwaves-check.dat'
       write(oUnit1,*)'col_1 to col_<nPhoto>'
@@ -446,10 +449,27 @@ c make sure outfile is defined above with the correct size
       close(oUnit1)
       close(oUnit2)
 
+c file of spectra for carbon-specific total absorption
+c rows = pwaves, columns = jp      
+      open(oUnit1,file='p-ini-char-apspec-mgC.dat',status='unknown')
+      open(oUnit2,file='p_ini_char_apspec_mgC_nohead.dat',
+     &     status='unknown')
+      write(oUnit1,*)'Rows = pwaves. Columns = jp'
+      write(oUnit1,*)'pwaves found in pwaves-check.dat'
+      write(oUnit1,*)'col_1 to col_<nPhoto>'
+      write(oUnit1,*)'is absorption aphy_mgC*1e3 (m-2 mg C-1)'
+      do l=1,nlam
+       write(oUnit1,9999)(aphy_mgC(jp,l)*1e3,jp=1,nplank)
+       write(oUnit2,9999)(aphy_mgC(jp,l)*1e3,jp=1,nplank)
+      enddo
+c make sure outfile is defined above with the correct size
+      close(oUnit1)
+      close(oUnit2)
+
 c file for absorption spectra of PS's only
 c rows = pwaves, columns = jp
       open(oUnit1,file='p-ini-char-apspec-psc.dat',status='unknown')
-      open(oUnit2,file='p_ini_char_aspec_psc_nohead.dat',
+      open(oUnit2,file='p_ini_char_apspec_psc_nohead.dat',
      &     status='unknown')
       write(oUnit1,*)'Rows = pwaves. Columns = jp'
       write(oUnit1,*)'pwaves found in pwaves-check.dat'
