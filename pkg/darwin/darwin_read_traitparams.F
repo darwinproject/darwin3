@@ -158,10 +158,19 @@
      &    a_mort,
      &    a_mort2,
      &    a_phytoTempCoeff,
-     &    a_phytoTempExp2,
      &    a_phytoTempExp1,
+     &    a_phytoTempAe,
+     &    a_phytoTempExp2,
      &    a_phytoTempOptimum,
      &    a_phytoDecayPower,
+     &    a_hetTempAe,
+     &    a_hetTempExp2,
+     &    a_hetTempOptimum,
+     &    a_hetDecayPower,
+     &    a_grazTempAe,
+     &    a_grazTempExp2,
+     &    a_grazTempOptimum,
+     &    a_grazDecayPower,
 #ifdef DARWIN_ALLOW_GEIDER
      &    a_mQyield,
      &    a_chl2cmax,
@@ -424,10 +433,19 @@ C     used to be 120D-20 for phyto
       a_mort = 0.02 _d 0 / pday
       a_mort2 = 0.0 _d 0
       a_phytoTempCoeff = 1. _d 0/3. _d 0
-      a_phytoTempExp2 = 0.001 _d 0
       a_phytoTempExp1 = 1.04 _d 0
+      a_phytoTempAe = 0.0438 _d 0
+      a_phytoTempExp2 = 0.001 _d 0
       a_phytoTempOptimum = 2. _d 0
       a_phytoDecayPower = 4. _d 0
+      a_hetTempAe = 0.0438 _d 0
+      a_hetTempExp2 = 0.001 _d 0
+      a_hetTempOptimum = 2. _d 0
+      a_hetDecayPower = 4. _d 0
+      a_grazTempAe = 0.0438 _d 0
+      a_grazTempExp2 = 0.001 _d 0
+      a_grazTempOptimum = 2. _d 0
+      a_grazDecayPower = 4. _d 0
 #ifdef DARWIN_ALLOW_GEIDER
       a_mQyield = 75 _d -6
       a_chl2cmax = .3 _d 0

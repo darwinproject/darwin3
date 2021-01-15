@@ -339,8 +339,17 @@ C
      &    a_phytoTempCoeff,
      &    a_phytoTempExp2,
      &    a_phytoTempExp1,
+     &    a_phytoTempAe,
      &    a_phytoTempOptimum,
      &    a_phytoDecayPower,
+     &    a_hetTempAe,
+     &    a_hetTempExp2,
+     &    a_hetTempOptimum,
+     &    a_hetDecayPower,
+     &    a_grazTempAe,
+     &    a_grazTempExp2,
+     &    a_grazTempOptimum,
+     &    a_grazDecayPower,
 #ifdef DARWIN_ALLOW_GEIDER
      &    a_mQyield,
      &    a_chl2cmax,
@@ -458,10 +467,19 @@ C
       _RL a_mort(nGroup)
       _RL a_mort2(nGroup)
       _RL a_phytoTempCoeff(nGroup)
-      _RL a_phytoTempExp2(nGroup)
       _RL a_phytoTempExp1(nGroup)
+      _RL a_phytoTempAe(nGroup)
+      _RL a_phytoTempExp2(nGroup)
       _RL a_phytoTempOptimum(nGroup)
       _RL a_phytoDecayPower(nGroup)
+      _RL a_hetTempAe(nGroup)
+      _RL a_hetTempExp2(nGroup)
+      _RL a_hetTempOptimum(nGroup)
+      _RL a_hetDecayPower(nGroup)
+      _RL a_grazTempAe(nGroup)
+      _RL a_grazTempExp2(nGroup)
+      _RL a_grazTempOptimum(nGroup)
+      _RL a_grazDecayPower(nGroup)
 #ifdef DARWIN_ALLOW_GEIDER
       _RL a_mQyield(nGroup)
       _RL a_chl2cmax(nGroup)

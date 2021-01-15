@@ -64,6 +64,10 @@
      &    TempAeArr,
      &    TemprefArr,
      &    TempCoeffArr,
+     &    reminTempAe,
+     &    mortTempAe,
+     &    mort2TempAe,
+     &    uptakeTempAe,
      &    alpfe,
      &    scav,
      &    ligand_tot,
@@ -293,6 +297,10 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       TempAeArr = -4000.0 _d 0
       TemprefArr = 293.15 _d 0
       TempCoeffArr = 0.5882 _d 0
+      reminTempAe = 0.0438 _d 0
+      mortTempAe = 0.0438 _d 0
+      mort2TempAe = 0.0438 _d 0
+      uptakeTempAe = 0.0 _d 0
       alpfe = 0.04 _d 0
       scav = 0.4 _d 0/pyear
       ligand_tot = 1. _d -3

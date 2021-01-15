@@ -305,6 +305,10 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`TempAeArr`              & -4000.0               & K                                & slope for pseudo-Arrhenius (TEMP_VERSION 2)
    :varlink:`TemprefArr`             & 293.15                & K                                & reference temp for pseudo-Arrhenius (TEMP_VERSION 2)
    :varlink:`TempCoeffArr`           & 0.5882                &                                  & pre-factor for pseudo-Arrhenius (TEMP_VERSION 2)
+   :varlink:`reminTempAe`            & 0.0438                & 1/K                              & temperature coefficient for remineralization (TEMP_VERSION 4)
+   :varlink:`mortTempAe`             & 0.0438                & 1/K                              & temperature coefficient for linear mortality (TEMP_VERSION 4)
+   :varlink:`mort2TempAe`            & 0.0438                & 1/K                              & temperature coefficient for quadr. mortality (TEMP_VERSION 4)
+   :varlink:`uptakeTempAe`           & 0.0                   & 1/K                              & temperature coefficient for uptake (TEMP_VERSION 4)
    :varlink:`alpfe`                  & 0.04                  &                                  & solubility of Fe dust
    :varlink:`scav`                   & 0.4/year              & 1/s                              & fixed iron scavenging rate
    :varlink:`ligand_tot`             & 1D-3                  & mol/m\ :sup:`3`                  & total ligand concentration
@@ -475,9 +479,18 @@ Traits are generated from the parameters in ``&DARWIN_TRAIT_PARAMS``
    :varlink:`ExportFracExude`  & :math:`f^{\op{exp}\op{exude}}_j`       &                                               & fraction of exudation to POM
    :varlink:`phytoTempCoeff`   & :math:`c_j`                            &                                               & see :numref:`pkg_darwin_temperature_params`
    :varlink:`phytoTempExp1`    & :math:`e_{1j}`                         & exp(1/°C)                                     & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`phytoTempAe`      & :math:`A^{\op{phy}}_{\op{e}j}`         & 1/°C                                          & see :numref:`pkg_darwin_temperature_params`
    :varlink:`phytoTempExp2`    & :math:`e_{2j}`                         &                                               & see :numref:`pkg_darwin_temperature_params`
    :varlink:`phytoTempOptimum` & :math:`T^{\op{opt}}_j`                 & °C                                            & see :numref:`pkg_darwin_temperature_params`
    :varlink:`phytoDecayPower`  & :math:`p_j`                            &                                               & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`hetTempAe`        & :math:`A^{\op{het}}_{\op{e}j}`         & 1/°C                                          & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`hetTempExp2`      & :math:`e^{\op{het}}_{2j}`              &                                               & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`hetTempOptimum`   & :math:`T^{\op{opt het}}_j`             & °C                                            & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`hetDecayPower`    & :math:`p^{\op{het}}_j`                 &                                               & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`grazTempAe`       & :math:`A^{\op{graz}}_{\op{e}j}`        & 1/°C                                          & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`grazTempExp2`     & :math:`e^{\op{graz}}_{2j}`             &                                               & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`grazTempOptimum`  & :math:`T^{\op{opt graz}}_j`            & °C                                            & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`grazDecayPower`   & :math:`p^{\op{graz}}_j`                &                                               & see :numref:`pkg_darwin_temperature_params`
    :varlink:`R_NC`             & :math:`R^{\op{N}:\op{C}}_j`            & mmol N (mmol C)\ :sup:`-1`                    & nitrogen-carbon ratio (not used with DARWIN_ALLOW_NQUOTA)
    :varlink:`R_PC`             & :math:`R^{\op{P}:\op{C}}_j`            & mmol P (mmol C)\ :sup:`-1`                    & phosphorus-carbon ratio (not used with DARWIN_ALLOW_PQUOTA)
    :varlink:`R_SiC`            & :math:`R^{\op{Si}:\op{C}}_j`           & mmol Si (mmol C)\ :sup:`-1`                   & silica-carbon ratio (not used with DARWIN_ALLOW_SIQUOTA)
@@ -634,10 +647,19 @@ traits and trait parameters. Where :math:`b` is not given, it is set to
    :varlink:`mort`               & :varlink:`a_mort`                 & 0.02 / day    &                                    &
    :varlink:`mort2`              & :varlink:`a_mort2`                & 0             &                                    &
    :varlink:`phytoTempCoeff`     & :varlink:`a_phytoTempCoeff`       & 1/3           &                                    &
-   :varlink:`phytoTempExp2`      & :varlink:`a_phytoTempExp2`        & 0.001         &                                    &
    :varlink:`phytoTempExp1`      & :varlink:`a_phytoTempExp1`        & 1.04          &                                    &
+   :varlink:`phytoTempAe`        & :varlink:`a_phytoTempAe`          & 0.0438        &                                    &
+   :varlink:`phytoTempExp2`      & :varlink:`a_phytoTempExp2`        & 0.001         &                                    &
    :varlink:`phytoTempOptimum`   & :varlink:`a_phytoTempOptimum`     & 2             &                                    &
    :varlink:`phytoDecayPower`    & :varlink:`a_phytoDecayPower`      & 4             &                                    &
+   :varlink:`hetTempAe`          & :varlink:`a_hetTempAe`            & 0.0438        &                                    &
+   :varlink:`hetTempExp2`        & :varlink:`a_hetTempExp2`          & 0.001         &                                    &
+   :varlink:`hetTempOptimum`     & :varlink:`a_hetTempOptimum`       & 2             &                                    &
+   :varlink:`hetDecayPower`      & :varlink:`a_hetDecayPower`        & 4             &                                    &
+   :varlink:`grazTempAe`         & :varlink:`a_grazTempAe`           & 0.0438        &                                    &
+   :varlink:`grazTempExp2`       & :varlink:`a_grazTempExp2`         & 0.001         &                                    &
+   :varlink:`grazTempOptimum`    & :varlink:`a_grazTempOptimum`      & 2             &                                    &
+   :varlink:`grazDecayPower`     & :varlink:`a_grazDecayPower`       & 4             &                                    &
    :varlink:`mQyield`            & :varlink:`a_mQyield`              & 75D-6         &                                    &
    :varlink:`chl2cmax`           & :varlink:`a_chl2cmax`             & .3            &                                    &
    :varlink:`inhibGeider`        & :varlink:`a_inhibGeider`          & 0             &                                    &

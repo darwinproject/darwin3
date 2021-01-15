@@ -76,9 +76,18 @@ C
 C- temperature dependence:
 C     phytoTempCoeff     :: []                         see :numref:`pkg_darwin_temperature_params`
 C     phytoTempExp1      :: [exp(1/degrees C)]         see :numref:`pkg_darwin_temperature_params`
+C     phytoTempAe        :: [1/degrees C]              see :numref:`pkg_darwin_temperature_params`
 C     phytoTempExp2      :: []                         see :numref:`pkg_darwin_temperature_params`
 C     phytoTempOptimum   :: [degrees C]                see :numref:`pkg_darwin_temperature_params`
 C     phytoDecayPower    :: []                         see :numref:`pkg_darwin_temperature_params`
+C     hetTempAe          :: [1/degrees C]              see :numref:`pkg_darwin_temperature_params`
+C     hetTempExp2        :: []                         see :numref:`pkg_darwin_temperature_params`
+C     hetTempOptimum     :: [degrees C]                see :numref:`pkg_darwin_temperature_params`
+C     hetDecayPower      :: []                         see :numref:`pkg_darwin_temperature_params`
+C     grazTempAe         :: [1/degrees C]              see :numref:`pkg_darwin_temperature_params`
+C     grazTempExp2       :: []                         see :numref:`pkg_darwin_temperature_params`
+C     grazTempOptimum    :: [degrees C]                see :numref:`pkg_darwin_temperature_params`
+C     grazDecayPower     :: []                         see :numref:`pkg_darwin_temperature_params`
 C
 C     R_NC               :: [mmol N (mmol C)^-1]       nitrogen-carbon ratio (not used with DARWIN_ALLOW_NQUOTA)
 C     R_PC               :: [mmol P (mmol C)^-1]       phosphorus-carbon ratio (not used with DARWIN_ALLOW_PQUOTA)
@@ -163,9 +172,18 @@ C     ksatDOFe           :: [mmol Fe m^-3]  half-saturation of DOFe for bacteria
      &    ExportFracExude,
      &    phytoTempCoeff,
      &    phytoTempExp1,
+     &    phytoTempAe,
      &    phytoTempExp2,
      &    phytoTempOptimum,
      &    phytoDecayPower,
+     &    hetTempAe,
+     &    hetTempExp2,
+     &    hetTempOptimum,
+     &    hetDecayPower,
+     &    grazTempAe,
+     &    grazTempExp2,
+     &    grazTempOptimum,
+     &    grazDecayPower,
      &    R_NC,
      &    R_PC,
      &    R_SiC,
@@ -236,9 +254,18 @@ C     ksatDOFe           :: [mmol Fe m^-3]  half-saturation of DOFe for bacteria
       _RL ExportFracExude(nplank)
       _RL phytoTempCoeff(nplank)
       _RL phytoTempExp1(nplank)
+      _RL phytoTempAe(nplank)
       _RL phytoTempExp2(nplank)
       _RL phytoTempOptimum(nplank)
       _RL phytoDecayPower(nplank)
+      _RL hetTempAe(nplank)
+      _RL hetTempExp2(nplank)
+      _RL hetTempOptimum(nplank)
+      _RL hetDecayPower(nplank)
+      _RL grazTempAe(nplank)
+      _RL grazTempExp2(nplank)
+      _RL grazTempOptimum(nplank)
+      _RL grazDecayPower(nplank)
       _RL R_NC(nplank)
       _RL R_PC(nplank)
       _RL R_SiC(nplank)

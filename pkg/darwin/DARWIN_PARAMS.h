@@ -156,6 +156,10 @@ C     tempnorm          :: []               set temperature function (was 1.0)
 C     TempAeArr         :: [K]              slope for pseudo-Arrhenius (TEMP_VERSION 2)
 C     TemprefArr        :: [K]              reference temp for pseudo-Arrhenius (TEMP_VERSION 2)
 C     TempCoeffArr      :: []               pre-factor for pseudo-Arrhenius (TEMP_VERSION 2)
+C     reminTempAe       :: [1/K]            temperature coefficient for remineralization (TEMP_VERSION 4)
+C     mortTempAe        :: [1/K]            temperature coefficient for linear mortality (TEMP_VERSION 4)
+C     mort2TempAe       :: [1/K]            temperature coefficient for quadr. mortality (TEMP_VERSION 4)
+C     uptakeTempAe      :: [1/K]            temperature coefficient for uptake (TEMP_VERSION 4)
 C
 C- Iron parameters
 C     alpfe             :: []                 solubility of Fe dust
@@ -272,6 +276,10 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    TempAeArr,
      &    TemprefArr,
      &    TempCoeffArr,
+     &    reminTempAe,
+     &    mortTempAe,
+     &    mort2TempAe,
+     &    uptakeTempAe,
      &    alpfe,
      &    scav,
      &    ligand_tot,
@@ -373,6 +381,10 @@ C     &    yono2,
       _RL TempAeArr
       _RL TemprefArr
       _RL TempCoeffArr
+      _RL reminTempAe
+      _RL mortTempAe
+      _RL mort2TempAe
+      _RL uptakeTempAe
       _RL alpfe
       _RL scav
       _RL ligand_tot

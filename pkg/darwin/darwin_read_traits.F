@@ -54,9 +54,18 @@
      &    ExportFracExude,
      &    phytoTempCoeff,
      &    phytoTempExp1,
+     &    phytoTempAe,
      &    phytoTempExp2,
      &    phytoTempOptimum,
      &    phytoDecayPower,
+     &    hetTempAe,
+     &    hetTempExp2,
+     &    hetTempOptimum,
+     &    hetDecayPower,
+     &    grazTempAe,
+     &    grazTempExp2,
+     &    grazTempOptimum,
+     &    grazDecayPower,
      &    R_NC,
      &    R_PC,
      &    R_SiC,
@@ -374,6 +383,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
         phytoTempCoeff(jp) = DARWIN_UNUSED
         phytoTempExp1(jp) = DARWIN_UNUSED
+        phytoTempAe(jp) = DARWIN_UNUSED
         phytoTempExp2(jp) = DARWIN_UNUSED
         phytoTempOptimum(jp) = DARWIN_UNUSED
         phytoDecayPower(jp) = DARWIN_UNUSED
