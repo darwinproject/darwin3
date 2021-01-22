@@ -6,7 +6,8 @@ C !ROUTINE: DARWIN_TEMPFUNC
 C !INTERFACE: ==========================================================
       SUBROUTINE DARWIN_TEMPFUNC(
      I                  Temp,
-     O                  photoFun, grazFun, reminFun, mortFun, mort2Fun,
+     O                  photoFun, hetFun, grazFun,
+     O                  reminFun, mortFun, mort2Fun,
      O                  uptakeFun,
      I                  myThid)
 
@@ -35,6 +36,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C grazFun :: the prey entries are for quota-style grazing,
 C            the predator ones for monod-style grazing
       _RL photoFun(nplank)
+      _RL hetFun(nplank)
       _RL grazFun(nplank)
       _RL reminFun
       _RL mortFun
@@ -78,6 +80,7 @@ cswd -- temperature range
         photoFun(j) = min(photoFun(j),1. _d 0)
       ENDDO
       DO j = 1,nplank
+        hetFun(j) = 1.0 _d 0
 c       grazFun(j) = zooTempCoeff(j)*EXP(
 c    &             zooTempExp(j)*(Temp - zooTempOptimum(j)))
         grazFun(j) = 1.0 _d 0
@@ -116,6 +119,7 @@ C
       reminFun = TempCoeffArr*
      &               max(reminFun, 1. _d -10)
       DO j = 1, nplank
+        hetFun(j) = reminFun
         grazFun(j) = reminFun
 c       grazFun(j) = 1. _d 0
       ENDDO
@@ -136,6 +140,7 @@ c ben's version 3 from quota model
       reminFun = MAX(1 _d -10, EXP(TempAe*(Temp-Tempref)))
       DO j = 1, nplank
         photoFun(j) = MAX(1 _d -10, EXP(TempAe*(Temp-Tempref)))
+        hetFun(j) = reminFun
         grazFun(j) = reminFun
       ENDDO
       mortFun = reminFun

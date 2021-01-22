@@ -7,7 +7,7 @@ C !INTERFACE: ==========================================================
      I     Ptr,
      U     gTr,
      O     chlout, diags,
-     I     PAR, photoTempFunc, grazTempFunc, reminTempFunc,
+     I     PAR, photoTempFunc, hetTempFunc, grazTempFunc, reminTempFunc,
      I     mortTempFunc, mort2TempFunc, uptakeTempFunc,
 #ifdef DARWIN_DEBUG
      I     iG, jG, k, dT,
@@ -38,6 +38,7 @@ C  myThid :: thread number
       _RL Ptr(nDarwin)
       _RL PAR(nlam)
       _RL photoTempFunc(nplank)
+      _RL hetTempFunc(nplank)
       _RL reminTempFunc
       _RL uptakeTempFunc
       _RL grazTempFunc(nplank)
@@ -747,13 +748,13 @@ C==== bacteria =========================================================
         IF (isAerobic(j) .NE. 0) THEN
           muO = yieldO2(j)*pcoefO2*O2
         ELSEIF (isDenit(j) .NE. 0) THEN
-          muO = yieldNO3(j)*pmaxDIN*NO3/(NO3 + ksatDIN)*reminTempFunc
+          muO = yieldNO3(j)*pmaxDIN*NO3/(NO3 + ksatDIN)*hetTempFunc(j)
         ENDIF
 
 C       POM-consuming (particle-associated)
         IF (bactType(j) .EQ. 1) THEN
 
-          PCm = yield(j)*PCmax(j)*reminTempFunc
+          PCm = yield(j)*PCmax(j)*hetTempFunc(j)
           muPON  = PCm*PON/(PON + ksatPON(j))
           muPOC  = PCm*POC/(POC + ksatPOC(j))
           muPOP  = PCm*POP/(POP + ksatPOP(j))
@@ -785,7 +786,7 @@ C         These are the bacteria products for remineralization of POM:
 C       DOM-consuming (free-living):
         ELSEIF (bactType(j) .EQ. 2) THEN
 
-          PCm = yield(j)*PCmax(j)*reminTempFunc
+          PCm = yield(j)*PCmax(j)*hetTempFunc(j)
           muDON  = PCm*DON/(DON + ksatDON(j))
           muDOC  = PCm*DOC/(DOC + ksatDOC(j))
           muDOP  = PCm*DOP/(DOP + ksatDOP(j))

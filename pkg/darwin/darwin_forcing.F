@@ -76,6 +76,7 @@ C  k                    :: vertical level
       _RL chlout(nPhoto)
       _RL diagsl(darwin_nDiag)
       _RL photoTempFunc(nplank)
+      _RL hetTempFunc(nplank)
       _RL grazTempFunc(nplank)
       _RL reminTempFunc
       _RL mortTempFunc
@@ -227,8 +228,8 @@ C === plankton =========================================================
       do i=iMin,iMax
       if (hFacC(i,j,k,bi,bj) .GT. 0.) then
         CALL DARWIN_TEMPFUNC(Theta(i,j,k,bi,bj),
-     &         photoTempFunc, grazTempFunc, reminTempFunc,
-     &         mortTempFunc, mort2TempFunc,
+     &         photoTempFunc, hetTempFunc, grazTempFunc,
+     &         reminTempFunc, mortTempFunc, mort2TempFunc,
      &         uptakeTempFunc, myThid)
         DO iTr=1,nDarwin
          ptr(iTr) = Ptracer(i, j, k, bi, bj, iTr)
@@ -242,6 +243,7 @@ C === plankton =========================================================
      U                 gtr,
      O                 chlout, diagsl,
      I                 PARl, photoTempFunc,
+     I                 hetTempFunc,
      I                 grazTempFunc,
      I                 reminTempFunc,
      I                 mortTempFunc, mort2TempFunc,
