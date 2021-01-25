@@ -190,6 +190,10 @@ latex_elements = {
     \setlength{\tymax}{0.5\textwidth}
     ''',
 
+    'fontenc': r'''
+    \usepackage[LGR,T1]{fontenc}
+    ''',
+
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
