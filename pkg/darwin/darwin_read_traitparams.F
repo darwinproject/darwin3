@@ -85,7 +85,6 @@
      &    smallchl2cmaxrange,
      &    Bigchl2cmax,
      &    Bigchl2cmaxrange,
-     &    aphy_chl_ave,
      &    val_acclimtimescl,
      &    oldTwoGrazers,
      &    GrazeFast,
@@ -346,7 +345,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       smallchl2cmaxrange = 0.3 _d 0
       Bigchl2cmax = 0.5 _d 0
       Bigchl2cmaxrange = 0.3 _d 0
-      aphy_chl_ave = 0.02 _d 0
       val_acclimtimescl = 1./(60. _d 0*60. _d 0*24. _d 0*20. _d 0)
       oldTwoGrazers = .FALSE.
       GrazeFast = 1.0 _d 0/(2.0 _d 0*pday)

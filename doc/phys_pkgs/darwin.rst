@@ -317,7 +317,8 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`depthfesed`             & -1.0                  & m                                & depth above which to add sediment source (was -1000)
    :varlink:`fesedflux`              & 1D-3 / day            & mmol Fe /m\ :sup:`2`/s           & fixed iron flux from sediment
    :varlink:`fesedflux_pcm`          & 0.68D-3               & mmol Fe / mmol C                 & iron input per POC sinking into bottom for :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`
-   :varlink:`R_CP_fesed`             & 106                   & mmol C / mmol P                  & POC:POP conversion for :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`
+   :varlink:`fesedflux_min`          & 0.5D-3 / day          & mmol Fe /s                       & min iron input rate subtracted from fesedflux_pcm*wc_sink*POC
+   :varlink:`R_CP_fesed`             & 106                   & mmol C / mmol P                  & POC:POP conversion for :varlink:`DARWIN_IRON_SED_SOURCE_POP`
    :varlink:`Knita`                  & 1/(0.5 days)          & 1/s                              & ammonia oxidation rate
    :varlink:`Knitb`                  & 1/(10 days)           & 1/s                              & nitrite oxidation rate
    :varlink:`PAR_oxi`                & 10                    & μEin/m\ :sup:`2`/s               & critical light level after which oxidation starts
@@ -370,6 +371,7 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`denit_NO3`              & 104.0                 & mmol N / mmol P                  & ratio of NO3 uptake to phos remineralization in denitrification
    :varlink:`NO3crit`                & 1D-2                  & mmol N m\ :sup:`-3`              & critical nitrate below which no denit (or remin) happens
    :varlink:`PARmin`                 & 0.1                   & μEin/m\ :sup:`2`/s               & minimum light for photosynthesis; for non-Geider: 1.0
+   :varlink:`aphy_chl_ave`           & 0.02                  & m\ :sup:`2`/mg Chl               & Chl-specific absorption coefficient
    :varlink:`chl2nmax`               & 3.00                  & mg Chl / mmol N                  & max Chl:N ratio for Chl synthesis following Moore 2002
    :varlink:`synthcost`              & 0.0                   & mmol C / mmol N                  & cost of biosynthesis
    :varlink:`palat_min`              & 0                     &                                  & min non-zero palatability, smaller :varlink:`palat` are set to 0 (was 1D-4 in quota)

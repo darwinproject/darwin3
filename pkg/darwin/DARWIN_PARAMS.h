@@ -234,6 +234,7 @@ C     NO3crit           :: [mmol N m-3]       critical nitrate below which no de
 C
 C- These should probably be traits
 C     PARmin            :: [uEin/m2/s]        minimum light for photosynthesis; for non-Geider: 1.0
+C     aphy_chl_ave      :: [m2/mg Chl]        Chl-specific absorption coefficient
 C     chl2nmax          :: [mg Chl / mmol N]  max Chl:N ratio for Chl synthesis following Moore 2002
 C     synthcost         :: [mmol C / mmol N]  cost of biosynthesis
 C     palat_min         :: []                 min non-zero palatability, smaller palat are set to 0 (was 1D-4 in quota)
@@ -339,6 +340,7 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    denit_NO3,
      &    NO3crit,
      &    PARmin,
+     &    aphy_chl_ave,
      &    chl2nmax,
      &    synthcost,
      &    palat_min,
@@ -439,6 +441,7 @@ C     &    yono2,
       _RL denit_NO3
       _RL NO3crit
       _RL PARmin
+      _RL aphy_chl_ave
       _RL chl2nmax
       _RL synthcost
       _RL palat_min

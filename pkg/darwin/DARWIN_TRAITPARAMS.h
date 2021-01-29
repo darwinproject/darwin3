@@ -89,7 +89,6 @@ C--   COMMON /DARWIN_RANDOM_PARAMS_r/ For darwin_allometric_random
      &    smallchl2cmaxrange,
      &    Bigchl2cmax,
      &    Bigchl2cmaxrange,
-     &    aphy_chl_ave,
      &    val_acclimtimescl,
      &    GrazeFast,
      &    GrazeSlow,
@@ -188,7 +187,6 @@ C--   COMMON /DARWIN_RANDOM_PARAMS_r/ For darwin_allometric_random
       _RL smallchl2cmaxrange
       _RL Bigchl2cmax
       _RL Bigchl2cmaxrange
-      _RL aphy_chl_ave
       _RL val_acclimtimescl
       _RL GrazeFast
       _RL GrazeSlow
