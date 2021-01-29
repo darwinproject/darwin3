@@ -37,7 +37,7 @@ ptracers package):
 
 The following abbreviated source terms are described in sections below:
 
-- :math:`U`: uptake, see :ref:`Uptake`
+- :math:`U`: uptake, see :ref:`Uptake`, :ref:`Growth`, :ref:`Light` and :ref:`Spectral`
 - :math:`M`: mortality, see :ref:`Mortality`
 - :math:`P`: nitrification, see :ref:`Remineralization`
 - :math:`D`: denitrification, see :ref:`Denitrification`
@@ -49,4 +49,23 @@ The following abbreviated source terms are described in sections below:
   (in square brackets) except Si are absent, see :ref:`CDOM`.
 
 For alkalinity, oxygen and CDOM also see the sections below: :ref:`CarbonChemistry` and :ref:`CDOM`.
+
+
+.. csv-table:: General parameters
+   :delim: &
+   :widths: auto
+   :class: longtable
+   :header: Trait, Param, Symbol, Default, Units, Description
+
+                       & :varlink:`Kdoc`       & :math:`r_{\op{DOC}}`       & 1/(100 days) & 1/s                            & DOC remineralization rate
+                       & :varlink:`Kdop`       & :math:`r_{\op{DOP}}`       & 1/(100 days) & 1/s                            & DON remineralization rate
+                       & :varlink:`Kdon`       & :math:`r_{\op{DON}}`       & 1/(100 days) & 1/s                            & DOP remineralization rate
+                       & :varlink:`KdoFe`      & :math:`r_{\op{DOFe}}`      & 1/(100 days) & 1/s                            & DOFe remineralization rate
+                       & :varlink:`KPOC`       & :math:`r_{\op{POC}}`       & 1/(50 days)  & 1/s                            & POC remineralization rate
+                       & :varlink:`KPOP`       & :math:`r_{\op{POP}}`       & 1/(50 days)  & 1/s                            & POP remineralization rate
+                       & :varlink:`KPON`       & :math:`r_{\op{PON}}`       & 1/(50 days)  & 1/s                            & PON remineralization rate
+                       & :varlink:`KPOFe`      & :math:`r_{\op{POFe}}`      & 1/(50 days)  & 1/s                            & POFe remineralization rate
+                       & :varlink:`KPOSi`      & :math:`r_{\op{POSi}}`      & 1/(300 days) & 1/s                            & POSi remineralization rate
+                       & :varlink:`Kdissc`     & :math:`\kappa^{\op{diss}}` & 1/(300 days) & 1/s                            & dissolution rate for PIC
+   :varlink:`R_PICPOC` & :varlink:`a_R_PICPOC` & :math:`R^{\op{PICPOC}}_j`  & 0.8          & mmol PIC (mmol POC)\ :sup:`-1` & inorganic-organic carbon ratio
 

@@ -1,5 +1,7 @@
 .. include:: ../defs.hrst
 
+.. _Temperature:
+
 Temperature dependence
 ^^^^^^^^^^^^^^^^^^^^^^
 

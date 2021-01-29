@@ -59,7 +59,9 @@ Equations
    :maxdepth: 1
 
    darwin_equations
-   darwin_Geider
+   darwin_growth
+   darwin_light
+   darwin_spectral
    darwin_uptake
    darwin_chl
    darwin_remin
@@ -74,7 +76,7 @@ Equations
    darwin_bacteria
 
 Differences to darwin2
-^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~
 
 -  Particulate/dissolved split of plankton mortality products is not
    allometric or element-dependent as it was in quota.
@@ -766,112 +768,6 @@ where
 .. math:: r = V_z/V_j
 
 and ``pp_opt`` and ``pp_sig`` are from the above table.
-
-
-Effective half saturation constants
-'''''''''''''''''''''''''''''''''''
-
-If ``DARWIN_effective_ksat=T``, half saturations for non-quota elements
-are computed from quota traits. If ``darwin_select_kn_allom=1`` (now
-deprecated), the half saturation for :math:`\op{NO}_3` is
-computed following Ward et al.,
-
-.. math::
-
-   k^{\op{NO3}}_j \rightarrow \frac{ k^{\op{NO3}}_j
-                              P^{{\mathrm{C}}{\op{m}}}_j Q^{{\mathrm{N}}\min}_j
-                              (Q^{{\mathrm{N}}\max}_j - Q^{{\mathrm{N}}\min}_j) }
-                            { V^{\op{NO3}\max}_j Q^{{\mathrm{N}}\max}_j +
-                              P^{{\mathrm{C}}{\op{m}}}_j Q^{{\mathrm{N}}\min}_j
-                              (Q^{{\mathrm{N}}\max}_j - Q^{{\mathrm{N}}\min}_j) }
-
-and those of the other elements are computed by scaling
-:math:`k^{\op{NO3}}_j` with the type’s elemental ratios. Here,
-:math:`k^{\op{NO3}}_j` on the right-hand side is computed from ``a_kn_NO3``
-and ``b_kn_NO3``.
-
-If ``darwin_select_kn_allom=2``, the half saturation for
-:math:`\op{NO}_3` is computed following Follett et al.,
-
-.. math::
-
-   k^{\op{NO3}}_j \rightarrow k^{\op{NO3}}_j \frac
-                     { P^{{\mathrm{C}}{\op{m}}}_j Q^{{\mathrm{N}}\min}_j }
-                     { V^{\op{NO3}\max}_j }
-
-Those of the other elements are again computed by scaling
-:math:`k^{\op{NO3}}_j` with the type’s elemental ratios.
-
-Allometric Scaling of absorption and scattering spectra
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-If ``darwin_allomSpectra=T``, read-in absorption and scattering spectra
-for each optical type :math:`i` are scaled according to plankton size.
-
-Absorption
-++++++++++
-
-is scaled in terms of volume,
-
-.. math::
-
-      a_j(\lambda) &= a^{\op{meas}}_i(\lambda) \cdot (V_j/V^{\op{meas\,a}}_i)^{{\op{darwin\_absorpSlope}}}
-
-      a^{\op{ps}}_j(\lambda) &= a^{\op{ps\ meas}}_i(\lambda) \cdot (V_j/V^{\op{meas\,a}}_i)^{{\op{darwin\_absorpSlope}}}
-      \;.
-
-Total scattering
-++++++++++++++++
-
-Cell-density-specific total scattering is scaled in terms of diameter.
-There are 2 slopes for small and large measured cell sizes.
-
-.. math::
-
-   b_j(\lambda) Q^{\op{C}}_j = b^{\op{meas}}_i(\lambda) Q^{\op{C}\,\op{meas}}_i \cdot
-                    \left( d_j/\op{bsize}_i \right)^{s^{\op{b}}_i(\lambda)}
-
-where
-
-.. math::
-
-   s^{\op{b}}_i(\lambda) = \begin{cases}
-        {\op{darwin\_scatSlopeLarge}}(\lambda)
-            & \text{if } \op{bsize}_i \ge 10^{{\op{darwin\_scatSwitchSizeLog}}(\lambda)} \\
-        {\op{darwin\_scatSlopeSmall}}(\lambda)
-            & \text{else.}
-     \end{cases}
-
-Carbon concentration is converted to cell density following Montagnes et
-al 1994 (need to check for consitency)
-
-.. math:: Q^{\op{C}} = \op{acarcell} V^{\op{bcarcell}}
-
-where :math:`V` is in :math:`\mu`\ m\ :math:`^3`,
-:math:`\op{acarcell}=0.109\cdot10^{-9} \op{mg\,C\,cell}^{-1}`,
-and :math:`\op{bcarcell}=0.991`.
-
-Backscattering
-++++++++++++++
-
-We scale the non-spectral mean backscattering ratio,
-
-.. math:: \tilde b_{\op{b}j} = \tilde b_{\op{b}i}^{\op{meas}} \cdot \left( d_j/\op{bsize}_i \right)^{{\op{darwin\_bbbSlope}}}
-
-where
-
-.. math::
-
-   \tilde b_{\op{b}i}^{\op{meas}} =
-     \frac{\sum_\lambda b^{\op{meas}}_{\op{b}i}(\lambda) \Delta\lambda}
-          {\sum_\lambda b^{\op{meas}}_{i}(\lambda) \Delta\lambda}
-
-and compute spectral backscattering from total scattering,
-
-.. math::
-
-   b_{\op{b}j}(\lambda) = b_j(\lambda) \tilde b_{\op{b}j}
-     \;.
 
 
 Diagnostics
