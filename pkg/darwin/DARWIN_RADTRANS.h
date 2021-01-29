@@ -120,11 +120,11 @@ C     darwin_scatSlopeLarge    :: []           slope for large plankton
       _RL exCDOM(nlam)
 
 C     COMMON /DARWIN_RADTRANS_TRAITS_r/
-C     aphy_chl    :: [m^-1 (mg Chl m^-3)^-1]  phytoplankton Chl-specific absorption coefficient
-C     aphy_chl_ps :: [m^-1 (mg Chl m^-3)^-1]  part of aphy_chl that is used in photosynthesis
-C     aphy_mgC    :: [m^-1 (mg C m^-3)^-1]    plankton carbon-specific absorption coefficient
-C     bphy_mgC    :: [m^-1 (mg C m^-3)^-1]    carbon-specific total scattering coefficient
-C     bbphy_mgC   :: [m^-1 (mg C m^-3)^-1]    carbon-specific backscattering coefficient
+C     aphy_chl    :: [m^2 (mg Chl)^-1]  phytoplankton Chl-specific absorption coefficient
+C     aphy_chl_ps :: [m^2 (mg Chl)^-1]  part of aphy_chl that is used in photosynthesis
+C     aphy_mgC    :: [m^2 (mg C)^-1]    plankton carbon-specific absorption coefficient
+C     bphy_mgC    :: [m^2 (mg C)^-1]    carbon-specific total scattering coefficient
+C     bbphy_mgC   :: [m^2 (mg C)^-1]    carbon-specific backscattering coefficient
       COMMON /DARWIN_RADTRANS_TRAITS_r/
      &    aphy_chl,
      &    aphy_chl_ps,
