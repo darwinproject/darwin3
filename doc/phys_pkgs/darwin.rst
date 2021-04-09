@@ -871,6 +871,12 @@ Diagnostics
 
 .. [#a] does not include free iron adjustment for FeT tracer
 
+The sign convention for the fluxCO2, gDICsurf, gALKsurf and gO2surf diagnostics
+is such that positive values increase the concentration in the ocean.  Note
+that the units vary: gDICsurf, gALKsurf and gO2surf are tracer tendencies,
+i.e., change rates of concentration, while fluxCO2 is a flux per area of
+sea surface.
+
 
 Call Tree
 ~~~~~~~~~
