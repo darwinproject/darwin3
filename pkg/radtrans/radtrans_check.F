@@ -76,6 +76,21 @@ C     and to separate text file
         CLOSE(oUnit)
       ENDIF
 
+C ======================================================================
+C     check for errors in configuration
+
+C ----------------------------------------------------------------------
+C     need sun package unless using mean cos(solz)
+#ifndef ALLOW_SUN
+      IF (.NOT.RT_useMeanCosSolz) THEN
+        WRITE(msgBuf,'(2A)') 'RADTRANS_CALC: need to compile the sun ',
+     &   'package unless RT_useMeanCosSolz is used.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R RADTRANS_CHECK'
+      ENDIF
+#endif
+
 C ----------------------------------------------------------------------
 C     check for unsupported forcing configurations
       errCount = 0
