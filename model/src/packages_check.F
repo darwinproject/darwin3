@@ -292,6 +292,12 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useFLT) CALL PACKAGES_ERROR_MSG('FLT',' ',myThid)
 #endif
 
+#ifdef ALLOW_RADTRANS
+      IF (useRADTRANS) CALL RADTRANS_CHECK( myThid )
+#else
+      IF (useRADTRANS) CALL PACKAGES_ERROR_MSG('RADTRANS',' ',myThid)
+#endif
+
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) CALL PTRACERS_CHECK( myThid )
 #else

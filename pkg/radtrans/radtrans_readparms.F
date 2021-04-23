@@ -114,7 +114,7 @@ C
 C-    pkg RADTRANS is not used
         _BEGIN_MASTER(myThid)
 C-    Track pkg activation status:
-C     print a (weak) warning if data.gchem is found
+C     print a (weak) warning if data.radtrans is found
          CALL PACKAGES_UNUSED_MSG( 'useRADTRANS', ' ', ' ' )
         _END_MASTER(myThid)
         RETURN
@@ -257,51 +257,6 @@ C band widths used to convert total-waveband irradiance to per nm
      &                          RT_wbEdges(l+1))
         ENDIF
       ENDDO
-C     write summary
-      WRITE(msgBuf,'(A)') 'RT_READPARMS:'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, 1 )
-      WRITE(msgBuf,'(A)') 'RT_READPARMS: wavebands:'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &                   SQUEEZE_RIGHT,myThid)
-      WRITE(msgBuf,'(2A)') 'RT_READPARMS: ',
-     &   ' idx       low   rep      high    width'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &                   SQUEEZE_RIGHT,myThid)
-      DO l=1,nlam
-        WRITE(msgBuf,'(A,I4,F10.3,F6.0,F10.3,F9.3)')
-     &  'RT_READPARMS: ', l, RT_wbEdges(l),
-     &  RT_wbRefWLs(l),RT_wbEdges(l+1),RT_wbWidths(l)
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &                   SQUEEZE_RIGHT,myThid)
-      ENDDO
-      WRITE(msgBuf,'(A)') 'RT_READPARMS:'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, 1 )
-
-C ----------------------------------------------------------------------
-      errCount = 0
-      IF ( useExfYearlyFields ) THEN
-       IF ( RT_E_RepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(2A)') 'RADTRANS_READPARMS: The use of ',
-     &       'useExfYearlyFields AND RT_E_RepCycle is not implemented'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
-       IF ( RT_iceRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(2A)') 'RADTRANS_READPARMS: The use of ',
-     &       'useExfYearlyFields AND RT_iceRepCycle is not implemented'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
-      ENDIF
-      IF ( errCount.GE.1 ) THEN
-        WRITE(msgBuf,'(A,I3,A)')
-     &     'RADTRANS_READPARMS: detected', errCount,' fatal error(s)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        CALL ALL_PROC_DIE( 0 )
-        STOP 'ABNORMAL END: S/R RADTRANS_READPARMS'
-      ENDIF
 
 C ----------------------------------------------------------------------
       IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN

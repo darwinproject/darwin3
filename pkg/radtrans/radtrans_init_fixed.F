@@ -52,13 +52,6 @@ C     errCount  :: error counter
         RT_WtouEins(l) = 1 _d 6*rlamm*hcoavo      !Watts to uEin/s conversion
       ENDDO
 
-      IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
-        CALL MDSFINDUNIT( oUnit, myThid )
-        open(oUnit,file='pwaves-check.dat',status='unknown')
-        write(oUnit,'(F6.0)')RT_wbRefWLs
-        close(oUnit)
-      ENDIF
-
 #ifdef ALLOW_EXF
       errCount = 0
 
