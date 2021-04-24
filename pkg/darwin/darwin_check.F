@@ -250,19 +250,28 @@ C check exf is compiled and used
         STOP 'ABNORMAL END: S/R DARWIN_CHECK'
       ENDIF
 
+#ifdef ALLOW_RADTRANS
+      IF (.NOT.useRADTRANS) THEN
+       WRITE(msgBuf,'(A,A)') 'DARWIN_CHECK: ',
+     &  'The radtrans pkg must be used when compiled with darwin.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: DARWIN_CHECK: radtrans compiled but not used'
+      ENDIF
+#endif
+
 #ifndef ALLOW_RADTRANS
       IF (.NOT.DARWIN_haveSurfPAR .AND. .NOT.DARWIN_useQsw .AND.
      &    .NOT.usingSphericalPolarGrid) THEN
-       WRITE(msgBuf,'(A,A)') 'DARWIN_EXF_READPARMS: ',
+       WRITE(msgBuf,'(A,A)') 'DARWIN_CHECK: ',
      &  'Attempting to use DARWIN_INSOL without a spherical polar grid.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,A)') 'DARWIN_EXF_READPARMS: ',
+       WRITE(msgBuf,'(A,A)') 'DARWIN_CHECK: ',
      &  'This is not supported.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,A)') 'DARWIN_EXF_READPARMS: ',
+       WRITE(msgBuf,'(A,A)') 'DARWIN_CHECK: ',
      &  'Please provide PARFile or set DARWIN_useQsw.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: DARWIN_EXF_READPARMS: DARWIN_INSOL vs grid'
+       STOP 'ABNORMAL END: DARWIN_CHECK: DARWIN_INSOL vs grid'
       ENDIF
 #endif
 
