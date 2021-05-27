@@ -345,6 +345,27 @@ C-      use units & names from data.ptracers :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      WRITE(diagName,'(A)')'fluxO2'
+      WRITE(diagTitle,'(A)')'Flux of O2 - air-sea exch'
+      diagUnits = 'mmol O2/m2/s    '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'VfluxCO2'
+      WRITE(diagTitle,'(A)')'Virtual flux of CO2'
+      diagUnits = 'mmol C/m2/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'VfluxAlk'
+      WRITE(diagTitle,'(A)')'Virtual flux of alkalinity'
+      diagUnits = 'mmol eq/m2/s    '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       WRITE(diagName,'(A)')'gDICsurf'
       WRITE(diagTitle,'(A)')
      &            'Tendency of DIC due to air-sea exch + oldvirt.flux'

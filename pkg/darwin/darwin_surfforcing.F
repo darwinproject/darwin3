@@ -327,7 +327,10 @@ C update tendency
        ENDDO
       ENDDO
 
-      CALL DIAGNOSTICS_FILL(fugf,'fugfCO2 ',0,1,1,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(fugf,    'fugfCO2 ',0,1,1,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(FluxO2,  'fluxO2  ',0,1,1,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(VFluxCO2,'VfluxCO2',0,1,1,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(VFluxAlk,'VfluxAlk',0,1,1,bi,bj,myThid)
 
 C     k is at surface
       ENDIF
