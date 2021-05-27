@@ -935,6 +935,7 @@ c degradation of  CDOM - high when bleached by light
         consumPOP  = 0. _d 0
         consumPON  = 0. _d 0
         consumPOFe = 0. _d 0
+        consumPOSi = 0. _d 0
         reminDOC = 0. _d 0
         reminDOP  = 0. _d 0
         reminDON  = 0. _d 0
@@ -943,6 +944,7 @@ c degradation of  CDOM - high when bleached by light
         reminPOP  = 0. _d 0
         reminPON  = 0. _d 0
         reminPOFe = 0. _d 0
+        reminPOSi = 0. _d 0
 #ifdef DARWIN_ALLOW_CDOM
         reminPOC_cdom = 0. _d 0
         reminPOP_cdom  = 0. _d 0
