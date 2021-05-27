@@ -1292,10 +1292,10 @@ C==== mortality ========================================================
 
         exude_POSi = exude_POSi + mort_c(jp)*Qsi(jp)
 
-        exude_PIC = exude_PIC + mort_c(jp)*R_PICPOC(jp)
-
         respir_c = respRate(jp)*Xe*reminTempFunc
         respir = respir + respir_c
+
+        exude_PIC = exude_PIC + (mort_c(jp)+respir_c)*R_PICPOC(jp)
 
         gTr(ic+jp-1)=gTr(ic+jp-1)  - mort_c(jp) - respir_c
 #ifdef DARWIN_ALLOW_NQUOTA
@@ -1330,6 +1330,7 @@ C==== mortality ========================================================
      &  exude_POFe +     ExportFracExude(jp) *kexcfe(jp)*Xe*Qfe(jp)
         exude_POSi =
      &  exude_POSi + kexcsi(jp)*Xe*Qsi(jp)
+        exude_PIC = exude_PIC + kexcc(jp)*Xe*R_PICPOC(jp)
         gTr(ic+jp-1)=gTr(ic+jp-1)   - kexcc(jp)*Xe
 #ifdef DARWIN_ALLOW_NQUOTA
         gTr(in+jp-1)=gTr(in+jp-1)   - kexcn(jp)*Xe*Qn(jp)
