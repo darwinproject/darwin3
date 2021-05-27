@@ -862,6 +862,11 @@ C=======================================================================
       gTr(iSiO2)=gTr(iSiO2) - consumSiO2
       gTr(iFeT )=gTr(iFeT ) - consumFeT
 
+#ifdef DARWIN_ALLOW_DENIT
+      IF (O2 .GE. O2crit .OR. NO3 .GE. NO3crit) THEN
+#else
+      IF (.TRUE.) THEN
+#endif
 C parameterized remineralization; want to set all K except KPOSi to zero
 C if running with bacteria
       respDOC  = reminTempFunc*KDOC *DOC
@@ -893,12 +898,16 @@ C if running with bacteria
       reminPOP  = reminPOP  + respPOP
       reminPOSi = reminPOSi + respPOSi
       reminPOFe = reminPOFe + respPOFe
+C     endif O2, NO3 for DARWIN_ALLOW_DENIT
+      ENDIF
 
 #ifdef DARWIN_ALLOW_CARBON
-      consumO2  = consumO2  + respDOP*R_OP
+      IF (O2 .GT. O2crit) THEN
+        consumO2  = consumO2  + respDOP*R_OP
 #ifndef DARWIN_ALLOW_CDOM
-      consumO2  = consumO2  + respPOP*R_OP
+        consumO2  = consumO2  + respPOP*R_OP
 #endif
+      ENDIF
 #endif
 
       disscPIC = Kdissc*PIC
@@ -917,47 +926,20 @@ c NH4 -> NO2 -> NO3 by bacterial action, parameterized
       reminPOC_CDOM = R_CP_CDOM*reminPOP_CDOM
       reminPON_CDOM = R_NP_CDOM*reminPOP_CDOM
       reminPOFe_CDOM = R_FeP_CDOM*reminPOP_CDOM
-c degradation of  CDOM - high when bleached by light
-      degrCDOM_DOP = reminTempFunc*CDOM*
-     &     (CDOMdegrd+CDOMbleach*MIN(1.0 _d 0, PARtot/PARCDOM))
+c degradation of  CDOM
+      tmp = CDOMdegrd
+#ifdef DARWIN_ALLOW_DENIT
+      IF (O2 .LT. O2crit .AND. NO3 .LT. NO3crit) THEN
+        tmp = 0 _d 0
+      ENDIF
+#endif
+c increase when bleached by light
+      tmp = tmp + CDOMbleach*MIN(1.0 _d 0, PARtot/PARCDOM)
+      degrCDOM_DOP = reminTempFunc*CDOM*tmp
       degrCDOM_DOC  = R_CP_CDOM  * degrCDOM_DOP
       degrCDOM_DON  = R_NP_CDOM  * degrCDOM_DOP
       degrCDOM_DOFe = R_FeP_CDOM * degrCDOM_DOP
 #endif
-
-#ifdef DARWIN_ALLOW_DENIT
-      IF (O2 .LT. O2crit .AND. NO3 .LT. NO3crit) THEN
-        consumDOC = 0. _d 0
-        consumDOP  = 0. _d 0
-        consumDON  = 0. _d 0
-        consumDOFe = 0. _d 0
-        consumPOC = 0. _d 0
-        consumPOP  = 0. _d 0
-        consumPON  = 0. _d 0
-        consumPOFe = 0. _d 0
-        consumPOSi = 0. _d 0
-        reminDOC = 0. _d 0
-        reminDOP  = 0. _d 0
-        reminDON  = 0. _d 0
-        reminDOFe = 0. _d 0
-        reminPOC = 0. _d 0
-        reminPOP  = 0. _d 0
-        reminPON  = 0. _d 0
-        reminPOFe = 0. _d 0
-        reminPOSi = 0. _d 0
-#ifdef DARWIN_ALLOW_CDOM
-        reminPOC_cdom = 0. _d 0
-        reminPOP_cdom  = 0. _d 0
-        reminPON_cdom  = 0. _d 0
-        reminPOFe_cdom = 0. _d 0
-        degrCDOM_DOP = reminTempFunc*CDOM*
-     &                 CDOMbleach*MIN(1.0 _d 0, PARtot/PARCDOM)
-        degrCDOM_DON  = R_NP_CDOM  * degrCDOM_DOP
-        degrCDOM_DOFe = R_FeP_CDOM * degrCDOM_DOP
-        degrCDOM_DOC  = R_CP_CDOM  * degrCDOM_DOP
-#endif
-      ENDIF
-#endif /* DARWIN_ALLOW_DENIT */
 
 C==== apply tendencies =================================================
 
