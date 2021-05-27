@@ -315,6 +315,19 @@ C === plankton =========================================================
       enddo
       CALL TIMER_STOP('DARWIN_PLANKTON [DARWIN_FORCING]',myThid)
 
+C === pre-sinking diags ================================================
+#ifdef ALLOW_DIAGNOSTICS
+      IF (useDIAGNOSTICS) THEN
+       CALL TIMER_START('DIAGS_FILL [DARWIN_FORCING]',myThid)
+       DO iTr=1,nDarwin
+        diagname = 'gECO'//PTRACERS_ioLabel(iTr)
+        CALL DIAGNOSTICS_FILL(gPtr(1-OLx,1-OLy,1,iTr), diagname,
+     &          0,Nr,2,bi,bj,myThid)
+       ENDDO
+       CALL TIMER_STOP ('DIAGS_FILL [DARWIN_FORCING]',myThid)
+      ENDIF
+#endif
+
 C === sinking ==========================================================
       CALL TIMER_START('DARWIN_SINKING [DARWIN_FORCING]',myThid)
       CALL DARWIN_SINKING( Ptracer,gPtr,bi,bj,iMin,iMax,jMin,jMax,
