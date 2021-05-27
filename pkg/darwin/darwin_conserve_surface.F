@@ -64,7 +64,7 @@ c carbon budget
       totflxC=totflxC+totSurfCorPtr(iPIC)
       DO np=1,nplank
         iTr=ic+np-1
-        totflxC=totflxC+totSurfCorPtr(iTr)
+        totflxC=totflxC+totSurfCorPtr(iTr)*(1+R_PICPOC(np))
       ENDDO
 #ifdef DARWIN_ALLOW_CDOM
       totflxC=totflxC+totSurfCorPtr(iCDOM)*R_CP_CDOM

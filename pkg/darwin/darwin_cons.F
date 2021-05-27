@@ -96,8 +96,8 @@ c carbon budget
           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iPOC)*vol
           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iPIC)*vol
           DO np=1,nplank
-            iTr=ic+np-1
-            tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iTr)*vol
+           iTr=ic+np-1
+           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iTr)*(1+R_PICPOC(np))*vol
           ENDDO
 #ifdef DARWIN_ALLOW_CDOM
           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iCDOM)*R_CP_CDOM*vol
