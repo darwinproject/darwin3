@@ -282,6 +282,13 @@ C-      use units & names from data.ptracers :
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName, '(2A)') 'gECO', PTRACERS_ioLabel(j)
+        ilnb = MAX(ILNBLNK(locName),1)
+        WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &        ' tendency from DARWIN w/o sink/swim'
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
 
 #ifdef DARWIN_DIAG_PERTYPE
