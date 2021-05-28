@@ -1,10 +1,15 @@
 #include "DARWIN_OPTIONS.h"
 
-c=============================================================
-c subroutine DARWIN_cons
-c check conservation in the model
-C==============================================================
-      SUBROUTINE DARWIN_CONS(myIter,myTime,myThid)
+CBOP
+C !ROUTINE: DARWIN_CONS
+C !INTERFACE: ==========================================================
+      SUBROUTINE DARWIN_CONS(stage,myTime,myIter,myThid)
+
+C !DESCRIPTION:
+C     Check conservation in the model
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -18,14 +23,16 @@ C==============================================================
 #include "DARWIN_FIELDS.h"
 #include "DARWIN_EXF_FIELDS.h"
 
-C     === Global variables ===
+C !INPUT PARAMETERS: ===================================================
+      INTEGER stage
       _RL myTime
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 #ifdef DARWIN_ALLOW_CONS
 
-C============== Local variables ============================================
+C !LOCAL VARIABLES: ====================================================
       _RL tmptotC
       _RL tmptotP
       _RL tmptotN
@@ -220,6 +227,21 @@ c-----------------------------------------------------------------
 #endif
 
       IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
+C do not write ecosystem non-conservation terms before they are applied
+        IF ( stage .EQ. 0) THEN
+         tmpsfcflxC = 0 _d 0
+         tmpvirflxC = 0 _d 0
+         tmptotNfix = 0 _d 0
+         tmptotNdenit = 0 _d 0
+         tmpminFeLoss = 0 _d 0
+         tmptotscavFe = 0 _d 0
+         tmpsfcflxFe = 0 _d 0
+         tmpsedflxFe = 0 _d 0
+#ifdef DARWIN_ALLOW_CARBON
+         tmpsfcflxA = 0 _d 0
+         tmpsfcflxO = 0 _d 0
+#endif
+        ENDIF
         WRITE(DAR_cons_C_unit,'(I12,4E24.16)'), myIter, tmptotC,
      &        tmptotC/voltot, tmpsfcflxC, tmpvirflxC
         WRITE(DAR_cons_P_unit,*), myIter, tmptotP, tmptotP/voltot
