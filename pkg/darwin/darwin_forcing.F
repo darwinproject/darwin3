@@ -152,12 +152,31 @@ C carbon air-sea interaction
 #endif
 
 C === iron =============================================================
+#ifdef DARWIN_ALLOW_CONS
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         DARWIN_minFeLoss(i,j,k,bi,bj) = Ptracer(i,j,k,bi,bj,iFeT)
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
       CALL TIMER_START('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
       CALL DARWIN_FE_CHEM(
      U                 Ptracer(1-OLx,1-OLy,1,bi,bj,iFeT),
      O                 freeFe(1-OLx, 1-OLy, 1),
      I                 bi, bj, iMin, iMax, jMin, jMax, myThid)
       CALL TIMER_STOP ('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
+#ifdef DARWIN_ALLOW_CONS
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         DARWIN_minFeLoss(i,j,k,bi,bj) = DARWIN_minFeLoss(i,j,k,bi,bj)
+     &                                 - Ptracer(i,j,k,bi,bj,iFeT)
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
 
 C     iron dust input
       CALL TIMER_START('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
@@ -188,6 +207,9 @@ C     scavenging
 #endif
         gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) -
      &                     scv*MAX(0 _d 0, freefe(i,j,k))
+#ifdef DARWIN_ALLOW_CONS
+        DARWIN_partScav(i,j,k,bi,bj) = scv*MAX(0 _d 0, freefe(i,j,k))
+#endif
       ENDDO
       ENDDO
       ENDDO
@@ -195,6 +217,13 @@ C     scavenging
 
 C     iron sediment source (in bottom grid cell above kMaxFeSed)
       CALL TIMER_START('DARWIN_FE_SED [DARWIN_FORCING]',myThid)
+#ifdef DARWIN_ALLOW_CONS
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        ironSedFlux(i,j,bi,bj) = 0 _d 0
+       ENDDO
+      ENDDO
+#endif
       DO k = kMinFeSed, kMaxFeSed
        kdn = MIN(Nr, k+1)
        DO j=jMin,jMax
@@ -215,6 +244,9 @@ C     iron sediment source (in bottom grid cell above kMaxFeSed)
 #endif
           gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) +
      &                             flx/(drF(k)*hFacC(i,j,k,bi,bj))
+#ifdef DARWIN_ALLOW_CONS
+          ironSedFlux(i,j,bi,bj) = flx
+#endif
          ENDIF
         ENDDO
        ENDDO
@@ -305,12 +337,32 @@ C === apply tendencies to tracers ======================================
 
 C === iron =============================================================
 C     re-apply free iron limit to FeT
+#ifdef DARWIN_ALLOW_CONS
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         DARWIN_minFeLoss(i,j,k,bi,bj) = DARWIN_minFeLoss(i,j,k,bi,bj)
+     &                                 + Ptracer(i,j,k,bi,bj,iFeT)
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
       CALL TIMER_START('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
       CALL DARWIN_FE_CHEM(
      U                 pTracer(1-OLx,1-OLy,1,bi,bj,iFeT),
      O                 freeFe(1-OLx,1-OLy,1),
      I                 bi, bj, iMin, iMax, jMin, jMax, myThid)
       CALL TIMER_STOP ('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
+#ifdef DARWIN_ALLOW_CONS
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         DARWIN_minFeLoss(i,j,k,bi,bj) = DARWIN_minFeLoss(i,j,k,bi,bj)
+     &                                 - Ptracer(i,j,k,bi,bj,iFeT)
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
 
 C === diagnostics ======================================================
 #ifdef ALLOW_DIAGNOSTICS
