@@ -16,6 +16,7 @@ C==============================================================
 #include "DARWIN_PARAMS.h"
 #include "DARWIN_TRAITS.h"
 #include "DARWIN_FIELDS.h"
+#include "DARWIN_EXF_FIELDS.h"
 
 C     === Global variables ===
       _RL myTime
@@ -30,13 +31,22 @@ C============== Local variables ============================================
       _RL tmptotN
       _RL tmptotSi
       _RL tmptotFe
+      _RL tmpsfcflxC
+      _RL tmpvirflxC
+      _RL tmpsfcflxFe
+      _RL tmpsedflxFe
+      _RL tmptotNfix
+      _RL tmptotNdenit
+      _RL tmptotscavFe
+      _RL tmpminFeLoss
 #ifdef DARWIN_ALLOW_CARBON
       _RL tmptotA
       _RL tmptotO
+      _RL tmpsfcflxA
+      _RL tmpsfcflxO
 #endif
-      _RL tmptotNfix
-      _RL tmptotNdenit
       _RL vol, voltot
+      _RL area
 
       INTEGER i,j,k,bi,bj
       INTEGER np, iTr
@@ -46,12 +56,20 @@ c
       tmptotN = 0. _d 0
       tmptotFe = 0. _d 0
       tmptotSi = 0. _d 0
+      tmpsfcflxC = 0. _d 0
+      tmpvirflxC = 0. _d 0
+      tmpsfcflxFe = 0. _d 0
+      tmpsedflxFe = 0. _d 0
+      tmptotNfix = 0. _d 0
+      tmptotNdenit = 0. _d 0
+      tmptotscavFe = 0. _d 0
+      tmpminFeLoss = 0. _d 0
 #ifdef DARWIN_ALLOW_CARBON
       tmptotA = 0. _d 0
       tmptotO = 0. _d 0
+      tmpsfcflxA = 0. _d 0
+      tmpsfcflxO = 0. _d 0
 #endif
-      tmptotNfix = 0. _d 0
-      tmptotNdenit = 0. _d 0
       voltot = 0. _d 0
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -61,6 +79,7 @@ c
         DO i=1,sNx
         DO j=1,sNy
 c-----------------------------------------------------------------
+          area=rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
           vol=rA(i,j,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
           voltot=voltot+vol
 
@@ -152,7 +171,26 @@ c oxygem budget !!!!!!!! NOT FULL BUDGET !!!!!!!!!!!
 
           tmptotNfix=tmptotNfix+DARWIN_Nfix(i,j,k,bi,bj)*vol
           tmptotNdenit=tmptotNdenit+DARWIN_Ndenit(i,j,k,bi,bj)*vol
+          tmptotscavFe=tmptotScavFe+DARWIN_partScav(i,j,k,bi,bj)*vol
+          tmpminFeLoss=tmpminFeLoss+DARWIN_minFeLoss(i,j,k,bi,bj)*vol
         ENDDO
+        ENDDO
+        ENDDO
+
+        DO i=1,sNx
+        DO j=1,sNy
+c-----------------------------------------------------------------
+          area=rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+          tmpsfcflxFe=tmpsfcflxFe+alpfe*inputfe(i,j,bi,bj)*area
+          tmpsedflxFe=tmpsedflxFe+ironSedFlux(i,j,bi,bj)*area
+#ifdef DARWIN_ALLOW_CARBON
+          tmpsfcflxC=tmpsfcflxC+FluxCO2(i,j,bi,bj)*area
+          tmpsfcflxO=tmpsfcflxO+FluxO2(i,j,bi,bj)*area
+#ifdef ALLOW_OLD_VIRTUALFLUX
+          tmpvirflxC=tmpvirflxC+VFluxCO2(i,j,bi,bj)*area
+          tmpsfcflxA=tmpsfcflxA+VFluxAlk(i,j,bi,bj)*area
+#endif
+#endif
         ENDDO
         ENDDO
       ENDDO
@@ -164,23 +202,38 @@ c oxygem budget !!!!!!!! NOT FULL BUDGET !!!!!!!!!!!
       _GLOBAL_SUM_RL(tmptotFe,myThid)
       _GLOBAL_SUM_RL(tmptotSi,myThid)
       _GLOBAL_SUM_RL(voltot,myThid)
+      _GLOBAL_SUM_RL(tmptotNfix,myThid)
+      _GLOBAL_SUM_RL(tmptotNdenit,myThid)
+      _GLOBAL_SUM_RL(tmptotscavFe,myThid)
+      _GLOBAL_SUM_RL(tmpminFeLoss,myThid)
+      _GLOBAL_SUM_RL(tmpsfcflxFe,myThid)
+      _GLOBAL_SUM_RL(tmpsedflxFe,myThid)
 #ifdef DARWIN_ALLOW_CARBON
       _GLOBAL_SUM_RL(tmptotA,myThid)
       _GLOBAL_SUM_RL(tmptotO,myThid)
+      _GLOBAL_SUM_RL(tmpsfcflxC,myThid)
+      _GLOBAL_SUM_RL(tmpsfcflxO,myThid)
+#ifdef ALLOW_OLD_VIRTUALFLUX
+      _GLOBAL_SUM_RL(tmpvirflxC,myThid)
+      _GLOBAL_SUM_RL(tmpsfcflxA,myThid)
 #endif
-      _GLOBAL_SUM_RL(tmptotNfix,myThid)
-      _GLOBAL_SUM_RL(tmptotNdenit,myThid)
+#endif
 
       IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
-        WRITE(DAR_cons_C_unit,*), myIter, tmptotC, tmptotC/voltot
+        WRITE(DAR_cons_C_unit,'(I12,4E24.16)'), myIter, tmptotC,
+     &        tmptotC/voltot, tmpsfcflxC, tmpvirflxC
         WRITE(DAR_cons_P_unit,*), myIter, tmptotP, tmptotP/voltot
         WRITE(DAR_cons_N_unit,'(I12,4E24.16)'), myIter, tmptotN,
-     &        tmptotN/voltot, tmptotNfix/voltot, tmptotNdenit/voltot
-        WRITE(DAR_cons_Fe_unit,*), myIter, tmptotFe, tmptotFe/voltot
+     &        tmptotN/voltot, tmptotNfix, -tmptotNdenit
+        WRITE(DAR_cons_Fe_unit,'(I12,6E24.16)'), myIter, tmptotFe,
+     &        tmptotFe/voltot, -tmpminFeLoss/deltaT, -tmptotscavFe,
+     &        tmpsfcflxFe, tmpsedflxFe
         WRITE(DAR_cons_Si_unit,*), myIter, tmptotSi, tmptotSi/voltot
 #ifdef DARWIN_ALLOW_CARBON
-        WRITE(DAR_cons_A_unit,*), myIter, tmptotA, tmptotA/voltot
-        WRITE(DAR_cons_O_unit,*), myIter, tmptotO, tmptotO/voltot
+        WRITE(DAR_cons_A_unit,'(I12,3E24.16)'), myIter, tmptotA,
+     &        tmptotA/voltot, tmpsfcflxA
+        WRITE(DAR_cons_O_unit,'(I12,3E24.16)'), myIter, tmptotO,
+     &        tmptotO/voltot, tmpsfcflxO
 #endif
       ENDIF
 
