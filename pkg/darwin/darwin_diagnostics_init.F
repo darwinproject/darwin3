@@ -368,7 +368,7 @@ C-      use units & names from data.ptracers :
 
       WRITE(diagName,'(A)')'VfluxAlk'
       WRITE(diagTitle,'(A)')'Virtual flux of alkalinity'
-      diagUnits = 'mmol eq/m2/s    '
+      diagUnits = 'meq/m2/s        '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -383,7 +383,7 @@ C-      use units & names from data.ptracers :
 
       WRITE(diagName,'(A)')'gALKsurf'
       WRITE(diagTitle,'(A)')'Tendency of ALK due to oldvirt.flux'
-      diagUnits = 'mmol eq/m3/s    '
+      diagUnits = 'meq/m3/s        '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
