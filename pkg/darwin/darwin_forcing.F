@@ -70,6 +70,9 @@ C  k                    :: vertical level
       _RL gO2(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL surfFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
+#ifndef DARWIN_ALLOW_CHLQUOTA
+      _RL tmp3d(1:sNx,1:sNy,Nr)
+#endif
       _RL scv,scav_poc
       _RL flx, POCl
       _RL ptr(nDarwin), gtr(nDarwin), PARl(nlam)
@@ -399,6 +402,31 @@ C === diagnostics ======================================================
         WRITE(diagname, '(A)') 'PAR'
         CALL DIAGNOSTICS_FILL(PAR,diagname,0,Nr,2,bi,bj,myThid)
        ENDIF
+#ifndef DARWIN_ALLOW_CHLQUOTA
+       IF (DIAGNOSTICS_IS_ON('Chl     ', myThid)) THEN
+#ifdef ALLOW_RADTRANS
+        DO k=1,Nr
+         DO j=1,sNy
+          DO i=1,sNx
+           tmp3d(i,j,k) = 0 _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+        DO l=1,nlam
+         DO k=1,Nr
+          DO j=1,sNy
+           DO i=1,sNx
+            tmp3d(i,j,k) = tmp3d(i,j,k) + chlPrev(i,j,k,bi,bj,l)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(tmp3d,'Chl     ',0,Nr,3,bi,bj,myThid)
+#else
+        CALL DIAGNOSTICS_FILL(chlPrev,'Chl     ',0,Nr,1,bi,bj,myThid)
+#endif
+       ENDIF
+#endif
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPP),   'PP      ',
      &       0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iNfix), 'Nfix    ',

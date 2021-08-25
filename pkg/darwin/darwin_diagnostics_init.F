@@ -52,6 +52,20 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      WRITE(diagName,'(A)')'plankC  '
+      WRITE(diagTitle,'(A)')'Total plankton carbon biomass'
+      diagUnits = 'mmol C/m^3      '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'Chl     '
+      WRITE(diagTitle,'(A)')'Total Chlorophyll a'
+      diagUnits = 'mg Chl a/m^3    '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       WRITE(diagName,'(A)')'PP'
       WRITE(diagTitle,'(A)')'Primary Production'
       diagUnits = 'mmol C/m^3/s    '
