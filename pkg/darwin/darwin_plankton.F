@@ -806,6 +806,7 @@ C         DOC respired to DIC
 
 #ifdef DARWIN_DIAG_PERTYPE
         diags(iPPplank+j-1) = diags(iPPplank+j-1) + growth
+        diags(iPCplank+j-1) = diags(iPCplank+j-1) + mu
 #endif
 
         gTr(ic+j-1)=gTr(ic+j-1) + growth
