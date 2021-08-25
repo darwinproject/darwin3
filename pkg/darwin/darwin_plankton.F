@@ -111,7 +111,6 @@ c !LOCAL VARIABLES: ====================================================
       _RL limitfe
       _RL limitnut
       _RL limitI
-      _RL ngrow
 
       _RL muPON
       _RL muPOC
@@ -525,12 +524,6 @@ C       normalize to sum 1
 C if diazo, all fracN* == 0 but want no N limitation
         limitn = MIN(1.0, limitn + diazo(j))
 #endif /* DARWIN_ALLOW_NQUOTA */
-c        IF (limitn .GT. 0.0) THEN
-c          ngrow = ((10*4+2)/(10*4 + 2*limitNH4/limitn +
-c     &                       8*limitNO2/limitn + 10*limitNO3/limitn))
-c        ELSE
-        ngrow = 1.0
-c        ENDIF
 
         limitnut = MIN(limitn, limitp, limitsi)
 #ifndef DARWIN_ALLOW_FEQUOTA
@@ -601,7 +594,7 @@ C         only 1 waveband without DARWIN_ALLOW_GEIDER
 
 #endif /* DARWIN_ALLOW_GEIDER */
 
-        growth = PC*ngrow*X(j)
+        growth = PC*X(j)
 
         uptakeDIC = growth
 
@@ -629,8 +622,8 @@ C==== chlorophyll ======================================================
 C       Geider 1998
         IF (PARtot .GT. PARmin) THEN
          IF (alpha_I*chl2c .GT. 0.0 _d 0) THEN
-C          rhochl = Chl2Nmax/(alpha_I*chl2c)*ngrow ???
-          rhochl = Chl2Nmax*PC*ngrow/(alpha_I*chl2c)
+C          rhochl = Chl2Nmax/(alpha_I*chl2c) ???
+          rhochl = Chl2Nmax*PC/(alpha_I*chl2c)
          ELSE
           rhochl = Chl2Nmax
          ENDIF
@@ -643,7 +636,7 @@ CTODO: this seems wrong!  Should only happen when PARtot.GT.PARmin
 #  else /* not DARWIN_ALLOW_NQUOTA */
 #   ifdef DARWIN_GEIDER_RHO_SYNTH
         IF (alpha_I .GT. 0.0 _d 0 .AND. acclim .GT. 0.0 _d 0) THEN
-          rhochl = Chl2Cmax(j)*PC*ngrow/(alpha_I*acclim)
+          rhochl = Chl2Cmax(j)*PC/(alpha_I*acclim)
         ELSE
           rhochl = 0.0 _d 0    ! should be Chl2Cmax(j) ?????
         ENDIF
