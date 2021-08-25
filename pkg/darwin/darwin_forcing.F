@@ -483,6 +483,9 @@ C      diags(iCons*) for convenience
         WRITE(diagname, '(A,I4.4)') 'PP', iTr
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPPplank+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'PC', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPCplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
         WRITE(diagname, '(A,I4.4)') 'GR', iTr
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGRplank+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)

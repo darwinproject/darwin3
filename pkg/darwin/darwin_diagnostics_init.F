@@ -314,6 +314,14 @@ C-      use units & names from data.ptracers :
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+        WRITE(diagName,'(A,I4.4)')'PC',j
+        WRITE(diagTitle,'(A,I4)')'Carbon-specific growth rate plankton '
+     &                           ,j
+        diagUnits = '1/s             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
         WRITE(diagName,'(A,I4.4)')'GR',j
         WRITE(diagTitle,'(A,I4)')'Grazing loss of plankton ',j
         diagUnits = 'mmol C/m^3/s    '

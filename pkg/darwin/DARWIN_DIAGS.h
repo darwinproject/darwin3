@@ -13,6 +13,7 @@ C Contains indices into diagnostics array
       integer iDenit
       integer iDenitN
       integer iPPplank
+      integer iPCplank
       integer iGRplank
       integer iGrGn
       integer iConsDIN
@@ -30,11 +31,13 @@ C Contains indices into diagnostics array
       PARAMETER(iConsDIN=8)
       PARAMETER(iPPplank=9)
 #ifdef DARWIN_DIAG_PERTYPE
-      PARAMETER(iGRplank=iPPplank+nplank)
+      PARAMETER(iPCplank=iPPplank+nplank)
+      PARAMETER(iGRplank=iPCplank+nplank)
       PARAMETER(iGrGn=iGRplank+nplank)
       PARAMETER(darwin_nDiag=iGrGn+nplank-1)
 #else
-      PARAMETER(iGRplank=iPPplank)
+      PARAMETER(iPCplank=iPPplank)
+      PARAMETER(iGRplank=iPCplank)
       PARAMETER(iGrGn=iGRplank)
       PARAMETER(darwin_nDiag=iGrGn-1)
 #endif
