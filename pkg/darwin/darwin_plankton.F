@@ -665,6 +665,7 @@ C=======================================================================
         diags(iPP) = diags(iPP) + growth
 #ifdef DARWIN_DIAG_PERTYPE
         diags(iPPplank+j-1) = diags(iPPplank+j-1) + growth
+        diags(iPCplank+j-1) = diags(iPCplank+j-1) + PC
 #endif
         IF (diazo(j) .GT. 0.0 _d 0) THEN
          diags(iNfix)=diags(iNfix)+uptakeN-uptakeNH4-uptakeNO2-uptakeNO3
