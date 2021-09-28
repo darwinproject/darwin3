@@ -681,6 +681,14 @@ CADJ STORE gchemTendency = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 #endif /* GCHEM_ADD2TR_TENDENCY */
 
+#ifdef ALLOW_GCHEM
+      IF ( .NOT.staggerTimeStep ) THEN
+        IF ( useGCHEM ) THEN
+          CALL GCHEM_CONS(0, myTime, myIter, myThid)
+        ENDIF
+      ENDIF
+#endif
+
 #ifdef ALLOW_LONGSTEP
       IF ( usePTRACERS .AND. LS_whenToSample .EQ. 0 ) THEN
 C       Average all variables before advection (but after do_oceanic_phys
@@ -1000,6 +1008,12 @@ C--   State-variables diagnostics
           CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
           CALL DO_STATEVARS_DIAGS( myTime, 1, myIter, myThid )
           CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+        ENDIF
+#endif
+
+#ifdef ALLOW_GCHEM
+        IF ( useGCHEM ) THEN
+          CALL GCHEM_CONS(0, myTime, myIter, myThid)
         ENDIF
 #endif
 
