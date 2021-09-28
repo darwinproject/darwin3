@@ -250,7 +250,7 @@ c-----------------------------------------------------------------
 
       IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
 C do not write ecosystem non-conservation terms before they are applied
-        IF ( stage .EQ. 0) THEN
+        IF ( stage .NE. 0 ) THEN
          tmpsfcflxC = 0 _d 0
          tmpvirflxC = 0 _d 0
          tmptotNfix = 0 _d 0
@@ -264,20 +264,43 @@ C do not write ecosystem non-conservation terms before they are applied
          tmpsfcflxO = 0 _d 0
 #endif
         ENDIF
-        WRITE(DAR_cons_C_unit,'(I12,4E24.16)'), myIter, tmptotC,
-     &        tmptotC/voltot, tmpsfcflxC, tmpvirflxC
-        WRITE(DAR_cons_P_unit,*), myIter, tmptotP, tmptotP/voltot
-        WRITE(DAR_cons_N_unit,'(I12,4E24.16)'), myIter, tmptotN,
-     &        tmptotN/voltot, tmptotNfix, -tmptotNdenit
-        WRITE(DAR_cons_Fe_unit,'(I12,6E24.16)'), myIter, tmptotFe,
-     &        tmptotFe/voltot, -tmpminFeLoss/deltaT, -tmptotscavFe,
-     &        tmpsfcflxFe, tmpsedflxFe
-        WRITE(DAR_cons_Si_unit,*), myIter, tmptotSi, tmptotSi/voltot
+        IF ((myIter.EQ.nIter0 .OR.
+     &       (staggerTimeStep.AND.myIter.EQ.nIter0+1)) .AND.
+     &      stage.EQ.0) THEN
+         WRITE(DAR_cons_C_unit,'(A1,A11,A6,A20,3A24)')'#','iter',
+     &        'stage','tot','mean','sfcflx','virtflx'
+         WRITE(DAR_cons_P_unit,'(A1,A11,A6,A20,A24)')'#','iter',
+     &        'stage','tot','mean'
+         WRITE(DAR_cons_N_unit,'(A1,A11,A6,A20,3A24)')'#','iter',
+     &        'stage','tot','mean','Nfix','Ndenit'
+         WRITE(DAR_cons_Fe_unit,'(A1,A11,A6,A20,5A24)')'#','iter',
+     &        'stage','tot','mean','minFeLoss','scav','sfcflx','sedflx'
+         WRITE(DAR_cons_Si_unit,'(A1,A11,A6,A20,A24)')'#','iter',
+     &        'stage','tot','mean'
 #ifdef DARWIN_ALLOW_CARBON
-        WRITE(DAR_cons_A_unit,'(I12,3E24.16)'), myIter, tmptotA,
-     &        tmptotA/voltot, tmpsfcflxA
-        WRITE(DAR_cons_O_unit,'(I12,3E24.16)'), myIter, tmptotO,
-     &        tmptotO/voltot, tmpsfcflxO
+         WRITE(DAR_cons_A_unit,'(A1,A11,A6,A20,2A24)')'#','iter',
+     &        'stage','tot','mean','sfcflx'
+         WRITE(DAR_cons_O_unit,'(A1,A11,A6,A20,2A24)')'#','iter',
+     &        'stage','tot','mean','sfcflx'
+#endif
+        ENDIF
+        WRITE(DAR_cons_C_unit,'(I12,I2,4E24.16)') myIter, stage,
+     &       tmptotC, tmptotC/voltot, tmpsfcflxC, tmpvirflxC
+        WRITE(DAR_cons_P_unit,'(I12,I2,2E24.16)') myIter, stage,
+     &       tmptotP, tmptotP/voltot
+        WRITE(DAR_cons_N_unit,'(I12,I2,4E24.16)') myIter, stage,
+     &       tmptotN, tmptotN/voltot, tmptotNfix, -tmptotNdenit
+        WRITE(DAR_cons_Fe_unit,'(I12,I2,6E24.16)') myIter, stage,
+     &       tmptotFe, tmptotFe/voltot, -tmpminFeLoss/deltaT,
+     &       -tmptotscavFe, tmpsfcflxFe, tmpsedflxFe
+        WRITE(DAR_cons_Si_unit,'(I12,I2,2E24.16)') myIter, stage,
+     &       tmptotSi,
+     &       tmptotSi/voltot
+#ifdef DARWIN_ALLOW_CARBON
+        WRITE(DAR_cons_A_unit,'(I12,I2,3E24.16)') myIter, stage,
+     &       tmptotA, tmptotA/voltot, tmpsfcflxA
+        WRITE(DAR_cons_O_unit,'(I12,I2,3E24.16)') myIter, stage,
+     &       tmptotO, tmptotO/voltot, tmpsfcflxO
 #endif
       ENDIF
 
