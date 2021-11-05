@@ -284,6 +284,12 @@ C     check types are within type ranges
           CALL PRINT_ERROR( msgBuf , 1)
           STOP 'ABNORMAL END: S/R DARWIN_READTRAITS'
         ENDIF
+        IF (R_SiC(jp).NE.0) THEN
+          WRITE(msgBuf,'(2A,I4)') 'DARWIN_READTRAITS: ERROR: ',
+     &    'bacteria has R_SiC.NE.0: ', jp
+          CALL PRINT_ERROR( msgBuf , 1)
+          STOP 'ABNORMAL END: S/R DARWIN_READTRAITS'
+        ENDIF
         IF (R_PICPOC(jp).NE.0) THEN
           WRITE(msgBuf,'(2A,I4)') 'DARWIN_READTRAITS: ERROR: ',
      &    'bacteria has R_PICPOC.NE.0: ', jp
