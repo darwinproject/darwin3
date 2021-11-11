@@ -1,0 +1,22 @@
+#! /usr/bin/env bash
+mydir=$(dirname $0)
+conselems=" C  N  P Fe Si  A  O"
+testoutput_cons() {
+    all=""
+    for e in $conselems; do
+        f="$1/darwin_cons_$e.txt"
+        if [ -e "$f" ]; then
+          yy="$($mydir/conscheck $f 0 -)"
+          yy="$(printf "%2.0f" $yy)"
+        else
+          yy=" -"
+        fi
+        all="$all $yy"
+    done
+    echo "$all"
+}
+
+echo " $conselems"
+for d in "$@"; do
+  echo "$(testoutput_cons "$d")  $d"
+done
