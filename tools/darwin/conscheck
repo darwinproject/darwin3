@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+import sys
+from os.path import splitext, split as psplit
+import numpy as np
+
+args = sys.argv[1:]
+fname = args.pop(0)
+if args:
+    mystage = args.pop(0)
+    try:
+        mystages = [int(mystage)]
+    except ValueError:
+        mystages = [1, 2]
+else:
+    mystages = None
+
+name, ext = splitext(fname)
+elem = name.split('_')[-1]
+
+a = np.loadtxt(fname)
+
+its = a[:,0]
+stage = a[:,1]
+if np.amax(stage%1) != 0 or np.amax(abs(stage)) > 10:
+    stage = its*0
+    a = np.concatenate([a[:,:1], stage[:,None], a[:,1:]], axis=1)
+
+tot = a[:,2]
+gmean = a[:,3]
+a = a[:,4:]
+
+if tot[0] != 0:
+    v0 = tot[0]/gmean[0]
+a = a.T
+n = len(a)
+
+d = np.diff(tot)
+dc = d.copy()
+v = tot.copy()
+for aa in a:
+    dc -= aa[1:]
+    v -= np.cumsum(aa)
+
+if mystages is not None:
+    wh = stage == mystages[0]
+    for mystage in mystages[1:]:
+        wh |= stage == mystage
+    its = its[wh]
+    stage = stage[wh]
+    v = v[wh]
+    dc = np.diff(v)
+
+mn = tot.mean()
+maxmn = np.amax(abs(mn))
+maxdc = np.amax(abs(dc))
+if args:
+    if maxmn == 0 and maxdc == 0:
+        print(22)
+    elif maxdc == 0:
+        print(16)
+    else:
+        rel = np.amax(abs(dc/mn))
+        dig = -np.log10(rel)
+        dig = int(np.round(dig))
+        print(dig)
+else:
+    print('# {:>8s} {:>s} {:>20s} {:>24s} {:>24s}'.format(
+          'iter','stage','tot','diff/mean(tot)','diff'))
+    for i in range(len(v)):
+        print('{:10.0f} {:.0f} {:24.16e} {:24.16e} {:24.16e}'.format(
+              its[i], stage[i], v[i], dc[np.clip(i-1,0,None)]/mn, dc[np.clip(i-1,0,None)]))
+
