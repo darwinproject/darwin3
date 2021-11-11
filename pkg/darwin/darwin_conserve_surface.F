@@ -44,6 +44,7 @@ C !LOCAL VARIABLES: ====================================================
       _RL totflxO
 #endif
       _RL vol, voltot
+      _RL tilevol(nSx,nSy)
 
       IF ( DARWIN_linFSConserve ) THEN
 
@@ -165,20 +166,20 @@ c oxygem budget !!!!!!!! NOT FULL BUDGET !!!!!!!!!!!
       totflxO=totflxO+totSurfCorPtr(iO2)
 #endif
 
-      voltot = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
       DO bi=myBxLo(myThid),myBxHi(myThid)
+        tilevol(bi,bj) = 0. _d 0
         DO k=1,Nr
         DO i=1,sNx
         DO j=1,sNy
           vol=rA(i,j,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
-          voltot=voltot+vol
+          tilevol(bi,bj) = tilevol(bi,bj) + vol
         ENDDO
         ENDDO
         ENDDO
       ENDDO
       ENDDO
-      _GLOBAL_SUM_RL(voltot,myThid)
+      CALL GLOBAL_SUM_TILE_RL(tilevol,voltot,myThid)
 
 C--   Everyone else must wait
       _BARRIER
