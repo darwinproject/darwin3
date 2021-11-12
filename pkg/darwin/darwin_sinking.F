@@ -14,8 +14,10 @@ C     compute tendencies from sinking of particulate organic matter
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-c#include "EEPARAMS.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN_INDICES.h"
 #include "DARWIN_PARAMS.h"
@@ -39,80 +41,106 @@ CEOP
 
 c !LOCAL VARIABLES: ====================================================
       INTEGER i,j,k,l
-      _RL dzup, dzdn, flux
+      _RL upfc, dnfc, flux, hFacCdn
+      _RL upf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL dnf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
       DO k=1,Nr-1
        DO j=jMin,jMax
         DO i=iMin,iMax
-         dzup = DRF(k)*hFacC(i,j,k,bi,bj)
-         dzdn = DRF(k+1)*hFacC(i,j,k+1,bi,bj)
-         IF (dzdn .GT. 0 _d 0) THEN
+         IF (hFacC(i,j,k+1,bi,bj) .GT. 0 _d 0) THEN
+          upf(i,j,k)=recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+          dnf(i,j,k+1)=recip_drF(k+1)*recip_hFacC(i,j,k+1,bi,bj)
+         ELSE
+          upf(i,j,k) = 0 _d 0
+          dnf(i,j,k+1) = 0 _d 0
+         ENDIF
+        ENDDO
+       ENDDO
+#ifdef NONLIN_FRSURF
+C-    Account for change in level thickness
+       IF (nonlinFreeSurf.GT.0) THEN
+         CALL FREESURF_RESCALE_G(
+     I                            bi, bj, k,
+     U                            upf,
+     I                            myThid )
+         CALL FREESURF_RESCALE_G(
+     I                            bi, bj, k+1,
+     U                            dnf,
+     I                            myThid )
+       ENDIF
+#endif /* NONLIN_FRSURF */
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         upfc = upf(i,j,k)
+         dnfc = dnf(i,j,k+1)
+         IF (dnfc .GT. 0 _d 0) THEN
           flux = wPIC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPIC))
-          gTr(i,j,k  ,iPIC ) = gTr(i,j,k  ,iPIC ) - flux/dzup
-          gTr(i,j,k+1,iPIC ) = gTr(i,j,k+1,iPIC ) + flux/dzdn
+          gTr(i,j,k  ,iPIC ) = gTr(i,j,k  ,iPIC ) - flux*upfc
+          gTr(i,j,k+1,iPIC ) = gTr(i,j,k+1,iPIC ) + flux*dnfc
           flux = wC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOC))
-          gTr(i,j,k  ,iPOC ) = gTr(i,j,k  ,iPOC ) - flux/dzup
-          gTr(i,j,k+1,iPOC ) = gTr(i,j,k+1,iPOC ) + flux/dzdn
+          gTr(i,j,k  ,iPOC ) = gTr(i,j,k  ,iPOC ) - flux*upfc
+          gTr(i,j,k+1,iPOC ) = gTr(i,j,k+1,iPOC ) + flux*dnfc
           flux = wN_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPON))
-          gTr(i,j,k  ,iPON ) = gTr(i,j,k  ,iPON ) - flux/dzup
-          gTr(i,j,k+1,iPON ) = gTr(i,j,k+1,iPON ) + flux/dzdn
+          gTr(i,j,k  ,iPON ) = gTr(i,j,k  ,iPON ) - flux*upfc
+          gTr(i,j,k+1,iPON ) = gTr(i,j,k+1,iPON ) + flux*dnfc
           flux = wP_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOP))
-          gTr(i,j,k  ,iPOP ) = gTr(i,j,k  ,iPOP ) - flux/dzup
-          gTr(i,j,k+1,iPOP ) = gTr(i,j,k+1,iPOP ) + flux/dzdn
+          gTr(i,j,k  ,iPOP ) = gTr(i,j,k  ,iPOP ) - flux*upfc
+          gTr(i,j,k+1,iPOP ) = gTr(i,j,k+1,iPOP ) + flux*dnfc
           flux = wSi_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOSi))
-          gTr(i,j,k  ,iPOSi) = gTr(i,j,k  ,iPOSi) - flux/dzup
-          gTr(i,j,k+1,iPOSi) = gTr(i,j,k+1,iPOSi) + flux/dzdn
+          gTr(i,j,k  ,iPOSi) = gTr(i,j,k  ,iPOSi) - flux*upfc
+          gTr(i,j,k+1,iPOSi) = gTr(i,j,k+1,iPOSi) + flux*dnfc
           flux = wFe_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOFe))
-          gTr(i,j,k  ,iPOFe) = gTr(i,j,k  ,iPOFe) - flux/dzup
-          gTr(i,j,k+1,iPOFe) = gTr(i,j,k+1,iPOFe) + flux/dzdn
+          gTr(i,j,k  ,iPOFe) = gTr(i,j,k  ,iPOFe) - flux*upfc
+          gTr(i,j,k+1,iPOFe) = gTr(i,j,k+1,iPOFe) + flux*dnfc
           DO l = 1, nplank
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ic+l-1))
-           gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) - flux/dzup
-           gTr(i,j,k+1,ic+l-1 )=gTr(i,j,k+1,ic+l-1 ) + flux/dzdn
+           gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) - flux*upfc
+           gTr(i,j,k+1,ic+l-1 )=gTr(i,j,k+1,ic+l-1 ) + flux*dnfc
            flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,ic+l-1))
-           gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) + flux/dzup
-           gTr(i,j,k+1,ic+l-1 )=gTr(i,j,k+1,ic+l-1 ) - flux/dzdn
+           gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) + flux*upfc
+           gTr(i,j,k+1,ic+l-1 )=gTr(i,j,k+1,ic+l-1 ) - flux*dnfc
 #ifdef DARWIN_ALLOW_NQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,in+l-1))
-           gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) - flux/dzup
-           gTr(i,j,k+1,in+l-1 )=gTr(i,j,k+1,in+l-1 ) + flux/dzdn
+           gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) - flux*upfc
+           gTr(i,j,k+1,in+l-1 )=gTr(i,j,k+1,in+l-1 ) + flux*dnfc
            flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,in+l-1))
-           gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) + flux/dzup
-           gTr(i,j,k+1,in+l-1 )=gTr(i,j,k+1,in+l-1 ) - flux/dzdn
+           gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) + flux*upfc
+           gTr(i,j,k+1,in+l-1 )=gTr(i,j,k+1,in+l-1 ) - flux*dnfc
 #endif
 #ifdef DARWIN_ALLOW_PQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ip+l-1))
-           gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) - flux/dzup
-           gTr(i,j,k+1,ip+l-1 )=gTr(i,j,k+1,ip+l-1 ) + flux/dzdn
+           gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) - flux*upfc
+           gTr(i,j,k+1,ip+l-1 )=gTr(i,j,k+1,ip+l-1 ) + flux*dnfc
            flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,ip+l-1))
-           gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) + flux/dzup
-           gTr(i,j,k+1,ip+l-1 )=gTr(i,j,k+1,ip+l-1 ) - flux/dzdn
+           gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) + flux*upfc
+           gTr(i,j,k+1,ip+l-1 )=gTr(i,j,k+1,ip+l-1 ) - flux*dnfc
 #endif
 #ifdef DARWIN_ALLOW_SIQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,isi+l-1))
-           gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) - flux/dzup
-           gTr(i,j,k+1,isi+l-1)=gTr(i,j,k+1,isi+l-1) + flux/dzdn
+           gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) - flux*upfc
+           gTr(i,j,k+1,isi+l-1)=gTr(i,j,k+1,isi+l-1) + flux*dnfc
            flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,isi+l-1))
-           gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) + flux/dzup
-           gTr(i,j,k+1,isi+l-1)=gTr(i,j,k+1,isi+l-1) - flux/dzdn
+           gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) + flux*upfc
+           gTr(i,j,k+1,isi+l-1)=gTr(i,j,k+1,isi+l-1) - flux*dnfc
 #endif
 #ifdef DARWIN_ALLOW_FEQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ife+l-1))
-           gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) - flux/dzup
-           gTr(i,j,k+1,ife+l-1)=gTr(i,j,k+1,ife+l-1) + flux/dzdn
+           gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) - flux*upfc
+           gTr(i,j,k+1,ife+l-1)=gTr(i,j,k+1,ife+l-1) + flux*dnfc
            flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,ife+l-1))
-           gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) + flux/dzup
-           gTr(i,j,k+1,ife+l-1)=gTr(i,j,k+1,ife+l-1) - flux/dzdn
+           gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) + flux*upfc
+           gTr(i,j,k+1,ife+l-1)=gTr(i,j,k+1,ife+l-1) - flux*dnfc
 #endif
           ENDDO
 #ifdef DARWIN_ALLOW_CHLQUOTA
           DO l = 1, nPhoto
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,iChl+l-1))
-           gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)-flux/dzup
-           gTr(i,j,k+1,iChl+l-1)=gTr(i,j,k+1,iChl+l-1)+flux/dzdn
+           gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)-flux*upfc
+           gTr(i,j,k+1,iChl+l-1)=gTr(i,j,k+1,iChl+l-1)+flux*dnfc
            flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,iChl+l-1))
-           gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)+flux/dzup
-           gTr(i,j,k+1,iChl+l-1)=gTr(i,j,k+1,iChl+l-1)-flux/dzdn
+           gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)+flux*upfc
+           gTr(i,j,k+1,iChl+l-1)=gTr(i,j,k+1,iChl+l-1)-flux*dnfc
           ENDDO
 #endif
          ENDIF
@@ -124,49 +152,67 @@ c !LOCAL VARIABLES: ====================================================
       DO k=1,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         dzup = DRF(k)*hFacC(i,j,k,bi,bj)
          IF (k.LT.Nr) THEN
-           dzdn = DRF(k+1)*hFacC(i,j,k+1,bi,bj)
+          hFacCdn = hFacC(i,j,k+1,bi,bj)
          ELSE
-           dzdn = 0. _d 0
+          hFacCdn = 0 _d 0
          ENDIF
-         IF (dzup .GT. 0 _d 0 .AND. dzdn .EQ. 0 _d 0) THEN
+         IF (hFacC(i,j,k,bi,bj).GT.0 _d 0 .AND. hFacCdn.EQ.0 _d 0) THEN
+          upf(i,j,k)=recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+         ELSE
+          upf(i,j,k)=0 _d 0
+         ENDIF
+        ENDDO
+       ENDDO
+#ifdef NONLIN_FRSURF
+C-    Account for change in level thickness
+       IF (nonlinFreeSurf.GT.0) THEN
+         CALL FREESURF_RESCALE_G(
+     I                            bi, bj, k,
+     U                            upf,
+     I                            myThid )
+       ENDIF
+#endif /* NONLIN_FRSURF */
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         upfc = upf(i,j,k)
+         IF (upfc .GT. 0 _d 0) THEN
           flux = wPIC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPIC))
-          gTr(i,j,k  ,iPIC ) = gTr(i,j,k  ,iPIC ) - flux/dzup
+          gTr(i,j,k  ,iPIC ) = gTr(i,j,k  ,iPIC ) - flux*upfc
           flux = wC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOC))
-          gTr(i,j,k  ,iPOC ) = gTr(i,j,k  ,iPOC ) - flux/dzup
+          gTr(i,j,k  ,iPOC ) = gTr(i,j,k  ,iPOC ) - flux*upfc
           flux = wN_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPON))
-          gTr(i,j,k  ,iPON ) = gTr(i,j,k  ,iPON ) - flux/dzup
+          gTr(i,j,k  ,iPON ) = gTr(i,j,k  ,iPON ) - flux*upfc
           flux = wP_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOP))
-          gTr(i,j,k  ,iPOP ) = gTr(i,j,k  ,iPOP ) - flux/dzup
+          gTr(i,j,k  ,iPOP ) = gTr(i,j,k  ,iPOP ) - flux*upfc
           flux = wSi_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOSi))
-          gTr(i,j,k  ,iPOSi) = gTr(i,j,k  ,iPOSi) - flux/dzup
+          gTr(i,j,k  ,iPOSi) = gTr(i,j,k  ,iPOSi) - flux*upfc
           flux = wFe_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOFe))
-          gTr(i,j,k  ,iPOFe) = gTr(i,j,k  ,iPOFe) - flux/dzup
+          gTr(i,j,k  ,iPOFe) = gTr(i,j,k  ,iPOFe) - flux*upfc
           DO l = 1, nplank
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ic+l-1))
-           gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) - flux/dzup
+           gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) - flux*upfc
 #ifdef DARWIN_ALLOW_NQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,in+l-1))
-           gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) - flux/dzup
+           gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) - flux*upfc
 #endif
 #ifdef DARWIN_ALLOW_PQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ip+l-1))
-           gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) - flux/dzup
+           gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) - flux*upfc
 #endif
 #ifdef DARWIN_ALLOW_SIQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,isi+l-1))
-           gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) - flux/dzup
+           gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) - flux*upfc
 #endif
 #ifdef DARWIN_ALLOW_FEQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ife+l-1))
-           gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) - flux/dzup
+           gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) - flux*upfc
 #endif
           ENDDO
 #ifdef DARWIN_ALLOW_CHLQUOTA
           DO l = 1, nPhoto
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,iChl+l-1))
-           gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)-flux/dzup
+           gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)-flux*upfc
           ENDDO
 #endif
          ENDIF
