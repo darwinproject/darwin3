@@ -353,7 +353,7 @@ C set alternate forcing sources
       ENDIF
 
       IF (.NOT.DARWIN_havepCO2) THEN
-        WRITE(msgBuf,'(2A,E12.6,A)')
+        WRITE(msgBuf,'(2A,E13.6,A)')
      &    '** WARNING ** DARWIN_EXF_READPARMS: ',
      &    'default pCO2 of ',pCO2const,' atm is used'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
