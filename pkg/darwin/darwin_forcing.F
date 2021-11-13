@@ -83,7 +83,7 @@ C  k                    :: vertical level
       _RL gO2(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL surfFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
-      _RL tmp3d(1:sNx,1:sNy,Nr)
+      _RL tmp3d(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
       _RL scv,scav_poc
       _RL flx, POCl
       _RL ptr(nDarwin), gtr(nDarwin), PARl(nlam)
@@ -167,12 +167,31 @@ C carbon air-sea interaction
       CALL TIMER_STOP ('DARWIN_SURFFORCING [DARWIN_FORCING]',myThid)
       DO j=jMin,jMax
       DO i=iMin,iMax
-        gPtr(i,j,1,iDIC) = gPtr(i,j,1,iDIC) + gDIC(i,j)
-        gPtr(i,j,1,iALK) = gPtr(i,j,1,iALK) + gALK(i,j)
-        gPtr(i,j,1,iO2)  = gPtr(i,j,1,iO2)  + gO2(i,j)
+        gPtr(i,j,1,iDIC) = gDIC(i,j)
+        gPtr(i,j,1,iALK) = gALK(i,j)
+        gPtr(i,j,1,iO2)  = gO2(i,j)
       ENDDO
       ENDDO
-#endif
+
+#ifdef NONLIN_FRSURF
+C-    Account for change in level thickness
+C     Other contributions to gPtr must come after these calls!
+      IF (nonlinFreeSurf.GT.0) THEN
+        CALL FREESURF_RESCALE_G(
+     I                           bi, bj, 1,
+     U                           gPtr(1-OLx,1-OLy,1,iDIC),
+     I                           myThid )
+        CALL FREESURF_RESCALE_G(
+     I                           bi, bj, 1,
+     U                           gPtr(1-OLx,1-OLy,1,iALK),
+     I                           myThid )
+        CALL FREESURF_RESCALE_G(
+     I                           bi, bj, 1,
+     U                           gPtr(1-OLx,1-OLy,1,iO2),
+     I                           myThid )
+      ENDIF
+#endif /* NONLIN_FRSURF */
+#endif /* DARWIN_ALLOW_CARBON */
 
 #ifdef DARWIN_DIAG_TENDENCIES
 C surface fluxes from E/P/runoff
@@ -239,13 +258,24 @@ C     scavenging
 C     iron dust input
       CALL TIMER_START('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
       DO j=jMin,jMax
-      DO i=iMin,iMax
-      IF (hFacC(i,j,1,bi,bj) .NE. 0.) THEN
-        gPtr(i,j,1,iFeT) =
-     &  gPtr(i,j,1,iFeT) + alpfe * inputFe(i,j,bi,bj) /
-     &                           drF(1) / hFacC(i,j,1,bi,bj)
-      ENDIF
+       DO i=iMin,iMax
+        tmp3d(i,j,1) = alpfe * inputFe(i,j,bi,bj)
+     &               * recip_drF(1) * recip_hFacC(i,j,1,bi,bj)
+       ENDDO
       ENDDO
+#ifdef NONLIN_FRSURF
+C-    Account for change in level thickness
+      IF (nonlinFreeSurf.GT.0) THEN
+        CALL FREESURF_RESCALE_G(
+     I                           bi, bj, 1,
+     U                           tmp3d,
+     I                           myThid )
+      ENDIF
+#endif /* NONLIN_FRSURF */
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        gPtr(i,j,1,iFeT) = gPtr(i,j,1,iFeT) + tmp3d(i,j,1)
+       ENDDO
       ENDDO
       CALL TIMER_STOP ('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
 
@@ -270,12 +300,26 @@ C     iron sediment source (in bottom grid cell above kMaxFeSed)
           flx = fesedflux
 #endif
           sedFe(i,j,k) = flx/(drF(k)*hFacC(i,j,k,bi,bj))
-          gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) +
-     &                             flx/(drF(k)*hFacC(i,j,k,bi,bj))
 #ifdef DARWIN_ALLOW_CONS
           ironSedFlx(i,j,bi,bj) = ironSedFlx(i,j,bi,bj) + dTsub(k)*flx
 #endif
+         ELSE
+          sedFe(i,j,k) = 0 _d 0
          ENDIF
+        ENDDO
+       ENDDO
+#ifdef NONLIN_FRSURF
+C-    Account for change in level thickness
+       IF (nonlinFreeSurf.GT.0) THEN
+        CALL FREESURF_RESCALE_G(
+     I                           bi, bj, k,
+     U                           sedFe,
+     I                           myThid )
+       ENDIF
+#endif /* NONLIN_FRSURF */
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+          gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) + sedFe(i,j,k)
         ENDDO
        ENDDO
       ENDDO
@@ -437,7 +481,7 @@ C === diagnostics ======================================================
           ENDDO
          ENDDO
         ENDDO
-        CALL DIAGNOSTICS_FILL(tmp3d,'Chl     ',0,Nr,3,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(tmp3d,'Chl     ',0,Nr,2,bi,bj,myThid)
 #else
         CALL DIAGNOSTICS_FILL(chlPrev,'Chl     ',0,Nr,1,bi,bj,myThid)
 #endif
