@@ -211,19 +211,6 @@ C === iron =============================================================
      I                 bi, bj, iMin, iMax, jMin, jMax, myThid)
       CALL TIMER_STOP ('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
 
-C     iron dust input
-      CALL TIMER_START('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
-      DO j=jMin,jMax
-      DO i=iMin,iMax
-      IF (hFacC(i,j,1,bi,bj) .NE. 0.) THEN
-        gPtr(i,j,1,iFeT) =
-     &  gPtr(i,j,1,iFeT) + alpfe * inputFe(i,j,bi,bj) /
-     &                           drF(1) / hFacC(i,j,1,bi,bj)
-      ENDIF
-      ENDDO
-      ENDDO
-      CALL TIMER_STOP ('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
-
 C     scavenging
       CALL TIMER_START('DARWIN_FE_SCAV [DARWIN_FORCING]',myThid)
       DO k=1,Nr
@@ -247,6 +234,19 @@ C     scavenging
       ENDDO
       ENDDO
       CALL TIMER_STOP ('DARWIN_FE_SCAV [DARWIN_FORCING]',myThid)
+
+C     iron dust input
+      CALL TIMER_START('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
+      DO j=jMin,jMax
+      DO i=iMin,iMax
+      IF (hFacC(i,j,1,bi,bj) .NE. 0.) THEN
+        gPtr(i,j,1,iFeT) =
+     &  gPtr(i,j,1,iFeT) + alpfe * inputFe(i,j,bi,bj) /
+     &                           drF(1) / hFacC(i,j,1,bi,bj)
+      ENDIF
+      ENDDO
+      ENDDO
+      CALL TIMER_STOP ('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
 
 C     iron sediment source (in bottom grid cell above kMaxFeSed)
       CALL TIMER_START('DARWIN_FE_SED [DARWIN_FORCING]',myThid)
