@@ -100,7 +100,11 @@ c carbon budget
            tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iTr)*(1+R_PICPOC(np))*vol
           ENDDO
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+          tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iCDOM)*vol
+# else
           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iCDOM)*R_CP_CDOM*vol
+# endif
 #endif
 
 c Phosphorus budget
@@ -117,7 +121,11 @@ c Phosphorus budget
 #endif
           ENDDO
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+          tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iCDOM)*R_PC_CDOM*vol
+# else
           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iCDOM)*vol
+# endif
 #endif
 
 c Nitrogen budget
@@ -136,7 +144,11 @@ c Nitrogen budget
 #endif
           ENDDO
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+          tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iCDOM)*R_NC_CDOM*vol
+# else
           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iCDOM)*R_NP_CDOM*vol
+# endif
 #endif
 
 c Iron budget
@@ -153,7 +165,11 @@ c Iron budget
 #endif
           ENDDO
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+          tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iCDOM)*R_FeC_CDOM*vol
+# else
           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iCDOM)*R_FeP_CDOM*vol
+# endif
 #endif
 
 c Silica budget

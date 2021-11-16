@@ -67,7 +67,11 @@ c carbon budget
         totflxC=totflxC+totSurfCorPtr(iTr)*(1+R_PICPOC(np))
       ENDDO
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      totflxC=totflxC+totSurfCorPtr(iCDOM)
+# else
       totflxC=totflxC+totSurfCorPtr(iCDOM)*R_CP_CDOM
+# endif
 #endif
 
 c Phosphorus budget
@@ -84,7 +88,11 @@ c Phosphorus budget
 #endif
       ENDDO
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      totflxP=totflxP+totSurfCorPtr(iCDOM)*R_PC_CDOM
+# else
       totflxP=totflxP+totSurfCorPtr(iCDOM)
+# endif
 #endif
 
 c Nitrogen budget
@@ -103,7 +111,11 @@ c Nitrogen budget
 #endif
       ENDDO
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      totflxN=totflxN+totSurfCorPtr(iCDOM)*R_NC_CDOM
+# else
       totflxN=totflxN+totSurfCorPtr(iCDOM)*R_NP_CDOM
+# endif
 #endif
 
 c Iron budget
@@ -120,7 +132,11 @@ c Iron budget
 #endif
       ENDDO
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      totflxFe=totflxFe+totSurfCorPtr(iCDOM)*R_FeC_CDOM
+# else
       totflxFe=totflxFe+totSurfCorPtr(iCDOM)*R_FeP_CDOM
+# endif
 #endif
 
 c Silica budget

@@ -37,7 +37,10 @@ C     darwin_bbw               :: []           backscattering ratio of water
 C     darwin_lambda_aCDOM      :: [nm]         reference wavelength for CDOM absorption spectra
 C     darwin_Sdom              :: [1/nm]       coefficient for CDOM absorption spectra
 C     darwin_aCDOM_fac         :: []           factor for computing aCDOM from water+Chlorophyll absorption
+C     darwin_rCDOM             :: [mmol C/m3]  recalcitrant CDOM concentration
+C                                              (with #define DARWIN_CDOM_UNITS_CARBON)
 C     darwin_rCDOM             :: [mmol P/m3]  recalcitrant CDOM concentration
+C                                              (with #undef DARWIN_CDOM_UNITS_CARBON)
 C     darwin_RPOC              :: [mmol C/m3]  recalcitrant POC concentration
 C-
 C     darwin_aCarCell          :: [mg C/cell]  coefficient coefficient for scaling plankton spectra
