@@ -921,10 +921,17 @@ c NH4 -> NO2 -> NO3 by bacterial action, parameterized
       ENDIF
 
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      reminPOC_CDOM = fracCDOM*reminPOC
+      reminPOP_CDOM = R_PC_CDOM*reminPOC_CDOM
+      reminPON_CDOM = R_NC_CDOM*reminPOC_CDOM
+      reminPOFe_CDOM = R_FeC_CDOM*reminPOC_CDOM
+# else
       reminPOP_CDOM = fracCDOM*reminPOP
       reminPOC_CDOM = R_CP_CDOM*reminPOP_CDOM
       reminPON_CDOM = R_NP_CDOM*reminPOP_CDOM
       reminPOFe_CDOM = R_FeP_CDOM*reminPOP_CDOM
+# endif
 c degradation of  CDOM
       tmp = CDOMdegrd
 #ifdef DARWIN_ALLOW_DENIT
@@ -934,10 +941,17 @@ c degradation of  CDOM
 #endif
 c increase when bleached by light
       tmp = tmp + CDOMbleach*MIN(1.0 _d 0, PARtot/PARCDOM)
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      degrCDOM_DOC = reminTempFunc*CDOM*tmp
+      degrCDOM_DOP  = R_PC_CDOM  * degrCDOM_DOC
+      degrCDOM_DON  = R_NC_CDOM  * degrCDOM_DOC
+      degrCDOM_DOFe = R_FeC_CDOM * degrCDOM_DOC
+# else
       degrCDOM_DOP = reminTempFunc*CDOM*tmp
       degrCDOM_DOC  = R_CP_CDOM  * degrCDOM_DOP
       degrCDOM_DON  = R_NP_CDOM  * degrCDOM_DOP
       degrCDOM_DOFe = R_FeP_CDOM * degrCDOM_DOP
+# endif
 #endif
 
 C==== apply tendencies =================================================
@@ -1004,7 +1018,11 @@ C     DOC is created by #4 PA-assoc solubilization and consumed by #5
       gTr(iDOP )=gTr(iDOP ) + reminPOP  - reminPOP_CDOM  + degrCDOM_DOP
       gTr(iDOFe)=gTr(iDOFe) + reminPOFe - reminPOFe_CDOM + degrCDOM_DOFe
 
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      gTr(iCDOM)=gTr(iCDOM) + reminPOC_CDOM - degrCDOM_DOC
+# else
       gTr(iCDOM)=gTr(iCDOM) + reminPOP_CDOM - degrCDOM_DOP
+# endif
 #else
       gTr(iDIC )=gTr(iDIC ) + reminPOC
 
@@ -1206,12 +1224,23 @@ C==== tendencies =======================================================
       gTr(iPIC )=gTr(iPIC ) + graz2PIC
 #endif
 #ifdef DARWIN_ALLOW_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      graz2CDOM = fracCDOM*(graz2OC - graz2POC)
+# else
       graz2CDOM = fracCDOM*(graz2OP - graz2POP)
+# endif
       gTr(iCDOM)=gTr(iCDOM) + graz2CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      gTr(iDOC )=gTr(iDOC ) -           graz2CDOM
+      gTr(iDON )=gTr(iDON ) - R_NC_CDOM*graz2CDOM
+      gTr(iDOP )=gTr(iDOP ) - R_PC_CDOM*graz2CDOM
+      gTr(iDOFe)=gTr(iDOFe) - R_FeC_CDOM*graz2CDOM
+# else
       gTr(iDOC )=gTr(iDOC )             - R_CP_CDOM*graz2CDOM
       gTr(iDON )=gTr(iDON )             - R_NP_CDOM*graz2CDOM
       gTr(iDOP )=gTr(iDOP ) - graz2CDOM
       gTr(iDOFe)=gTr(iDOFe)             - R_FeP_CDOM*graz2CDOM
+# endif
 #endif
 
       DO jp = 1, nplank
@@ -1384,10 +1413,17 @@ C==== mortality ========================================================
 #ifdef DARWIN_ALLOW_CDOM
       exude_CDOM = fracCDOM*exude_DOP
       gTr(iCDOM)=gTr(iCDOM) + exude_CDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      gTr(iDOC )=gTr(iDOC ) -           exude_CDOM
+      gTr(iDON )=gTr(iDON ) - R_NC_CDOM*exude_CDOM
+      gTr(iDOP )=gTr(iDOP ) - R_PC_CDOM*exude_CDOM
+      gTr(iDOFe)=gTr(iDOFe) - R_FeC_CDOM*exude_CDOM
+# else
       gTr(iDOC )=gTr(iDOC )              - R_CP_CDOM*exude_CDOM
       gTr(iDON )=gTr(iDON )              - R_NP_CDOM*exude_CDOM
       gTr(iDOP )=gTr(iDOP ) - exude_CDOM
       gTr(iDOFe)=gTr(iDOFe)              - R_FeP_CDOM*exude_CDOM
+# endif
 #endif
 
 #endif /* ALLOW_DARWIN */

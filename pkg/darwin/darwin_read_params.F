@@ -168,9 +168,15 @@ C     &    yono2,
      &    CDOMdegrd,
      &    CDOMbleach,
      &    PARCDOM,
+# ifdef DARWIN_CDOM_UNITS_CARBON
+     &    R_NC_CDOM,
+     &    R_FeC_CDOM,
+     &    R_PC_CDOM,
+# else
      &    R_NP_CDOM,
      &    R_FeP_CDOM,
      &    R_CP_CDOM,
+# endif
      &    CDOMcoeff
 #endif
 
@@ -407,10 +413,17 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       CDOMdegrd = 1. _d 0 / (200 _d 0*pday)
       CDOMbleach = 1. _d 0 / (15 _d 0*pday)
       PARCDOM = 20. _d 0
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      R_NC_CDOM = 16. _d 0 / 120 _d 0
+      R_FeC_CDOM = 1. _d -3 / 120 _d 0
+      R_PC_CDOM = 1 _d 0 / 120. _d 0
+      CDOMcoeff = .1 _d -1  / 1. _d -4 / 120 _d 0
+# else
       R_NP_CDOM = 16. _d 0
       R_FeP_CDOM = 1. _d -3
       R_CP_CDOM = 120. _d 0
       CDOMcoeff = .1 _d -1  / 1. _d -4
+# endif
 
       READ(UNIT=iUnit, NML=DARWIN_CDOM_PARAMS)
 #endif

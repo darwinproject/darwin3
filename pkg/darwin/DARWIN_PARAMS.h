@@ -485,26 +485,44 @@ C     fracCDOM   :: []                  fraction of remineralized POP contributi
 C     CDOMdegrd  :: [1/s]               CDOM degradation rate
 C     CDOMbleach :: [1/s]               CDOM bleaching rate
 C     PARCDOM    :: [uEin/m2/s]         PAR where CDOM bleaching becomes maximal
+C     R_NC_CDOM  :: [mmol N / mmol C]   CDOM N:C ratio
+C     R_FeC_CDOM :: [mmol Fe / mmol C]  CDOM Fe:C ratio
+C     R_PC_CDOM  :: [mmol P / mmol C]   CDOM P:C ratio
 C     R_NP_CDOM  :: [mmol N / mmol P]   CDOM N:P ratio
 C     R_FeP_CDOM :: [mmol Fe / mmol P]  CDOM Fe:P ratio
 C     R_CP_CDOM  :: [mmol C / mmol P]   CDOM C:P ratio
+C     CDOMcoeff  :: [m2 / mmol C]       C-specific absorption coefficient of CDOM
+C                                       (with #define DARWIN_CDOM_UNITS_CARBON)
 C     CDOMcoeff  :: [m2 / mmol P]       P-specific absorption coefficient of CDOM
+C                                       (with #undef DARWIN_CDOM_UNITS_CARBON)
       COMMON /DARWIN_CDOM_PARAMS_r/
      &    fracCDOM,
      &    CDOMdegrd,
      &    CDOMbleach,
      &    PARCDOM,
+# ifdef DARWIN_CDOM_UNITS_CARBON
+     &    R_NC_CDOM,
+     &    R_FeC_CDOM,
+     &    R_PC_CDOM,
+# else
      &    R_NP_CDOM,
      &    R_FeP_CDOM,
      &    R_CP_CDOM,
+# endif
      &    CDOMcoeff
       _RL fracCDOM
       _RL CDOMdegrd
       _RL CDOMbleach
       _RL PARCDOM
+# ifdef DARWIN_CDOM_UNITS_CARBON
+      _RL R_NC_CDOM
+      _RL R_FeC_CDOM
+      _RL R_PC_CDOM
+# else
       _RL R_NP_CDOM
       _RL R_FeP_CDOM
       _RL R_CP_CDOM
+# endif
       _RL CDOMcoeff
 #endif
 
