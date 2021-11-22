@@ -151,7 +151,7 @@ c      ENDIF
       CALL DARWIN_LIGHT_RADTRANS(PAR,subTime,bi,bj,iMin,iMax,jMin,jMax,
      &                        subTime,myIter,myThid)
 #else
-      CALL DARWIN_LIGHT(PAR, midTime, bi, bj, iMin, iMax, jMin, jMax, 
+      CALL DARWIN_LIGHT(PAR, midTime, bi, bj, iMin, iMax, jMin, jMax,
      &               subTime, myIter, myThid)
 #endif
       CALL TIMER_STOP ('DARWIN_LIGHT [DARWIN_FORCING]',myThid)
@@ -410,7 +410,7 @@ C === pre-sinking diags ================================================
 
 C === sinking ==========================================================
       CALL TIMER_START('DARWIN_SINKING [DARWIN_FORCING]',myThid)
-      CALL DARWIN_SINKING( Ptracer,gPtr,bi,bj,iMin,iMax,jMin,jMax,
+      CALL DARWIN_SINKING( Ptracer,gPtr,dTsub,bi,bj,iMin,iMax,jMin,jMax,
      &                  subTime,myIter,myThid )
       CALL TIMER_STOP ('DARWIN_SINKING [DARWIN_FORCING]',myThid)
 
