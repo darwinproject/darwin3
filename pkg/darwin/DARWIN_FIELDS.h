@@ -65,6 +65,20 @@ C
       _RL carbVirFlx(sNx,sNy,nSx,nSy)
       _RL oxySfcFlx(sNx,sNy,nSx,nSy)
       _RL alkVirFlx(sNx,sNy,nSx,nSy)
+
+# ifdef DARWIN_BOTTOM_SINK
+      COMMON /DARWIN_CONS_BOTTOM/
+     &      botSnkC,
+     &      botSnkN,
+     &      botSnkP,
+     &      botSnkFe,
+     &      botSnkSi
+      _RL botSnkC(sNx,sNy,nSx,nSy)
+      _RL botSnkN(sNx,sNy,nSx,nSy)
+      _RL botSnkP(sNx,sNy,nSx,nSy)
+      _RL botSnkFe(sNx,sNy,nSx,nSy)
+      _RL botSnkSi(sNx,sNy,nSx,nSy)
+# endif
 #endif
 
 C Carbon Variables

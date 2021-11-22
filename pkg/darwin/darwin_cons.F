@@ -48,6 +48,13 @@ C !LOCAL VARIABLES: ====================================================
       _RL tilesedflxFe(nSx,nSy)
       _RL tilesfcflxC(nSx,nSy)
       _RL tilevirflxC(nSx,nSy)
+#ifdef DARWIN_BOTTOM_SINK
+      _RL tileBotSnkC(nSx,nSy)
+      _RL tileBotSnkN(nSx,nSy)
+      _RL tileBotSnkP(nSx,nSy)
+      _RL tileBotSnkFe(nSx,nSy)
+      _RL tileBotSnkSi(nSx,nSy)
+#endif
 #ifdef DARWIN_ALLOW_CARBON
       _RL tiletotA(nSx,nSy)
       _RL tileAlkSrc(nSx,nSy)
@@ -70,6 +77,11 @@ C !LOCAL VARIABLES: ====================================================
       _RL tmpsedflxFe
       _RL tmpsfcflxC
       _RL tmpvirflxC
+      _RL tmpBotSnkC
+      _RL tmpBotSnkN
+      _RL tmpBotSnkP
+      _RL tmpBotSnkFe
+      _RL tmpBotSnkSi
 #ifdef DARWIN_ALLOW_CARBON
       _RL tmptotA
       _RL tmpAlkSrc
@@ -100,6 +112,11 @@ C !LOCAL VARIABLES: ====================================================
       tmpsedflxFe = 0 _d 0
       tmpsfcflxC = 0 _d 0
       tmpvirflxC = 0 _d 0
+      tmpBotSnkC = 0 _d 0
+      tmpBotSnkN = 0 _d 0
+      tmpBotSnkP = 0 _d 0
+      tmpBotSnkFe = 0 _d 0
+      tmpBotSnkSi = 0 _d 0
 #ifdef DARWIN_ALLOW_CARBON
       tmptotA = 0 _d 0
       tmpAlkSrc = 0 _d 0
@@ -127,6 +144,13 @@ C !LOCAL VARIABLES: ====================================================
        tilesedflxFe(bi,bj) = 0. _d 0
        tilesfcflxC(bi,bj) = 0. _d 0
        tilevirflxC(bi,bj) = 0. _d 0
+#ifdef DARWIN_BOTTOM_SINK
+       tileBotSnkC(bi,bj) = 0. _d 0
+       tileBotSnkN(bi,bj) = 0. _d 0
+       tileBotSnkP(bi,bj) = 0. _d 0
+       tileBotSnkFe(bi,bj) = 0. _d 0
+       tileBotSnkSi(bi,bj) = 0. _d 0
+#endif
 #ifdef DARWIN_ALLOW_CARBON
        tiletotA(bi,bj) = 0. _d 0
        tileAlkSrc(bi,bj) = 0. _d 0
@@ -306,6 +330,13 @@ c-----------------------------------------------------------------------
         tilevirflxA(bi,bj)=tilevirflxA(bi,bj)+alkVirFlx(i,j,bi,bj)*area
 #endif
 #endif
+#ifdef DARWIN_BOTTOM_SINK
+        tileBotSnkC(bi,bj)=tilebotsnkC(bi,bj)+botSnkC(i,j,bi,bj)*area
+        tileBotSnkN(bi,bj)=tilebotsnkN(bi,bj)+botSnkN(i,j,bi,bj)*area
+        tileBotSnkP(bi,bj)=tilebotsnkP(bi,bj)+botSnkP(i,j,bi,bj)*area
+        tileBotSnkFe(bi,bj)=tilebotsnkFe(bi,bj)+botSnkFe(i,j,bi,bj)*area
+        tileBotSnkSi(bi,bj)=tilebotsnkSi(bi,bj)+botSnkSi(i,j,bi,bj)*area
+#endif
         ELSEIF (stage .EQ. 2) THEN
         tilesfcflxFe(bi,bj)=tilesfcflxFe(bi,bj)+alpfe*inputfe(i,j,bi,bj)
      &                                         *PTRACERS_dtLev(ks)*area
@@ -340,6 +371,13 @@ c-----------------------------------------------------------------------
        CALL GLOBAL_SUM_TILE_RL(tilesfcflxO,tmpsfcflxO,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilevirflxA,tmpvirflxA,myThid)
 #endif
+#ifdef DARWIN_BOTTOM_SINK
+       CALL GLOBAL_SUM_TILE_RL(tileBotSnkC,tmpBotSnkC,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tileBotSnkN,tmpBotSnkN,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tileBotSnkP,tmpBotSnkP,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tileBotSnkFe,tmpBotSnkFe,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tileBotSnkSi,tmpBotSnkSi,myThid)
+#endif
       ELSEIF (stage .EQ. 2) THEN
        CALL GLOBAL_SUM_TILE_RL(tilesfcflxFe,tmpsfcflxFe,myThid)
       ENDIF
@@ -350,15 +388,16 @@ C do not write ecosystem non-conservation terms before they are applied
      &       (staggerTimeStep.AND.myIter.EQ.nIter0+1)) .AND.
      &      stage.EQ.0) THEN
          WRITE(DAR_cons_C_unit,'(A1,A11,A6,A20,4A24)')'#','iter',
-     &      'stage','tot','mean','sfcflx','virtflx'
+     &      'stage','tot','mean','sfcflx','virtflx','botsnk'
          WRITE(DAR_cons_N_unit,'(A1,A11,A6,A20,4A24)')'#','iter',
-     &      'stage','tot','mean','Nfix','Ndenit'
+     &      'stage','tot','mean','Nfix','Ndenit','botsnk'
          WRITE(DAR_cons_P_unit,'(A1,A11,A6,A20,2A24)')'#','iter',
-     &      'stage','tot','mean'
+     &      'stage','tot','mean','botsnk'
          WRITE(DAR_cons_Fe_unit,'(A1,A11,A6,A20,6A24)')'#','iter',
-     &      'stage','tot','mean','minFeLoss','scav','sfcflx','sedflx'
+     &      'stage','tot','mean','minFeLoss','scav','sfcflx','sedflx',
+     &      'botsnk'
          WRITE(DAR_cons_Si_unit,'(A1,A11,A6,A20,2A24)')'#','iter',
-     &      'stage','tot','mean'
+     &      'stage','tot','mean','botsnk'
 #ifdef DARWIN_ALLOW_CARBON
          WRITE(DAR_cons_A_unit,'(A1,A11,A6,A20,4A24)')'#','iter',
      &      'stage','tot','mean','sfcflx','AlkSrc'
@@ -367,16 +406,17 @@ C do not write ecosystem non-conservation terms before they are applied
 #endif
         ENDIF
         WRITE(DAR_cons_C_unit,'(I12,I2,5E24.16)') myIter, stage,
-     &     tmptotC, tmptotC/voltot, tmpsfcflxC, tmpvirflxC
+     &     tmptotC, tmptotC/voltot, tmpsfcflxC, tmpvirflxC, -tmpBotSnkC
         WRITE(DAR_cons_N_unit,'(I12,I2,5E24.16)') myIter, stage,
-     &     tmptotN, tmptotN/voltot, tmptotNfix, -tmptotNdenit
+     &     tmptotN, tmptotN/voltot, tmptotNfix, -tmptotNdenit,
+     &     -tmpBotSnkN
         WRITE(DAR_cons_P_unit,'(I12,I2,3E24.16)') myIter, stage,
-     &     tmptotP, tmptotP/voltot
+     &     tmptotP, tmptotP/voltot, -tmpBotSnkP
         WRITE(DAR_cons_Fe_unit,'(I12,I2,7E24.16)') myIter, stage,
      &     tmptotFe, tmptotFe/voltot, -tmpminFeLoss, -tmptotscavFe,
-     &     tmpsfcflxFe, tmpsedflxFe
+     &     tmpsfcflxFe, tmpsedflxFe, -tmpBotSnkFe
         WRITE(DAR_cons_Si_unit,'(I12,I2,3E24.16)') myIter, stage,
-     &     tmptotSi, tmptotSi/voltot
+     &     tmptotSi, tmptotSi/voltot, -tmpBotSnkSi
 #ifdef DARWIN_ALLOW_CARBON
         WRITE(DAR_cons_A_unit,'(I12,I2,6E24.16)') myIter, stage,
      &     tmptotA, tmptotA/voltot, tmpvirflxA, tmpAlkSrc

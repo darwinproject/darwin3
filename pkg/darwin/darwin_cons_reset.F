@@ -49,6 +49,13 @@ C     !LOCAL VARIABLES:
           carbVirFlx(i,j,bi,bj) = 0 _d 0
           oxySfcFlx(i,j,bi,bj) = 0 _d 0
           alkVirFlx(i,j,bi,bj) = 0 _d 0
+#ifdef DARWIN_BOTTOM_SINK
+          botSnkC(i,j,bi,bj) = 0 _d 0
+          botSnkN(i,j,bi,bj) = 0 _d 0
+          botSnkP(i,j,bi,bj) = 0 _d 0
+          botSnkFe(i,j,bi,bj) = 0 _d 0
+          botSnkSi(i,j,bi,bj) = 0 _d 0
+#endif
          ENDDO
         ENDDO
        ENDDO

@@ -6,7 +6,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE DARWIN_SINKING(
      I     Ptr,
      U     gTr,
-     I     bi,bj,iMin,iMax,jMin,jMax,myTime,myIter,myThid)
+     I     dTsub,bi,bj,iMin,iMax,jMin,jMax,myTime,myIter,myThid)
 
 C !DESCRIPTION:
 C     compute tendencies from sinking of particulate organic matter
@@ -22,12 +22,14 @@ C !USES: ===============================================================
 #include "DARWIN_INDICES.h"
 #include "DARWIN_PARAMS.h"
 #include "DARWIN_TRAITS.h"
+#include "DARWIN_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid :: thread number
 C  Ptr    :: darwin model tracers
 C  dT     :: time step (for fake tendency with useEquilibriumC)
       _RL Ptr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,nDarwin)
+      _RL dTsub(Nr)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER myThid, myIter
       _RL myTime
@@ -179,34 +181,93 @@ C-    Account for change in level thickness
          IF (upfc .GT. 0 _d 0) THEN
           flux = wPIC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPIC))
           gTr(i,j,k  ,iPIC ) = gTr(i,j,k  ,iPIC ) - flux*upfc
+#ifdef DARWIN_ALLOW_CONS
+          botSnkC(i,j,bi,bj) = botSnkC(i,j,bi,bj) + dTsub(k)*flux
+#endif
+C
           flux = wC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOC))
           gTr(i,j,k  ,iPOC ) = gTr(i,j,k  ,iPOC ) - flux*upfc
+#ifdef DARWIN_ALLOW_CONS
+          botSnkC(i,j,bi,bj) = botSnkC(i,j,bi,bj) + dTsub(k)*flux
+#endif
+C
           flux = wN_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPON))
           gTr(i,j,k  ,iPON ) = gTr(i,j,k  ,iPON ) - flux*upfc
+#ifdef DARWIN_ALLOW_CONS
+          botSnkN(i,j,bi,bj) = botSnkN(i,j,bi,bj) + dTsub(k)*flux
+#endif
+C
           flux = wP_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOP))
           gTr(i,j,k  ,iPOP ) = gTr(i,j,k  ,iPOP ) - flux*upfc
-          flux = wSi_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOSi))
-          gTr(i,j,k  ,iPOSi) = gTr(i,j,k  ,iPOSi) - flux*upfc
+#ifdef DARWIN_ALLOW_CONS
+          botSnkP(i,j,bi,bj) = botSnkP(i,j,bi,bj) + dTsub(k)*flux
+#endif
+C
           flux = wFe_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOFe))
           gTr(i,j,k  ,iPOFe) = gTr(i,j,k  ,iPOFe) - flux*upfc
+#ifdef DARWIN_ALLOW_CONS
+          botSnkFe(i,j,bi,bj) = botSnkFe(i,j,bi,bj) + dTsub(k)*flux
+#endif
+C
+          flux = wSi_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOSi))
+          gTr(i,j,k  ,iPOSi) = gTr(i,j,k  ,iPOSi) - flux*upfc
+#ifdef DARWIN_ALLOW_CONS
+          botSnkSi(i,j,bi,bj) = botSnkSi(i,j,bi,bj) + dTsub(k)*flux
+#endif
           DO l = 1, nplank
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ic+l-1))
            gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) - flux*upfc
+#ifdef DARWIN_ALLOW_CONS
+           botSnkC(i,j,bi,bj) = botSnkC(i,j,bi,bj) + dTsub(k)*flux
+     &                                         *(1 _d 0 + R_PICPOC(l))
+# ifndef DARWIN_ALLOW_NQUOTA
+           botSnkN(i,j,bi,bj) = botSnkN(i,j,bi,bj)
+     &                        + dTsub(k)*flux*R_NC(l)
+# endif
+# ifndef DARWIN_ALLOW_PQUOTA
+           botSnkP(i,j,bi,bj) = botSnkP(i,j,bi,bj)
+     &                        + dTsub(k)*flux*R_PC(l)
+# endif
+# ifndef DARWIN_ALLOW_FEQUOTA
+           botSnkFe(i,j,bi,bj) = botSnkFe(i,j,bi,bj)
+     &                         + dTsub(k)*flux*R_FeC(l)
+# endif
+# ifndef DARWIN_ALLOW_SIQUOTA
+           botSnkSi(i,j,bi,bj) = botSnkSi(i,j,bi,bj)
+     &                         + dTsub(k)*flux*R_SiC(l)
+# endif
+#endif
+C
 #ifdef DARWIN_ALLOW_NQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,in+l-1))
            gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) - flux*upfc
+# ifdef DARWIN_ALLOW_CONS
+           botSnkN(i,j,bi,bj) = botSnkN(i,j,bi,bj) + dTsub(k)*flux
+# endif
 #endif
+C
 #ifdef DARWIN_ALLOW_PQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ip+l-1))
            gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) - flux*upfc
+# ifdef DARWIN_ALLOW_CONS
+           botSnkP(i,j,bi,bj) = botSnkP(i,j,bi,bj) + dTsub(k)*flux
+# endif
 #endif
-#ifdef DARWIN_ALLOW_SIQUOTA
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,isi+l-1))
-           gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) - flux*upfc
-#endif
+C
 #ifdef DARWIN_ALLOW_FEQUOTA
            flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ife+l-1))
            gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) - flux*upfc
+# ifdef DARWIN_ALLOW_CONS
+           botSnkFe(i,j,bi,bj) = botSnkFe(i,j,bi,bj) + dTsub(k)*flux
+# endif
+#endif
+C
+#ifdef DARWIN_ALLOW_SIQUOTA
+           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,isi+l-1))
+           gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) - flux*upfc
+# ifdef DARWIN_ALLOW_CONS
+           botSnkSi(i,j,bi,bj) = botSnkSi(i,j,bi,bj) + dTsub(k)*flux
+# endif
 #endif
           ENDDO
 #ifdef DARWIN_ALLOW_CHLQUOTA
