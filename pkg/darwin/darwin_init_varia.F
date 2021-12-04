@@ -36,6 +36,7 @@ CEOP
 C     !LOCAL VARIABLES:
       _RL dTsub(Nr)
       INTEGER i,j,k,bi,bj,jp
+      CHARACTER*(MAX_LEN_FNAM) fnam
 
       CALL DARWIN_EXF_INIT_VARIA(myThid)
 
@@ -146,21 +147,28 @@ C      use current time for insol
 
 #ifdef DARWIN_ALLOW_CONS
       IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
+       WRITE(fnam,'(A,I10.10,A)') 'darwin_cons_C.',nIter0,'.txt'
        CALL MDSFINDUNIT( DAR_cons_c_unit, mythid )
-       open(DAR_cons_C_unit,file='darwin_cons_C.txt',status='unknown')
-       CALL MDSFINDUNIT( DAR_cons_p_unit, mythid )
-       open(DAR_cons_P_unit,file='darwin_cons_P.txt',status='unknown')
+       OPEN(DAR_cons_C_unit,file=fnam,status='unknown')
+       WRITE(fnam,'(A,I10.10,A)') 'darwin_cons_N.',nIter0,'.txt'
        CALL MDSFINDUNIT( DAR_cons_n_unit, mythid )
-       open(DAR_cons_N_unit,file='darwin_cons_N.txt',status='unknown')
+       OPEN(DAR_cons_N_unit,file=fnam,status='unknown')
+       WRITE(fnam,'(A,I10.10,A)') 'darwin_cons_P.',nIter0,'.txt'
+       CALL MDSFINDUNIT( DAR_cons_p_unit, mythid )
+       OPEN(DAR_cons_P_unit,file=fnam,status='unknown')
+       WRITE(fnam,'(A,I10.10,A)') 'darwin_cons_Fe.',nIter0,'.txt'
        CALL MDSFINDUNIT( DAR_cons_fe_unit, mythid )
-       open(DAR_cons_Fe_unit,file='darwin_cons_Fe.txt',status='unknown')
+       OPEN(DAR_cons_Fe_unit,file=fnam,status='unknown')
+       WRITE(fnam,'(A,I10.10,A)') 'darwin_cons_Si.',nIter0,'.txt'
        CALL MDSFINDUNIT( DAR_cons_si_unit, mythid )
-       open(DAR_cons_Si_unit,file='darwin_cons_Si.txt',status='unknown')
+       OPEN(DAR_cons_Si_unit,file=fnam,status='unknown')
 #ifdef DARWIN_ALLOW_CARBON
+       WRITE(fnam,'(A,I10.10,A)') 'darwin_cons_A.',nIter0,'.txt'
        CALL MDSFINDUNIT( DAR_cons_a_unit, mythid )
-       open(DAR_cons_A_unit,file='darwin_cons_A.txt',status='unknown')
+       OPEN(DAR_cons_A_unit,file=fnam,status='unknown')
+       WRITE(fnam,'(A,I10.10,A)') 'darwin_cons_O.',nIter0,'.txt'
        CALL MDSFINDUNIT( DAR_cons_o_unit, mythid )
-       open(DAR_cons_O_unit,file='darwin_cons_O.txt',status='unknown')
+       OPEN(DAR_cons_O_unit,file=fnam,status='unknown')
 #endif
 c     myProcId and myThid
       ENDIF
