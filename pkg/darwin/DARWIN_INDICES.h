@@ -38,7 +38,7 @@ C these cannot be modified for now
       INTEGER eChl
       INTEGER nDarwin
       PARAMETER (iDIC   =1)
-      PARAMETER (iNO3   =iDIC+1)
+      PARAMETER (iNO3   =iDIC +1)
       PARAMETER (iNO2   =iNO3 +1)
       PARAMETER (iNH4   =iNO2 +1)
       PARAMETER (iPO4   =iNH4 +1)
@@ -105,7 +105,7 @@ C these cannot be modified for now
       PARAMETER (iChl   =esi +1)
       PARAMETER (eChl   =iChl+nPhoto-1)
 #else
-      PARAMETER (eChl   =efe)
+      PARAMETER (eChl   =esi)
 #endif
       PARAMETER (nDarwin=eChl)
 
