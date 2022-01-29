@@ -2744,6 +2744,31 @@ if test "x$CPP_OPTIONS" = x ; then
     exit 1
 fi
 
+echo "  Searching for DARWIN_INDICES.h in order to update darwin_check.F"
+for i in "." $MODS ; do
+    if [ -e "$i/DARWIN_INDICES.h" ] &&
+         ! ([ "$i" = "." ] && [ -L "$i/DARWIN_INDICES.h" ]); then
+        if ! [ -e "$i/darwin_check.F" ]; then
+            echo "    copying $ROOTDIR/pkg/darwin/darwin_check.F to $i/darwin_check.F"
+            cp -p "$ROOTDIR/pkg/darwin/darwin_check.F" "$i/darwin_check.F"
+        fi
+        echo -n "    updating $i/darwin_check.F ...  "
+	( cd "$i" && $ROOTDIR/tools/darwin/cog -c -r darwin_check.F \
+	) > make_${pdir}.errors 2>&1
+	RETVAL=$?
+	if test "x${RETVAL}" = x0 ; then
+            echo "success."
+	    rm -f make_${pdir}.errors
+	else
+            echo
+	    echo "Error: problem encountered while building darwin_check.F in $i:"
+	    cat make_${pdir}.errors 1>&2
+	    exit 1
+	fi
+        break
+    fi
+done
+
 #  Here, we build the list of files to be "run through" the adjoint
 #  compiler.
 if test -f $TMP.adSrcFiles ; then
