@@ -806,7 +806,7 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	cat <<EOF>> $LOGFILE
+	cat <<EOF >> $LOGFILE
 
  WARNING: C test compile fails
  WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
@@ -818,7 +818,7 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	cat <<EOF>> $LOGFILE
+	cat <<EOF >> $LOGFILE
 
  WARNING: The "nm" command failed.
  WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
@@ -838,7 +838,7 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	cat <<EOF>> $LOGFILE
+	cat <<EOF >> $LOGFILE
 
  WARNING: FORTRAN test compile fails -- please see '$LOGFILE'
  WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
@@ -850,7 +850,7 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	cat <<EOF>> $LOGFILE
+	cat <<EOF >> $LOGFILE
 
  WARNING: The "nm" command failed.
  WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
@@ -2714,7 +2714,7 @@ if test "x$STANDARDDIRS" != x ; then
 fi
 
 echo "  Searching for *OPTIONS.h files in order to warn about the presence"
-echo "    of \"#define \"-type statements that are no longer allowed:"
+echo '    of "#define "-type statements that are no longer allowed:'
 CPP_OPTIONS=
 CPP_EEOPTIONS=
 spaths=". $INCLUDEDIRS"
