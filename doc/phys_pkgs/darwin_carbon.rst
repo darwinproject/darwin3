@@ -5,17 +5,36 @@
 Carbon chemistry
 ^^^^^^^^^^^^^^^^
 
-.. math::
+Carbon and oxygen surface fluxes are handled similarly to the
+:ref:`sub_pkg_dic`.
 
-     \partial_t\op{ALK} &= -\biggl( P_{\op{NO3}} - \sum_j U^{\op{NO3}}_j \biggr)
-       - 2\biggl( \sum_j P^{\mathrm{C}}_j {c}_j R^{{\text{PIC:POC}}}_j - \kappa^{{\text{diss}}}_{\mathrm{C}}\op{PIC}\biggr)
-       + D_{\op{NO3}}
+.. csv-table:: Carbon parameters
+   :delim: &
+   :widths: auto
+   :header: Name, Default, Units, Description
 
-     \partial_t{\mathrm{O}}_2 &= R_{{\mathrm{O}}:{\mathrm{P}}} \biggl( \sum_j U^{\op{PO4}}_j
-              - r_{\op{DOP}} \op{DOP}- (r_{\op{POP}} \op{POP})
-            \biggr)
-
-The POP term is not present with :varlink:`DARWIN_ALLOW_CDOM`.
-
-…surface forcing …
-
+   :varlink:`m3perkg`                & 1 / 1024.5            & m\ :sup:`3`/kg                   & constant for converting per kg to per m^3
+   :varlink:`surfSaltMinInit`        & 4.0                   & g/kg                             & limits for carbon solver input at initialization
+   :varlink:`surfSaltMaxInit`        & 50.0                  & g/kg                             & ...
+   :varlink:`surfTempMinInit`        & --4.0                 & °C                               &
+   :varlink:`surfTempMaxInit`        & 39.0                  & °C                               &
+   :varlink:`surfDICMinInit`         & 10.0                  & mmol C m\ :sup:`-3`              &
+   :varlink:`surfDICMaxInit`         & 4000.0                & mmol C m\ :sup:`-3`              &
+   :varlink:`surfALKMinInit`         & 10.0                  & meq m\ :sup:`-3`                 &
+   :varlink:`surfALKMaxInit`         & 4000.0                & meq m\ :sup:`-3`                 &
+   :varlink:`surfPO4MinInit`         & 1D-10                 & mmol P m\ :sup:`-3`              &
+   :varlink:`surfPO4MaxInit`         & 10.0                  & mmol P m\ :sup:`-3`              &
+   :varlink:`surfSiMinInit`          & 1D-8                  & mmol Si m\ :sup:`-3`             &
+   :varlink:`surfSiMaxInit`          & 500.0                 & mmol Si m\ :sup:`-3`             &
+   :varlink:`surfSaltMin`            & 4.0                   & g/kg                             & limits for carbon solver input during run
+   :varlink:`surfSaltMax`            & 50.0                  & g/kg                             & ...
+   :varlink:`surfTempMin`            & --4.0                 & °C                               &
+   :varlink:`surfTempMax`            & 39.0                  & °C                               &
+   :varlink:`surfDICMin`             & 400.0                 & mmol C m\ :sup:`-3`              &
+   :varlink:`surfDICMax`             & 4000.0                & mmol C m\ :sup:`-3`              &
+   :varlink:`surfALKMin`             & 400.0                 & meq m\ :sup:`-3`                 &
+   :varlink:`surfALKMax`             & 4000.0                & meq m\ :sup:`-3`                 &
+   :varlink:`surfPO4Min`             & 1D-10                 & mmol P m\ :sup:`-3`              &
+   :varlink:`surfPO4Max`             & 10.0                  & mmol P m\ :sup:`-3`              &
+   :varlink:`surfSiMin`              & 1D-8                  & mmol Si m\ :sup:`-3`             &
+   :varlink:`surfSiMax`              & 500.0                 & mmol Si m\ :sup:`-3`             &

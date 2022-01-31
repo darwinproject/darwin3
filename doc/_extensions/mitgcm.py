@@ -67,7 +67,9 @@ def autolink(pattern):
     %s in *pattern* will be replaced by the role text.
     """
     def role(name, rawtext, text, lineno, inliner, options={}, content=[]):
-        url = pattern % (text,)
-        node = nodes.reference(rawtext, text, refuri=url, **options)
+        text = utils.unescape(text)
+        has_explicit_title, title, part = split_explicit_title(text)
+        url = pattern % (part,)
+        node = nodes.reference(rawtext, title, refuri=url, **options)
         return [node], []
     return role

@@ -309,6 +309,7 @@ C- Predator prey preference distribution parameters
 C     a_pp_sig               :: standard deviation of predator-prey volume ratio for palatability
 C     a_pp_opt               :: a for optimal predator-prey volume ratio
 C     b_pp_opt               :: b for optimal predator-prey volume ratio
+C     palat_min              :: min non-zero palatability, smaller palat are set to 0 (was 1D-4 in quota)
 C
 C     a_respRate_c           :: Note function of cellular C --> aC^b
 C     a_respRate_c_denom     :: Note function of cellular C --> aC^b
@@ -377,6 +378,7 @@ C
      &    a_ppSig,
      &    a_ppOpt,
      &    b_ppOpt,
+     &    palat_min,
      &    a_PCmax,
      &    a_PCmax_denom,
      &    b_PCmax,
@@ -507,6 +509,7 @@ C
       _RL a_ppSig(nGroup)
       _RL a_ppOpt(nGroup)
       _RL b_ppOpt(nGroup)
+      _RL palat_min
       _RL a_PCmax(nGroup)
       _RL a_PCmax_denom(nGroup)
       _RL b_PCmax(nGroup)

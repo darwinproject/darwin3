@@ -198,6 +198,7 @@
      &    a_ppSig,
      &    a_ppOpt,
      &    b_ppOpt,
+     &    palat_min,
      &    a_PCmax,
      &    a_PCmax_denom,
      &    b_PCmax,
@@ -474,6 +475,7 @@ C     used to be 22.4
       a_ppSig = 1.0 _d 0
       a_ppOpt = 1024. _d 0
       b_ppOpt = 0.00 _d 0
+      palat_min = 0 _d 0
       a_PCmax = 1.00 _d 0 / pday
       a_PCmax_denom = 1. _d 0
       b_PCmax = -0.15 _d 0

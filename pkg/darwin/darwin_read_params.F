@@ -139,7 +139,6 @@
      &    aphy_chl_ave,
      &    chl2nmax,
      &    synthcost,
-     &    palat_min,
      &    inhib_graz,
      &    inhib_graz_exp,
      &    hillnumUptake,
@@ -379,7 +378,6 @@ C     O2crit from Lipschultz et al 1990, DSR 37, 1513-1541:
       aphy_chl_ave = 0.02 _d 0
       chl2nmax = 3.00 _d 0
       synthcost = 0.0 _d 0
-      palat_min = 0 _d 0
       inhib_graz = 1.0 _d 0
       inhib_graz_exp = 0.0 _d 0
       hillnumUptake = 1.0 _d 0
