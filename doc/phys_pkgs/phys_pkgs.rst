@@ -132,3 +132,4 @@ Biogeochemistry Packages
    dic.rst
    darwin.rst
    radtrans.rst
+   sun.rst

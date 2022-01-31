@@ -241,7 +241,6 @@ C     PARmin            :: [uEin/m2/s]        minimum light for photosynthesis; 
 C     aphy_chl_ave      :: [m2/mg Chl]        Chl-specific absorption coefficient
 C     chl2nmax          :: [mg Chl / mmol N]  max Chl:N ratio for Chl synthesis following Moore 2002
 C     synthcost         :: [mmol C / mmol N]  cost of biosynthesis
-C     palat_min         :: []                 min non-zero palatability, smaller palat are set to 0 (was 1D-4 in quota)
 C     inhib_graz        :: [(mmol C m-3)-1]   inverse decay scale for grazing inhibition
 C     inhib_graz_exp    :: []                 exponent for grazing inhibition (0 to turn off inhibition)
 C     hillnumUptake     :: []                 exponent for limiting quota uptake in nutrient uptake
@@ -351,7 +350,6 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    aphy_chl_ave,
      &    chl2nmax,
      &    synthcost,
-     &    palat_min,
      &    inhib_graz,
      &    inhib_graz_exp,
      &    hillnumUptake,
@@ -456,7 +454,6 @@ C     &    yono2,
       _RL aphy_chl_ave
       _RL chl2nmax
       _RL synthcost
-      _RL palat_min
       _RL inhib_graz
       _RL inhib_graz_exp
       _RL hillnumUptake

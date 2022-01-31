@@ -56,7 +56,7 @@ where
 and :math:`I_l` is photosynthetically active radiation.  The Chlorophyll
 a-specific initial slope of the photosynthesis-light curve is computed from the
 maximum quantum yield of carbon fixation and the coefficient of absorption by
-photosynthetically active pigments,
+photosynthetically active pigments (see :numref:`Spectral`),
 
 .. math::
 
@@ -83,7 +83,10 @@ from plankton Chlorophyll and carbon tracers.  Without,
 
    \op{Chl\text{:}C}_j = \op{Chl\text{:}C}_j^{\op{acclim}}
 
+where
+
 .. math::
+   :label: chl2cacclim
 
    \op{Chl\text{:}C}_j^{\op{acclim}} = \left[
          \frac{\op{Chl\text{:}C}^{\max}_j}
@@ -139,7 +142,7 @@ growth.
 
    :varlink:`ksatPAR`     & :varlink:`a_ksatPAR`        & :math:`k^{\op{sat}}_{\op{PAR}}`   & 0.012                    & m\ :sup:`2` s μEin\ :sup:`-1`   & saturation coefficient for PAR
    :varlink:`kinhPAR`     & :varlink:`a_kinhPAR`        & :math:`k^{\op{inh}}_{\op{PAR}}`   & 0.006                    & m\ :sup:`2` s μEin\ :sup:`-1`   & inhibition coefficient for PAR
-   :varlink:`PCmax`       & :varlink:`a,b_PCmax`        & :math:`P^{\op{max}}_{\op{C}j}`    & (1/day) V\ :sup:`--0.15` & 1/s                             & maximum carbon-specific growth rate
+   :varlink:`PCmax`       & :varlink:`a <a_PCmax>`,\ :varlink:`b_PCmax`      & :math:`P^{\op{max}}_{\op{C}j}`    & (1/day) V\ :sup:`--0.15` & 1/s                             & maximum carbon-specific growth rate
                           & :varlink:`PARmin`           & :math:`I_{\min}`                  & 0.1                      & μEin/m\ :sup:`2`/s              & minimum light for photosynthesis
    :varlink:`mQyield`     & :varlink:`a_mQyield`        & :math:`\Phi_j`                    & 0.000075                 & mmol C (μEin)\ :sup:`-1`        & maximum quantum yield
    :varlink:`chl2cmax`    & :varlink:`a_chl2cmax`       & :math:`\op{Chl\text{:}C}^{\op{max}}_j` & 0.3                 & mg Chl (mmol C)\ :sup:`-1`      & maximum Chlorophyll-carbon ratio

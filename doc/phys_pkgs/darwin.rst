@@ -1,16 +1,41 @@
 .. include:: ../defs.hrst
 
+.. _sub_phys_pkg_darwin:
+
 DARWIN package
 --------------
 
-Introduction
-~~~~~~~~~~~~
+The :filelink:`darwin package <pkg/darwin>` models the dynamics of a flexible
+number of phyto- and zooplankton and bacteria types, and the nutrient cycles of
+carbon, nitrogen, phosphorus, iron and silica.  The description of the
+ecosystem model is split over a number of pages:
 
-The darwin package models the dynamics of a flexible number of phyto- and
-zooplankton types, and the nutrient cycles of carbon, nitrogen, phosphorus,
-iron and silica.  Plankton and nutrients are represented by their concentration
-in the ocean, using the ptracers package.  The darwin packages uses the
-following tracers (or a subset, depending on the configuration):
+.. toctree::
+   :maxdepth: 1
+
+   darwin_equations
+   darwin_growth
+   darwin_light
+   darwin_spectral
+   darwin_uptake
+   darwin_chl
+   darwin_remin
+   darwin_denit
+   darwin_cdom
+   darwin_carbon
+   darwin_iron
+   darwin_mort
+   darwin_exude
+   darwin_grazing
+   darwin_bacteria
+   darwin_temperature
+   darwin_sink
+   darwin_cons
+   darwin_changes
+
+Plankton and nutrients are represented by their concentration in the ocean,
+using the :ref:`sub_phys_pkg_ptracers`.  The darwin package uses the following
+tracers (or a subset, depending on the configuration):
 
 .. table::
    :widths: auto
@@ -37,7 +62,8 @@ following tracers (or a subset, depending on the configuration):
    PIC            mmol C  m\ :sup:`--3`           concentration of particulate inorganic carbon
    ALK            meq m\ :sup:`--3`               alkalinity
    O2             mmol O\ :sub:`2` m\ :sup:`--3`  concentration of oxygen
-   CDOM           mmol P  m\ :sup:`--3`           concentration of colored dissolved organic matter
+   CDOM           | mmol P  m\ :sup:`--3`         | concentration of colored dissolved organic matter
+                  | mmol C  m\ :sup:`--3`         | - if #define DARWIN_CDOM_UNITS_CARBON
    c\ :sub:`j`    mmol C  m\ :sup:`--3`           concentration of carbon in plankton type j
    n\ :sub:`j`    mmol N  m\ :sup:`--3`           concentration of nitrogen in plankton type j
    p\ :sub:`j`    mmol P  m\ :sup:`--3`           concentration of phosphorus in plankton type j
@@ -50,46 +76,6 @@ Phyto- and zooplankton are not distinguished except that certain source terms
 will not be active, dependening on whether a plankton type can engage in
 photosynthesis, grazing, etc.  This makes it very simple to include, for
 instance, mixotrophy in the model.
-
-
-Equations
-~~~~~~~~~
-
-.. toctree::
-   :maxdepth: 1
-
-   darwin_equations
-   darwin_growth
-   darwin_light
-   darwin_spectral
-   darwin_uptake
-   darwin_chl
-   darwin_remin
-   darwin_cdom
-   darwin_denit
-   darwin_carbon
-   darwin_iron
-   darwin_mort
-   darwin_exude
-   darwin_grazing
-   darwin_temperature
-   darwin_bacteria
-   darwin_changes
-
-Differences to darwin2
-~~~~~~~~~~~~~~~~~~~~~~
-
--  Particulate/dissolved split of plankton mortality products is not
-   allometric or element-dependent as it was in quota.
-
--  grazing and mortality temperature dependent with TEMP_VERSION 2.
-
--  chl2cmin affects acclim.
-
-Bug fixes:
-
--  1e-3 replaced by 1 _d -3 in conversion of tracers for pH solver.
-
 
 
 Compiling and Running
@@ -137,7 +123,9 @@ To use spectral light, compile the radtrans package, see
    :varlink:`DARWIN_ALLOW_SIQUOTA`              & enable silica quotas for all plankton
    :varlink:`DARWIN_ALLOW_CHLQUOTA`             & enable chlorophyll quotas for all *phototrophs*
    :varlink:`DARWIN_ALLOW_CDOM`                 & enable a dynamic CDOM tracer
+   :varlink:`DARWIN_CDOM_UNITS_CARBON`          & measure CDOM in units of mmol C/m\ :sup:`3` and follow organic carbon instead of phosphorus
    :varlink:`DARWIN_ALLOW_CARBON`               & enable air-sea carbon exchange and ALK and O\ :math:`_2` tracers
+   :varlink:`DARWIN_TOTALPHSCALE`               & consistently use the total pH scale for carbon chemistry coefficients
    :varlink:`DARWIN_ALLOW_DENIT`                & enable denitrification code
    :varlink:`DARWIN_ALLOW_EXUDE`                & enable exudation of individual quotas
    :varlink:`ALLOW_OLD_VIRTUALFLUX`             & enable old virtualflux code for DIC and ALK
@@ -381,7 +369,6 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`aphy_chl_ave`           & 0.02                  & m\ :sup:`2`/mg Chl               & Chl-specific absorption coefficient
    :varlink:`chl2nmax`               & 3.00                  & mg Chl / mmol N                  & max Chl:N ratio for Chl synthesis following Moore 2002
    :varlink:`synthcost`              & 0.0                   & mmol C / mmol N                  & cost of biosynthesis
-   :varlink:`palat_min`              & 0                     &                                  & min non-zero palatability, smaller :varlink:`palat` are set to 0 (was 1D-4 in quota)
    :varlink:`inhib_graz`             & 1.0                   & (mmol C m\ :sup:`-3`)\ :sup:`-1` & inverse decay scale for grazing inhibition
    :varlink:`inhib_graz_exp`         & 0.0                   &                                  & exponent for grazing inhibition (0 to turn off inhibition)
    :varlink:`hillnumUptake`          & 1.0                   &                                  & exponent for limiting quota uptake in nutrient uptake
@@ -407,10 +394,14 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`CDOMdegrd`  & 1 / (200 days) & 1/s                  & CDOM degradation rate
    :varlink:`CDOMbleach` & 1 / (15 days)  & 1/s                  & CDOM bleaching rate
    :varlink:`PARCDOM`    & 20             & μEin/m\ :sup:`2`/s   & PAR where CDOM bleaching becomes maximal
-   :varlink:`R_NP_CDOM`  & 16             & mmol N / mmol P      & CDOM N:P ratio
-   :varlink:`R_FeP_CDOM` & 1D-3           & mmol Fe / mmol P     & CDOM Fe:P ratio
-   :varlink:`R_CP_CDOM`  & 120            & mmol C / mmol P      & CDOM C:P ratio
-   :varlink:`CDOMcoeff`  & .1D-1 / 1D-4   & m\ :sup:`2` / mmol P & P-specific absorption coefficient of CDOM
+   :varlink:`R_NP_CDOM`  & 16             & mmol N / mmol P      & CDOM N:P ratio (with #undef DARWIN_CDOM_UNITS_CARBON)
+   :varlink:`R_FeP_CDOM` & 1D-3           & mmol Fe / mmol P     & CDOM Fe:P ratio (with #undef DARWIN_CDOM_UNITS_CARBON)
+   :varlink:`R_CP_CDOM`  & 120            & mmol C / mmol P      & CDOM C:P ratio (with #undef DARWIN_CDOM_UNITS_CARBON)
+   :varlink:`R_NC_CDOM`  & 16/120         & mmol N / mmol C      & CDOM N:C ratio (with #define DARWIN_CDOM_UNITS_CARBON)
+   :varlink:`R_PC_CDOM`  & 1/120          & mmol P / mmol C      & CDOM P:C ratio (with #define DARWIN_CDOM_UNITS_CARBON)
+   :varlink:`R_FeC_CDOM` & 1D-3/120       & mmol Fe / mmol C     & CDOM Fe:C ratio (with #define DARWIN_CDOM_UNITS_CARBON)
+   :varlink:`CDOMcoeff`  & 100.0          & m\ :sup:`2` / mmol P & P-specific absorption coefficient of CDOM at :math:`\lambda_{\op{CDOM}}`
+                         & 100/120        & m\ :sup:`2` / mmol C & - if #define DARWIN_CDOM_UNITS_CARBON
 
 
 .. tabularcolumns:: |\Y{.255}|\Y{.115}|\Y{.13}|\Y{.5}|
@@ -430,6 +421,7 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`darwin_Sdom`               & 0.014    & 1/nm               & coefficient for CDOM absorption spectra
    :varlink:`darwin_aCDOM_fac`          & 0.2      &                    & factor for computing aCDOM from water+Chlorophyll absorption
    :varlink:`darwin_rCDOM`              & 0.0      & mmol P/m\ :sup:`3` & recalcitrant CDOM concentration
+                                        & 0.0      & mmol C/m\ :sup:`3` & - if #define DARWIN_CDOM_UNITS_CARBON
    :varlink:`darwin_RPOC`               & 0.0      & mmol C/m\ :sup:`3` & recalcitrant POC concentration
    :varlink:`darwin_allomSpectra`       & .FALSE.  &                    & enable/disable allometric scaling of plankton absorption and scattering spectra
    :varlink:`darwin_aCarCell`           & 0.109D-9 & mg C/cell          & coefficient coefficient for scaling plankton spectra
@@ -613,7 +605,10 @@ and :math:`V_{0 g}=\op{biovol0(g)}` and
 The scaling coefficients are read from namelist ``&darwin_trait_params``
 in ``data.darwin``. The following table shows the correspondence between
 traits and trait parameters. Where :math:`b` is not given, it is set to
-0, i.e., all types in the group share the same trait value.
+0, i.e., all types in the group share the same trait value.  For some trait
+parameters *x*, a divisor may be specified in *x*\ _denom.  This is
+particularly useful for specifying a rate in ‘per-day’ units, i.e.,
+*x*\ _denom=86400.
 
 .. csv-table:: Namelist DARWIN_TRAIT_PARAMS
    :delim: &
@@ -680,13 +675,14 @@ traits and trait parameters. Where :math:`b` is not given, it is set to
                                  & :varlink:`a_biosink_denom`        & 1             &                                    &
    :varlink:`bioswim`            & :varlink:`a_bioswim`              & 0.00 / day    & :varlink:`b_bioswim`               & 0.18
                                  & :varlink:`a_bioswim_denom`        & 1             &                                    &
-   :varlink:`palat`              & :varlink:`a_ppSig`                & 1             & *see below*
+   :varlink:`palat`              & :varlink:`a_ppSig`                & 1             & *see note* [#palat]_
    :varlink:`palat`              & :varlink:`a_ppOpt`                & 1024          & :varlink:`b_ppOpt`                 & 0.00
+   :varlink:`palat`              & :varlink:`palat_min`              & 0             &                                    &
    :varlink:`PCmax`              & :varlink:`a_PCmax`                & 1.00 / day    & :varlink:`b_PCmax`                 & -0.15
                                  & :varlink:`a_PCmax_denom`          & 1             &                                    &
    :varlink:`qcarbon`            & :varlink:`a_qcarbon`              & 1.80D-11      & :varlink:`b_qcarbon`               & 0.94
    :varlink:`respRate`           & :varlink:`a_respRate_c`           & 0.00          & :varlink:`b_respRate_c`            & 0.93
-                                 & :varlink:`a_respRate_c_denom`     & 1             & *see note below*
+                                 & :varlink:`a_respRate_c_denom`     & 1             & *see note* [#resprate]_
    :varlink:`kexcc`              & :varlink:`a_kexcC`                & 0.00          & :varlink:`b_kexcC`                 & -0.33
    :varlink:`vmaxNO3`            & :varlink:`a_vmaxNO3`              & 0.51 / day    & :varlink:`b_vmaxNO3`               & -0.27
                                  & :varlink:`a_vmaxNO3_denom`        & 1             &                                    &
@@ -730,45 +726,14 @@ traits and trait parameters. Where :math:`b` is not given, it is set to
    :varlink:`bphy_mgC`           & :varlink:`bphy_mgC_type`          & *read*        & *via* :varlink:`grp_aptype`
    :varlink:`bbphy_mgC`          & :varlink:`bbphy_mgC_type`         & *read*        & *via* :varlink:`grp_aptype`
 
+.. [#palat] Palatabilities are initialized to zero and have to be set in
+   ``data.traits`` unless :varlink:`DARWIN_ALLOMETRIC_PALAT` is defined in
+   which case they are computed from pp_opt, pp_sig and palat_min based on
+   predator and prey sizes, see :numref:`Grazing`.
 
-For some trait parameters *x*, a divisor may be specified in *x*\ _denom.
-This is particularly useful for specifying a rate in ‘per-day’ units, i.e.,
-*x*\ _denom=86400.
-
-The respiration rate follows a different scaling law from other traits: it
-scales in terms of cellular carbon content,
-
-.. math::
-
-    r^{\op{resp}}_j =
-    \op{a\_respRate\_c}\big/\op{qcarbon}
-    \left( 12\cdot10^9 \cdot Q_{\mathrm{C}}\right)^{\op{b\_respRate\_c}}
-
-where
-
-.. math:: Q_{\mathrm{C}}= \op{a\_qcarbon} \cdot V^{\op{b\_carbon}}
-
-So
-
-.. math::
-
-   r^{\op{resp}}_j = \op{a\_respRate\_c}\cdot(12\cdot10^9 \cdot \op{a\_carbon})^{\op{b\_respRate\_c}}
-               \big/ \op{qcarbon} \cdot V^{\op{b\_respRate\_c}\cdot\op{b\_carbon}}
-
-The units of ``a_respRate_c`` are mmol C cell\ :sup:`--1` s\ :sup:`--1`.
-Its value in the darwin quota model was 3.21·10\ :sup:`--11`/86400.
-
-Palatabilities are initialized to zero and have to be set in
-``data.traits`` unless :varlink:`DARWIN_ALLOMETRIC_PALAT` is defined in which
-case they are computed based on predator and prey sizes,
-
-.. math:: p_{j,z} = \frac{1}{2\op{pp\_sig}_z} \exp\left\{ -\ln(r/\op{pp\_opt}_z)^2/(2 \op{pp\_sig}_z^2) \right\}
-
-where
-
-.. math:: r = V_z/V_j
-
-and ``pp_opt`` and ``pp_sig`` are from the above table.
+.. [#resprate] The respiration rate follows a different scaling law from other
+   traits.  It scales in terms of cellular carbon content, see
+   :numref:`Mortality`.
 
 
 Diagnostics
@@ -776,113 +741,93 @@ Diagnostics
 
 .. tabularcolumns:: |\Y{.16}|\Y{.16}|\Y{.18}|\Y{.5}|
 
-.. table:: Darwin package diagnstic fields
+.. csv-table:: Darwin package diagnstic fields
+   :delim: &
+   :widths: auto
+   :class: longtable
+   :header: Name, Code, Units, Description
 
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | **Name**   | **Code**         | **Units**                       | **Description**                                                                                            |
-   +============+==================+=================================+============================================================================================================+
-   | plankC     | ``SMR_____MR``   | mmol C /m\ :sup:`3`             | Total plankton carbon biomass                                                                              |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | Chl        | ``SMR_____MR``   | mg Chl a /m\ :sup:`3`           | Total Chlorophyll a                                                                                        |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | PP         | ``SMRP____MR``   | mmol C /m\ :sup:`3`/s           | Primary Production                                                                                         |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | Nfix       | ``SMRP____MR``   | mmol N /m\ :sup:`3`/s           | N fixation                                                                                                 |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | Denit      | ``SMRP____MR``   | mmol N /m\ :sup:`3`/s           | Denitrification                                                                                            |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | DenitN     | ``SMRP____MR``   | mmol N /m\ :sup:`3`/s           | Nitrogen loss due to denitrification                                                                       |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | PAR###     | ``SMRP____MR``   | μEin/m\ :sup:`2`/s              | PAR waveband ###                                                                                           |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | PARF###    | ``SMRP____LR``   | μEin/m\ :sup:`2`/s              | PAR at W point, waveband ###                                                                               |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | a###       | ``SMRP____MR``   | 1/m                             | total absorption for waveband ###                                                                          |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | bt###      | ``SMRP____MR``   | 1/m                             | total scattering for waveband ###                                                                          |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | bb###      | ``SMRP____MR``   | 1/m                             | total backscattering for waveband ###                                                                      |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | aplk###    | ``SMRP____MR``   | 1/m                             | absorption by plankton for waveband ###                                                                    |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | btplk###   | ``SMRP____MR``   | 1/m                             | scattering by plankton for waveband ###                                                                    |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | bbplk###   | ``SMRP____MR``   | 1/m                             | backscattering by plankton for waveband ###                                                                |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | aprt###    | ``SMRP____MR``   | 1/m                             | absorption by particles for waveband ###                                                                   |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | btprt###   | ``SMRP____MR``   | 1/m                             | scattering by particles for waveband ###                                                                   |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | bbprt###   | ``SMRP____MR``   | 1/m                             | backscattering by particles for waveband ###                                                               |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | aCDOM###   | ``SMRP____MR``   | 1/m                             | absorption by CDOM for waveband ###                                                                        |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | atten      | ``SMRP____MR``   | 1                               | attenuation in layer                                                                                       |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | PARF       | ``SMRP____LR``   | μEin/m\ :sup:`2`/s              | PAR at top of layer                                                                                        |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | PAR        | ``SMRP____MR``   | μEin/m\ :sup:`2`/s              | total PAR at layer center                                                                                  |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | C_DIN      | ``SM_P____MR``   | mmol N /m\ :sup:`3`/s           | consumption of DIN: :math:`\sum_j(U^{\op{NO3}}_j+U^{\op{NO2}}_j+U^{\op{NH4}}_j)`                           |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | C_PO4      | ``SM_P____MR``   | mmol P /m\ :sup:`3`/s           | consumption of PO4: :math:`\sum_j U^{\op{PO4}}_j`                                                          |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | C_Si       | ``SM_P____MR``   | mmol Si /m\ :sup:`3`/s          | consumption of Si: :math:`\sum _j U^{\op{SiO2}}_j`                                                         |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | C_Fe       | ``SM_P____MR``   | mmol Fe /m\ :sup:`3`/s          | consumption of Fe: :math:`\sum_j U^{\op{Fe}}_j`                                                            |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | S_DIN      | ``SM______MR``   | mmol N /m\ :sup:`3`/s           | non-transport source of DIN: :math:`r_{\op{DON}}\op{DON}+[r_{\op{PON}}\op{PON}]-D_{\op{NH4}}-D_{\op{NO3}}` |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | S_PO4      | ``SM______MR``   | mmol P /m\ :sup:`3`/s           | non-transport source of PO4: :math:`r_{\op{DOP}}\op{DOP}+[r_{\op{POP}}\op{POP}]`                           |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | S_Si       | ``SM______MR``   | mmol Si /m\ :sup:`3`/s          | non-transport source of Si: :math:`r_{\op{POSi}}\op{POSi}`                                                 |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | S_Fe       | ``SM______MR``   | mmol Fe /m\ :sup:`3`/s          | non-transport source of Fe: :math:`r_{\op{DOFe}}\op{DOFe}+[r_{\op{POFe}}\op{POFe}]+S_{\op{Fe}}`            |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | gDAR##     | ``SMR_____MR``   | [TRAC##]/s                      | ptracer ## tendency from DARWIN [#a]_                                                                      |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | gECO##     | ``SMR_____MR``   | [TRAC##]/s                      | ptracer ## tendency from DARWIN w/o sink/swim [#a]_                                                        |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | PP####     | ``SMRP____MR``   | mmol C /m\ :sup:`3`/s           | Primary Production plankton ####                                                                           |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | PC####     | ``SMRP____MR``   | 1/s                             | Carbon-specific growth rate plankton ####                                                                  |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | GR####     | ``SMRP____MR``   | mmol C /m\ :sup:`3`/s           | Grazing loss of plankton ####                                                                              |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | GrGn####   | ``SMRP____MR``   | mmol C /m\ :sup:`3`/s           | Grazing gain of plankton ####                                                                              |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | sfcSolFe   | ``SM_P____MR``   | mmol Fe /m\ :sup:`2`/s          | Soluble iron input at sea surface                                                                          |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | pH         | ``SMR_____MR``   | 1                               | pH                                                                                                         |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | pCO2       | ``SMRP____MR``   | atm                             | Partial Pressure of CO2                                                                                    |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | fugfCO2    | ``SM_P____L1``   | 1                               | Fugacity factor of surface CO2                                                                             |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | fluxCO2    | ``SM______L1``   | mmol C /m\ :sup:`2`/s           | Flux of CO2 - air-sea exch                                                                                 |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | fluxO2     | ``SM______L1``   | mmol O2 /m\ :sup:`2`/s          | Flux of O2 - air-sea exch                                                                                  |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | VfluxCO2   | ``SM______L1``   | mmol C /m\ :sup:`2`/s           | Virtual flux of CO2                                                                                        |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | VfluxAlk   | ``SM______L1``   | meq/m\ :sup:`2`/s               | Virtual flux of alkalinity                                                                                 |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | gDICsurf   | ``SM______L1``   | mmol C /m\ :sup:`3`/s           | Tendency of DIC due to air-sea exch + oldvirt.flux                                                         |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | gALKsurf   | ``SM______L1``   | mmol eq /m\ :sup:`3`/s          | Tendency of ALK due to oldvirt.flux                                                                        |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | gO2surf    | ``SM______L1``   | mmol O\ :sub:`2` /m\ :sup:`3`/s | Tendency of O2 due to air-sea exch                                                                         |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | surfPAR    | ``SM_P____L1``   | μEin/m\ :sup:`2`/s              | PAR forcing at surface                                                                                     |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | surfiron   | ``SM_P____L1``   | mmol Fe /m\ :sup:`2`/s          | iron forcing at surface                                                                                    |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | DARice     | ``SM_P____L1``   | m\ :sup:`2`/m\ :sup:`2`         | ice area fraction                                                                                          |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | DARwind    | ``SM_P____L1``   | m/s                             | wind speed used for carbon exchange                                                                        |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
-   | surfpCO2   | ``SM_P____L1``   | mol/mol                         | surface pCO2                                                                                               |
-   +------------+------------------+---------------------------------+------------------------------------------------------------------------------------------------------------+
+   plankC     & ``SMR_____MR`` & mmol C /m\ :sup:`3`             & Total plankton carbon biomass
+   Chl        & ``SMR_____MR`` & mg Chl a /m\ :sup:`3`           & Total Chlorophyll a
+   PP         & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Primary Production
+   Nfix       & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & N fixation
+   Denit      & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & Denitrification
+   DenitN     & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & Nitrogen loss due to denitrification
+   PAR###     & ``SMRP____MR`` & µEin/m\ :sup:`2`/s              & PAR waveband ###
+   PARF###    & ``SMRP____LR`` & µEin/m\ :sup:`2`/s              & PAR at W point, waveband ###
+   a###       & ``SMRP____MR`` & 1/m                             & total absorption for waveband ###
+   bt###      & ``SMRP____MR`` & 1/m                             & total scattering for waveband ###
+   bb###      & ``SMRP____MR`` & 1/m                             & total backscattering for waveband ###
+   aplk###    & ``SMRP____MR`` & 1/m                             & absorption by plankton for waveband ###
+   btplk###   & ``SMRP____MR`` & 1/m                             & scattering by plankton for waveband ###
+   bbplk###   & ``SMRP____MR`` & 1/m                             & backscattering by plankton for waveband ###
+   aprt###    & ``SMRP____MR`` & 1/m                             & absorption by particles for waveband ###
+   btprt###   & ``SMRP____MR`` & 1/m                             & scattering by particles for waveband ###
+   bbprt###   & ``SMRP____MR`` & 1/m                             & backscattering by particles for waveband ###
+   aCDOM###   & ``SMRP____MR`` & 1/m                             & absorption by CDOM for waveband ###
+   atten      & ``SMRP____MR`` & 1                               & attenuation in layer
+   PARF       & ``SMRP____LR`` & µEin/m\ :sup:`2`/s              & PAR at top of layer
+   PAR        & ``SMRP____MR`` & µEin/m\ :sup:`2`/s              & total PAR at layer center
+   C_DIN      & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & consumption of DIN: :math:`\sum_j(U^{\op{NO3}}_j+U^{\op{NO2}}_j+U^{\op{NH4}}_j)`
+   C_NO3      & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & consumption of NO3: :math:`\sum_j U^{\op{NO3}}_j`
+   C_NO2      & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & consumption of NO2: :math:`\sum_j U^{\op{NO2}}_j`
+   C_NH4      & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & consumption of NH4: :math:`\sum_j U^{\op{NH4}}_j`
+   C_PO4      & ``SMRP____MR`` & mmol P /m\ :sup:`3`/s           & consumption of PO4: :math:`\sum_j U^{\op{PO4}}_j`
+   C_Si       & ``SMRP____MR`` & mmol Si /m\ :sup:`3`/s          & consumption of Si: :math:`\sum _j U^{\op{SiO2}}_j`
+   C_Fe       & ``SMRP____MR`` & mmol Fe /m\ :sup:`3`/s          & consumption of Fe: :math:`\sum_j U^{\op{Fe}}_j`
+   S_DIN      & ``SMR_____MR`` & mmol N /m\ :sup:`3`/s           & non-transport source of DIN: :math:`r_{\op{DON}}\op{DON}+[r_{\op{PON}}\op{PON}]-D_{\op{NH4}}-D_{\op{NO3}}`
+   S_NO3      & ``SMR_____MR`` & mmol N /m\ :sup:`3`/s           & non-transport source of NO3
+   S_NO2      & ``SMR_____MR`` & mmol N /m\ :sup:`3`/s           & non-transport source of NO2
+   S_NH4      & ``SMR_____MR`` & mmol N /m\ :sup:`3`/s           & non-transport source of NH4
+   S_PO4      & ``SMR_____MR`` & mmol P /m\ :sup:`3`/s           & non-transport source of PO4: :math:`r_{\op{DOP}}\op{DOP}+[r_{\op{POP}}\op{POP}]`
+   S_Si       & ``SMR_____MR`` & mmol Si /m\ :sup:`3`/s          & non-transport source of Si: :math:`r_{\op{POSi}}\op{POSi}`
+   S_Fe       & ``SMR_____MR`` & mmol Fe /m\ :sup:`3`/s          & non-transport source of Fe: :math:`r_{\op{DOFe}}\op{DOFe}+[r_{\op{POFe}}\op{POFe}]+S_{\op{Fe}}`
+   gDAR##     & ``SMR_____MR`` & [TRAC##]/s                      & ptracer ## tendency from DARWIN [#a]_
+   gECO##     & ``SMR_____MR`` & [TRAC##]/s                      & ptracer ## tendency from DARWIN w/o sink/swim [#a]_
+   PP####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Primary Production plankton ####
+   PC####     & ``SMRP____MR`` & 1/s                             & Carbon-specific growth rate plankton ####
+   GR####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Grazing loss of plankton ####
+   GrGn####   & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Grazing gain of plankton ####
+   sfcSolFe   & ``SM_P____L1`` & mmol Fe /m\ :sup:`2`/s          & Soluble iron input at sea surface
+   sedFe      & ``SM_P____MR`` & mmol Fe /m\ :sup:`2`/s          & Iron input from sediment
+   freeFeLs   & ``SMRP____MR`` & mmol Fe /m\ :sup:`3`/s          & Iron loss due to free iron limit
+   pH         & ``SMR_____MR`` & 1                               & pH
+   pCO2       & ``SMRP____MR`` & atm                             & Partial Pressure of CO2
+   fugfCO2    & ``SM_P____L1`` & 1                               & Fugacity factor of CO2 at surface
+   fCO2       & ``SM_P____L1`` & atm                             & Fugacity of CO2 (atm)
+   fluxCO2    & ``SM______L1`` & mmol C /m\ :sup:`2`/s           & Flux of CO2 - air-sea exch
+   fluxO2     & ``SM______L1`` & mmol O2 /m\ :sup:`2`/s          & Flux of O2 - air-sea exch
+   VfluxCO2   & ``SM______L1`` & mmol C /m\ :sup:`2`/s           & Virtual flux of CO2
+   VfluxAlk   & ``SM______L1`` & meq/m\ :sup:`2`/s               & Virtual flux of alkalinity
+   gDICsurf   & ``SM______L1`` & mmol C /m\ :sup:`3`/s           & Tendency of DIC due to air-sea exch + oldvirt.flux
+   gDICEpr    & ``SM______L1`` & mmol C /m\ :sup:`3`/s           & Tendency of DIC due to E/P/runoff
+   gALKEpr    & ``SM______L1`` & mmol eq./m\ :sup:`3`/s          & Tendency of ALK due to E/P/runoff
+   gO2Epr     & ``SM______L1`` & mmol eq./m\ :sup:`3`/s          & Tendency of O2 due to E/P/runoff
+   gNO3Epr    & ``SM______L1`` & mmol N /m\ :sup:`3`/s           & Tendency of DIC due to E/P/runoff
+   gNO2Epr    & ``SM______L1`` & mmol N /m\ :sup:`3`/s           & Tendency of DIC due to E/P/runoff
+   gNH4Epr    & ``SM______L1`` & mmol N /m\ :sup:`3`/s           & Tendency of DIC due to E/P/runoff
+   gPO4Epr    & ``SM______L1`` & mmol P /m\ :sup:`3`/s           & Tendency of PO4 due to E/P/runoff
+   gFeTEpr    & ``SM______L1`` & mmol C /m\ :sup:`3`/s           & Tendency of FeT due to E/P/runoff
+   gSiO2Epr   & ``SM______L1`` & mmol Si /m\ :sup:`3`/s          & Tendency of SiO2 due to E/P/runoff
+   gALKsurf   & ``SM______L1`` & meq/m\ :sup:`3`/s               & Tendency of ALK due to oldvirt.flux
+   gO2surf    & ``SM______L1`` & mmol O2 /m\ :sup:`3`/s          & Tendency of O2 due to air-sea exch
+   C_DIC      & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & Consumption of DIC
+   C_DICPIC   & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & Consumption of DIC due to PIC
+   respDIC    & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & DIC due to respiration
+   rDIC_DOC   & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & DIC due to remineralization of DOC
+   rDIC_POC   & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & DIC due to remineralization of POC
+   dDIC_PIC   & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & DIC due to dissolution of PIC
+   C_ALK      & ``SMR_____MR`` & mmol eq./m\ :sup:`3`/s          & Consumption of alkalinity
+   S_ALK      & ``SMR_____MR`` & mmol eq./m\ :sup:`3`/s          & Non-transport source of alkalinity
+   C_O2       & ``SMR_____MR`` & mmol O /m\ :sup:`3`/s           & Consumption of oxygen
+   S_O2       & ``SMR_____MR`` & mmol O /m\ :sup:`3`/s           & Non-transport source of oxygen
+   surfPAR    & ``SM_P____L1`` & µEin/m\ :sup:`2`/s              & PAR forcing at surface
+   surfiron   & ``SM_P____L1`` & mmol Fe /m\ :sup:`2`/s          & iron forcing at surface
+   DARice     & ``SM_P____L1`` & m\ :sup:`2`/m\ :sup:`2`         & ice area fraction
+   DARwind    & ``SM_P____L1`` & m/s                             & wind speed used for carbon exchange
+   surfpCO2   & ``SM_P____L1`` & mol/mol                         & atmospheric surface pCO2
+   apCO2      & ``SM_P____L1`` & atm                             & atmospheric pCO2
+   apCO2sat   & ``SM_P____L1`` & atm                             & atmospheric pCO2 sat
 
 .. [#a] does not include free iron adjustment for FeT tracer
 
@@ -891,6 +836,21 @@ is such that positive values increase the concentration in the ocean.  Note
 that the units vary: gDICsurf, gALKsurf and gO2surf are tracer tendencies,
 i.e., change rates of concentration, while fluxCO2 is a flux per area of
 sea surface.
+
+Also of interest are the following diagnostics from the ptracers and gchem packages:
+
+.. csv-table::
+   :delim: &
+   :widths: auto
+   :class: longtable
+   :header: Name, Code, Units, Description
+
+   Tp_g##  & ``SMR_____MR`` & [TRAC##]/s & ptracer ## total transport tendency (before gchem_forcing_sep)
+   TRAC##  & ``SMR_____MR`` & [TRAC##]   & ptracer ## concentration before transport
+   GC_Tr## & ``SMR_____MR`` & [TRAC##]   & ptracer ## concentration before GCHEM
+
+The ptracer number ## here and in gDAR## is the one defined in the ptracers
+package, see :numref:`ptracers_diagnostics` for value larger than 99.
 
 
 Call Tree
@@ -967,3 +927,19 @@ Call Tree
                 gchem_write_pickup
                   darwin_write_pickup
 
+
+Differences to darwin2
+^^^^^^^^^^^^^^^^^^^^^^
+
+Not up-to-date!
+
+-  Particulate/dissolved split of plankton mortality products is not
+   allometric or element-dependent as it was in quota.
+
+-  grazing and mortality temperature dependent with TEMP_VERSION 2.
+
+-  chl2cmin affects acclim.
+
+Bug fixes:
+
+-  1e-3 replaced by 1 _d -3 in conversion of tracers for pH solver.

@@ -48,12 +48,11 @@ computation at the previous time step, without, a fixed Chlorophyll-to-C ratio,
 
 .. csv-table:: Non-spectral light parameters
    :delim: &
-   :widths: auto
+   :widths: 18,12,14,16,40
    :header: Param, Symbol, Default, Units, Description
 
    :varlink:`parfrac`    & :math:`f_{\op{PAR}}` & 0.4      &                    & fraction of Qsw that is PAR
    :varlink:`parconv`    & :math:`c_{\op{PAR}}` & 1/0.2174 & µEin/s/W           & conversion from W/m2 to uEin/m2/s
    :varlink:`katten_w`   & :math:`k_{\op{w}}`   & 0.04     & 1/m                & attenuation coefficient of water
    :varlink:`katten_Chl` & :math:`k_{\op{Chl}}` & 0.04     & m\ :sup:`2`/mg Chl & attenuation coefficient of chlorophyll
-
-
+   :varlink:`aphy_chl_ave` &                    & 0.02     & m\ :sup:`2`/mg Chl & Chl-specific absorption coefficient for photosynthesis
