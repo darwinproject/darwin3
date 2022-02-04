@@ -558,8 +558,6 @@ C LOCAL VARIABLES
         _RL  is
         _RL  is2
 c add pressure dependency
-        _RL  bdepth
-        _RL  cdepth
         _RL  pressc
 c calcite stuff
         _RL  Ksp_T_Calc
@@ -615,14 +613,7 @@ c for surface exchange coeffs
 c if surface, calculate at interface pressure,
 c else calculate at mid-depth pressure
         if (Klevel.gt.1) then
-         bdepth = 0.0 _d 0
-         cdepth = 0.0 _d 0
-         pressc = 1.01325 _d 0
-         do k = 1,Klevel
-             cdepth = bdepth + 0.5 _d 0*drF(k)
-             bdepth = bdepth + drF(k)
-             pressc = 1.0 _d 0 + 0.1 _d 0*cdepth
-         end do
+          pressc = 1.0 _d 0 - 0.1 _d 0*rC(kLevel)
         else
           pressc = 1.01325 _d 0
         endif
