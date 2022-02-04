@@ -31,7 +31,6 @@ C  Mick Follows, MIT, Oct 1999.
 
 C Apr 2011: fix vapour bug (following Bennington)
 
-
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
@@ -144,7 +143,6 @@ c set first guess and brackets for [H+] solvers
 c first guess (for newton-raphson)
         phguess = phlocal
 
-
 c bracketing values (for bracket/bisection)
         phhi = 10.0
         phlo = 5.0
@@ -153,7 +151,6 @@ c convert to [H+]...
         xlo = 10.0**(-phhi)
         xhi = 10.0**(-phlo)
         xmid = (xlo + xhi)*0.5
-
 
 c----------------------------------------------------------------
 c iteratively solve for [H+]
@@ -245,7 +242,6 @@ c      with fixed, large number of iterations
               if(hstep .eq. 3)x = xmid
 c set some common combinations of parameters used in
 c the iterative [H+] solvers
-
 
               x2=x*x
               x3=x2*x
@@ -401,7 +397,6 @@ C     == Local variables ==
         _RL  siooh3g
         _RL  fco2
 
-
 c ---------------------------------------------------------------------
 C Change units from the input of mol/m^3 -> mol/kg:
 c (1 mol/m^3)  x (1 m^3/1024.5 kg)
@@ -497,6 +492,8 @@ C     | determine coefficients for surface carbon chemistry      |
 C     | adapted from OCMIP2:  SUBROUTINE CO2CALC                 |
 C     | mick follows, oct 1999                                   |
 C     | minor changes to tidy, swd aug 2002                      |
+C     | MODIFIED FOR PRESSURE DEPENDENCE                         |
+C     | Karsten Friis and Mick Follows 2004                      |
 C     *==========================================================*
 C INPUT
 C       diclocal = total inorganic carbon (mol/m^3)
@@ -527,6 +524,7 @@ C !USES: ===============================================================
         IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "GRID.h"
 #include "DARWIN_SIZE.h"
 #include "DARWIN_FIELDS.h"
@@ -619,18 +617,21 @@ c else calculate at mid-depth pressure
 
         do i=imin,imax
          do j=jmin,jmax
-          if (hFacC(i,j,kLevel,bi,bj).gt.0. _d 0) then
+          IF ( maskC(i,j,kLevel,bi,bj).EQ.oneRS ) THEN
            t = ttemp(i,j)
            s = stemp(i,j)
-C terms used more than once
+C terms used more than once for:
+C temperature
            tk = 273.15 _d 0 + t
            tk100 = tk/100. _d 0
            tk1002=tk100*tk100
            invtk=1.0 _d 0/tk
            dlogtk=log(tk)
+C ionic strength
            is=19.924 _d 0*s/(1000. _d 0-1.005 _d 0*s)
            is2=is*is
            sqrtis=sqrt(is)
+C salinity
            s2=s*s
            sqrts=sqrt(s)
            s15=s**1.5 _d 0
@@ -664,10 +665,10 @@ C------------------------------------------------------------------------
 C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
 C Millero p.664 (1995) using Mehrbach et al. data on seawater scale
-           ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*invtk -
+           ak1(i,j,bi,bj)=10**(-1 _d 0*(3670.7 _d 0*invtk -
      &          62.008 _d 0 + 9.7944 _d 0*dlogtk -
      &          0.0118 _d 0 * s + 0.000116 _d 0*s2))
-           ak2(i,j,bi,bj)=10.**(-1. _d 0*(1394.7 _d 0*invtk+ 4.777 _d 0-
+           ak2(i,j,bi,bj)=10**(-1 _d 0*(1394.7 _d 0*invtk + 4.777 _d 0 -
      &          0.0184 _d 0*s + 0.000118 _d 0*s2))
 C
 C NOW PRESSURE DEPENDENCE:
@@ -676,14 +677,16 @@ c Pytkowicz (1968)
            if (kLevel.gt.1) then
 c pressc = pressure in bars
            ak1(i,j,bi,bj) = ak1(i,j,bi,bj)*
-     &             exp( (24.2-0.085*t)*(pressc-1.0)/(83.143*tk) )
+     &             exp( (24.2 _d 0-0.085 _d 0*t)
+     &                 *(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
 c FIRST GO FOR K2: According to GEOSECS (1982) report
 c          ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
 c    &             exp( (26.4-0.040*t)*(pressc-1.0)/(83.143*tk) )
 c SECOND GO FOR K2: corrected coeff according to CO2sys documentation
 c                   E. Lewis and D. Wallace (1998) ORNL/CDIAC-105
            ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
-     &             exp( (16.4-0.040*t)*(pressc-1.0)/(83.143*tk) )
+     &             exp( (16.4 _d 0-0.040 _d 0*t)
+     &                 *(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
            endif
 C------------------------------------------------------------------------
 C kb = [H][BO2]/[HBO2]
@@ -698,11 +701,11 @@ C Mick and Karsten - Dec 04
 C ADDING pressure dependence based on Millero (1995), p675
 C with additional info from CO2sys documentation (E. Lewis and
 C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
-            bigR = 83.145
-            dv = -29.48 + 0.1622*t + 2.608d-3*t*t
-            dk = -2.84d-3
+            bigR = 83.145 _d 0
+            dv = -29.48 _d 0 + 0.1622 _d 0*t + 2.608 _d -3*t*t
+            dk = -2.84 _d -3
             pfactor = - (dv/(bigR*tk))*pressc
-     &                + (0.5*dk/(bigR*tk))*pressc*pressc
+     &                + (0.5 _d 0*dk/(bigR*tk))*pressc*pressc
             akb(i,j,bi,bj) = akb(i,j,bi,bj)*exp(pfactor)
            endif
 C------------------------------------------------------------------------
@@ -746,9 +749,9 @@ C ks = [H][SO4]/[HSO4]
 C dickson (1990, J. chem. Thermodynamics 22, 113)
            aks(i,j,bi,bj)=exp(-4276.1 _d 0*invtk + 141.328 _d 0 -
      &          23.093 _d 0*dlogtk +
-     &   (-13856. _d 0*invtk + 324.57 _d 0 - 47.986 _d 0*dlogtk)*sqrtis+
-     &   (35474. _d 0*invtk - 771.54 _d 0 + 114.723 _d 0*dlogtk)*is -
-     &          2698. _d 0*invtk*is**1.5 _d 0 + 1776. _d 0*invtk*is2 +
+     &   (-13856 _d 0*invtk + 324.57 _d 0 - 47.986 _d 0*dlogtk)*sqrtis+
+     &   (35474 _d 0*invtk - 771.54 _d 0 + 114.723 _d 0*dlogtk)*is -
+     &          2698 _d 0*invtk*is**1.5 _d 0 + 1776 _d 0*invtk*is2 +
      &          log(1.0 _d 0 - 0.001005 _d 0*s))
 C------------------------------------------------------------------------
 C kf = [H][F]/[HF]
@@ -779,12 +782,13 @@ c          Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*exp(xvalue)
 c
 c
 C Following Mucci (1983) - from Zeebe/Wolf-Gladrow equic.m
-         tmpa1 = - 171.9065 - (0.077993*tk) + (2839.319/tk)
-     &            + (71.595*log10(tk))
-         tmpa2 = +(-0.77712 + (0.0028426*tk) + (178.34/tk) )*sqrts
-         tmpa3 = -(0.07711*s) + (0.0041249*s15)
-         logKspc = tmpa1 + tmpa2 + tmpa3
-         Ksp_T_Calc = 10.0**logKspc
+           tmpa1 = - 171.9065 _d 0 - (0.077993 _d 0*tk) 
+     &           + (2839.319 _d 0/tk) + (71.595 _d 0*log10(tk))
+           tmpa2 = +(-0.77712 _d 0 + (0.0028426 _d 0*tk) 
+     &           + (178.34 _d 0/tk) )*sqrts
+           tmpa3 = -(0.07711 _d 0*s) + (0.0041249 _d 0*s15)
+           logKspc = tmpa1 + tmpa2 + tmpa3
+           Ksp_T_Calc = 10.0 _d 0**logKspc
 c        write(6,*)i,j,k,tmpa1,tmpa2,tmpa3,logkspc,Ksp_T_Calc
 c with pressure dependence Culberson and Pytkowicz (1968)
 c        xvalue  =  (36.0-0.20*t)*(pressc-1.0)/(83.143*tk)
@@ -801,15 +805,15 @@ c          Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*exp(xvalue)
 
 c alternative pressure dependence from Ingle (1975)
 
-           zdum   = (pressc*10.0d0 - 10.0d0)/10.0d0
-           xvalue = ( (48.8d0 - 0.53d0*t)*zdum
-     &                 + (-0.00588d0 + 0.0001845d0*t)*zdum*zdum)
-     &            / (188.93d0*(t + 273.15d0))
+           zdum   = (pressc*10. _d 0 - 10. _d 0)/10. _d 0
+           xvalue = ( (48.8 _d 0 - 0.53 _d 0*t)*zdum
+     &                + (-0.00588 _d 0 + 0.0001845 _d 0*t)*zdum*zdum)
+     &            / (188.93 _d 0*(t + 273.15 _d 0))
 
            Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*10**(xvalue)
 
 C------------------------------------------------------------------------
-         else
+          ELSE
 c add Bennington
             fugf(i,j,bi,bj)=0. _d 0
             ff(i,j,bi,bj)=0. _d 0
@@ -828,7 +832,7 @@ c add Bennington
             st(i,j,bi,bj) = 0. _d 0
             ft(i,j,bi,bj) = 0. _d 0
             Ksp_TP_Calc(i,j,bi,bj) = 0. _d 0
-         endif
+          ENDIF
          end do
         end do
 
@@ -836,4 +840,3 @@ c add Bennington
 
         RETURN
         END
-
