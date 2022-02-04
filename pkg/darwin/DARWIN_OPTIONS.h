@@ -36,6 +36,9 @@ C enable a dynamic CDOM tracer
 C enable air-sea carbon exchange and Alk and O2 tracers
 #undef  DARWIN_ALLOW_CARBON
 
+C consistently use the total pH scale for carbon chemistry coefficients
+#undef  DARWIN_TOTALPHSCALE
+
 
 C optional bits
 
