@@ -279,6 +279,14 @@ C check exf is compiled and used
       ENDIF
 #endif
 
+#if defined DARWIN_ALLOW_DENIT && ! defined DARWIN_ALLOW_CARBON
+       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'DARWIN_ALLOW_DENIT requires DARWIN_ALLOW_CARBON.',
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: DARWIN_CHECK: DENIT without CARBON'
+      ENDIF
+#endif
+
 C check we are not using hollexp and also inhib_graz or DARWIN_GRAZING_SWITCH
       IF (hollexp .NE. 1.0 _d 0) THEN
         IF (inhib_graz_exp .NE. 0) THEN
