@@ -557,8 +557,9 @@ C LOCAL VARIABLES
         _RL  invtk
         _RL  is
         _RL  is2
+        _RL  pSurf
 c add pressure dependency
-        _RL  pressc
+        _RL  pAppl
 c calcite stuff
         _RL  Ksp_T_Calc
         _RL  xvalue
@@ -610,13 +611,20 @@ c 1 BAR at z=0m (atmos pressure)
 c use UPPER surface of cell so top layer pressure = 0 bar
 c for surface exchange coeffs
 
-c if surface, calculate at interface pressure,
-c else calculate at mid-depth pressure
-        if (Klevel.gt.1) then
-          pressc = 1.0 _d 0 - 0.1 _d 0*rC(kLevel)
-        else
-          pressc = 1.01325 _d 0
-        endif
+C Following Ingle (1975), zdum must be depth converted to pressure units
+C pAppl could be actual applied pressure (check?) but use depth for now
+        IF (kLevel .EQ. 1) THEN
+C Only zdum is used in this case.  All coefficients are computed for the
+C surface, so we compute the calcite coefficients also for zero depth
+          pSurf = 1.01325 _d 0
+          pAppl = 0 _d 0
+          zdum = 0 _d 0
+        ELSE
+          pSurf = 1 _d 0
+C Compute at layer center for non-surface layers
+          pAppl = -0.1 _d 0*rC(kLevel)
+          zdum = -rC(kLevel)/10 _d 0
+        ENDIF
 
         do i=imin,imax
          do j=jmin,jmax
@@ -646,7 +654,7 @@ C added by Val Bennington Nov 2010
 C Fugacity Factor needed for non-ideality in ocean
 C ff used for atmospheric correction for water vapor and pressure
 C Weiss (1974) Marine Chemistry
-           P1atm = pressc ! bars
+           P1atm = pSurf + pAppl  ! bars
            Rgas = 83.1451 _d 0 ! bar*cm3/(mol*K)
            RT = Rgas*tk
            delta = (57.7 _d 0 - 0.118 _d 0*tk)
@@ -682,18 +690,18 @@ C NOW PRESSURE DEPENDENCE:
 c Following Takahashi (1981) GEOSECS report - quoting Culberson and
 c Pytkowicz (1968)
            if (kLevel.gt.1) then
-c pressc = pressure in bars
+c pAppl = applied pressure in bars (p - p_atm)
            ak1(i,j,bi,bj) = ak1(i,j,bi,bj)*
      &             exp( (24.2 _d 0-0.085 _d 0*t)
-     &                 *(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
+     &                 *pAppl/(83.143 _d 0*tk) )
 c FIRST GO FOR K2: According to GEOSECS (1982) report
 c          ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
-c    &             exp( (26.4-0.040*t)*(pressc-1.0)/(83.143*tk) )
+c    &             exp( (26.4-0.040*t)*(pAppl-1.0)/(83.143*tk) )
 c SECOND GO FOR K2: corrected coeff according to CO2sys documentation
 c                   E. Lewis and D. Wallace (1998) ORNL/CDIAC-105
            ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
      &             exp( (16.4 _d 0-0.040 _d 0*t)
-     &                 *(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
+     &                 *pAppl/(83.143 _d 0*tk) )
            endif
 C------------------------------------------------------------------------
 C kb = [H][BO2]/[HBO2]
@@ -715,8 +723,8 @@ C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
 C           bigR = 83.145
 C           dv = -29.48 + 0.1622*t + 2.608d-3*t*t
 C           dk = -2.84d-3
-C           pfactor = - (dv/(bigR*tk))*pressc
-C     &               + (0.5*dk/(bigR*tk))*pressc*pressc
+C           pfactor = - (dv/(bigR*tk))*pAppl
+C     &               + (0.5*dk/(bigR*tk))*pAppl*pAppl
 C           akb(i,j,bi,bj) = akb(i,j,bi,bj)*exp(pfactor)
 #else
 C Mick and Karsten - Dec 04
@@ -726,8 +734,8 @@ C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
             bigR = 83.145 _d 0
             dv = -29.48 _d 0 + 0.1622 _d 0*t + 2.608 _d -3*t*t
             dk = -2.84 _d -3
-            pfactor = - (dv/(bigR*tk))*pressc
-     &                + (0.5 _d 0*dk/(bigR*tk))*pressc*pressc
+            pfactor = - (dv/(bigR*tk))*pAppl
+     &                + (0.5 _d 0*dk/(bigR*tk))*pAppl*pAppl
             akb(i,j,bi,bj) = akb(i,j,bi,bj)*exp(pfactor)
 #endif
            endif
@@ -835,8 +843,8 @@ C------------------------------------------------------------------------
 C Pressure correct aks on native free pH scale
            dv=-18.03 _d 0 + 0.0466 _d 0*t + 0.316 _d -3 *t*t
            dk=-4.53 _d -3 + 0.09 _d -3 *t
-           pfactor = -(dv/(bigR*tk))*pressc
-     &            +(0.5*dk/(bigR*tk))*pressc*pressc
+           pfactor = -(dv/(bigR*tk))*pAppl
+     &            +(0.5*dk/(bigR*tk))*pAppl*pAppl
            aks(i,j,bi,bj) = aks(i,j,bi,bj)*exp(pfactor)
 
            total2free = 1. _d 0/
@@ -857,8 +865,8 @@ C Pressure correct akf on the free scale before converting back to total
            akf(i,j,bi,bj) = akf(i,j,bi,bj) * total2free_surf
            dv  =  -9.78 _d 0 -0.0090 _d 0 *t -0.942 _d -3 *t*t
            dk  =  -3.91 _d -3 + 0.054 _d -3 *t
-           pfactor = -(dv/(bigR*tk))*pressc
-     &               +(0.5*dk/(bigR*tk))*pressc*pressc
+           pfactor = -(dv/(bigR*tk))*pAppl
+     &               +(0.5*dk/(bigR*tk))*pAppl*pAppl
            akf(i,j,bi,bj) = akf(i,j,bi,bj) * exp(pfactor)
            akf(i,j,bi,bj) = akf(i,j,bi,bj)*free2total
 
@@ -887,8 +895,8 @@ C------------------------------------------------------------------------
 C Pressure correct akb on the seawater scale before converting back to total scale
             dv = -29.48 _d 0 + 0.1622 _d 0*t + 2.608 _d -3*t*t
             dk = -2.84 _d -3
-            pfactor = - (dv/(bigR*tk))*pressc
-     &                + (0.5*dk/(bigR*tk))*pressc*pressc
+            pfactor = - (dv/(bigR*tk))*pAppl
+     &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
             akb(i,j,bi,bj) = total2sw_surf*akb(i,j,bi,bj)*exp(pfactor)
             akb(i,j,bi,bj) = akb(i,j,bi,bj)*sw2total
 
@@ -896,8 +904,8 @@ C------------------------------------------------------------------------
 C Pressure correct ak1p on the seawater scale before converting back to total scale
             dv = -14.51 _d 0 + 0.1211 _d 0*t -0.321 _d -3*t*t
             dk = -2.67 _d -3 + 0.0427 _d -3*t
-            pfactor = - (dv/(bigR*tk))*pressc
-     &                + (0.5*dk/(bigR*tk))*pressc*pressc
+            pfactor = - (dv/(bigR*tk))*pAppl
+     &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
             ak1p(i,j,bi,bj) = total2sw_surf*ak1p(i,j,bi,bj)*exp(pfactor)
             ak1p(i,j,bi,bj) = ak1p(i,j,bi,bj)*sw2total
 
@@ -905,8 +913,8 @@ C------------------------------------------------------------------------
 C Pressure correct ak2p on the seawater scale before converting back to total scale
             dv = -23.12 _d 0 + 0.1758 _d 0*t -2.647 _d -3*t*t
             dk = -5.15 _d -3 + 0.09 _d -3*t
-            pfactor = - (dv/(bigR*tk))*pressc
-     &                + (0.5*dk/(bigR*tk))*pressc*pressc
+            pfactor = - (dv/(bigR*tk))*pAppl
+     &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
             ak2p(i,j,bi,bj) = total2sw_surf*ak2p(i,j,bi,bj)*exp(pfactor)
             ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)*sw2total
 
@@ -914,8 +922,8 @@ C------------------------------------------------------------------------
 C Pressure correct ak3p on the seawater scale before converting back to total scale
             dv = -26.57 _d 0 + 0.2020 _d 0*t -3.042 _d -3*t*t
             dk = -4.08 _d -3 + 0.0714 _d -3*t
-            pfactor = - (dv/(bigR*tk))*pressc
-     &                + (0.5*dk/(bigR*tk))*pressc*pressc
+            pfactor = - (dv/(bigR*tk))*pAppl
+     &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
             ak3p(i,j,bi,bj) = total2sw_surf*ak3p(i,j,bi,bj)*exp(pfactor)
             ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)*sw2total
 
@@ -923,8 +931,8 @@ C------------------------------------------------------------------------
 C Pressure correct akw on the seawater scale before converting back to total scale
             dv = -20.02 _d 0 + 0.1119 _d 0*t -1.409 _d -3*t*t
             dk = -5.13 _d -3 + 0.0794 _d -3 *t
-            pfactor = - (dv/(bigR*tk))*pressc
-     &                + (0.5*dk/(bigR*tk))*pressc*pressc
+            pfactor = - (dv/(bigR*tk))*pAppl
+     &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
             akw(i,j,bi,bj) = total2sw_surf*akw(i,j,bi,bj)*exp(pfactor)
             akw(i,j,bi,bj) = akw(i,j,bi,bj)*sw2total
 
@@ -933,8 +941,8 @@ C Pressure correct aksi on the seawater scale before converting back to total sc
 C Estimated from the effect on akb
             dv = -29.48 _d 0 + 0.1622 _d 0*t + 2.608 _d -3*t*t
             dk = -2.84 _d -3
-            pfactor = - (dv/(bigR*tk))*pressc
-     &                + (0.5*dk/(bigR*tk))*pressc*pressc
+            pfactor = - (dv/(bigR*tk))*pAppl
+     &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
             aksi(i,j,bi,bj) = total2sw_surf*aksi(i,j,bi,bj)*exp(pfactor)
             aksi(i,j,bi,bj) = aksi(i,j,bi,bj)*sw2total
       ENDIF
@@ -950,7 +958,7 @@ c          Ksp_T_Calc = ( -34.452 - 39.866*(s**0.333333)
 c    &                  + 110.21*log(s) - 7.5752d-6 * (tk**2.0)
 c    &                  ) * 1.0d-7
 c with pressure dependence Culberson and Pytkowicz (1968)
-c          xvalue  =  (36-0.20*t)*(pressc-1.0)/(83.143*tk)
+c          xvalue  =  (36-0.20*t)*pAppl/(83.143*tk)
 c          Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*exp(xvalue)
 c
 c
@@ -964,7 +972,7 @@ C Following Mucci (1983) - from Zeebe/Wolf-Gladrow equic.m
            Ksp_T_Calc = 10.0 _d 0**logKspc
 c        write(6,*)i,j,k,tmpa1,tmpa2,tmpa3,logkspc,Ksp_T_Calc
 c with pressure dependence Culberson and Pytkowicz (1968)
-c        xvalue  =  (36.0-0.20*t)*(pressc-1.0)/(83.143*tk)
+c        xvalue  =  (36.0-0.20*t)*pAppl/(83.143*tk)
 c        Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*exp(xvalue)
 
 c alternative pressure depdendence
@@ -972,13 +980,12 @@ c following Millero (1995) but using info from Appendix A11 of
 c Zeebe and Wolf-Gladrow (2001) book
 c          dv = -48.6 - 0.5304*t
 c          dk = -11.76d-3 - 0.3692*t
-c          xvalue = - (dv/(bigR*tk))*pressc
-c    &               + (0.5*dk/(bigR*tk))*pressc*pressc
+c          xvalue = - (dv/(bigR*tk))*pAppl
+c    &               + (0.5*dk/(bigR*tk))*pAppl*pAppl
 c          Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*exp(xvalue)
 
 c alternative pressure dependence from Ingle (1975)
 
-           zdum   = (pressc*10. _d 0 - 10. _d 0)/10. _d 0
            xvalue = ( (48.8 _d 0 - 0.53 _d 0*t)*zdum
      &                + (-0.00588 _d 0 + 0.0001845 _d 0*t)*zdum*zdum)
      &            / (188.93 _d 0*(t + 273.15 _d 0))
