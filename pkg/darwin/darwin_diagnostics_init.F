@@ -661,6 +661,14 @@ C-      use units & names from data.ptracers :
       diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'apCO2sat'
+      WRITE(diagTitle,'(A)')'atmospheric pCO2 sat'
+      diagUnits = 'atm             '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 #endif
 
 #endif /* ALLOW_DIAGNOSTICS */

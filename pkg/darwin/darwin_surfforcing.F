@@ -61,7 +61,7 @@ C !LOCAL VARIABLES: ====================================================
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
       _RL SchmidtNoDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL pCO2sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL apCO2sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Kwexch(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Kwexch0(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pisvel0(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -274,8 +274,8 @@ c make sure Schmidt number is not negative (will happen if temp>39C)
          SchmidtNoDIC(i,j) = MAX(1.0 _d -2, SchmidtNoDIC(i,j))
 
 C Determine surface flux (FDIC)
-C first correct pCO2at for surface atmos pressure
-         pCO2sat(i,j) = AtmosP(i,j,bi,bj)*AtmospCO2(i,j,bi,bj)
+C first correct apCO2 for surface atmos pressure
+         apCO2sat(i,j) = AtmosP(i,j,bi,bj)*atmospCO2(i,j,bi,bj)
 
 C then account for Schmidt number
          Kwexch(i,j) = Kwexch0(i,j)
@@ -283,9 +283,10 @@ C then account for Schmidt number
 
 C compute fugacity of CO2
          fugCO2(i,j) = pCO2(i,j,ks,bi,bj)*fugf(i,j,bi,bj)
+
 c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
          FluxCO2(i,j,bi,bj) = Kwexch(i,j)*(
-     &    ff(i,j,bi,bj)*pCO2sat(i,j) - fugCO2(i,j)*ak0(i,j,bi,bj)
+     &    ff(i,j,bi,bj)*apCO2sat(i,j) - fugCO2(i,j)*ak0(i,j,bi,bj)
      &   )
         ELSE
          FluxCO2(i,j,bi,bj) = 0. _d 0
@@ -331,6 +332,7 @@ C update tendency
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
+       CALL DIAGNOSTICS_FILL(apCO2sat,'apCO2sat',0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(fugf,    'fugfCO2 ',0,1,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(fugCO2,  'fCO2    ',0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(FluxO2,  'fluxO2  ',0,1,1,bi,bj,myThid)
