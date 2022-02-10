@@ -133,6 +133,9 @@ C compute and print global element totals
 C value for unused traits
 #define DARWIN_UNUSED 0
 
+C fill diagnostics for most tendency terms
+#undef  DARWIN_DIAG_TENDENCIES
+
 
 C deprecated
 

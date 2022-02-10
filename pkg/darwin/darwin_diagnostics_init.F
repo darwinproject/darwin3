@@ -452,6 +452,80 @@ C-      use units & names from data.ptracers :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifdef DARWIN_DIAG_TENDENCIES
+      WRITE(diagName,'(A)')'gDICEpr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of DIC due to E/P/runoff'
+      diagUnits = 'mmol C/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gALKEpr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of ALK due to E/P/runoff'
+      diagUnits = 'mmol eq./m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gO2Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of O2 due to E/P/runoff'
+      diagUnits = 'mmol eq./m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gNO3Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of DIC due to E/P/runoff'
+      diagUnits = 'mmol N/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gNO2Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of DIC due to E/P/runoff'
+      diagUnits = 'mmol N/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gNH4Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of DIC due to E/P/runoff'
+      diagUnits = 'mmol N/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gPO4Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of PO4 due to E/P/runoff'
+      diagUnits = 'mmol P/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gFeTEpr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of FeT due to E/P/runoff'
+      diagUnits = 'mmol C/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gSiO2Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of SiO2 due to E/P/runoff'
+      diagUnits = 'mmol Si/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* DARWIN_DIAG_TENDENCIES */
+
       WRITE(diagName,'(A)')'gALKsurf'
       WRITE(diagTitle,'(A)')'Tendency of ALK due to oldvirt.flux'
       diagUnits = 'meq/m3/s        '
