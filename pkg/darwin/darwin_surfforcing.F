@@ -74,6 +74,7 @@ C local variables for carbon chem
       _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SchmidtNoO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL O2sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fugCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL aTT
       _RL aTK
       _RL aTS
@@ -280,11 +281,12 @@ C then account for Schmidt number
          Kwexch(i,j) = Kwexch0(i,j)
      &                 / sqrt(SchmidtNoDIC(i,j)/660.0 _d 0)
 
+C compute fugacity of CO2
+         fugCO2(i,j) = pCO2(i,j,ks,bi,bj)*fugf(i,j,bi,bj)
 c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
-         FluxCO2(i,j,bi,bj) =
-     &          Kwexch(i,j)*(
-     &            ff(i,j,bi,bj)*pCO2sat(i,j) -
-     &            pCO2(i,j,ks,bi,bj)*fugf(i,j,bi,bj)*ak0(i,j,bi,bj) )
+         FluxCO2(i,j,bi,bj) = Kwexch(i,j)*(
+     &    ff(i,j,bi,bj)*pCO2sat(i,j) - fugCO2(i,j)*ak0(i,j,bi,bj)
+     &   )
         ELSE
          FluxCO2(i,j,bi,bj) = 0. _d 0
         ENDIF
@@ -330,6 +332,7 @@ C update tendency
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
        CALL DIAGNOSTICS_FILL(fugf,    'fugfCO2 ',0,1,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(fugCO2,  'fCO2    ',0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(FluxO2,  'fluxO2  ',0,1,1,bi,bj,myThid)
 #ifdef ALLOW_OLD_VIRTUALFLUX
        CALL DIAGNOSTICS_FILL(VFluxCO2,'VfluxCO2',0,1,1,bi,bj,myThid)
