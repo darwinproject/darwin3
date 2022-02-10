@@ -423,6 +423,13 @@ C-      use units & names from data.ptracers :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      WRITE(diagName,'(A)')'fCO2'
+      WRITE(diagTitle,'(A)')'Fugacity of CO2 (atm)'
+      diagUnits = 'atm             '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       WRITE(diagName,'(A)')'fluxCO2'
       WRITE(diagTitle,'(A)')'Flux of CO2 - air-sea exch'
       diagUnits = 'mmol C/m2/s     '
