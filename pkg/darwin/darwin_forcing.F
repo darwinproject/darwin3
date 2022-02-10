@@ -67,6 +67,19 @@ C  k                    :: vertical level
       _RL diags(1-OLx:sNx+OLx,1-OLy:sNy+OLy, Nr, darwin_nDiag)
       _RL gDIC(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL gALK(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+#ifdef DARWIN_DIAG_TENDENCIES
+      _RL gDICsurfForc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gNO3surfForc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gNO2surfForc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gNH4surfForc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gPO4surfForc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gFeTsurfForc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gSiO2surfForc(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+#ifdef DARWIN_ALLOW_CARBON
+      _RL gALKsurfForc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gO2surfForc(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+#endif
+#endif
       _RL gO2(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL surfFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
@@ -151,6 +164,34 @@ C carbon air-sea interaction
         gPtr(i,j,1,iDIC) = gPtr(i,j,1,iDIC) + gDIC(i,j)
         gPtr(i,j,1,iALK) = gPtr(i,j,1,iALK) + gALK(i,j)
         gPtr(i,j,1,iO2)  = gPtr(i,j,1,iO2)  + gO2(i,j)
+      ENDDO
+      ENDDO
+#endif
+
+#ifdef DARWIN_DIAG_TENDENCIES
+C surface fluxes from E/P/runoff
+      DO j=jMin,jMax
+      DO i=iMin,iMax
+        gDICsurfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iDIC)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gNO3surfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iNO3)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gNO2surfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iNO2)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gNH4surfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iNH4)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gPO4surfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iPO4)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gFeTsurfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iFeT)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gSiO2surfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iSiO2)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+#ifdef DARWIN_ALLOW_CARBON
+        gALKsurfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iALK)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gO2surfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iO2)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+#endif
       ENDDO
       ENDDO
 #endif
@@ -566,9 +607,34 @@ C      diags(iCons*) for convenience
        CALL DIAGNOSTICS_FILL(gALK,   'gALKsurf',0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(gO2,    'gO2surf ',0,1,2,bi,bj,myThid)
 #endif
-       CALL TIMER_STOP ('DIAGS_FILL [DARWIN_FORCING]',myThid)
-      ENDIF
+
+#ifdef DARWIN_DIAG_TENDENCIES
+       CALL DIAGNOSTICS_FILL(gDICsurfForc,'gDICEpr ',0,1,2,
+     &  bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(gNO3surfForc,'gNO3Epr ',0,1,2,
+     &  bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(gNO2surfForc,'gNO2Epr ',0,1,2,
+     &  bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(gNH4surfForc,'gNH4Epr ',0,1,2,
+     &  bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(gPO4surfForc,'gPO4Epr ',0,1,2,
+     &  bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(gFeTsurfForc,'gFeTEpr ',0,1,2,
+     &  bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(gSiO2surfForc,'gSiO2Epr',0,1,2,
+     &  bi,bj,myThid)
+#ifdef DARWIN_ALLOW_CARBON
+       CALL DIAGNOSTICS_FILL(gALKsurfForc,'gALKEpr ',0,1,2,
+     &  bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(gO2surfForc, 'gO2Epr  ',0,1,2,
+     &  bi,bj,myThid)
 #endif
+#endif
+
+       CALL TIMER_STOP ('DIAGS_FILL [DARWIN_FORCING]',myThid)
+C     useDiagnostics
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       midTime = midTime + deltaTclock/nsubtime
       subTime = subTime + deltaTclock/nsubtime
