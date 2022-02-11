@@ -52,14 +52,14 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      WRITE(diagName,'(A)')'plankC  '
+      WRITE(diagName,'(A)')'plankC'
       WRITE(diagTitle,'(A)')'Total plankton carbon biomass'
       diagUnits = 'mmol C/m^3      '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      WRITE(diagName,'(A)')'Chl     '
+      WRITE(diagName,'(A)')'Chl'
       WRITE(diagTitle,'(A)')'Total Chlorophyll a'
       diagUnits = 'mg Chl a/m^3    '
       diagCode  = 'SMR     MR      '
@@ -220,28 +220,28 @@ c nutrient consumption
       WRITE(diagName,'(A)')'C_DIN'
       WRITE(diagTitle,'(A)')'consumption of DIN'
       diagUnits = 'mmolN/m3/s      '
-      diagCode  = 'SM P    MR      '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_PO4'
       WRITE(diagTitle,'(A)')'consumption of PO4'
       diagUnits = 'mmolP/m3/s      '
-      diagCode  = 'SM P    MR      '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_Si'
       WRITE(diagTitle,'(A)')'consumption of Si'
       diagUnits = 'mmolSi/m3/s      '
-      diagCode  = 'SM P    MR      '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_Fe'
       WRITE(diagTitle,'(A)')'consumption of Fe'
       diagUnits = 'mmolFe/m3/s      '
-      diagCode  = 'SM P    MR      '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -249,28 +249,28 @@ c additional source terms of nutrients
       WRITE(diagName,'(A)')'S_DIN'
       WRITE(diagTitle,'(A)')'non-transport source of DIN'
       diagUnits = 'mmolN/m3/s      '
-      diagCode  = 'SM      MR      '
+      diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_PO4'
       WRITE(diagTitle,'(A)')'non-transport source of PO4'
       diagUnits = 'mmolP/m3/s      '
-      diagCode  = 'SM      MR      '
+      diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_Si'
       WRITE(diagTitle,'(A)')'non-transport source of Si'
       diagUnits = 'mmolSi/m3/s      '
-      diagCode  = 'SM      MR      '
+      diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_Fe'
       WRITE(diagTitle,'(A)')'non-transport source of Fe'
       diagUnits = 'mmolFe/m3/s      '
-      diagCode  = 'SM      MR      '
+      diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -448,7 +448,7 @@ C-      use units & names from data.ptracers :
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'surfpCO2'
-      WRITE(diagTitle,'(A)')'surface pCO2'
+      WRITE(diagTitle,'(A)')'atmospheric surface pCO2'
       diagUnits = 'mol/mol         '
       diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
