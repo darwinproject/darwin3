@@ -86,6 +86,7 @@ C  k                    :: vertical level
       _RL mort2TempFunc
       _RL uptakeTempFunc
       _RL tmp
+      _RL sedFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
       DO k=1,Nr
        dTsub(k) = PTRACERS_dTLev(k)/nsubtime
@@ -245,6 +246,7 @@ C     iron sediment source (in bottom grid cell above kMaxFeSed)
 #else
           flx = fesedflux
 #endif
+          sedFe(i,j,k) = flx/(drF(k)*hFacC(i,j,k,bi,bj))
           gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) +
      &                             flx/(drF(k)*hFacC(i,j,k,bi,bj))
 #ifdef DARWIN_ALLOW_CONS
@@ -439,13 +441,36 @@ C === diagnostics ======================================================
 C      nutrient consumption diagnostics
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsDIN),'C_DIN   ',
      &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsNO3),'C_NO3   ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsNO2),'C_NO2   ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsNH4),'C_NH4   ',
+     &       0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsPO4),'C_PO4   ',
      &       0,Nr,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsSi),'C_Si    ',
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsSi), 'C_Si    ',
      &       0,Nr,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsFe),'C_Fe    ',
-     &       0,Nr,2,
-     &          bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsFe), 'C_Fe    ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsDIC),'C_DIC   ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsDIC_PIC),
+     &           'C_DICPIC',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iRespirDIC),'respDIC ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iReminDIC_DOC),
+     &           'rDIC_DOC',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iReminDIC_POC),
+     &           'rDIC_POC',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDisscDIC_PIC),
+     &           'dDIC_PIC',0,Nr,2,bi,bj,myThid)
+#ifdef DARWIN_ALLOW_CARBON
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsALK),'C_ALK   ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsO2), 'C_O2    ',
+     &       0,Nr,2,bi,bj,myThid)
+#endif
 
 C      compute 'source' diagnostics: tendencies without consumption;
 C      add full tendencies to consumption and store result back into
@@ -455,29 +480,54 @@ C      diags(iCons*) for convenience
          DO i=1,sNx
             diags(i,j,k,iConsDIN) = diags(i,j,k,iConsDIN)
      &         + gPtr(i,j,k,iNH4) + gPtr(i,j,k,iNO2) + gPtr(i,j,k,iNO3)
+            diags(i,j,k,iConsNO3) = diags(i,j,k,iConsNO3)
+     &                            + gPtr(i,j,k,iNO3)
+            diags(i,j,k,iConsNO2) = diags(i,j,k,iConsNO2)
+     &                            + gPtr(i,j,k,iNO2)
+            diags(i,j,k,iConsNH4) = diags(i,j,k,iConsNH4)
+     &                            + gPtr(i,j,k,iNH4)
             diags(i,j,k,iConsPO4) = diags(i,j,k,iConsPO4)
      &                            + gPtr(i,j,k,iPO4)
             diags(i,j,k,iConsSi) = diags(i,j,k,iConsSi)
      &                           + gPtr(i,j,k,iSiO2)
             diags(i,j,k,iConsFe) = diags(i,j,k,iConsFe)
      &                           + gPtr(i,j,k,iFeT)
+#ifdef DARWIN_ALLOW_CARBON
+            diags(i,j,k,iConsALK) = diags(i,j,k,iConsALK)
+     &                            + gPtr(i,j,k,iALK)
+            diags(i,j,k,iConsO2)  = diags(i,j,k,iConsO2)
+     &                            + gPtr(i,j,k,iO2)
+#endif
          ENDDO
         ENDDO
        ENDDO
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsDIN),'S_DIN   ',
      &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsNO3),'S_NO3   ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsNO2),'S_NO2   ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsNH4),'S_NH4   ',
+     &       0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsPO4),'S_PO4   ',
      &       0,Nr,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsSi),'S_Si    ',
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsSi), 'S_Si    ',
      &       0,Nr,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsFe),'S_Fe    ',
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsFe), 'S_Fe    ',
      &       0,Nr,2,bi,bj,myThid)
+#ifdef DARWIN_ALLOW_CARBON
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsALK),'S_ALK   ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsO2), 'S_O2    ',
+     &       0,Nr,2,bi,bj,myThid)
+#endif
 
        DO iTr=1,nDarwin
         diagname = 'gDAR'//PTRACERS_ioLabel(iTr)
         CALL DIAGNOSTICS_FILL(gPtr(1-OLx,1-OLy,1,iTr), diagname,
      &          0,Nr,2,bi,bj,myThid)
        ENDDO
+
 #ifdef DARWIN_DIAG_PERTYPE
        DO iTr=1,nplank
         WRITE(diagname, '(A,I4.4)') 'PP', iTr
@@ -505,7 +555,9 @@ C      diags(iCons*) for convenience
          ENDDO
         ENDDO
         CALL DIAGNOSTICS_FILL(surfFe,'sfcSolFe',0,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(sedFe,'sedFe   ',0,Nr,1,bi,bj,myThid)
        ENDIF
+
 #ifdef DARWIN_ALLOW_CARBON
        CALL DIAGNOSTICS_FILL(pH,     'pH      ',0,Nr,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(pCO2,   'pCO2    ',0,Nr,1,bi,bj,myThid)
