@@ -7,6 +7,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE DARWIN_FE_CHEM(
      U                        FeT,
      O                        freeFe,
+     U                        FeLoss,
      I                        bi, bj, iMin, iMax, jMin, jMax, myThid )
 
 C !DESCRIPTION: ========================================================
@@ -30,6 +31,7 @@ C !INPUT PARAMETERS: ===================================================
 
 C !INPUT/OUTPUT PARAMETERS: ============================================
       _RL FeT(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
+      _RL FeLoss(sNx, sNy, Nr)
 
 C !OUTPUT PARAMETERS: ==================================================
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
@@ -55,12 +57,14 @@ c !LOCAL VARIABLES: ====================================================
      &              4. _d 0*ligand_stab*ligand_tot
      &            )**0.5 _d 0
      &          )/(2. _d 0*ligand_stab)
-          
+
           FeL = ligand_tot - lig
           freefe(i,j,k) = FeT(i,j,k) - FeL
 #ifdef DARWIN_MINFE
           freefe(i,j,k) = MIN(freefe(i,j,k), freefemax)
           IF (maskInC(i,j,bi,bj) .GT. 0.0) THEN
+           FeLoss(i,j,k) = FeLoss(i,j,k) + FeT(i,j,k) - FeL
+     &                                   - freefe(i,j,k)
            FeT(i,j,k) = FeL + freefe(i,j,k)
           ENDIF
 #endif
