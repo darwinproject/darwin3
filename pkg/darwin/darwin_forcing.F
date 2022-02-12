@@ -1,6 +1,3 @@
-C TODO
-C - have to call fechem after model?
-
 #include "DARWIN_OPTIONS.h"
 #ifdef ALLOW_SEAICE
 #include "SEAICE_OPTIONS.h"
@@ -62,6 +59,9 @@ C  k                    :: vertical level
       CHARACTER*8 diagname
       _RL dTsub(Nr)
       _RL midTime, subTime
+#if defined ALLOW_DIAGNOSTICS && ! defined DARWIN_ALLOW_CONS
+      _RL DARWIN_minFeLoss(sNx,sNy,Nr,nSx,nSy)
+#endif
       _RL gPtr(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nDarwin)
       _RL PAR(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nlam)
       _RL diags(1-OLx:sNx+OLx,1-OLy:sNy+OLy, Nr, darwin_nDiag)
@@ -83,9 +83,7 @@ C  k                    :: vertical level
       _RL gO2(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL surfFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
-#ifndef DARWIN_ALLOW_CHLQUOTA
       _RL tmp3d(1:sNx,1:sNy,Nr)
-#endif
       _RL scv,scav_poc
       _RL flx, POCl
       _RL ptr(nDarwin), gtr(nDarwin), PARl(nlam)
@@ -98,8 +96,16 @@ C  k                    :: vertical level
       _RL mortTempFunc
       _RL mort2TempFunc
       _RL uptakeTempFunc
-      _RL tmp
+      _RL tmp, tmpFac
       _RL sedFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+
+      DO k=1,Nr
+       DO j=1,sNy
+        DO i=1,sNy
+         DARWIN_minFeLoss(i,j,k,bi,bj) = 0 _d 0
+        ENDDO
+       ENDDO
+      ENDDO
 
       DO k=1,Nr
        dTsub(k) = PTRACERS_dTLev(k)/nsubtime
@@ -197,31 +203,13 @@ C surface fluxes from E/P/runoff
 #endif
 
 C === iron =============================================================
-#ifdef DARWIN_ALLOW_CONS
-      DO k=1,Nr
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         DARWIN_minFeLoss(i,j,k,bi,bj) = Ptracer(i,j,k,bi,bj,iFeT)
-        ENDDO
-       ENDDO
-      ENDDO
-#endif
       CALL TIMER_START('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
       CALL DARWIN_FE_CHEM(
      U                 Ptracer(1-OLx,1-OLy,1,bi,bj,iFeT),
-     O                 freeFe(1-OLx, 1-OLy, 1),
+     O                 freeFe(1-OLx,1-OLy,1),
+     U                 DARWIN_minFeLoss(1,1,1,bi,bj),
      I                 bi, bj, iMin, iMax, jMin, jMax, myThid)
       CALL TIMER_STOP ('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
-#ifdef DARWIN_ALLOW_CONS
-      DO k=1,Nr
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         DARWIN_minFeLoss(i,j,k,bi,bj) = DARWIN_minFeLoss(i,j,k,bi,bj)
-     &                                 - Ptracer(i,j,k,bi,bj,iFeT)
-        ENDDO
-       ENDDO
-      ENDDO
-#endif
 
 C     iron dust input
       CALL TIMER_START('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
@@ -396,32 +384,13 @@ C === apply tendencies to tracers ======================================
 
 C === iron =============================================================
 C     re-apply free iron limit to FeT
-#ifdef DARWIN_ALLOW_CONS
-      DO k=1,Nr
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         DARWIN_minFeLoss(i,j,k,bi,bj) = DARWIN_minFeLoss(i,j,k,bi,bj)
-     &                                 + Ptracer(i,j,k,bi,bj,iFeT)
-        ENDDO
-       ENDDO
-      ENDDO
-#endif
       CALL TIMER_START('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
       CALL DARWIN_FE_CHEM(
      U                 pTracer(1-OLx,1-OLy,1,bi,bj,iFeT),
      O                 freeFe(1-OLx,1-OLy,1),
+     U                 DARWIN_minFeLoss(1,1,1,bi,bj),
      I                 bi, bj, iMin, iMax, jMin, jMax, myThid)
       CALL TIMER_STOP ('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
-#ifdef DARWIN_ALLOW_CONS
-      DO k=1,Nr
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         DARWIN_minFeLoss(i,j,k,bi,bj) = DARWIN_minFeLoss(i,j,k,bi,bj)
-     &                                 - Ptracer(i,j,k,bi,bj,iFeT)
-        ENDDO
-       ENDDO
-      ENDDO
-#endif
 
 C === diagnostics ======================================================
 #ifdef ALLOW_DIAGNOSTICS
@@ -585,6 +554,7 @@ C      diags(iCons*) for convenience
      &        diagname,0,Nr,2,bi,bj,myThid)
        ENDDO
 #endif
+       CALL DIAGNOSTICS_FILL(sedFe, 'sedFe   ',0,Nr,1,bi,bj,myThid)
        IF (DIAGNOSTICS_IS_ON('sfcSolFe', myThid)) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -596,7 +566,6 @@ C      diags(iCons*) for convenience
          ENDDO
         ENDDO
         CALL DIAGNOSTICS_FILL(surfFe,'sfcSolFe',0,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(sedFe,'sedFe   ',0,Nr,1,bi,bj,myThid)
        ENDIF
 
 #ifdef DARWIN_ALLOW_CARBON
@@ -640,6 +609,22 @@ C     useDiagnostics
       subTime = subTime + deltaTclock/nsubtime
 C     isub
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF (useDIAGNOSTICS) THEN
+       IF (DIAGNOSTICS_IS_ON('freeFeLs', myThid)) THEN
+        DO k=1,Nr
+         tmpFac = 1 _d 0 / PTRACERS_dTLev(k)
+         DO j=1,sNy
+          DO i=1,sNy
+           tmp3d(i,j,k) = tmpFac*DARWIN_minFeLoss(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(tmp3d,'freeFeLs',0,Nr,3,bi,bj,myThid)
+       ENDIF
+      ENDIF
+#endif
 
 #endif /* ALLOW_DARWIN */
 
