@@ -79,6 +79,24 @@ C
       _RL botSnkFe(sNx,sNy,nSx,nSy)
       _RL botSnkSi(sNx,sNy,nSx,nSy)
 # endif
+
+# ifdef EXACT_CONSERV
+      COMMON /DARWIN_CONS_EPR/
+     &      totEPRC,
+     &      totEPRN,
+     &      totEPRP,
+     &      totEPRFe,
+     &      totEPRSi,
+     &      totEPRA,
+     &      totEPRO
+      _RL totEPRC
+      _RL totEPRN
+      _RL totEPRP
+      _RL totEPRFe
+      _RL totEPRSi
+      _RL totEPRA
+      _RL totEPRO
+# endif
 #endif
 
 C Carbon Variables
