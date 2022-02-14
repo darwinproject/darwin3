@@ -59,6 +59,7 @@ C  gO2  :: O2 tendency due to air-sea exchange
 
 C !LOCAL VARIABLES: ====================================================
       INTEGER i,j,k,ks
+      LOGICAL debugPrt
       _RL co3dummy
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
@@ -226,15 +227,38 @@ c put bounds on tracers so pH solver doesn't blow up
        ENDDO
       ENDDO
 
+#ifdef DARWIN_SOLVESAPHE
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL(
+     &   'DARWIN_COEFFS_DEEP',myThid)
+#endif
+C Calculate carbon coefficients
+      CALL DARWIN_COEFFS_SURF(
+     I                       surftemp, surfsalt,
+     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+
+C Now correct the coefficients for pressure dependence
+      CALL DARWIN_COEFFS_DEEP(
+     I                       surftemp, surfsalt,
+     I                       bi,bj,iMin,iMax,jMin,jMax,
+     I                       k,myThid)
+#else
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL(
+     &   'DARWIN_CARBON_COEFFS',myThid)
+#endif
       CALL DARWIN_CARBON_COEFFS(
      I                   surftemp,surfsalt,
      I                   bi,bj,iMin,iMax,jMin,jMax,k,myThid)
-C====================================================================
+#endif /* DARWIN_SOLVESAPHE */
 
+C====================================================================
+       debugPrt = debugMode
 c pCO2 solver...
       DO j=jmin,jmax
        DO i=imin,imax
         IF ( maskC(i,j,k,bi,bj).NE.0. _d 0 ) THEN
+
 c put bounds on tracers so pH solver doesn't blow up
          surfdic  = ptr2mol * MAX(surfDICMin,
      &              MIN(surfDICMax, Ptracer(i,j,k,bi,bj,iDIC)))
@@ -248,7 +272,27 @@ c put bounds on tracers so pH solver doesn't blow up
          surfsi   = ptr2mol * MAX(surfSiMinINit,
      &              MIN(surfSiMax, Ptracer(i,j,k,bi,bj,iSiO2)))
      &              * maskC(i,j,k,bi,bj)
-         CALL DARWIN_CALC_PCO2_APPROX(
+
+#ifdef DARWIN_SOLVESAPHE
+         IF ( selectPHsolver.GT.0 ) THEN
+C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
+#ifdef ALLOW_DEBUG
+            IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+#endif
+            CALL CALC_PCO2_SOLVESAPHE(
+     I          surftemp(i,j), surfsalt(i,j),
+     I          surfdic, surfphos, surfsi, surfalk,
+     U          pH(i,j,k,bi,bj), pCO2(i,j,k,bi,bj), co3dummy,
+     I          i,j,k,bi,bj, debugPrt,myIter,myThid )
+            debugPrt = .FALSE.
+         ELSE
+C Use the original Follows et al. (2006) solver
+#endif /* DARWIN_SOLVESAPHE */
+#ifdef ALLOW_DEBUG
+            IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+            debugPrt = .FALSE.
+#endif
+            CALL DARWIN_CALC_PCO2_APPROX(
      I        surftemp(i,j), surfsalt(i,j),
      I        surfdic, surfphos, surfsi, surfalk,
      I        ak1(i,j,bi,bj), ak2(i,j,bi,bj),
@@ -260,6 +304,10 @@ c put bounds on tracers so pH solver doesn't blow up
      I        bt(i,j,bi,bj), st(i,j,bi,bj), ft(i,j,bi,bj),
      U        pH(i,j,k,bi,bj), pCO2(i,j,k,bi,bj), co3dummy,
      I        i,j,k,bi,bj,myIter,myThid )
+#ifdef DARWIN_SOLVESAPHE
+         ENDIF
+#endif /* DARWIN_SOLVESAPHE */
+
         ELSE
          pCO2(i,j,k,bi,bj)=0. _d 0
         ENDIF
