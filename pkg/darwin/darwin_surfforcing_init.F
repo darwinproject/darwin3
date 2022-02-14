@@ -37,6 +37,7 @@ C  myThid               :: thread number
 #ifdef DARWIN_ALLOW_CARBON
 
 C !LOCAL VARIABLES: ====================================================
+       LOGICAL debugPrt
        INTEGER i,j,k,it
        _RL co3dummy
 C Number of iterations for pCO2 solvers...
@@ -83,16 +84,56 @@ C determine inorganic carbon chem coefficients
      &                      MIN(surfTempMaxInit, theta(i,j,k,bi,bj)))
            ENDDO
           ENDDO
-          
+
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            ak0(i,j,bi,bj)=0. _d 0
+            ak1(i,j,bi,bj)=0. _d 0
+            ak2(i,j,bi,bj)=0. _d 0
+            akw(i,j,bi,bj)=0. _d 0
+            akb(i,j,bi,bj)=0. _d 0
+            akf(i,j,bi,bj)=0. _d 0
+            ak1p(i,j,bi,bj)=0. _d 0
+            ak2p(i,j,bi,bj)=0. _d 0
+            ak3p(i,j,bi,bj)=0. _d 0
+            aksi(i,j,bi,bj)=0. _d 0
+            fugf(i,j,bi,bj)=0. _d 0
+            ff(i,j,bi,bj)=0. _d 0
+            ft(i,j,bi,bj)=0. _d 0
+            st(i,j,bi,bj)=0. _d 0
+            bt(i,j,bi,bj)=0. _d 0
+           ENDDO
+          ENDDO
+
+#ifdef DARWIN_SOLVESAPHE
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('DARWIN_COEFFS_SURF',myThid)
+#endif
+          CALL DARWIN_COEFFS_SURF(
+     I                       surftemp,surfsalt,
+     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+
+C Now correct the coefficients for pressure dependence
+          CALL DARWIN_COEFFS_DEEP(
+     I                       surftemp, surfsalt,
+     I                       bi,bj,iMin,iMax,jMin,jMax,
+     I                       k,myThid)
+#else /* DARWIN_SOLVESAPHE */
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+#endif
           CALL DARWIN_CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,k,myThid)
+#endif /* DARWIN_SOLVESAPHE */
 
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             pH(i,j,k,bi,bj) = 8. _d 0
            ENDDO
           ENDDO
+
+          debugPrt = debugMode
 
 c first approximation
 C$TAF LOOP = parallel
@@ -114,9 +155,46 @@ c put bounds on tracers so pH solver doesn't blow up
      &                  MIN(surfSiMaxInit, Ptracer(i,j,k,bi,bj,iSiO2)))
      &                  * maskC(i,j,k,bi,bj)
 C$TAF init dic_surf = static, 10
+#ifdef DARWIN_SOLVESAPHE
+             IF ( selectPHsolver.GT.0 ) THEN
+C Use Munhoven (2013) Solvesaphe routine to initialize pH
+#ifdef ALLOW_DEBUG
+              IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+#endif
+C call AHINI_FOR_AT to get better initial guess of pH
+              CALL AHINI_FOR_AT(
+     I           surfalk*ptr2molkg,
+     I           surfdic*ptr2molkg,
+     I           bt(i,j,bi,bj),
+     U           pH(i,j,k,bi,bj),
+     I           i,j,k,bi,bj,nIter0,myThid )
+
+C$TAF STORE pH(i,j,k,bi,bj)                            = dic_surf
+C$TAF STORE surfalk, surfphos, surfsi                  = dic_surf
+
+#ifdef ALLOW_DEBUG
+              IF (debugPrt)
+     &          CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+#endif
+              CALL CALC_PCO2_SOLVESAPHE(
+     I         surftemp(i,j),surfsalt(i,j),
+     I         surfdic, surfphos,
+     I         surfsi,surfalk,
+     U         pH(i,j,k,bi,bj),pCO2(i,j,k,bi,bj),co3dummy,
+     I         i,j,k,bi,bj, debugPrt, nIter0, myThid )
+              debugPrt = .FALSE.
+             ELSE
+C Use the original Follows et al. (2006) solver
+#endif /* DARWIN_SOLVESAPHE */
+#ifdef ALLOW_DEBUG
+              IF (debugPrt) THEN
+                CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+                debugPrt = .FALSE.
+              ENDIF
+#endif
              DO it=1,10
-C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
-C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
+C$TAF STORE pH(i,j,k,bi,bj)                            = dic_surf
+C$TAF STORE surfalk, surfphos, surfs                   = dic_surf
               CALL DARWIN_CALC_PCO2_APPROX(
      I        surftemp(i,j), surfsalt(i,j),
      I        surfdic, surfphos, surfsi, surfalk,
@@ -130,6 +208,9 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      U        pH(i,j,k,bi,bj), pCO2(i,j,k,bi,bj), co3dummy,
      I        i,j,k,bi,bj, it ,  myThid )
              ENDDO
+#ifdef DARWIN_SOLVESAPHE
+             ENDIF
+#endif /* DARWIN_SOLVESAPHE */
             ENDIF
            ENDDO
           ENDDO

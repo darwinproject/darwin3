@@ -13,9 +13,44 @@
 #include "DARWIN_PARAMS.h"
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit,oUnit,myThid
+      INTEGER errCount,iUnit,oUnit,myThid
+#ifndef DARWIN_SOLVESAPHE
+      INTEGER selectBTconst, selectFTconst, selectHFconst
+      INTEGER selectK1K2const, selectPHsolver
+#endif
 
 #ifdef ALLOW_DARWIN
+
+C Pa2Atm    :: Conversion factor for atmospheric pressure anomaly pLoad (when
+C              coupled to atmospheric model) into Atm.
+C              Default assumes pLoad in Pascal: 1 Atm = 1.01325e5 Pa = 1013.25 mb
+C ptr2mol   :: set carbon mmol/m3 <---> mol/m3 conversion factor
+C              default permil = 1 _d -3
+C ptr2molkg :: set carbon mmol/m3 <---> mol/kg conversion factor
+C              default permil = 1 _d -3 / (1024.5 kg/m3)
+C  selectBTconst :: estimates borate concentration from salinity:
+C     =1 :: use default formulation of Uppström (1974)(same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation from Lee et al (2010)
+C  selectFTconst :: estimates fluoride concentration from salinity:
+C     =1 :: use default formulation of Riley (1965) (same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation from Culkin (1965)
+C  selectHFconst :: sets the first dissociation constant for hydrogen fluoride:
+C     =1 :: use default  Dickson and Riley (1979) (same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation of Perez and Fraga (1987)
+C  selectK1K2const :: sets the 1rst & 2nd dissociation constants of carbonic acid:
+C     =1 :: use default formulation of Millero (1995) with data
+C            from Mehrbach et al. (1973) (same as S/R CARBON_COEFFS)
+C     =2 :: use formulation of Roy et al. (1993)
+C     =3 :: use "combination" formulation of Millero (1995)
+C     =4 :: use formulation of Luecker et al. (2000)
+C     =5 :: use formulation of Millero (2010, Mar. Fresh Wat. Res.)
+C     =6 :: use formulation of Waters, Millero, Woosley (2014, Mar. Chem.)
+C  selectPHsolver :: sets the pH solver to use:
+C     =0 :: use Follows et al., (2006) solver;
+C     =1 :: use the GENERAL solver from Munhoven (2013);
+C     =2 :: use SEC solver  from Munhoven (2013);
+C     =3 :: use FAST solver from Munhoven (2013);
+C----
 
       NAMELIST/DARWIN_CONSTANTS/
      &    rad2deg
@@ -24,6 +59,7 @@
       NAMELIST/CARBON_CONSTANTS/
      &    Pa2Atm,
      &    ptr2mol,
+     &    ptr2molkg,
      &    sca1,
      &    sca2,
      &    sca3,
@@ -142,6 +178,9 @@
      &    surfPO4Max,
      &    surfSiMin,
      &    surfSiMax,
+     &    selectBTconst, selectFTconst,
+     &    selectHFconst, selectK1K2const,
+     &    selectPHsolver,
 #endif
      &    diaz_ini_fac,
      &    O2crit,
@@ -272,6 +311,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 #ifdef DARWIN_ALLOW_CARBON
       Pa2Atm = 1.01325 _d 5
       ptr2mol = 1.0 _d -3
+      ptr2molkg = ptr2mol / 1024.5 _d 0
       sca1 = 2073.1 _d 0
       sca2 = -125.62 _d 0
       sca3 = 3.6276 _d 0
@@ -395,6 +435,11 @@ C
       surfPO4Max = 10.0 _d 0
       surfSiMin = 1.0 _d -8
       surfSiMax = 500.0 _d 0
+      selectBTconst   = UNSET_I
+      selectFTconst   = UNSET_I
+      selectHFconst   = UNSET_I
+      selectK1K2const = UNSET_I
+      selectPHsolver  = UNSET_I
 #endif
       diaz_ini_fac = 1 _d 0
 C     O2crit from Lipschultz et al 1990, DSR 37, 1513-1541:
@@ -467,7 +512,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       kMinFeSed = 1
       kMaxFeSed = 0
 
-
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C     DARWIN_RADTRANS_PARAMS
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
@@ -516,6 +560,132 @@ C     from Montagnes et al 1994:
       bbpart_P = -1
       exCDOM = -1
 #endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C-    derive other parameters:
+
+C-    set parameter default values
+#ifdef DARWIN_ALLOW_CARBON
+      IF ( selectBTconst  .EQ.UNSET_I ) selectBTconst   = 1
+      IF ( selectFTconst  .EQ.UNSET_I ) selectFTconst   = 1
+      IF ( selectHFconst  .EQ.UNSET_I ) selectHFconst   = 1
+      IF ( selectK1K2const.EQ.UNSET_I ) selectK1K2const = 1
+      IF ( selectPHsolver .EQ.UNSET_I ) selectPHsolver  = 0
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Print out parameter values :
+
+      errCount = 0
+
+#ifdef DARWIN_SOLVESAPHE
+C Record the solver to calculate pH and evaluate surface ocean pCO2
+      IF ( selectPHsolver.GT.0 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Munhoven (2013) Solvesaphe for pH/pCO2'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ELSEIF ( selectPHsolver.EQ.0 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Follows et al. (2006) for pH/pCO2'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
+#endif /* DARWIN_SOLVESAPHE */
+
+C Record which carbonate coefficients are used and which pH/pCO2 solver
+#ifdef DARWIN_SOLVESAPHE
+      WRITE(msgBuf,'(A)')
+     &  'Using Munhoven (2013) Solvesaphe carbon coefficients'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+C Munhoven (2013)'s "Solvesaphe" coefficients have several options:
+      IF ( selectK1K2const.EQ.1 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ELSEIF ( selectK1K2const.EQ.2 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Roy et al. (1993) K1 and K2 coefficients'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ELSEIF ( selectK1K2const.EQ.3 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Millero (1995) "consensus" K1 and K2 coefficients'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ELSEIF ( selectK1K2const.EQ.4 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Luecker et al. (2000) K1 and K2 coefficients'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ELSEIF ( selectK1K2const.EQ.5 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Millero et al. (2010) K1 and K2 coefficients'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ELSEIF ( selectK1K2const.EQ.6 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Waters et al. (2014) K1 and K2 coefficients'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF ( selectHFconst.EQ.1 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Dickson and Riley (1979) KF coefficient'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ELSEIF ( selectHFconst.EQ.2 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Perez and Fraga (1987) KF coefficient'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF ( selectBTconst.EQ.1 ) THEN
+         WRITE(msgBuf,'(A)')
+     & 'Using Uppstrom (1974) BT estimation from salinity'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ELSEIF ( selectBTconst.EQ.2 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Lee et al (2010) BT estimation from salinity'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF ( selectFTconst.EQ.1 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Riley (1965) FT estimation from salinity'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ELSEIF ( selectBTconst.EQ.2 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Culkin (1965) FT estimation from salinity'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
+#else /* DARWIN_SOLVESAPHE */
+C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
+      WRITE(msgBuf,'(A)')
+     &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  'Using Dickson and Riley (1979) KF coefficient'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  'Using Uppstrom (1974) BT estimation from salinity'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  'Using Riley (1965) FT estimation from salinity'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+#endif /* DARWIN_SOLVESAPHE */
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C     log all parameters to a namelist file
