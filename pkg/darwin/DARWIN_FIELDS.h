@@ -145,5 +145,27 @@ C Fugacity Factor added by Val Bennington Nov. 2010
       _RL  bt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Ksp_TP_Calc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+#ifdef DARWIN_SOLVESAPHE
+C If using Solvesaphe routines (Munhoven, 2013) then in adittion,
+C  cat  = total calcium concentration, Ref.: Culkin (1965)
+C   akn = the dissociation constant of ammonium [H][NH3]/[NH4]
+C           Ref.: Yao and Millero (1995)
+C   akhs = the dissociation constant of hydrogen sulfide [H][HS]/[H2S]
+C           Ref.: Millero et al. (1988)
+C          (cited by Millero (1995) and Yao and Millero (1995))
+C  aphscale = pH scale conversion factor ; convert from the total to the free
+C          scale for solvesaphe calculations;  Ref.: Munhoven, 2013
+C   Ksp_TP_Arag = solubility product for aragonite, Ref.: Mucci (1983)
+
+       COMMON /DARWIN_SOLVESAPHE/
+     &                     cat, akn, akhs, aphscale, Ksp_TP_Arag
+
+      _RL  cat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  akn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  akhs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aphscale(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* DARWIN_SOLVESAPHE */
+
 CEOP
 #endif /* ALLOW_DARWIN */

@@ -50,6 +50,7 @@ C     rad2deg ::
 C--   COMMON /CARBON_CONSTANTS_r/ Coefficients for DIC chemistry
 C     Pa2Atm :: Convert pressure in Pascal to atm
 C     ptr2mol :: convert ptracers (in mmol/m3) to mol/m3
+C     ptr2molkg :: convert ptracers (in mmol/m3) to mol/kg
 C-
 C     sca1 :: Schmidt no. coefficient for CO2
 C     sca2 :: Schmidt no. coefficient for CO2
@@ -75,6 +76,7 @@ C     oC0 :: Coefficient for determining saturation O2
       COMMON /CARBON_CONSTANTS_r/
      &    Pa2Atm,
      &    ptr2mol,
+     &    ptr2molkg,
      &    sca1,
      &    sca2,
      &    sca3,
@@ -96,6 +98,7 @@ C     oC0 :: Coefficient for determining saturation O2
      &    oC0
       _RL Pa2Atm
       _RL ptr2mol
+      _RL ptr2molkg
       _RL sca1
       _RL sca2
       _RL sca3
@@ -510,6 +513,46 @@ C      _RL fno2
 C      _RL yno2
 C      _RL yono2
       _RL depthdenit
+
+#ifdef DARWIN_SOLVESAPHE
+C If using Solvesaphe routines (Munhoven, 2013) then in addition,
+C  selectBTconst :: estimates borate concentration from salinity:
+C     =1 :: use default formulation of Uppström (1974)(same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation from Lee et al (2010)
+C
+C  selectFTconst :: estimates fluoride concentration from salinity:
+C     =1 :: use default formulation of Riley (1965) (same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation from Culkin (1965)
+C
+C  selectHFconst :: sets the first dissociation constant for hydrogen fluoride:
+C     =1 :: use default  Dickson and Riley (1979) (same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation of Perez and Fraga (1987)
+C
+C  selectK1K2const :: sets the 1rst & 2nd dissociation constants of carbonic acid:
+C     =1 :: use default formulation of Millero (1995) with data
+C            from Mehrbach et al. (1973) (same as S/R CARBON_COEFFS)
+C     =2 :: use formulation of Roy et al. (1993)
+C     =3 :: use "combination" formulation of Millero (1995)
+C     =4 :: use formulation of Luecker et al. (2000)
+C     =5 :: use formulation of Millero (2010, Mar. Fresh Wat. Res.)
+C     =6 :: use formulation of Waters, Millero, Woosley (2014, Mar. Chem.)
+C  selectPHsolver :: sets the pH solver to use:
+C     =1 :: use the GENERAL solver ;  =2 :: use SEC solver ;
+C     =3 :: use FAST solver routine.
+
+       COMMON /DARWIN_SOLVESAPHE_I/
+     &                     at_maxniter,
+     &                     selectBTconst,selectFTconst,
+     &                     selectHFconst,selectK1K2const,
+     &                     selectPHsolver
+
+      INTEGER at_maxniter
+      INTEGER selectBTconst
+      INTEGER selectFTconst
+      INTEGER selectHFconst
+      INTEGER selectK1K2const
+      INTEGER selectPHsolver
+#endif /* DARWIN_SOLVESAPHE */
 
 #ifdef DARWIN_ALLOW_CDOM
 C--   COMMON /DARWIN_CDOM_PARAMS_r/
