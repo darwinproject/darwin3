@@ -2755,7 +2755,8 @@ for pack in $PACKAGES; do
                     cp -p "$ROOTDIR/pkg/darwin/darwin_check.F" "$i/darwin_check.F"
                 fi
                 echo -n "    updating $i/darwin_check.F ...  "
-                ( cd "$i" && $ROOTDIR/tools/darwin/cog -c -r darwin_check.F \
+                ABSROOTDIR="`cd "$ROOTDIR"; pwd`"
+                ( cd "$i" && "$ABSROOTDIR/tools/darwin/cog" -c -r darwin_check.F \
                 ) > make_${pdir}.errors 2>&1
                 RETVAL=$?
                 if test "x${RETVAL}" = x0 ; then
