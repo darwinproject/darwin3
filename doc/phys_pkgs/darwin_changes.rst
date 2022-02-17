@@ -5,6 +5,20 @@ Change Log
 
 (bug fixes and breaking changes in bold)
 
+- 2022-02-16 Darwin doc overhaul
+- 2022-02-12 Add option for CDOM to be in carbon units
+- 2022-02-12 Use applied pressure for pressure correction
+- 2022-02-12 Make sure dissociation constants are on the same pH scale
+- 2022-02-12 Add diagnostics: apCO2, apCO2sat, fCO2, freeFeLs, runoff tendencies, more consumption and source diagnostics
+- 2022-01-31 Make DARWIN_INDICES.h work better in code mods dir
+- 2022-01-30 **Fix bug with silica quotas but no Chl quotas**
+- 2022-01-14 merge checkpoint68f of MITgcm
+- 2022-01-13 **Fix benign bug in surfforcing diagnostics**
+- 2021-12-10 merge checkpoint68e of MITgcm
+
+darwin_ckpt68d
+
+- 2021-10-04 merge checkpoint68d of MITgcm
 - 2021-08-25 Add growth rate diagnostics 'PC####'
 - 2021-08-25 Add biomass and Chlorophyll diags, 'plankC' and 'Chl'
 
