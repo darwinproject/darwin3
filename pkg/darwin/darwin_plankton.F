@@ -236,6 +236,7 @@ C for grazing
 
       _RL preygraz   (nplank)
       _RL preygrazexp(nplank)
+      _RL grazrate   (nplank)
       _RL predgrazc  (nplank)
 #ifdef DARWIN_ALLOW_NQUOTA
       _RL predgrazn  (nplank)
@@ -805,8 +806,8 @@ C         DOC respired to DIC
         ENDIF
 
 #ifdef DARWIN_DIAG_PERTYPE
-        diags(iPPplank+j-1) = diags(iPPplank+j-1) + growth
-        diags(iPCplank+j-1) = diags(iPCplank+j-1) + mu
+        diags(iHPplank+j-1) = diags(iHPplank+j-1) + growth
+        diags(iHCplank+j-1) = diags(iHCplank+j-1) + mu
 #endif
 
         gTr(ic+j-1)=gTr(ic+j-1) + growth
@@ -1048,6 +1049,7 @@ C==== grazing ==========================================================
       DO j=1,nplank
        preygraz(j)   = 0.0
        preygrazexp(j) = 0.0
+       grazrate(j)  = 0.0
        predgrazc(j)  = 0.0
 #ifdef DARWIN_ALLOW_NQUOTA
        predgrazn(j)  = 0.0
@@ -1115,7 +1117,7 @@ C       regulate grazing near full quota
         ENDDO
         sumprey = MAX(0.0, sumprey - phygrazmin)
         sumpref = MAX(phygrazmin, sumpref)
-        tmp = grazemax(jz)*grazTempFunc(jz)**tempGraz(jz)*X(jz)*
+        tmp = grazemax(jz)*grazTempFunc(jz)**tempGraz(jz)*
      &    (sumprey**hollexp/(sumprey**hollexp+kgrazesat(jz)**hollexp))*
      &    (1.0 - EXP(-inhib_graz*sumprey))**inhib_graz_exp
 
@@ -1130,6 +1132,8 @@ C       regulate grazing near full quota
 #else
           grazphy = tmp*palat(jp,jz)*X(jp)/sumpref
 #endif
+          grazrate(jz) = grazrate(jz) + grazphy*asseff(jp,jz)*regQc
+          grazphy = grazphy*X(jz)
 
           expFrac = ExportFracPreyPred(jp,jz)
 
@@ -1289,6 +1293,7 @@ C==== tendencies =======================================================
       ENDDO
       DO jz = 1, nplank
         diags(iGrGn+jz-1) = predgrazc(jz)
+        diags(iGrGC+jz-1) = grazrate(jz)
       ENDDO
 #endif
 

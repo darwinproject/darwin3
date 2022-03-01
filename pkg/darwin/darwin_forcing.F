@@ -546,11 +546,20 @@ C      diags(iCons*) for convenience
         WRITE(diagname, '(A,I4.4)') 'PC', iTr
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPCplank+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'HP', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iHPplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'HC', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iHCplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
         WRITE(diagname, '(A,I4.4)') 'GR', iTr
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGRplank+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
         WRITE(diagname, '(A,I4.4)') 'GrGn', iTr
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGrGn+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'GrGC', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGrGC+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
        ENDDO
 #endif
