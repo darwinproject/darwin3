@@ -359,8 +359,23 @@ C-      use units & names from data.ptracers :
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         WRITE(diagName,'(A,I4.4)')'PC',j
-        WRITE(diagTitle,'(A,I4)')'Carbon-specific growth rate plankton '
-     &                           ,j
+        WRITE(diagTitle,'(A,I4)')
+     &        'Carbon-specific phototrophic growth rate plankton ',j
+        diagUnits = '1/s             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I4.4)')'HP',j
+        WRITE(diagTitle,'(A,I4)')'Heterotrophic production plankton ',j
+        diagUnits = 'mmol C/m^3/s    '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I4.4)')'HC',j
+        WRITE(diagTitle,'(A,I4)')
+     &        'Carbon-specific heterotrophic growth rate plankton ' ,j
         diagUnits = '1/s             '
         diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -375,7 +390,15 @@ C-      use units & names from data.ptracers :
 
         WRITE(diagName,'(A,I4.4)')'GrGn',j
         WRITE(diagTitle,'(A,I4)')'Grazing gain of plankton ',j
-        diagUnits = 'mmol C/m^3/s    '
+        diagUnits = '1/s             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I4.4)')'GrGC',j
+        WRITE(diagTitle,'(A,I4)')
+     &        'Carbon-specific grazing rate plankton ',j
+        diagUnits = '1/s             '
         diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )

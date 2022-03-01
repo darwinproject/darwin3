@@ -31,6 +31,9 @@ C Contains indices into diagnostics array
       integer iPPplank
       integer iGRplank
       integer iGrGn
+      integer iGrGC
+      integer iHPplank
+      integer iHCplank
       integer darwin_nDiag
 
       PARAMETER(iPP=     1)
@@ -58,12 +61,18 @@ C Contains indices into diagnostics array
       PARAMETER(iPCplank=iPPplank+nplank)
       PARAMETER(iGRplank=iPCplank+nplank)
       PARAMETER(iGrGn=iGRplank+nplank)
-      PARAMETER(darwin_nDiag=iGrGn+nplank-1)
+      PARAMETER(iGrGC=iGrGn+nplank)
+      PARAMETER(iHPplank=iGrGC+nplank)
+      PARAMETER(iHCplank=iHPplank+nplank)
+      PARAMETER(darwin_nDiag=iHCplank+nplank-1)
 #else
       PARAMETER(iPCplank=iPPplank)
-      PARAMETER(iGRplank=iPCplank)
-      PARAMETER(iGrGn=iGRplank)
-      PARAMETER(darwin_nDiag=iGrGn-1)
+      PARAMETER(iGRplank=iPPplank)
+      PARAMETER(iGrGn=iPPplank)
+      PARAMETER(iGrGC=iPPplank)
+      PARAMETER(iHPplank=iPPplank)
+      PARAMETER(iHCplank=iPPplank)
+      PARAMETER(darwin_nDiag=iPPplank-1)
 #endif
 
 CEOP
