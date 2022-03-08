@@ -785,9 +785,12 @@ Diagnostics
    gDAR##     & ``SMR_____MR`` & [TRAC##]/s                      & ptracer ## tendency from DARWIN [#a]_
    gECO##     & ``SMR_____MR`` & [TRAC##]/s                      & ptracer ## tendency from DARWIN w/o sink/swim [#a]_
    PP####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Primary Production plankton ####
-   PC####     & ``SMRP____MR`` & 1/s                             & Carbon-specific growth rate plankton ####
+   PC####     & ``SMRP____MR`` & 1/s                             & Carbon-specific phototrophic growth rate plankton ####
+   HP####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Heterotrophic production plankton ####
+   HC####     & ``SMRP____MR`` & 1/s                             & Carbon-specific heterotrophic growth rate plankton ####
    GR####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Grazing loss of plankton ####
    GrGn####   & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Grazing gain of plankton ####
+   GrGC####   & ``SMRP____MR`` & 1/s                             & Carbon-specific grazing rate plankton ####
    sfcSolFe   & ``SM_P____L1`` & mmol Fe /m\ :sup:`2`/s          & Soluble iron input at sea surface
    sedFe      & ``SM_P____MR`` & mmol Fe /m\ :sup:`2`/s          & Iron input from sediment
    freeFeLs   & ``SMRP____MR`` & mmol Fe /m\ :sup:`3`/s          & Iron loss due to free iron limit
