@@ -304,6 +304,21 @@ C check we are not using hollexp and also inhib_graz or DARWIN_GRAZING_SWITCH
 #endif
       ENDIF
 
+#ifdef DARWIN_NITRATE_FELIMIT
+# ifndef DARWIN_ALLOW_NQUOTA
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
+     & 'DARWIN_NITRATE_FELIMIT requires DARWIN_ALLOW_NQUOTA'
+      CALL PRINT_ERROR( msgBuf , 1)
+      STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+# endif
+# ifndef DARWIN_ALLOW_FEQUOTA
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
+     & 'DARWIN_NITRATE_FELIMIT requires DARWIN_ALLOW_FEQUOTA'
+      CALL PRINT_ERROR( msgBuf , 1)
+      STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+# endif
+#endif
+
 C log tracer names together with what they should be
       WRITE(msgBuf,'(A)')
      &      'DARWIN_CHECK: iPtr darwin       PTRACERS_names'

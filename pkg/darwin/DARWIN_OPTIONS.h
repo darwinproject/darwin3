@@ -52,6 +52,9 @@ C enable old virtualflux code for DIC and Alk
 #undef  ALLOW_OLD_VIRTUALFLUX
 
 C reduce nitrate uptake by iron limitation factor
+C only effective with both nitrogen and iron quota
+C this option was used pre-2015 in the quota model, together with Geider,
+C so the iron limitation factor is also applied to alpha_I
 #undef DARWIN_NITRATE_FELIMIT
 
 C allow organic matter to sink into bottom (sedimentize)
