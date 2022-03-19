@@ -967,6 +967,7 @@ C         DOC respired to DIC
 
         ENDIF
 
+        diags(iDenitN) = diags(iDenitN) + uptakeNO3
 #ifdef DARWIN_DIAG_PERTYPE
         diags(iHPplank+j-1) = diags(iHPplank+j-1) + growth
         diags(iHCplank+j-1) = diags(iHCplank+j-1) + mu
@@ -1135,14 +1136,18 @@ C==== Apply remaining tendencies =======================================
 #ifdef DARWIN_ALLOW_CARBON
 c production of O2 by photosynthesis
       gTr(iO2  )=gTr(iO2  ) + R_OP*consumPO4
+      diags(iProdO2) = diags(iProdO2) + R_OP*consumPO4
 c loss of O2 by remineralization
       IF (O2 .GT. O2crit) THEN
         gTr(iO2)=gTr(iO2) - consumO2
+        diags(iConsO2) = diags(iConsO2) + consumO2
       ENDIF
 
       diags(iConsO2) = consumO2
 
       gTr(iALK)=gTr(iALK) - (prodNO3 - consumNO3)
+     &                    - 2.0 _d 0*(consumDIC_PIC - disscPIC)
+      diags(iSrcAlk) = diags(iSrcAlk) - (prodNO3 - consumNO3)
      &                    - 2.0 _d 0*(consumDIC_PIC - disscPIC)
 #endif /* DARWIN_ALLOW_CARBON */
 
@@ -1154,7 +1159,6 @@ c loss of O2 by remineralization
       gTr(iNH4 )=gTr(iNH4 ) + reminDON - prodNO2
       gTr(iNO2 )=gTr(iNO2 ) + prodNO2 - prodNO3
       gTr(iNO3 )=gTr(iNO3 ) + prodNO3
-      diags(iDenitN) = 0.0
 #ifdef DARWIN_ALLOW_DENIT
       IF (O2 .LT. O2crit) THEN
         denitNH4 = reminDON
@@ -1167,7 +1171,8 @@ c loss of O2 by remineralization
         gTr(iNH4)=gTr(iNH4) - denitNH4
         gTr(iNO3)=gTr(iNO3) - denit_NO3/denit_np*denit
         gTr(iALK)=gTr(iALK) + denit_NO3/denit_np*denit
-        diags(iDenitN) = denitNH4 + denit_NO3/denit_np*denit
+        diags(iDenitN)=diags(iDenitN)+denitNH4+denit_NO3/denit_np*denit
+        diags(iSrcAlk)=diags(iSrcAlk)+denit_NO3/denit_np*denit
       ENDIF
 #endif /* DARWIN_ALLOW_DENIT */
 
