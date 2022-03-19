@@ -6,6 +6,7 @@ C !ROUTINE: DARWIN_SURFFORCING
 C !INTERFACE: ==========================================================
       SUBROUTINE DARWIN_SURFFORCING(
      O           gDIC, gALK, gO2,
+     I           dTsub,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myTime,myIter,myThid)
 
@@ -40,6 +41,7 @@ C  myThid               :: thread number
 C  myIter               :: current timestep
 C  myTime               :: current time
 C  bi,bj                :: tile indices
+      _RL dTsub(Nr)
       INTEGER iMin,iMax,jMin,jMax,bi,bj
       INTEGER myIter, myThid
       _RL myTime
@@ -139,6 +141,8 @@ C (i.e. positive virtual flux into surface layer)
          VFluxAlk(i,j,bi,bj) = gsm_ALK*surfaceForcingS(i,j,bi,bj)/gsm_S
          gALK(i,j) =
      &     recip_drF(ks) * VFluxAlk(i,j,bi,bj)
+         alkVirFlx(i,j,bi,bj) = alkVirFlx(i,j,bi,bj)
+     &                        + VFluxAlk(i,j,bi,bj)*dTsub(ks)
         ELSE
          VFluxAlk(i,j,bi,bj) = 0 _d 0
         ENDIF
@@ -196,6 +200,8 @@ C Determine flux, inc. correction for local atmos surface pressure
          FluxO2(i,j,bi,bj) = Kwexch(i,j)*
      &                     (AtmosP(i,j,bi,bj)*O2sat(i,j)
      &                      - pTracer(i,j,ks,bi,bj,iO2))
+         oxySfcFlx(i,j,bi,bj) = oxySfcFlx(i,j,bi,bj)
+     &                        + FluxO2(i,j,bi,bj)*dTsub(ks)
 
          gO2(i,j) =
      &      recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)*FluxO2(i,j,bi,bj)
@@ -293,6 +299,8 @@ c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
         ENDIF
 C convert flux (mol kg-1 m s-1) to (mmol m-2 s-1)
         FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/m3perkg/ptr2mol
+        carbSfcFlx(i,j,bi,bj) = carbSfcFlx(i,j,bi,bj)
+     &                        + FluxCO2(i,j,bi,bj)*dTsub(ks)
 
 #ifdef ALLOW_OLD_VIRTUALFLUX
         IF (maskC(i,j,ks,bi,bj).NE.0. _d 0) THEN
@@ -304,6 +312,8 @@ C in salinity. Thus, also increase in other surface tracers
 C (i.e. positive virtual flux into surface layer)
 C ...so here, VirtualFLux = dC/dt!
          VFluxCO2(i,j,bi,bj)=gsm_DIC*surfaceForcingS(i,j,bi,bj)/gsm_S
+         carbVirFlx(i,j,bi,bj) = carbVirFlx(i,j,bi,bj)
+     &                         + VFluxCO2(i,j,bi,bj)*dTsub(ks)
 c OR
 c let virtual flux be zero
 c        VirtualFlux(i,j)=0.d0

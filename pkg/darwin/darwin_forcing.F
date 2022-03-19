@@ -162,7 +162,7 @@ C carbon air-sea interaction
       CALL TIMER_START('DARWIN_SURFFORCING [DARWIN_FORCING]',myThid)
       CALL DARWIN_SURFFORCING(
      O                    gDIC, gALK, gO2,
-     I                    bi,bj,iMin,iMax,jMin,jMax,
+     I                    dTsub,bi,bj,iMin,iMax,jMin,jMax,
      I                    subTime,myIter,myThid)
       CALL TIMER_STOP ('DARWIN_SURFFORCING [DARWIN_FORCING]',myThid)
       DO j=jMin,jMax
@@ -228,7 +228,8 @@ C     scavenging
         gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) -
      &                     scv*MAX(0 _d 0, freefe(i,j,k))
 #ifdef DARWIN_ALLOW_CONS
-        DARWIN_partScav(i,j,k,bi,bj) = scv*MAX(0 _d 0, freefe(i,j,k))
+        DARWIN_partScav(i,j,k,bi,bj) = DARWIN_partScav(i,j,k,bi,bj)
+     &                    + dTsub(k)*scv*MAX(0 _d 0, freefe(i,j,k))
 #endif
       ENDDO
       ENDDO
@@ -250,13 +251,6 @@ C     iron dust input
 
 C     iron sediment source (in bottom grid cell above kMaxFeSed)
       CALL TIMER_START('DARWIN_FE_SED [DARWIN_FORCING]',myThid)
-#ifdef DARWIN_ALLOW_CONS
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        ironSedFlux(i,j,bi,bj) = 0 _d 0
-       ENDDO
-      ENDDO
-#endif
       DO k = kMinFeSed, kMaxFeSed
        kdn = MIN(Nr, k+1)
        DO j=jMin,jMax
@@ -279,7 +273,7 @@ C     iron sediment source (in bottom grid cell above kMaxFeSed)
           gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) +
      &                             flx/(drF(k)*hFacC(i,j,k,bi,bj))
 #ifdef DARWIN_ALLOW_CONS
-          ironSedFlux(i,j,bi,bj) = flx
+          ironSedFlx(i,j,bi,bj) = ironSedFlx(i,j,bi,bj) + dTsub(k)*flx
 #endif
          ENDIF
         ENDDO
@@ -324,8 +318,16 @@ C === plankton =========================================================
          diags(i, j, k, l) = diagsl(l)
         ENDDO
 #ifdef DARWIN_ALLOW_CONS
-        DARWIN_Nfix(i,j,k,bi,bj) = diagsl(iNfix)
-        DARWIN_Ndenit(i,j,k,bi,bj) = diagsl(iDenitN)
+        DARWIN_Nfix(i,j,k,bi,bj)   = DARWIN_Nfix(i,j,k,bi,bj)
+     &                             + dTsub(k)*diagsl(iNfix)
+        DARWIN_Ndenit(i,j,k,bi,bj) = DARWIN_Ndenit(i,j,k,bi,bj)
+     &                             + dTsub(k)*diagsl(iDenitN)
+        DARWIN_O2prod(i,j,k,bi,bj) = DARWIN_O2prod(i,j,k,bi,bj)
+     &                             + dTsub(k)*diagsl(iProdO2)
+        DARWIN_O2cons(i,j,k,bi,bj) = DARWIN_O2cons(i,j,k,bi,bj)
+     &                             + dTsub(k)*diagsl(iConsO2)
+        DARWIN_AlkSrc(i,j,k,bi,bj) = DARWIN_AlkSrc(i,j,k,bi,bj)
+     &                             + dTsub(k)*diagsl(iSrcAlk)
 #endif
 #ifndef DARWIN_ALLOW_CHLQUOTA
 #ifdef ALLOW_RADTRANS
@@ -356,7 +358,7 @@ C === pre-sinking diags ================================================
        DO iTr=1,nDarwin
         diagname = 'gECO'//PTRACERS_ioLabel(iTr)
         CALL DIAGNOSTICS_FILL(gPtr(1-OLx,1-OLy,1,iTr), diagname,
-     &          0,Nr,2,bi,bj,myThid)
+     &                        0,Nr,2,bi,bj,myThid)
        ENDDO
        CALL TIMER_STOP ('DIAGS_FILL [DARWIN_FORCING]',myThid)
       ENDIF
@@ -401,7 +403,7 @@ C === diagnostics ======================================================
        DO l = 1, nlam
         WRITE(diagname, '(A,I3.3)') 'PAR', l
         CALL DIAGNOSTICS_FILL(PAR(1-OLx,1-OLy,1,l),diagname,0,Nr,2,
-     &        bi,bj,myThid)
+     &                        bi,bj,myThid)
        ENDDO
        IF (DIAGNOSTICS_IS_ON('PAR     ', myThid)) THEN
         DO l=2,nlam
