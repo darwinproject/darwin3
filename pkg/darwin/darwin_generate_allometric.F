@@ -227,6 +227,7 @@ C       if 0, temperature dependent, if 1, not.
         ExportFracMort(jp) = a_ExportFracMort(g)
         ExportFracMort2(jp) = a_ExportFracMort2(g)
         ExportFracExude(jp) = a_ExportFracExude(g)
+        FracExudeC(jp) = a_FracExudeC(g)
 
 C temperature function parameters
         phytoTempCoeff(jp)   = a_phytoTempCoeff(g)
