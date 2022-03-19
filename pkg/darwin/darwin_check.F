@@ -319,6 +319,34 @@ C check we are not using hollexp and also inhib_graz or DARWIN_GRAZING_SWITCH
 # endif
 #endif
 
+C Carbon store is only implemented without quotas
+#ifdef DARWIN_ALLOW_CSTORE
+# ifdef DARWIN_ALLOW_NQUOTA
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
+     & 'DARWIN_ALLOW_CSTORE does not support DARWIN_ALLOW_NQUOTA'
+      CALL PRINT_ERROR( msgBuf , 1)
+      STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+# endif
+# ifdef DARWIN_ALLOW_PQUOTA
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
+     & 'DARWIN_ALLOW_CSTORE does not support DARWIN_ALLOW_PQUOTA'
+      CALL PRINT_ERROR( msgBuf , 1)
+      STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+# endif
+# ifdef DARWIN_ALLOW_FEQUOTA
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
+     & 'DARWIN_ALLOW_CSTORE does not support DARWIN_ALLOW_FEQUOTA'
+      CALL PRINT_ERROR( msgBuf , 1)
+      STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+# endif
+# ifdef DARWIN_ALLOW_SIQUOTA
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
+     & 'DARWIN_ALLOW_CSTORE does not support DARWIN_ALLOW_SIQUOTA'
+      CALL PRINT_ERROR( msgBuf , 1)
+      STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+# endif
+#endif
+
 C log tracer names together with what they should be
       WRITE(msgBuf,'(A)')
      &      'DARWIN_CHECK: iPtr darwin       PTRACERS_names'

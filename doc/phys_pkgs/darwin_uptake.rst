@@ -19,6 +19,7 @@ and the Geider formulation of photosynthesis.
 Nutrient limitation is computed following Liebig's law of the minimum,
 
 .. math::
+   :label: eq_darwin_limitnut
 
    \gamma^{\op{nut}}_j = \min(\gamma^{\mathrm{P}}_j, \gamma^{\mathrm{N}}_j, \gamma^{\op{Si}}_j,
                               \gamma^{\op{Fe}}_j)

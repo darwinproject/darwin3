@@ -155,6 +155,7 @@
      &    a_ExportFracMort,
      &    a_ExportFracMort2,
      &    a_ExportFracExude,
+     &    a_FracExudeC,
      &    a_mort,
      &    a_mort2,
      &    a_phytoTempCoeff,
@@ -431,6 +432,7 @@ C     used to be 120D-20 for phyto
       a_ExportFracMort = 0.5 _d 0
       a_ExportFracMort2 = 0.5 _d 0
       a_ExportFracExude = DARWIN_UNINIT_RL
+      a_FracExudeC = 0.3 _d 0
       a_mort = 0.02 _d 0 / pday
       a_mort2 = 0.0 _d 0
       a_phytoTempCoeff = 1. _d 0/3. _d 0

@@ -66,6 +66,12 @@ c carbon budget
         iTr=ic+np-1
         totflxC=totflxC+totSurfCorPtr(iTr)*(1+R_PICPOC(np))
       ENDDO
+#ifdef DARWIN_ALLOW_CSTORE
+      DO np=1,nPhoto
+        iTr=ich+np-1
+        totflxC=totflxC+totSurfCorPtr(iTr)
+      ENDDO
+#endif
 #ifdef DARWIN_ALLOW_CDOM
 # ifdef DARWIN_CDOM_UNITS_CARBON
       totflxC=totflxC+totSurfCorPtr(iCDOM)

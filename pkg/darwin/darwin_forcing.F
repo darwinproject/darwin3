@@ -447,6 +447,22 @@ C === diagnostics ======================================================
      &       0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDenitN),'DenitN  ',
      &       0,Nr,2,bi,bj,myThid)
+#ifdef DARWIN_ALLOW_CSTORE
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iEX),   'EXU     ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGW),   'BioSyn  ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDN),   'DmdN    ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDP),   'DmdP    ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDFe),  'DmdFe   ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDSi),  'DmdSi   ',
+     &       0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDmin), 'Dmdmin  ',
+     &       0,Nr,2,bi,bj,myThid)
+#endif
 
 C      nutrient consumption diagnostics
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsDIN),'C_DIN   ',
@@ -562,6 +578,33 @@ C      diags(iCons*) for convenience
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGrGC+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
        ENDDO
+#endif
+#ifdef DARWIN_ALLOW_CSTORE
+#ifdef DARWIN_ALLOW_CSTORE_DIAGS
+       DO iTr=1,nPhoto
+        WRITE(diagname, '(A,I4.4)') 'EXU', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iEXplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'BS', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iGWplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'DN', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDNplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'DP', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDPplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'DFe', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDFplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'DSi', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDSplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'Dmin', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDminplank+iTr-1),
+     &        diagname,0,Nr,2,bi,bj,myThid)
+       ENDDO
+#endif
 #endif
        CALL DIAGNOSTICS_FILL(sedFe, 'sedFe   ',0,Nr,1,bi,bj,myThid)
        IF (DIAGNOSTICS_IS_ON('sfcSolFe', myThid)) THEN

@@ -335,6 +335,7 @@ C
      &    a_ExportFracMort,
      &    a_ExportFracMort2,
      &    a_ExportFracExude,
+     &    a_FracExudeC,
      &    a_mort,
      &    a_mort2,
      &    a_phytoTempCoeff,
@@ -466,6 +467,7 @@ C
       _RL a_ExportFracMort(nGroup)
       _RL a_ExportFracMort2(nGroup)
       _RL a_ExportFracExude(nGroup)
+      _RL a_FracExudeC(nGroup)
       _RL a_mort(nGroup)
       _RL a_mort2(nGroup)
       _RL a_phytoTempCoeff(nGroup)
