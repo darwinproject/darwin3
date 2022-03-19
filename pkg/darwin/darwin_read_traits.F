@@ -52,6 +52,7 @@
      &    ExportFracMort,
      &    ExportFracMort2,
      &    ExportFracExude,
+     &    FracExudeC,
      &    phytoTempCoeff,
      &    phytoTempExp1,
      &    phytoTempAe,
@@ -358,27 +359,35 @@ C zero out unused trait entries, so they do not mess up the traits file
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       DO jp=1,nplank
 #ifndef DARWIN_ALLOW_NQUOTA
+#ifndef DARWIN_ALLOW_CSTORE
        vmaxNH4(jp) = DARWIN_UNUSED
        vmaxNO2(jp) = DARWIN_UNUSED
        vmaxNO3(jp) = DARWIN_UNUSED
        vmaxN(jp) = DARWIN_UNUSED
+#endif
        Qnmax(jp) = DARWIN_UNUSED
        Qnmin(jp) = DARWIN_UNUSED
 #endif
 #ifndef DARWIN_ALLOW_PQUOTA
+#ifndef DARWIN_ALLOW_CSTORE
        vmaxPO4(jp) = DARWIN_UNUSED
+#endif
        Qpmax(jp) = DARWIN_UNUSED
        Qpmin(jp) = DARWIN_UNUSED
 #endif
-#ifndef DARWIN_ALLOW_SIQUOTA
-       vmaxSiO2(jp) = DARWIN_UNUSED
-       Qsimax(jp) = DARWIN_UNUSED
-       Qsimin(jp) = DARWIN_UNUSED
-#endif
 #ifndef DARWIN_ALLOW_FEQUOTA
+#ifndef DARWIN_ALLOW_CSTORE
        vmaxFeT(jp) = DARWIN_UNUSED
+#endif
        Qfemax(jp) = DARWIN_UNUSED
        Qfemin(jp) = DARWIN_UNUSED
+#endif
+#ifndef DARWIN_ALLOW_SIQUOTA
+#ifndef DARWIN_ALLOW_CSTORE
+       vmaxSiO2(jp) = DARWIN_UNUSED
+#endif
+       Qsimax(jp) = DARWIN_UNUSED
+       Qsimin(jp) = DARWIN_UNUSED
 #endif
 #ifndef DARWIN_ALLOW_EXUDE
        kexcc(jp) = DARWIN_UNUSED

@@ -88,6 +88,7 @@ c !LOCAL VARIABLES: ====================================================
 
       _RL X(nplank)
       _RL Qc(nplank)
+      _RL Qctot(nplank)
       _RL Qn(nplank)
       _RL Qp(nplank)
       _RL Qsi(nplank)
@@ -95,6 +96,8 @@ c !LOCAL VARIABLES: ====================================================
 #ifdef DARWIN_ALLOW_CHLQUOTA
       _RL QChl(nPhoto)
 #endif
+      _RL Qch(nplank)
+
       _RL regQc
       _RL regQn
       _RL regQp
@@ -192,6 +195,7 @@ c !LOCAL VARIABLES: ====================================================
 
       _RL inhibNH4
 
+      _RL photoSyn
       _RL alpha_I
       _RL alpha_I_growth
       _RL PCm
@@ -237,6 +241,17 @@ c !LOCAL VARIABLES: ====================================================
 
 #ifdef DARWIN_ALLOW_DENIT
       _RL denit, denitNH4
+#endif
+
+#ifdef DARWIN_ALLOW_CSTORE
+      _RL Dmd_NC
+      _RL Dmd_PC
+      _RL Dmd_SiC
+      _RL Dmd_FeC
+      _RL Dmd_min
+      _RL excretC
+      _RL excC
+      _RL storeC
 #endif
 
 C for grazing
@@ -293,11 +308,12 @@ C for grazing
       _RL graz2CDOM, exude_CDOM
 #endif
 
-C==== precompute a few things ==========================================
+C=======================================================================
+C==== Precompute a few things ==========================================
 
       PARtot = SUM(PAR)
 
-C==== make all bio fields non-negative and compute quotas ==============
+C==== Make all bio fields non-negative and compute quotas ==============
 
       DIC  = MAX(0., Ptr(iDIC))
       NH4  = MAX(0., Ptr(iNH4))
@@ -325,13 +341,12 @@ C==== make all bio fields non-negative and compute quotas ==============
       CDOM = MAX(0., Ptr(iCDOM))
 #endif
 
-C==== make all bio fields non-negative and compute quotas ==============
-
       DO j = 1, nplank
 C fixed carbon quota, for now 1.0 (may change later)
         Qc(j) = 1.0
+        Qctot(j) = 1.0
         X(j) = MAX(0., Ptr(ic+j-1))/Qc(j)
-C other elementsj get quota from corresponding ptracer or set to fixed
+C other elements get quota from corresponding ptracer or set to fixed
 c ratio if not variable.
 #ifdef DARWIN_ALLOW_NQUOTA
         IF (X(j) .GT. 0 _d 0) THEN
@@ -379,7 +394,18 @@ c ratio if not variable.
         ENDIF
       ENDDO
 #endif
+#ifdef DARWIN_ALLOW_CSTORE
+      DO j = 1, nPhoto
+        IF (X(j) .GT. 0 _d 0) THEN
+          Qch(j) = MAX(0 _d 0, Ptr(ich+j-1))/X(j)
+        ELSE
+          Qch(j) = 0 _d 0
+        ENDIF
+        Qctot(j) = Qctot(j) + Qch(j)
+      ENDDO
+#endif
 
+C==== Initialize accumulators ==========================================
       consumDIC  = 0.0
       consumDIC_PIC = 0.0
       consumNH4  = 0.0
@@ -414,6 +440,9 @@ c ratio if not variable.
       prodNO2 = 0.0
       prodNO3 = 0.0
       respir = 0.0 _d 0
+#ifdef DARWIN_ALLOW_CSTORE
+      excC = 0.0
+#endif
 
       DO j = 1, nPhoto
         chlout(j) = 0.0 _d 0
@@ -424,21 +453,28 @@ c ratio if not variable.
       ENDDO
 
 C=======================================================================
-C==== phytoplankton ====================================================
+C==== Phototrophy ======================================================
 
       DO j = 1, nPhoto
        IF (isPhoto(j) .NE. 0) THEN
-C fixed carbon quota, for now 1.0 (may change later)
-C other elements: get quota from corresponding ptracer or set to fixed
-c ratio if not variable.
 
-C==== uptake and nutrient limitation ===================================
+C==== Uptake and nutrient limitation ===================================
 C       for quota elements, growth is limiteed by available quota,
 C       for non-quota elements, by available nutrients in medium
 
 C       to not use PO4, ..., set ksatPO4=0 and vmaxPO4=0 (if DARWIN_ALLOW_PQUOTA)
 C       or R_PC=0 (if not)
 C       the result will be limitp = 1, uptakePO4 = 0
+
+C       CSTORE/exudation:
+C       Dmd_XC means the amount of carbon needed for biosynthesis when X
+C       is the limiting nutrient.  To find the lowest demand (maximum
+C       achievable growth rate), start with a large value.  Quota
+C       elements will be handled further down in a dedicatd CSTORE
+C       section.
+#ifdef DARWIN_ALLOW_CSTORE
+        Dmd_min = HUGE(Dmd_min)
+#endif
 
 c phosphorus
         IF (ksatPO4(j) .GT. 0 _d 0) THEN
@@ -456,7 +492,17 @@ c       normalized Droop limitation
         limitp = MIN(1., (1.0-Qpmin(j)/MAX(Qpmin(j), Qp(j)))/
      &                   (1.0-Qpmin(j)/Qpmax(j)))
 #else /* no PQUOTA */
+# ifdef DARWIN_ALLOW_CSTORE
+        IF (R_PC(j) .GT. 0 _d 0) THEN
+          Dmd_PC = vmaxPO4(j)*MM_PO4*uptakeTempFunc*X(j)/R_PC(j)
+          Dmd_min = MIN(Dmd_min, Dmd_PC)
+        ELSE
+C       set to zero to avoid floating point error in diagonstic
+          Dmd_PC = 0 _d 0
+        ENDIF
+# else
         limitp = MM_PO4
+# endif
 #endif /* pquota */
 
 c silica
@@ -474,7 +520,16 @@ c       linear limitation
         limitsi = MAX(0., MIN(1., (Qsi(j) - Qsimin(j))/
      &                         (Qsimax(j) - Qsimin(j)) ))
 #else /* no SIQUOTA */
+# ifdef DARWIN_ALLOW_CSTORE
+        IF (R_SiC(j) .GT. 0 _d 0) THEN
+          Dmd_SiC = VmaxSiO2(j)*MM_SiO2*uptakeTempFunc*X(j)/R_SiC(j)
+          Dmd_min = MIN(Dmd_min, Dmd_SiC)
+        ELSE
+          Dmd_SiC = 0 _d 0
+        ENDIF
+# else
         limitsi = MM_SiO2
+# endif
 #endif
 
 c iron
@@ -492,7 +547,17 @@ c       normalized Droop limitation
         limitfe = MIN(1., (1.0-Qfemin(j)/MAX(Qfemin(j), Qfe(j)))/
      &                    (1.0-Qfemin(j)/Qfemax(j)))
 #else /* no FEQUOTA */
+C iron limit is applied in Geider
+# ifdef DARWIN_ALLOW_CSTORE
+        IF (R_FeC(j) .GT. 0 _d 0) THEN
+          Dmd_FeC = vmaxFeT(j)*MM_FeT*uptakeTempFunc*X(j)/R_FeC(j)
+          Dmd_min = MIN(Dmd_min, Dmd_FeC)
+        ELSE
+          Dmd_FeC = 0 _d 0
+        ENDIF
+# else
         limitfe = MM_FeT
+# endif
 #endif
 
 c nitrogen
@@ -538,6 +603,20 @@ C       normalize to sum 1
           fracNO2 = 0 _d 0
           fracNO3 = 0 _d 0
         ENDIF
+# ifdef DARWIN_ALLOW_CSTORE
+C       compute maximum N uptake and C demand by N
+        uptakeNH4 = vmaxNH4(j)*limitNH4*uptakeTempFunc*X(j)
+        uptakeNO2 = vmaxNO2(j)*limitNO2*uptakeTempFunc*X(j)
+        uptakeNO3 = vmaxNO3(j)*limitNO3*uptakeTempFunc*X(j)
+        uptakeN = MAX(uptakeNH4 + uptakeNO2 + uptakeNO3,
+     &                VmaxN(j)*uptakeTempFunc*diazo(j)*X(j))
+        IF (R_NC(j) .GT. 0 _d 0) THEN
+          Dmd_NC = uptakeN/R_NC(j)
+          Dmd_min = MIN(Dmd_min, Dmd_NC)
+        ELSE
+          Dmd_NC = 0 _d 0
+        ENDIF
+# endif
 C if diazo, all fracN* == 0 but want no N limitation
         limitn = MIN(1 _d 0, limitn)
         IF (diazo(j) .GT. 0) THEN
@@ -545,14 +624,19 @@ C if diazo, all fracN* == 0 but want no N limitation
         ENDIF
 #endif /* DARWIN_ALLOW_NQUOTA */
 
+#ifdef DARWIN_ALLOW_CSTORE
+C       will apply limits for quota elements to growth rate instead
+        limitnut = 1 _d 0
+#else
         limitnut = MIN(limitn, limitp, limitsi)
 #if !(defined DARWIN_ALLOW_GEIDER && defined DARWIN_ALLOW_FEQUOTA)
         limitnut = MIN(limitnut, limitfe)
 #endif
+#endif
 
         limitpCO2 = 1.
 
-C==== growth ===========================================================
+C==== Photosynthesis ===================================================
 #ifdef DARWIN_ALLOW_GEIDER
 
         alpha_I = 0 _d 0
@@ -562,6 +646,7 @@ C==== growth ===========================================================
 C       NB: for quota, PCmax(j) = Vmax_c(j)
         PCm = PCmax(j)*limitnut*photoTempFunc(j)*limitpCO2
 
+C       chl:c for 'balanced growth' at given light
         IF (PCm .GT. 0.0) THEN
           acclim = MAX(chl2cmin(j), MIN(chl2cmax(j),
      &             chl2cmax(j)/(1+(chl2cmax(j)*alpha_I)/(2*PCm)) ))
@@ -614,7 +699,7 @@ C         only 1 waveband without DARWIN_ALLOW_GEIDER
 
 #endif /* DARWIN_ALLOW_GEIDER */
 
-        uptakeDIC = PC*X(j)
+        photoSyn = PC*X(j)
 
 C==== Respiration ======================================================
 C Respiration goes straight back to DIC, so we subtract from DIC uptake.
@@ -624,9 +709,26 @@ C Zooplankton respiration is handled in the mortality/exudation loop.
         Xe = MAX(0 _d 0, X(j) - Xmin(j))
         respir_c = respRate(j)*Xe*reminTempFunc
         respir = respir + respir_c
-        uptakeDIC = uptakeDIC - respir_c
+        uptakeDIC = photoSyn - respir_c
 
-C==== chlorophyll ======================================================
+C==== Growth ===========================================================
+C Growth is growth rate of functional internal carbon
+
+#ifdef DARWIN_ALLOW_CSTORE
+C To decide the growth rate according to the minimum of C demand and
+C photosynthesis.  To decide the minimum of C demand by the four
+C elements (N, P, Si, Fe), Dmd_XC is the maximum carbon-specific
+C photosynthesis rate convertible into biomass when X is the limiting
+C nutrient as computed above.
+        growth = MIN(uptakeDIC, Dmd_min)
+        excretC = MAX(0.0, uptakeDIC - growth)*FracExudeC(j)
+        excC = excC + excretC
+        storeC = uptakeDIC - growth - excretC
+#else /* without CSTORE */
+        growth = uptakeDIC
+#endif /* DARWIN_ALLOW_CSTORE */
+
+C==== Geider 1997 Chlorophyll ==========================================
 #ifdef DARWIN_ALLOW_GEIDER
 # ifdef DARWIN_ALLOW_CHLQUOTA
 #  ifdef DARWIN_ALLOW_NQUOTA
@@ -643,17 +745,19 @@ C       Geider 1998
         ENDIF
 C       synth cost goes straight back to DIC
         uptakeDIC = uptakeDIC - synthcost*uptakeN
+        growth = growth - synthcost*uptakeN
 #  else /* not DARWIN_ALLOW_NQUOTA */
 #   ifdef DARWIN_GEIDER_RHO_SYNTH
         IF (alpha_I .GT. 0.0 _d 0 .AND. acclim .GT. 0.0 _d 0) THEN
+C         should be chl2c instead of acclim?
           rhochl = Chl2Cmax(j)*PC/(alpha_I*acclim)
         ELSE
           rhochl = 0.0 _d 0    ! should be Chl2Cmax(j) ?????
         ENDIF
-        synthChl = rhochl*uptakeDIC +
+        synthChl = rhochl*growth +
      &                      acclimtimescl(j)*(acclim-chl2c)*X(j)
 #   else
-        synthChl = acclim*uptakeDIC +
+        synthChl = acclim*growth +
      &                      acclimtimescl(j)*(acclim-chl2c)*X(j)
 #   endif
 #  endif /* not DARWIN_ALLOW_NQUOTA */
@@ -663,10 +767,10 @@ C       synth cost goes straight back to DIC
 # endif /* DARWIN_ALLOW_CHLQUOTA */
 #endif /* DARWIN_ALLOW_GEIDER */
 
-C=======================================================================
-C non-quota elements are taken up with fixed stoichiometry
+C==== Uptake of non-quota elements =====================================
+C       non-quota elements are taken up with fixed stoichiometry
 #ifndef DARWIN_ALLOW_NQUOTA
-        uptakeN = uptakeDIC*R_NC(j)
+        uptakeN = growth*R_NC(j)
 C Maintain ratios of NH4, NO2 and NO3 uptake.
         IF (uptakeN .GE. 0 _d 0) THEN
          uptakeNH4 = uptakeN*fracNH4
@@ -681,16 +785,17 @@ C Excess respired N goes to NO3.
         ENDIF
 #endif
 #ifndef DARWIN_ALLOW_PQUOTA
-        uptakePO4 = uptakeDIC*R_PC(j)
+        uptakePO4 = growth*R_PC(j)
 #endif
 #ifndef DARWIN_ALLOW_SIQUOTA
-        uptakeSiO2 = uptakeDIC*R_SiC(j)
+        uptakeSiO2 = growth*R_SiC(j)
 #endif
 #ifndef DARWIN_ALLOW_FEQUOTA
-        uptakeFeT = uptakeDIC*R_FeC(j)
+        uptakeFeT = growth*R_FeC(j)
 #endif
 
-        consumDIC_PIC = consumDIC_PIC + uptakeDIC*R_PICPOC(j)
+C==== Nutrient consumption =============================================
+        consumDIC_PIC = consumDIC_PIC + growth*R_PICPOC(j)
         consumDIC  = consumDIC  + uptakeDIC
         consumNH4  = consumNH4  + uptakeNH4
         consumNO2  = consumNO2  + uptakeNO2
@@ -707,10 +812,31 @@ C Excess respired N goes to NO3.
         IF (diazo(j) .GT. 0.0 _d 0) THEN
          diags(iNfix)=diags(iNfix)+uptakeN-uptakeNH4-uptakeNO2-uptakeNO3
         ENDIF
+#ifdef DARWIN_ALLOW_CSTORE
+        diags(iEX) = diags(iEX) + excretC
+        diags(iGW) = diags(iGW) + growth
+        diags(iDN) = diags(iDN) + Dmd_NC
+        diags(iDP) = diags(iDP) + Dmd_PC
+        diags(iDFe) = diags(iDFe) + Dmd_FeC
+        diags(iDSi) = diags(iDSi) + Dmd_SiC
+        diags(iDmin)= diags(iDmin)+ Dmd_min
+#ifdef DARWIN_ALLOW_CSTORE_DIAGS
+        diags(iEXplank+j-1) = diags(iEXplank+j-1) + excretC
+        diags(iGWplank+j-1) = diags(iGWplank+j-1) + growth
+        diags(iDNplank+j-1) = diags(iDNplank+j-1) + Dmd_NC
+        diags(iDPplank+j-1) = diags(iDPplank+j-1) + Dmd_PC
+        diags(iDFplank+j-1) = diags(iDFplank+j-1) + Dmd_FeC
+        diags(iDSplank+j-1) = diags(iDSplank+j-1) + Dmd_SiC
+        diags(iDminplank+j-1) = diags(iDminplank+j-1) + Dmd_min
+#endif
+#endif
 
-C=======================================================================
+C==== Apply phototrophy tendencies =====================================
 
-        gTr(ic+j-1)=gTr(ic+j-1)  + uptakeDIC
+        gTr(ic+j-1)=gTr(ic+j-1)  + growth
+#ifdef DARWIN_ALLOW_CSTORE
+        gTr(ich+j-1)=gTr(ich+j-1)  + storeC
+#endif
 #ifdef DARWIN_ALLOW_NQUOTA
         gTr(in+j-1)=gTr(in+j-1)  + uptakeN
 #endif
@@ -747,7 +873,7 @@ C     j
       ENDDO
 
 C=======================================================================
-C==== bacteria =========================================================
+C==== Bacteria =========================================================
 
       DO j = 1, nplank
        IF (bactType(j) .NE. 0) THEN
@@ -884,7 +1010,7 @@ C     j loop end
       ENDDO
 
 C=======================================================================
-C=======================================================================
+C==== Apply phototrophic and bacterial nutrient consumption ============
 
       gTr(iDIC )=gTr(iDIC ) - consumDIC - consumDIC_PIC
 
@@ -898,6 +1024,7 @@ C=======================================================================
       gTr(iSiO2)=gTr(iSiO2) - consumSiO2
       gTr(iFeT )=gTr(iFeT ) - consumFeT
 
+C==== Add parameterized remineralization ===============================
 #ifdef DARWIN_ALLOW_DENIT
       IF (O2 .GE. O2crit .OR. NO3 .GE. NO3crit) THEN
 #else
@@ -948,7 +1075,7 @@ C     endif O2, NO3 for DARWIN_ALLOW_DENIT
 
       disscPIC = Kdissc*PIC
 
-c nitrogen chemistry
+C==== Nitrogen chemistry ===============================================
 c NH4 -> NO2 -> NO3 by bacterial action, parameterized
       prodNO2 = knita*NH4
       prodNO3 = knitb*NO2
@@ -957,6 +1084,7 @@ c NH4 -> NO2 -> NO3 by bacterial action, parameterized
         prodNO3 = prodNO3*MAX(0.0, 1.0 - PARtot/PAR_oxi)
       ENDIF
 
+C==== CDOM =============================================================
 #ifdef DARWIN_ALLOW_CDOM
 # ifdef DARWIN_CDOM_UNITS_CARBON
       reminPOC_CDOM = fracCDOM*reminPOC
@@ -991,7 +1119,7 @@ c increase when bleached by light
 # endif
 #endif
 
-C==== apply tendencies =================================================
+C==== Apply remaining tendencies =======================================
 
 #ifdef DARWIN_ALLOW_CARBON
 c production of O2 by photosynthesis
@@ -1038,6 +1166,9 @@ c loss of O2 by remineralization
 
 C     DOC is created by #4 PA-assoc solubilization and consumed by #5
       gTr(iDOC )=gTr(iDOC ) + solubilPOC - consumDOC
+#ifdef DARWIN_ALLOW_CSTORE
+      gTr(iDOC )=gTr(iDOC ) + excC
+#endif
       gTr(iDON )=gTr(iDON ) + solubilPON - consumDON
       gTr(iDOP )=gTr(iDOP ) + solubilPOP - consumDOP
       gTr(iDOFe)=gTr(iDOFe) + solubilPOFe - consumDOFe
@@ -1080,7 +1211,8 @@ C     DOC is created by #4 PA-assoc solubilization and consumed by #5
       diags(iConsSi)  = consumSiO2
       diags(iConsFe)  = consumFeT
 
-C==== grazing ==========================================================
+C=======================================================================
+C==== Grazing ==========================================================
 
       DO j=1,nplank
        preygraz(j)   = 0.0
@@ -1176,8 +1308,10 @@ C       regulate grazing near full quota
           preygraz(jp) = preygraz(jp) + grazphy
           preygrazexp(jp) = preygrazexp(jp) + expFrac*grazphy
 
-          predgrazc(jz) = predgrazc(jz) + grazphy*asseff(jp,jz)*regQc
-          predexpc = predexpc + expFrac*grazphy*asseff(jp,jz)*regQc
+          predgrazc(jz) = predgrazc(jz) + grazphy*asseff(jp,jz)*
+     &                                    regQc*Qctot(jp)
+          predexpc = predexpc + expFrac*grazphy*asseff(jp,jz)*
+     &                                    regQc*Qctot(jp)
 #ifdef DARWIN_ALLOW_NQUOTA
           predgrazn(jz) = predgrazn(jz) + grazphy*asseff(jp,jz)*
      &                                    regQn*Qn(jp)
@@ -1233,7 +1367,7 @@ C     end predator loop
 
       DO jp = 1, nplank
        IF (isPrey(jp).NE.0) THEN
-          graz2OC  = graz2OC  + preygraz(jp)
+          graz2OC  = graz2OC  + preygraz(jp)*Qctot(jp)
           graz2ON  = graz2ON  + preygraz(jp)*Qn (jp)
           graz2OP  = graz2OP  + preygraz(jp)*Qp (jp)
           graz2POSi = graz2POSi + preygraz(jp)*Qsi(jp)
@@ -1242,14 +1376,14 @@ C     end predator loop
           graz2PIC = graz2PIC + preygraz(jp)*R_PICPOC(jp)
 #endif
 
-          graz2POC  = graz2POC  + preygrazexp(jp)
+          graz2POC  = graz2POC  + preygrazexp(jp)*Qctot(jp)
           graz2PON  = graz2PON  + preygrazexp(jp)*Qn (jp)
           graz2POP  = graz2POP  + preygrazexp(jp)*Qp (jp)
           graz2POFe = graz2POFe + preygrazexp(jp)*Qfe(jp)
        ENDIF
       ENDDO
 
-C==== tendencies =======================================================
+C==== Apply grazing tendencies =========================================
 
       gTr(iDOC )=gTr(iDOC ) + graz2OC  - graz2POC
       gTr(iDON )=gTr(iDON ) + graz2ON  - graz2PON
@@ -1307,6 +1441,13 @@ C==== tendencies =======================================================
       ENDIF
       ENDDO
 #endif
+#ifdef DARWIN_ALLOW_CSTORE
+      DO jp = 1, nPhoto
+      IF (isPrey(jp).NE.0) THEN
+       gTr(ich+jp-1)=gTr(ich+jp-1) - preygraz(jp)*Qch(jp)
+      ENDIF
+      ENDDO
+#endif
 
       DO jz = 1, nplank
       IF (isPred(jz).NE.0) THEN
@@ -1333,7 +1474,8 @@ C==== tendencies =======================================================
       ENDDO
 #endif
 
-C==== mortality ========================================================
+C=======================================================================
+C==== Mortality and parameterized exudation ============================
       exude_DOC  = 0.0 _d 0
       exude_POC  = 0.0 _d 0
       exude_DON  = 0.0 _d 0
@@ -1357,10 +1499,17 @@ C==== mortality ========================================================
 
         mort_c(jp) = mortX + mortX2
 
+#ifdef DARWIN_ALLOW_CSTORE
+        exude_DOC=exude_DOC+(1.-ExportFracMort(jp)) *mortX*Qctot(jp)
+     &                     +(1.-ExportFracMort2(jp))*mortX2*Qctot(jp)
+        exude_POC=exude_POC+    ExportFracMort(jp)  *mortX*Qctot(jp)
+     &                     +    ExportFracMort2(jp) *mortX2*Qctot(jp)
+#else
         exude_DOC = exude_DOC + (1.-ExportFracMort(jp)) *mortX
      &                        + (1.-ExportFracMort2(jp))*mortX2
         exude_POC = exude_POC +     ExportFracMort(jp)  *mortX
      &                        +     ExportFracMort2(jp) *mortX2
+#endif
 
         exude_DON = exude_DON + (1.-ExportFracMort(jp)) *mortX *Qn(jp)
      &                        + (1.-ExportFracMort2(jp))*mortX2*Qn(jp)
@@ -1456,6 +1605,11 @@ C to DIC as if it had never been synthesized.
 #ifdef DARWIN_ALLOW_CHLQUOTA
       DO jp = 1, nPhoto
         gTr(iChl+jp-1)=gTr(iChl+jp-1) - mort_c(jp)*QChl(jp)
+      ENDDO
+#endif
+#ifdef DARWIN_ALLOW_CSTORE
+      DO jp = 1, nPhoto
+        gTr(ich+jp-1)=gTr(ich+jp-1) - mort_c(jp)*Qch(jp)
       ENDDO
 #endif
 

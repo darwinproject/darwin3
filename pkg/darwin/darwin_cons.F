@@ -99,6 +99,12 @@ c carbon budget
            iTr=ic+np-1
            tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iTr)*(1+R_PICPOC(np))*vol
           ENDDO
+#ifdef DARWIN_ALLOW_CSTORE
+          DO np=1,nPhoto
+           iTr=ich+np-1
+           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iTr)*vol
+          ENDDO
+#endif
 #ifdef DARWIN_ALLOW_CDOM
 # ifdef DARWIN_CDOM_UNITS_CARBON
           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iCDOM)*vol
