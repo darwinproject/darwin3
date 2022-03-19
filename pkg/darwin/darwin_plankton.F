@@ -275,6 +275,10 @@ C for grazing
 
       _RL respir
       _RL respir_c
+      _RL respirN
+      _RL respirP
+      _RL respirFe
+      _RL respirSi
 
 #ifdef DARWIN_ALLOW_CDOM
       _RL graz2CDOM, exude_CDOM
@@ -400,6 +404,7 @@ c ratio if not variable.
       solubilPOFe  = 0.0
       prodNO2 = 0.0
       prodNO3 = 0.0
+      respir = 0.0 _d 0
 
       DO j = 1, nPhoto
         chlout(j) = 0.0 _d 0
@@ -597,6 +602,16 @@ C         only 1 waveband without DARWIN_ALLOW_GEIDER
 
         uptakeDIC = PC*X(j)
 
+C==== Respiration ======================================================
+C Respiration goes straight back to DIC, so we subtract from DIC uptake.
+C Uptake of other non-quota elements is reduced according to plankton
+C stoichiometry to ensure conservation of chemical elements.
+C Zooplankton respiration is handled in the mortality/exudation loop.
+        Xe = MAX(0 _d 0, X(j) - Xmin(j))
+        respir_c = respRate(j)*Xe*reminTempFunc
+        respir = respir + respir_c
+        uptakeDIC = uptakeDIC - respir_c
+
 C==== chlorophyll ======================================================
 #ifdef DARWIN_ALLOW_GEIDER
 # ifdef DARWIN_ALLOW_CHLQUOTA
@@ -638,9 +653,18 @@ C=======================================================================
 C non-quota elements are taken up with fixed stoichiometry
 #ifndef DARWIN_ALLOW_NQUOTA
         uptakeN = uptakeDIC*R_NC(j)
-        uptakeNH4 = uptakeN*fracNH4
-        uptakeNO2 = uptakeN*fracNO2
-        uptakeNO3 = uptakeN*fracNO3
+C Maintain ratios of NH4, NO2 and NO3 uptake.
+        IF (uptakeN .GE. 0 _d 0) THEN
+         uptakeNH4 = uptakeN*fracNH4
+         uptakeNO2 = uptakeN*fracNO2
+         uptakeNO3 = uptakeN*fracNO3
+        ELSE
+C Do not allow uptake of NH4 and NO2 to go negative.
+C Excess respired N goes to NO3.
+         uptakeNH4 = 0 _d 0
+         uptakeNO2 = 0 _d 0
+         uptakeNO3 = uptakeN
+        ENDIF
 #endif
 #ifndef DARWIN_ALLOW_PQUOTA
         uptakePO4 = uptakeDIC*R_PC(j)
@@ -1307,6 +1331,10 @@ C==== mortality ========================================================
       exude_POSi = 0.0 _d 0
       exude_PIC  = 0.0 _d 0
       respir     = 0.0 _d 0
+      respirN    = 0.0 _d 0
+      respirP    = 0.0 _d 0
+      respirFe   = 0.0 _d 0
+      respirSi   = 0.0 _d 0
 
       DO jp = 1, nplank
         Xe = MAX(0 _d 0, X(jp) - Xmin(jp))
@@ -1337,12 +1365,31 @@ C==== mortality ========================================================
 
         exude_POSi = exude_POSi + mort_c(jp)*Qsi(jp)
 
-        respir_c = respRate(jp)*Xe*reminTempFunc
-        respir = respir + respir_c
+        exude_PIC = exude_PIC + mort_c(jp)*R_PICPOC(jp)
 
-        exude_PIC = exude_PIC + (mort_c(jp)+respir_c)*R_PICPOC(jp)
+C Respiration of non-phototrophs
+C Respired carbon goes to DIC.  Other non-quota elements go to inorganic
+C matter pools according to plankton stoichiometry.  PIC also goes back
+C to DIC as if it had never been synthesized.
+        IF (isPhoto(jp) .EQ. 0) THEN
+         respir_c = respRate(jp)*Xe*reminTempFunc
+         gTr(ic+jp-1) = gTr(ic+jp-1) - respir_c
+         respir = respir + respir_c*(1 _d 0 + R_PICPOC(jp))
+#ifndef DARWIN_ALLOW_NQUOTA
+         respirN = respirN + respir_c*R_NC(jp)
+#endif
+#ifndef DARWIN_ALLOW_PQUOTA
+         respirP = respirP + respir_c*R_PC(jp)
+#endif
+#ifndef DARWIN_ALLOW_FEQUOTA
+         respirFe = respirFe + respir_c*R_FeC(jp)
+#endif
+#ifndef DARWIN_ALLOW_SIQUOTA
+         respirSi = respirSi + respir_c*R_SiC(jp)
+#endif
+        ENDIF
 
-        gTr(ic+jp-1)=gTr(ic+jp-1)  - mort_c(jp) - respir_c
+        gTr(ic+jp-1)=gTr(ic+jp-1)  - mort_c(jp)
 #ifdef DARWIN_ALLOW_NQUOTA
         gTr(in+jp-1)=gTr(in+jp-1)  - mort_c(jp)*Qn(jp)
 #endif
@@ -1398,7 +1445,19 @@ C==== mortality ========================================================
       ENDDO
 #endif
 
-      gTr(iDIC )=gTr(iDIC ) + respir
+      gTr(iDIC) = gTr(iDIC) + respir
+#ifndef DARWIN_ALLOW_NQUOTA
+      gTr(iNO3) = gTr(iNO3) + respirN
+#endif
+#ifndef DARWIN_ALLOW_PQUOTA
+      gTr(iPO4) = gTr(iPO4) + respirP
+#endif
+#ifndef DARWIN_ALLOW_FEQUOTA
+      gTr(iFeT) = gTr(iFeT) + respirFe
+#endif
+#ifndef DARWIN_ALLOW_SIQUOTA
+      gTr(iSiO2) = gTr(iSiO2) + respirSi
+#endif
 
       diags(iRespirDIC) = respir
 
