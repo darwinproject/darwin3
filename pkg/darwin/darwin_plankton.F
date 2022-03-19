@@ -1383,9 +1383,7 @@ C     end predator loop
           graz2OP  = graz2OP  + preygraz(jp)*Qp (jp)
           graz2POSi = graz2POSi + preygraz(jp)*Qsi(jp)
           graz2OFe = graz2OFe + preygraz(jp)*Qfe(jp)
-#ifdef DARWIN_ALLOW_CARBON
           graz2PIC = graz2PIC + preygraz(jp)*R_PICPOC(jp)
-#endif
 
           graz2POC  = graz2POC  + preygrazexp(jp)*Qctot(jp)
           graz2PON  = graz2PON  + preygrazexp(jp)*Qn (jp)
@@ -1405,9 +1403,7 @@ C==== Apply grazing tendencies =========================================
       gTr(iPOP )=gTr(iPOP ) + graz2POP
       gTr(iPOSi)=gTr(iPOSi) + graz2POSi
       gTr(iPOFe)=gTr(iPOFe) + graz2POFe
-#ifdef DARWIN_ALLOW_CARBON
       gTr(iPIC )=gTr(iPIC ) + graz2PIC
-#endif
 #ifdef DARWIN_ALLOW_CDOM
 # ifdef DARWIN_CDOM_UNITS_CARBON
       graz2CDOM = fracCDOM*(graz2OC - graz2POC)
