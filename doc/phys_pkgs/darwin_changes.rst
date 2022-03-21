@@ -5,6 +5,7 @@ Change Log
 
 (bug fixes and breaking changes in bold)
 
+- 2022-03-30 Add code for internal carbon store and exudation
 - 2022-03-30 **Fix conservation of non-quota elems with parameterized respiration**
 - 2022-03-30 **Adjust uptake of non-quota elements for synthcost**
 - 2022-03-30 **Keep iron limit when using FEQUOTA without Geider**

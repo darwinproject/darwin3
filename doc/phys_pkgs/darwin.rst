@@ -15,6 +15,7 @@ ecosystem model is split over a number of pages:
 
    darwin_equations
    darwin_growth
+   darwin_cstore
    darwin_light
    darwin_spectral
    darwin_uptake
