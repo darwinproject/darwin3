@@ -972,7 +972,18 @@ C         DOC respired to DIC
         diags(iHCplank+j-1) = diags(iHCplank+j-1) + mu
 #endif
 
-        gTr(ic+j-1)=gTr(ic+j-1) + growth
+        gTr(ic+j-1) = gTr(ic+j-1) + growth
+
+C bacteria have fixed elemental ratios for now
+#ifdef DARWIN_ALLOW_NQUOTA
+        gTr(in+j-1) = gTr(in+j-1) + growth*R_NC(j)
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+        gTr(ip+j-1) = gTr(ip+j-1) + growth*R_PC(j)
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+        gTr(ife+j-1) = gTr(ife+j-1) + growth*R_FeC(j)
+#endif
 
 C==== Cumulative consum, remin, and prod ===============================
         consumNO3  = consumNO3  + uptakeNO3
