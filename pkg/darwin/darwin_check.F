@@ -329,6 +329,17 @@ C check we are not using hollexp and also inhib_graz or DARWIN_GRAZING_SWITCH
 # endif
 #endif
 
+C Bacteria have fixed elemental ratios even when quotas are turned on
+#if defined(DARWIN_ALLOW_NQUOTA) || defined(DARWIN_ALLOW_PQUOTA) || defined(DARWIN_ALLOW_FEQUOTA) || defined(DARWIN_ALLOW_SIQUOTA)
+      DO j=1,nplank
+       IF (bactType(j) .NE. 0) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: Warning: ',
+     &   'Bacteria have fixed elemental quotas'
+        CALL PRINT_ERROR( msgBuf , 1)
+       ENDIF
+      ENDDO
+#endif
+
 C Carbon store is only implemented without quotas
 #ifdef DARWIN_ALLOW_CSTORE
 # ifdef DARWIN_ALLOW_NQUOTA
