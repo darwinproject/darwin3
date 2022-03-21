@@ -5,6 +5,13 @@ Change Log
 
 (bug fixes and breaking changes in bold)
 
+- 2022-03-30 **Fix conservation of non-quota elems with parameterized respiration**
+- 2022-03-30 **Adjust uptake of non-quota elements for synthcost**
+- 2022-03-30 **Keep iron limit when using FEQUOTA without Geider**
+- 2022-03-23 Add per-type growth diagnostics HP####, HC####, GrGC####
+
+darwin_ckpt68g
+
 - 2022-02-16 Darwin doc overhaul
 - 2022-02-12 Add option for CDOM to be in carbon units
 - 2022-02-12 Use applied pressure for pressure correction
