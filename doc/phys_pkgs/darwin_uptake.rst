@@ -34,7 +34,7 @@ Monod limitation
 
 .. math:: \gamma^{\mathrm{P}}_j = \frac{\mathrm{PO}_4}{\mathrm{PO}_4 + k^{\op{PO4}}_j}
 
-.. math:: U^{\mathrm{P}}_j = R^{{\mathrm{P}}:{\mathrm{C}}}_j P^{\mathrm{C}}_j {c}_j
+.. math:: U^{\mathrm{P}}_j = R^{{\mathrm{P}}:{\mathrm{C}}}_j U^{\op{DIC}}_j
 
 With P quota:
 '''''''''''''
@@ -132,15 +132,15 @@ Uptake is then
 
      U^{\op{NH4}}_j &= \frac{\gamma^{\op{NH4}}_j}
                     {\gamma^{\op{NH4}}_j + \gamma^{\op{NO2}}_j + \gamma^{\op{NO3}}_j}
-                    R^{{\mathrm{N}}:{\mathrm{C}}}_j P^{\mathrm{C}}_j {c}_j
+                    R^{{\mathrm{N}}:{\mathrm{C}}}_j U^{\op{DIC}}_j
 
      U^{\op{NO2}}_j &= \frac{\gamma^{\op{NO2}}_j}
                     {\gamma^{\op{NH4}}_j + \gamma^{\op{NO2}}_j + \gamma^{\op{NO3}}_j}
-                    R^{{\mathrm{N}}:{\mathrm{C}}}_j P^{\mathrm{C}}_j {c}_j
+                    R^{{\mathrm{N}}:{\mathrm{C}}}_j U^{\op{DIC}}_j
 
      U^{\op{NO3}}_j &= \frac{\gamma^{\op{NO3}}_j}
                      {\gamma^{\op{NH4}}_j + \gamma^{\op{NO2}}_j + \gamma^{\op{NO3}}_j}
-                     R^{{\mathrm{N}}:{\mathrm{C}}}_j P^{\mathrm{C}}_j {c}_j
+                     R^{{\mathrm{N}}:{\mathrm{C}}}_j U^{\op{DIC}}_j
 
 With N quota:
 '''''''''''''
@@ -213,7 +213,7 @@ Without Fe quota:
 
 .. math:: \gamma^{\op{QFe}}_j = 1
 
-.. math:: U^{\op{Fe}}_j = R^{\op{Fe}:{\mathrm{C}}}_j P^{\mathrm{C}}_j {c}_j
+.. math:: U^{\op{Fe}}_j = R^{\op{Fe}:{\mathrm{C}}}_j U^{\op{DIC}}_j
 
 
 With Fe quota,
