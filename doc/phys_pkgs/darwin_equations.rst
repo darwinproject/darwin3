@@ -60,7 +60,7 @@ linear free surface formulation discussed in
 The following abbreviated source terms are described in sections below:
 
 - :math:`U`: uptake, see :ref:`Uptake` and :ref:`Bacteria`,
-  also :ref:`Growth`, :ref:`Light` and :ref:`Spectral`
+  also :ref:`Growth`, :ref:`CarbonStore`, :ref:`Light` and :ref:`Spectral`
 - :math:`M`: :ref:`Mortality`
 - :math:`R^{\mathrm{C}}`: :ref:`Respiration`
 - :math:`H`, :math:`R_j`: bacterial hydrolysis and remineralization, see :ref:`Bacteria`
