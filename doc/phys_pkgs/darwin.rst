@@ -24,6 +24,7 @@ ecosystem model is split over a number of pages:
    darwin_cdom
    darwin_carbon
    darwin_iron
+   darwin_resp
    darwin_mort
    darwin_exude
    darwin_grazing
