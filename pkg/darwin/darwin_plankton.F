@@ -527,7 +527,7 @@ C if diazo, all fracN* == 0 but want no N limitation
 #endif /* DARWIN_ALLOW_NQUOTA */
 
         limitnut = MIN(limitn, limitp, limitsi)
-#ifndef DARWIN_ALLOW_FEQUOTA
+#if !(defined DARWIN_ALLOW_GEIDER && defined DARWIN_ALLOW_FEQUOTA)
         limitnut = MIN(limitnut, limitfe)
 #endif
 
