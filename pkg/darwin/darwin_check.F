@@ -100,7 +100,10 @@ CCOG]]]
 #ifdef DARWIN_ALLOW_CHLQUOTA
       INTEGER i_Chl, e_Chl
 #endif
-CCOG[[[end]]] (checksum: fda07ee4b9e30b0d4919bee98d030025)
+#ifdef DARWIN_ALLOW_CSTORE
+      INTEGER i_ch, e_ch
+#endif
+CCOG[[[end]]] (checksum: 1916d588f1c9768c75358b16b3668716)
       INTEGER n_DARWIN
 
       NAMELIST/DARWIN_INDICES/
@@ -155,7 +158,10 @@ CCOG]]]
 #ifdef DARWIN_ALLOW_CHLQUOTA
      &    i_Chl, e_Chl,
 #endif
-CCOG[[[end]]] (checksum: f12561ee0f9d111c504373bd03e7b7fb)
+#ifdef DARWIN_ALLOW_CSTORE
+     &    i_ch, e_ch,
+#endif
+CCOG[[[end]]] (checksum: 0e66f1b9da7ec7a8cdcee6982dbf6ee5)
      &    n_DARWIN
 
       _BEGIN_MASTER(myThid)
@@ -221,7 +227,11 @@ CCOG]]]
        i_Chl = iChl
        e_Chl = eChl
 #endif
-CCOG[[[end]]] (checksum: 216985aa5ad9c0682720271669178696)
+#ifdef DARWIN_ALLOW_CSTORE
+       i_ch = ich
+       e_ch = ech
+#endif
+CCOG[[[end]]] (checksum: a71e683a0fd6b38624b27db90e6ece19)
        n_DARWIN = nDARWIN
 
        CALL MDSFINDUNIT( oUnit, mythid )
@@ -536,7 +546,17 @@ CCOG]]]
      &                     SQUEEZE_RIGHT,myThid)
       ENDDO
 #endif
-CCOG[[[end]]] (checksum: 74ce65a9bf6ddd1b59465e34262c2cff)
+
+#ifdef DARWIN_ALLOW_CSTORE
+      DO j = 1, ech+1-ich
+        iPtr = ich + j - 1
+        WRITE(msgBuf,'(A,I4,X,A,I4,X,A32)') 'DARWIN_CHECK: ',
+     &    iPtr, 'ch   ', j, PTRACERS_names(iPtr)
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                     SQUEEZE_RIGHT,myThid)
+      ENDDO
+#endif
+CCOG[[[end]]] (checksum: 05ba5478d3ba98e0625cfbc0f8f1432c)
 
       _END_MASTER(myThid)
 
