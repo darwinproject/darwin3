@@ -1077,7 +1077,7 @@ C     endif O2, NO3 for DARWIN_ALLOW_DENIT
       ENDIF
 
 #ifdef DARWIN_ALLOW_CARBON
-      IF (O2 .GT. O2crit) THEN
+      IF (O2 .GE. O2crit) THEN
         consumO2  = consumO2  + respDOP*R_OP
 #ifndef DARWIN_ALLOW_CDOM
         consumO2  = consumO2  + respPOP*R_OP
@@ -1138,12 +1138,10 @@ c production of O2 by photosynthesis
       gTr(iO2  )=gTr(iO2  ) + R_OP*consumPO4
       diags(iProdO2) = diags(iProdO2) + R_OP*consumPO4
 c loss of O2 by remineralization
-      IF (O2 .GT. O2crit) THEN
+      IF (O2 .GE. O2crit) THEN
         gTr(iO2)=gTr(iO2) - consumO2
         diags(iConsO2) = diags(iConsO2) + consumO2
       ENDIF
-
-      diags(iConsO2) = consumO2
 
       gTr(iALK)=gTr(iALK) - (prodNO3 - consumNO3)
      &                    - 2.0 _d 0*(consumDIC_PIC - disscPIC)
