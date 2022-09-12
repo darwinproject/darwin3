@@ -740,7 +740,13 @@ CADJ STORE rStarExpC = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ALLOW_GCHEM
       IF ( .NOT.staggerTimeStep ) THEN
         IF ( useGCHEM ) THEN
+#ifdef ALLOW_LONGSTEP
+         IF ( MOD(myIterBeg, LS_nIter) .EQ. 0 ) THEN
+#endif
           CALL GCHEM_CONS(0, myTime, myIter, myThid)
+#ifdef ALLOW_LONGSTEP
+         ENDIF
+#endif
         ENDIF
       ENDIF
 #endif
@@ -1051,7 +1057,13 @@ C--   State-variables diagnostics
 
 #ifdef ALLOW_GCHEM
         IF ( useGCHEM ) THEN
+#ifdef ALLOW_LONGSTEP
+         IF ( MOD(myIterBeg, LS_nIter) .EQ. 0 ) THEN
+#endif
           CALL GCHEM_CONS(0, myTime, myIter, myThid)
+#ifdef ALLOW_LONGSTEP
+         ENDIF
+#endif
         ENDIF
 #endif
 
