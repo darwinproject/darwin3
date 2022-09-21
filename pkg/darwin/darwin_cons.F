@@ -23,6 +23,7 @@ C !USES: ===============================================================
 #include "DARWIN_PARAMS.h"
 #include "DARWIN_TRAITS.h"
 #include "DARWIN_FIELDS.h"
+#include "DARWIN_EXF_PARAMS.h"
 #include "DARWIN_EXF_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -55,6 +56,16 @@ C !LOCAL VARIABLES: ====================================================
       _RL tileBotSnkP(nSx,nSy)
       _RL tileBotSnkFe(nSx,nSy)
       _RL tileBotSnkSi(nSx,nSy)
+#endif
+#ifdef DARWIN_NUTRIENT_RUNOFF
+      _RL tilerunoffC(nSx,nSy)
+      _RL tilerunoffN(nSx,nSy)
+      _RL tilerunoffP(nSx,nSy)
+      _RL tilerunoffFe(nSx,nSy)
+      _RL tilerunoffSi(nSx,nSy)
+#ifdef DARWIN_ALLOW_CARBON
+      _RL tilerunoffA(nSx,nSy)
+#endif
 #endif
 #ifdef EXACT_CONSERV
       _RL tileEPRC(nSx,nSy)
@@ -94,6 +105,12 @@ C !LOCAL VARIABLES: ====================================================
       _RL tmpBotSnkP
       _RL tmpBotSnkFe
       _RL tmpBotSnkSi
+      _RL tmprunoffC
+      _RL tmprunoffN
+      _RL tmprunoffP
+      _RL tmprunoffFe
+      _RL tmprunoffSi
+      _RL tmprunoffA
       _RL tmpEPRC
       _RL tmpEPRN
       _RL tmpEPRP
@@ -136,6 +153,12 @@ C !LOCAL VARIABLES: ====================================================
       tmpBotSnkP = 0 _d 0
       tmpBotSnkFe = 0 _d 0
       tmpBotSnkSi = 0 _d 0
+      tmprunoffC = 0 _d 0
+      tmprunoffN = 0 _d 0
+      tmprunoffP = 0 _d 0
+      tmprunoffFe = 0 _d 0
+      tmprunoffSi = 0 _d 0
+      tmprunoffA = 0 _d 0
       tmpEPRC = 0 _d 0
       tmpEPRN = 0 _d 0
       tmpEPRP = 0 _d 0
@@ -176,6 +199,16 @@ C !LOCAL VARIABLES: ====================================================
        tileBotSnkP(bi,bj) = 0. _d 0
        tileBotSnkFe(bi,bj) = 0. _d 0
        tileBotSnkSi(bi,bj) = 0. _d 0
+#endif
+#ifdef DARWIN_NUTRIENT_RUNOFF
+       tilerunoffC(bi,bj) = 0. _d 0
+       tilerunoffN(bi,bj) = 0. _d 0
+       tilerunoffP(bi,bj) = 0. _d 0
+       tilerunoffFe(bi,bj) = 0. _d 0
+       tilerunoffSi(bi,bj) = 0. _d 0
+#ifdef DARWIN_ALLOW_CARBON
+       tilerunoffA(bi,bj) = 0. _d 0
+#endif
 #endif
 #ifdef EXACT_CONSERV
        tileEPRC(bi,bj) = 0. _d 0
@@ -377,6 +410,38 @@ c-----------------------------------------------------------------------
         ELSEIF (stage .EQ. 2) THEN
         tilesfcflxFe(bi,bj)=tilesfcflxFe(bi,bj)+alpfe*inputfe(i,j,bi,bj)
      &                                         *PTRACERS_dtLev(ks)*area
+#ifdef DARWIN_NUTRIENT_RUNOFF
+        tilerunoffC(bi,bj) = tilerunoffC(bi,bj) + DOCrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffN(bi,bj) = tilerunoffN(bi,bj) + DONrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffP(bi,bj) = tilerunoffP(bi,bj) + DOPrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffN(bi,bj) = tilerunoffN(bi,bj) + DINrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffP(bi,bj) = tilerunoffP(bi,bj) + IPrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area*R_DIP_IP_runoff
+        tilerunoffSi(bi,bj)= tilerunoffSi(bi,bj)+ DSirunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffC(bi,bj) = tilerunoffC(bi,bj) + POCrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffN(bi,bj) = tilerunoffN(bi,bj) + PONrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffP(bi,bj) = tilerunoffP(bi,bj) + POPrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffC(bi,bj) = tilerunoffC(bi,bj) + DICrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+#ifdef DARWIN_ALLOW_CARBON
+        tilerunoffA(bi,bj) = tilerunoffA(bi,bj) + DICrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area*R_ALK_DIC_runoff
+#endif
+        tilerunoffFe(bi,bj)= tilerunoffFe(bi,bj)+ IPrunoff(i,j,bi,bj)
+     &         *PTRACERS_dtLev(ks)*area*R_DIP_IP_runoff*R_DFe_DIP_runoff
+        tilerunoffFe(bi,bj)= tilerunoffFe(bi,bj)+ DOPrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area*R_DOFe_DOP_runoff
+        tilerunoffFe(bi,bj)= tilerunoffFe(bi,bj)+ POPrunoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area*R_POFe_POP_runoff
+#endif
         ENDIF
 
 C compute surface flux from EmPmR with local ptracer concentration
@@ -589,6 +654,16 @@ C store totals in common block to retrieve at stage 1
 #endif
       ELSEIF (stage .EQ. 2) THEN
        CALL GLOBAL_SUM_TILE_RL(tilesfcflxFe,tmpsfcflxFe,myThid)
+#ifdef DARWIN_NUTRIENT_RUNOFF
+       CALL GLOBAL_SUM_TILE_RL(tilerunoffC,tmprunoffC,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilerunoffN,tmprunoffN,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilerunoffP,tmprunoffP,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilerunoffFe,tmprunoffFe,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilerunoffSi,tmprunoffSi,myThid)
+# ifdef DARWIN_ALLOW_CARBON
+       CALL GLOBAL_SUM_TILE_RL(tilerunoffA,tmprunoffA,myThid)
+# endif
+#endif
       ENDIF
 
 #ifdef EXACT_CONSERV
@@ -611,40 +686,46 @@ C do not write ecosystem non-conservation terms before they are applied
         IF ((myIter.EQ.nIter0 .OR.
      &       (staggerTimeStep.AND.myIter.EQ.nIter0+1)) .AND.
      &      stage.EQ.0) THEN
-         WRITE(DAR_cons_C_unit,'(A1,A11,A6,A20,5A24)')'#','iter',
-     &      'stage','tot','mean','sfcflx','virtflx','botsnk','EvPrRn'
-         WRITE(DAR_cons_N_unit,'(A1,A11,A6,A20,5A24)')'#','iter',
-     &      'stage','tot','mean','Nfix','Ndenit','botsnk','EvPrRn'
-         WRITE(DAR_cons_P_unit,'(A1,A11,A6,A20,3A24)')'#','iter',
-     &      'stage','tot','mean','botsnk','EvPrRn'
-         WRITE(DAR_cons_Fe_unit,'(A1,A11,A6,A20,7A24)')'#','iter',
+         WRITE(DAR_cons_C_unit,'(A1,A11,A6,A20,6A24)')'#','iter',
+     &      'stage','tot','mean','sfcflx','virtflx','botsnk','EvPrRn',
+     &      'runoff'
+         WRITE(DAR_cons_N_unit,'(A1,A11,A6,A20,6A24)')'#','iter',
+     &      'stage','tot','mean','Nfix','Ndenit','botsnk','EvPrRn',
+     &      'runoff'
+         WRITE(DAR_cons_P_unit,'(A1,A11,A6,A20,4A24)')'#','iter',
+     &      'stage','tot','mean','botsnk','EvPrRn','runoff'
+         WRITE(DAR_cons_Fe_unit,'(A1,A11,A6,A20,8A24)')'#','iter',
      &      'stage','tot','mean','minFeLoss','scav','sfcflx','sedflx',
-     &      'botsnk','EvPrRn'
-         WRITE(DAR_cons_Si_unit,'(A1,A11,A6,A20,3A24)')'#','iter',
-     &      'stage','tot','mean','botsnk','EvPrRn'
+     &      'botsnk','EvPrRn','runoff'
+         WRITE(DAR_cons_Si_unit,'(A1,A11,A6,A20,4A24)')'#','iter',
+     &      'stage','tot','mean','botsnk','EvPrRn',
+     &      'runoff'
+
 #ifdef DARWIN_ALLOW_CARBON
-         WRITE(DAR_cons_A_unit,'(A1,A11,A6,A20,4A24)')'#','iter',
-     &      'stage','tot','mean','sfcflx','AlkSrc','EvPrRn'
+         WRITE(DAR_cons_A_unit,'(A1,A11,A6,A20,5A24)')'#','iter',
+     &      'stage','tot','mean','sfcflx','AlkSrc','EvPrRn','runoff'
          WRITE(DAR_cons_O_unit,'(A1,A11,A6,A20,5A24)')'#','iter',
      &      'stage','tot','mean','sfcflx','O2prod','O2cons','EvPrRn'
 #endif
         ENDIF
-        WRITE(DAR_cons_C_unit,'(I12,I2,6E24.16)') myIter, stage,
+        WRITE(DAR_cons_C_unit,'(I12,I2,7E24.16)') myIter, stage,
      &     tmptotC, tmptotC/voltot, tmpsfcflxC, tmpvirflxC, -tmpBotSnkC,
-     &     tmpEPRC
-        WRITE(DAR_cons_N_unit,'(I12,I2,6E24.16)') myIter, stage,
+     &     tmpEPRC, tmprunoffC
+        WRITE(DAR_cons_N_unit,'(I12,I2,7E24.16)') myIter, stage,
      &     tmptotN, tmptotN/voltot, tmptotNfix, -tmptotNdenit,
-     &     -tmpBotSnkN, tmpEPRN
-        WRITE(DAR_cons_P_unit,'(I12,I2,4E24.16)') myIter, stage,
-     &     tmptotP, tmptotP/voltot, -tmpBotSnkP, tmpEPRP
-        WRITE(DAR_cons_Fe_unit,'(I12,I2,8E24.16)') myIter, stage,
+     &     -tmpBotSnkN, tmpEPRN, tmprunoffN
+        WRITE(DAR_cons_P_unit,'(I12,I2,5E24.16)') myIter, stage,
+     &     tmptotP, tmptotP/voltot, -tmpBotSnkP, tmpEPRP, tmprunoffP
+        WRITE(DAR_cons_Fe_unit,'(I12,I2,9E24.16)') myIter, stage,
      &     tmptotFe, tmptotFe/voltot, -tmpminFeLoss, -tmptotscavFe,
-     &     tmpsfcflxFe, tmpsedflxFe, -tmpBotSnkFe, tmpEPRFe
-        WRITE(DAR_cons_Si_unit,'(I12,I2,4E24.16)') myIter, stage,
-     &     tmptotSi, tmptotSi/voltot, -tmpBotSnkSi, tmpEPRSi
+     &     tmpsfcflxFe, tmpsedflxFe, -tmpBotSnkFe, tmpEPRFe, tmprunoffFe
+        WRITE(DAR_cons_Si_unit,'(I12,I2,5E24.16)') myIter, stage,
+     &     tmptotSi, tmptotSi/voltot, -tmpBotSnkSi, tmpEPRSi,
+     &     tmprunoffSi
 #ifdef DARWIN_ALLOW_CARBON
-        WRITE(DAR_cons_A_unit,'(I12,I2,5E24.16)') myIter, stage,
-     &     tmptotA, tmptotA/voltot, tmpvirflxA, tmpAlkSrc, tmpEPRA
+        WRITE(DAR_cons_A_unit,'(I12,I2,6E24.16)') myIter, stage,
+     &     tmptotA, tmptotA/voltot, tmpvirflxA, tmpAlkSrc, tmpEPRA,
+     &     tmprunoffA
         WRITE(DAR_cons_O_unit,'(I12,I2,6E24.16)') myIter, stage,
      &     tmptotO, tmptotO/voltot, tmpsfcflxO, tmpO2prod, -tmpO2cons,
      &     tmpEPRO
