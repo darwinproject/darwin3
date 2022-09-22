@@ -226,43 +226,111 @@ C surface fluxes from E/P/runoff with constant/local concentrations
 
 C === nutrient runoff ==================================================
 #ifdef DARWIN_NUTRIENT_RUNOFF
-      DO j=jMin,jMax
-      DO i=iMin,iMax
-        gPtr(i,j,1,iDOC) = gPtr(i,j,1,iDOC) + DOCrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-        gPtr(i,j,1,iDON) = gPtr(i,j,1,iDON) + DONrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-        gPtr(i,j,1,iDOP) = gPtr(i,j,1,iDOP) + DOPrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-        gPtr(i,j,1,iNO3) = gPtr(i,j,1,iNO3) + DINrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_NO3_DIN_runoff
-        gPtr(i,j,1,iNO2) = gPtr(i,j,1,iNO2) + DINrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_NO2_DIN_runoff
-        gPtr(i,j,1,iNH4) = gPtr(i,j,1,iNH4) + DINrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_NH4_DIN_runoff
-        gPtr(i,j,1,iPO4) = gPtr(i,j,1,iPO4) + IPrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_DIP_IP_runoff
-        gPtr(i,j,1,iSiO2) = gPtr(i,j,1,iSiO2) + DSirunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-        gPtr(i,j,1,iPOC) = gPtr(i,j,1,iPOC) + POCrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-        gPtr(i,j,1,iPOP) = gPtr(i,j,1,iPOP) + POPrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-        gPtr(i,j,1,iPON) = gPtr(i,j,1,iPON) + PONrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-        gPtr(i,j,1,iDIC) = gPtr(i,j,1,iDIC) + DICrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-        gPtr(i,j,1,iALK) = gPtr(i,j,1,iALK) + DICrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_ALK_DIC_runoff
-        gPtr(i,j,1,iFeT) = gPtr(i,j,1,iFeT) + IPrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_DIP_IP_runoff
-     &                                           * R_DFe_DIP_runoff
-        gPtr(i,j,1,iDOFe) = gPtr(i,j,1,iDOFe) + DOPrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_DOFe_DOP_runoff
-        gPtr(i,j,1,iPOFe) = gPtr(i,j,1,iPOFe) + POPrunoff(i,j,bi,bj)
-     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_POFe_POP_runoff
-      ENDDO
-      ENDDO
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iDOC),
+     I                          DOCrunoff(1-OLx,1-OLy,bi,bj), 1 _d 0,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iDON),
+     I                          DONrunoff(1-OLx,1-OLy,bi,bj), 1 _d 0,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iDOP),
+     I                          DOPrunoff(1-OLx,1-OLy,bi,bj), 1 _d 0,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iNO3),
+     I                          DINrunoff(1-OLx,1-OLy,bi,bj),
+     I                          R_NO3_DIN_runoff,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iNO2),
+     I                          DINrunoff(1-OLx,1-OLy,bi,bj),
+     I                          R_NO2_DIN_runoff,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iNH4),
+     I                          DINrunoff(1-OLx,1-OLy,bi,bj),
+     I                          R_NH4_DIN_runoff,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iPO4),
+     I                          IPrunoff(1-OLx,1-OLy,bi,bj),
+     I                          R_DIP_IP_runoff,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iSiO2),
+     I                          DSirunoff(1-OLx,1-OLy,bi,bj), 1 _d 0,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iPOC),
+     I                          POCrunoff(1-OLx,1-OLy,bi,bj), 1 _d 0,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iPON),
+     I                          PONrunoff(1-OLx,1-OLy,bi,bj), 1 _d 0,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iPOP),
+     I                          POPrunoff(1-OLx,1-OLy,bi,bj), 1 _d 0,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iDIC),
+     I                          DICrunoff(1-OLx,1-OLy,bi,bj), 1 _d 0,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+#ifdef DARWIN_ALLOW_CARBON
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iALK),
+     I                          DICrunoff(1-OLx,1-OLy,bi,bj),
+     I                          R_ALK_DIC_runoff,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+#endif
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iFeT),
+     I                          IPrunoff(1-OLx,1-OLy,bi,bj),
+     I                          R_DIP_IP_runoff*R_DFe_DIP_runoff,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iDOFe),
+     I                          DOPrunoff(1-OLx,1-OLy,bi,bj),
+     I                          R_DOFe_DOP_runoff,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_SURFFORC(
+     U                          gPtr(1-OLx,1-OLy,1,iPOFe),
+     I                          POPrunoff(1-OLx,1-OLy,bi,bj),
+     I                          R_POFe_POP_runoff,
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          myIter, myTime, myThid )
 #endif
 
 C === iron =============================================================
