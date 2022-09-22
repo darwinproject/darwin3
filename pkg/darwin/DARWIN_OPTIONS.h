@@ -67,6 +67,9 @@ C allow organic matter to sink into bottom (sedimentize)
 C CDOM is in carbon units and follows POC
 #define DARWIN_CDOM_UNITS_CARBON
 
+C nutrient runoff
+#undef  DARWIN_NUTRIENT_RUNOFF
+
 
 C light
 
@@ -169,7 +172,6 @@ C set traits for darwin2 9-species setup (requires DARWIN_RANDOM_TRAITS)
 
 C enable diazotrophy when using (requires DARWIN_RANDOM_TRAITS)
 #undef  DARWIN_ALLOW_DIAZ
-
 
 #endif /* ALLOW_DARWIN */
 #endif /* DARWIN_OPTIONS_H */
