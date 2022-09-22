@@ -39,6 +39,9 @@ C !USES: ===============================================================
 #include "DARWIN_FIELDS.h"
 #include "DARWIN_EXF_FIELDS.h"
 #endif
+#ifdef DARWIN_NUTRIENT_RUNOFF
+#include "DARWIN_EXF_PARAMS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  Ptrdummy             :: dummy for darwin2 compatibility
@@ -167,9 +170,9 @@ C carbon air-sea interaction
       CALL TIMER_STOP ('DARWIN_SURFFORCING [DARWIN_FORCING]',myThid)
       DO j=jMin,jMax
       DO i=iMin,iMax
-        gPtr(i,j,1,iDIC) = gDIC(i,j)
-        gPtr(i,j,1,iALK) = gALK(i,j)
-        gPtr(i,j,1,iO2)  = gO2(i,j)
+        gPtr(i,j,1,iDIC) = gPtr(i,j,1,iDIC) + gDIC(i,j)
+        gPtr(i,j,1,iALK) = gPtr(i,j,1,iALK) + gALK(i,j)
+        gPtr(i,j,1,iO2)  = gPtr(i,j,1,iO2)  + gO2(i,j)
       ENDDO
       ENDDO
 
@@ -194,7 +197,7 @@ C     Other contributions to gPtr must come after these calls!
 #endif /* DARWIN_ALLOW_CARBON */
 
 #ifdef DARWIN_DIAG_TENDENCIES
-C surface fluxes from E/P/runoff
+C surface fluxes from E/P/runoff with constant/local concentrations
       DO j=jMin,jMax
       DO i=iMin,iMax
         gDICsurfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iDIC)
@@ -217,6 +220,47 @@ C surface fluxes from E/P/runoff
         gO2surfForc(i,j) = surfaceForcingPTr(i,j,bi,bj,iO2)
      &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
 #endif
+      ENDDO
+      ENDDO
+#endif
+
+C === nutrient runoff ==================================================
+#ifdef DARWIN_NUTRIENT_RUNOFF
+      DO j=jMin,jMax
+      DO i=iMin,iMax
+        gPtr(i,j,1,iDOC) = gPtr(i,j,1,iDOC) + DOCrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gPtr(i,j,1,iDON) = gPtr(i,j,1,iDON) + DONrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gPtr(i,j,1,iDOP) = gPtr(i,j,1,iDOP) + DOPrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gPtr(i,j,1,iNO3) = gPtr(i,j,1,iNO3) + DINrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_NO3_DIN_runoff
+        gPtr(i,j,1,iNO2) = gPtr(i,j,1,iNO2) + DINrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_NO2_DIN_runoff
+        gPtr(i,j,1,iNH4) = gPtr(i,j,1,iNH4) + DINrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_NH4_DIN_runoff
+        gPtr(i,j,1,iPO4) = gPtr(i,j,1,iPO4) + IPrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_DIP_IP_runoff
+        gPtr(i,j,1,iSiO2) = gPtr(i,j,1,iSiO2) + DSirunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gPtr(i,j,1,iPOC) = gPtr(i,j,1,iPOC) + POCrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gPtr(i,j,1,iPOP) = gPtr(i,j,1,iPOP) + POPrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gPtr(i,j,1,iPON) = gPtr(i,j,1,iPON) + PONrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gPtr(i,j,1,iDIC) = gPtr(i,j,1,iDIC) + DICrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+        gPtr(i,j,1,iALK) = gPtr(i,j,1,iALK) + DICrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_ALK_DIC_runoff
+        gPtr(i,j,1,iFeT) = gPtr(i,j,1,iFeT) + IPrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_DIP_IP_runoff
+     &                                           * R_DFe_DIP_runoff
+        gPtr(i,j,1,iDOFe) = gPtr(i,j,1,iDOFe) + DOPrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_DOFe_DOP_runoff
+        gPtr(i,j,1,iPOFe) = gPtr(i,j,1,iPOFe) + POPrunoff(i,j,bi,bj)
+     &   * recip_drF(1)*recip_hFacC(i,j,1,bi,bj) * R_POFe_POP_runoff
       ENDDO
       ENDDO
 #endif
