@@ -200,8 +200,10 @@ C Determine flux, inc. correction for local atmos surface pressure
          FluxO2(i,j,bi,bj) = Kwexch(i,j)*
      &                     (AtmosP(i,j,bi,bj)*O2sat(i,j)
      &                      - pTracer(i,j,ks,bi,bj,iO2))
+#ifdef DARWIN_ALLOW_CONS
          oxySfcFlx(i,j,bi,bj) = oxySfcFlx(i,j,bi,bj)
      &                        + FluxO2(i,j,bi,bj)*dTsub(ks)
+#endif
 
          gO2(i,j) =
      &      recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)*FluxO2(i,j,bi,bj)
@@ -299,8 +301,10 @@ c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
         ENDIF
 C convert flux (mol kg-1 m s-1) to (mmol m-2 s-1)
         FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/m3perkg/ptr2mol
+#ifdef DARWIN_ALLOW_CONS
         carbSfcFlx(i,j,bi,bj) = carbSfcFlx(i,j,bi,bj)
      &                        + FluxCO2(i,j,bi,bj)*dTsub(ks)
+#endif
 
 #ifdef ALLOW_OLD_VIRTUALFLUX
         IF (maskC(i,j,ks,bi,bj).NE.0. _d 0) THEN
