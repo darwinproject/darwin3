@@ -225,25 +225,21 @@ The forcing fields are:
    :class: longtable
    :header: Name, Default, Units, Description
 
-   iron & 0.0    & mmol Fe m\ :sup:`--2` s\ :sup:`--1` & iron input through sea surface, will be multiplied by solubility :varlink:`alpfe`
-   PAR  & 0.0    & μEin m\ :sup:`--2` s\ :sup:`--1`    & Photosynthetically active radiation below sea surface; not used with the radtrans package
-   ice  & 0.0    & m\ :sup:`2`\ /m\ :sup:`2`           & fraction of surface covered by ice; used to reduce non-spectral light and for carbon and oxygen surface forcing; for spectral light, ice fraction has to be given in ``data.radtrans``
-   wind & 5.0    & m/s                                 & wind speed; used for carbon and oxygen surface forcing
-   pCO2 & 278E-6 & atm                                 & partial pressure of atmospheric CO\ :sub:`2`; used for carbon and oxygen surface forcing
-
-The parameters darwin_inscal\_«Name» can be used to convert units.  Some examples
-are given in :numref:`tab_phys_pkgs_darwin_inscal`.
-
-.. csv-table:: Example unit conversions
-   :delim: &
-   :widths: auto
-   :class: longtable
-   :header: Field, File units, Scaling factor
-   :name: tab_phys_pkgs_darwin_inscal
-
-   iron & mol Fe m\ :sup:`--2` s\ :sup:`--1` & darwin_inscal_iron = 1000
-        & kg Fe m\ :sup:`--2`                & darwin_inscal_iron = 17906.7
-   PAR  & Ein m\ :sup:`--2` day\ :sup:`--1`  & darwin_inscal_PAR = 11.574074074074
+   iron      & 0.0    & mmol Fe m\ :sup:`--2` s\ :sup:`--1` & iron input through sea surface, will be multiplied by solubility :varlink:`alpfe`
+   PAR       & 0.0    & μEin m\ :sup:`--2` s\ :sup:`--1`    & Photosynthetically active radiation below sea surface; not used with the radtrans package
+   ice       & 0.0    & m\ :sup:`2`\ /m\ :sup:`2`           & fraction of surface covered by ice; used to reduce non-spectral light and for carbon and oxygen surface forcing; for spectral light, ice fraction has to be given in ``data.radtrans``
+   wind      & 5.0    & m/s                                 & wind speed; used for carbon and oxygen surface forcing
+   pCO2      & 278E-6 & atm                                 & partial pressure of atmospheric CO\ :sub:`2`; used for carbon and oxygen surface forcing
+   DOCrunoff & 0.0    & mmol C  m\ :sup:`--2` s\ :sup:`--1` & surface flux of DOC from runoff
+   DONrunoff & 0.0    & mmol N  m\ :sup:`--2` s\ :sup:`--1` & surface flux of DON from runoff
+   DOPrunoff & 0.0    & mmol P  m\ :sup:`--2` s\ :sup:`--1` & surface flux of DOP from runoff
+   DINrunoff & 0.0    & mmol N  m\ :sup:`--2` s\ :sup:`--1` & surface flux of DIN from runoff
+   IPrunoff  & 0.0    & mmol P  m\ :sup:`--2` s\ :sup:`--1` & surface flux of IP  from runoff
+   DSirunoff & 0.0    & mmol Si m\ :sup:`--2` s\ :sup:`--1` & surface flux of DSi from runoff
+   POCrunoff & 0.0    & mmol C  m\ :sup:`--2` s\ :sup:`--1` & surface flux of POC from runoff
+   PONrunoff & 0.0    & mmol N  m\ :sup:`--2` s\ :sup:`--1` & surface flux of PON from runoff
+   POPrunoff & 0.0    & mmol P  m\ :sup:`--2` s\ :sup:`--1` & surface flux of POP from runoff
+   DICrunoff & 0.0    & mmol C  m\ :sup:`--2` s\ :sup:`--1` & surface flux of DIC from runoff
 
 Each forcing field has a set of parameters in :varlink:`DARWIN_FORCING_PARAMS`.
 These work as in the exf package, see
@@ -265,6 +261,62 @@ These work as in the exf package, see
    :varlink:`PAR_exfremo_slope`     & 0.0                     & can be used to remove global trend
    :varlink:`PARmask`               & 'c'                     & grid point for masking: ' ' = no masking; 'c' = centered mask; 'w' = western mask; 's' = southern
    :varlink:`darwin_inscal_PAR`     & 1.0                     & optional rescaling of input fields to adjust units
+
+The parameters darwin_inscal\_«Name» can be used to convert units.  Some examples
+are given in :numref:`tab_phys_pkgs_darwin_inscal`.
+
+.. csv-table:: Example unit conversions
+   :delim: &
+   :widths: auto
+   :class: longtable
+   :header: Field, File units, Scaling factor
+   :name: tab_phys_pkgs_darwin_inscal
+
+   iron & mol Fe m\ :sup:`--2` s\ :sup:`--1` & darwin_inscal_iron = 1000
+        & kg Fe m\ :sup:`--2`                & darwin_inscal_iron = 17906.7
+   PAR  & Ein m\ :sup:`--2` day\ :sup:`--1`  & darwin_inscal_PAR = 11.574074074074
+
+Nutrient runoff has some extra parameters:
+
+.. tabularcolumns:: |\Y{.25}|\Y{.12}|\Y{.14}|\Y{.49}|
+
+.. csv-table:: Namelist DARWIN_FORCING_PARAMS, cont’d
+   :delim: &
+   :widths: 25,12,14,49
+   :header: Name, Default, Units, Description
+
+   :varlink:`R_ALK_DIC_runoff`  & 1.0218 & meq / mmol C     & ALK:DIC ratio in runoff
+   :varlink:`R_NO3_DIN_runoff`  & 0.6531 & mmol N / mmol N  & NO3 fraction of DIN in runoff
+   :varlink:`R_NO2_DIN_runoff`  & 0.0158 & mmol N / mmol N  & NO2 fraction of DIN in runoff
+   :varlink:`R_NH4_DIN_runoff`  & 0.3311 & mmol N / mmol N  & NH4 fraction of DIN in runoff
+   :varlink:`R_DIP_IP_runoff`   & 0.333  & mmol P / mmol P  & ratio of dissolved to total inorganic P in runoff
+   :varlink:`R_DFe_DIP_runoff`  & 0.0003 & mmol Fe / mmol P & Fe:P ratio for inorganic P in runoff
+   :varlink:`R_DOFe_DOP_runoff` & 0.0003 & mmol Fe / mmol P & Fe:P ratio for dissolved organic matter in runoff
+   :varlink:`R_POFe_POP_runoff` & 0.0003 & mmol Fe / mmol P & Fe:P ratio for particulate organic matter in runoff
+
+These govern how the various tracers receive contributions from the runoff files:
+
+.. csv-table:: Runoff forcing-tracer associations
+   :delim: &
+   :widths: auto
+   :header: Tracer, Surface Forcing Field
+
+   DOC  & DOCrunoff
+   DON  & DONrunoff
+   DOP  & DOPrunoff
+   NO3  & DINrunoff \* R_NO3_DIN_runoff
+   NO2  & DINrunoff \* R_NO2_DIN_runoff
+   NH4  & DINrunoff \* R_NH4_DIN_runoff
+   PO4  & IPrunoff  \* R_DIP_IP_runoff
+   SiO2 & DSirunoff
+   POC  & POCrunoff
+   PON  & PONrunoff
+   POP  & POPrunoff
+   DIC  & DICrunoff
+   ALK  & DICrunoff \* R_ALK_DIC_runoff
+   FeT  & IPrunoff  \* R_DIP_IP_runoff \* R_DFe_DIP_runoff
+   DOFe & DOPrunoff \* R_DOFe_DOP_runoff
+   POFe & POPrunoff \* R_POFe_POP_runoff
 
 Interpolation parameters for all forcing fields are set in namelist
 :varlink:`DARWIN_INTERP_PARAMS`.  See the exf package for how to set them.
