@@ -133,6 +133,9 @@ To use spectral light, compile the radtrans package, see
    :varlink:`ALLOW_OLD_VIRTUALFLUX`             & enable old virtualflux code for DIC and ALK
    :varlink:`DARWIN_NITRATE_FELIMIT`            & reduce nitrate uptake by iron limitation factor
    :varlink:`DARWIN_BOTTOM_SINK`                & allow organic matter to sink into bottom (sedimentize)
+   :varlink:`DARWIN_ALLOW_CSTORE`               & enable internal carbon store and exudation for all phototrophs
+   :varlink:`DARWIN_ALLOW_CSTORE_DIAGS`         & enable diagnostics for internal carbon store
+   :varlink:`DARWIN_NUTRIENT_RUNOFF`            & include code for reading nutrient runoff from files
    :varlink:`DARWIN_AVPAR`                      & compute average PAR in layer, assuming exponential decay (%)
    :varlink:`DARWIN_ALLOW_GEIDER`               & enable GEIDER light code (required for radtrans)
    :varlink:`DARWIN_GEIDER_RHO_SYNTH`           & use ρ instead of acclimated Chl:C for chlorophyll synthesis
@@ -149,6 +152,7 @@ To use spectral light, compile the radtrans package, see
    :varlink:`DARWIN_PART_SCAV`                  & enable particle scavenging code
    :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`   & enable variable iron sediment source
    :varlink:`DARWIN_DIAG_PERTYPE`               & enable per-type diagnostics PP####, GR####, GrGn####
+   :varlink:`DARWIN_DIAG_TENDENCIES`            & enable diagnostics for many tendency terms
    :varlink:`DARWIN_DEBUG`                      & turn on debugging output
    :varlink:`DARWIN_ALLOW_CONS`                 & compute and print global element totals
    :varlink:`DARWIN_UNUSED`                     & value for unused traits
