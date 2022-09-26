@@ -67,7 +67,7 @@ C allow organic matter to sink into bottom (sedimentize)
 C CDOM is in carbon units and follows POC
 #define DARWIN_CDOM_UNITS_CARBON
 
-C nutrient runoff
+C include code for reading nutrient runoff from files
 #undef  DARWIN_NUTRIENT_RUNOFF
 
 
