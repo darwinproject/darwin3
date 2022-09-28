@@ -791,7 +791,7 @@ particularly useful for specifying a rate in ‘per-day’ units, i.e.,
 
 .. [#resprate] The respiration rate follows a different scaling law from other
    traits.  It scales in terms of cellular carbon content, see
-   :numref:`Mortality`.
+   :numref:`Respiration`.
 
 
 Diagnostics
