@@ -36,6 +36,7 @@ C     !USES:
 #include "DARWIN_SIZE.h"
 #include "DARWIN_INDICES.h"
 #include "DARWIN_PARAMS.h"
+#include "DARWIN_TRAITPARAMS.h"
 #include "DARWIN_TRAITS.h"
 
 C     !INPUT PARAMETERS:
@@ -48,7 +49,9 @@ CEOP
 C     !LOCAL VARIABLES:
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER j,jz,iPtr,oUnit
+      CHARACTER*80 gname
+      INTEGER j,jz,iPtr,oUnit,g
+      _RL dm
 CCOG[[[cog
 CCOGcog.out('\n'.join('''
 CCOG{pre}      INTEGER i_{name}
@@ -568,6 +571,29 @@ CCOG]]]
       ENDDO
 #endif
 CCOG[[[end]]] (checksum: 05ba5478d3ba98e0625cfbc0f8f1432c)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Log plankton types with ptracer indices
+
+#ifndef DARWIN_RANDOM_TRAITS
+      WRITE(msgBuf,'(A)') 'DARWIN_CHECK:'
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A,A4,X,A4,X,A24,X,A4,X,A32)')
+     &      'DARWIN_CHECK: ','iPtr','iPlk','ESD','grp','grp_name'
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
+      DO j = 1, ec+1-ic
+        iPtr = ic + j - 1
+        dm = (6 _d 0*biovol(j))**(1 _d 0/3 _d 0)
+        g = group(j)
+        gname = grp_names(g)
+        WRITE(msgBuf,'(A,I4,X,I4,X,E24.16,X,I4,X,A32)')
+     &        'DARWIN_CHECK: ', iPtr, j, dm, g, gname
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                     SQUEEZE_RIGHT,myThid)
+      ENDDO
+#endif
 
       _END_MASTER(myThid)
 
