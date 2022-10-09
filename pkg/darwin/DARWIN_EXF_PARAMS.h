@@ -218,7 +218,7 @@ C DOC forcing parameters for exf
      &    DOCrunoff_nlon, DOCrunoff_nlat, DOCrunoff_interpMethod
       COMMON/darwin_interp_DOCrunoff_r/
      &    DOCrunoff_lon0, DOCrunoff_lat0, DOCrunoff_lon_inc,
-     %    DOCrunoff_lat_inc
+     &    DOCrunoff_lat_inc
       INTEGER DOCrunoff_interpMethod, DOCrunoff_nlon, DOCrunoff_nlat
       _RL  DOCrunoff_lon0
       _RL  DOCrunoff_lat0
@@ -326,7 +326,7 @@ C DIN forcing parameters for exf
      &    DINrunoff_nlon, DINrunoff_nlat, DINrunoff_interpMethod
       COMMON/darwin_interp_DINrunoff_r/
      &    DINrunoff_lon0, DINrunoff_lat0, DINrunoff_lon_inc,
-     %    DINrunoff_lat_inc
+     &    DINrunoff_lat_inc
       INTEGER DINrunoff_interpMethod, DINrunoff_nlon, DINrunoff_nlat
       _RL  DINrunoff_lon0
       _RL  DINrunoff_lat0
@@ -362,7 +362,7 @@ C DIP forcing parameters for exf
      &    IPrunoff_nlon, IPrunoff_nlat, IPrunoff_interpMethod
       COMMON/darwin_interp_IPrunoff_r/
      &    IPrunoff_lon0, IPrunoff_lat0, IPrunoff_lon_inc,
-     %    IPrunoff_lat_inc
+     &    IPrunoff_lat_inc
       INTEGER IPrunoff_interpMethod, IPrunoff_nlon, IPrunoff_nlat
       _RL  IPrunoff_lon0
       _RL  IPrunoff_lat0
@@ -398,7 +398,7 @@ C DSi forcing parameters for exf
      &    DSirunoff_nlon, DSirunoff_nlat, DSirunoff_interpMethod
       COMMON/darwin_interp_DSirunoff_r/
      &    DSirunoff_lon0, DSirunoff_lat0, DSirunoff_lon_inc,
-     %    DSirunoff_lat_inc
+     &    DSirunoff_lat_inc
       INTEGER DSirunoff_interpMethod, DSirunoff_nlon, DSirunoff_nlat
       _RL  DSirunoff_lon0
       _RL  DSirunoff_lat0
@@ -434,7 +434,7 @@ C POC forcing parameters for exf
      &    POCrunoff_nlon, POCrunoff_nlat, POCrunoff_interpMethod
       COMMON/darwin_interp_POCrunoff_r/
      &    POCrunoff_lon0, POCrunoff_lat0, POCrunoff_lon_inc,
-     %    POCrunoff_lat_inc
+     &    POCrunoff_lat_inc
       INTEGER POCrunoff_interpMethod, POCrunoff_nlon, POCrunoff_nlat
       _RL  POCrunoff_lon0
       _RL  POCrunoff_lat0
@@ -470,7 +470,7 @@ C POP forcing parameters for exf
      &    POPrunoff_nlon, POPrunoff_nlat, POPrunoff_interpMethod
       COMMON/darwin_interp_POPrunoff_r/
      &    POPrunoff_lon0, POPrunoff_lat0, POPrunoff_lon_inc,
-     %    POPrunoff_lat_inc
+     &    POPrunoff_lat_inc
       INTEGER POPrunoff_interpMethod, POPrunoff_nlon, POPrunoff_nlat
       _RL  POPrunoff_lon0
       _RL  POPrunoff_lat0
@@ -506,7 +506,7 @@ C PON forcing parameters for exf
      &    PONrunoff_nlon, PONrunoff_nlat, PONrunoff_interpMethod
       COMMON/darwin_interp_PONrunoff_r/
      &    PONrunoff_lon0, PONrunoff_lat0, PONrunoff_lon_inc,
-     %    PONrunoff_lat_inc
+     &    PONrunoff_lat_inc
       INTEGER PONrunoff_interpMethod, PONrunoff_nlon, PONrunoff_nlat
       _RL  PONrunoff_lon0
       _RL  PONrunoff_lat0
@@ -542,7 +542,7 @@ C DIC forcing parameters for exf
      &    DICrunoff_nlon, DICrunoff_nlat, DICrunoff_interpMethod
       COMMON/darwin_interp_DICrunoff_r/
      &    DICrunoff_lon0, DICrunoff_lat0, DICrunoff_lon_inc,
-     %    DICrunoff_lat_inc
+     &    DICrunoff_lat_inc
       INTEGER DICrunoff_interpMethod, DICrunoff_nlon, DICrunoff_nlat
       _RL  DICrunoff_lon0
       _RL  DICrunoff_lat0
