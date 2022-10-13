@@ -17,6 +17,11 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "PTRACERS_SIZE.h"
@@ -101,6 +106,14 @@ C  k                    :: vertical level
       _RL uptakeTempFunc
       _RL tmp, tmpFac
       _RL sedFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef DARWIN_DEBUG
+      INTEGER iG, jG
+      INTEGER iBase, jBase
+      INTEGER iGjLoc, jGjLoc
+#ifdef ALLOW_EXCH2
+      INTEGER tN
+#endif /* ALLOW_EXCH2 */
+#endif /* DARWIN_DEBUG */
 
       DO k=1,Nr
        DO j=1,sNy
@@ -439,10 +452,45 @@ C-    Account for change in level thickness
 
 C === plankton =========================================================
       CALL TIMER_START('DARWIN_PLANKTON [DARWIN_FORCING]',myThid)
+
+#ifdef DARWIN_DEBUG
+C Set dimensions:
+C-    default:
+      iGjLoc = 0
+      jGjLoc = 1
+      iBase = myXGlobalLo-1 + (bi-1)*sNx
+      jBase = myYGlobalLo-1 + (bj-1)*sNy
+#ifdef ALLOW_EXCH2
+      IF ( W2_useE2ioLayOut ) THEN
+        tN = W2_myTileList(bi,bj)
+        iBase = exch2_txGlobalo(tN) - 1
+        jBase = exch2_tyGlobalo(tN) - 1
+        IF   ( exch2_mydNx(tN) .GT. exch2_global_Nx ) THEN
+C-      face x-size larger than glob-size : fold it
+          iGjLoc = 0
+          jGjLoc = exch2_mydNx(tN) / exch2_global_Nx
+        ELSEIF ( exch2_tNy(tN) .GT. exch2_global_Ny ) THEN
+C-      tile y-size larger than glob-size : make a long line
+          iGjLoc = exch2_mydNx(tN)
+          jGjLoc = 0
+        ELSE
+C-      default (face fit into global-IO-array)
+          iGjLoc = 0
+          jGjLoc = 1
+        ENDIF
+      ENDIF
+#endif /* ALLOW_EXCH2 */
+#endif /* DARWIN_DEBUG */
+
       do k=1,Nr
       do j=jMin,jMax
-      do i=iMin,iMax
-      if (hFacC(i,j,k,bi,bj) .GT. 0.) then
+#ifdef DARWIN_DEBUG
+       iG = iBase + (j-1)*iGjLoc
+       jG = jBase + (j-1)*jGjLoc + 1
+#endif /* DARWIN_DEBUG */
+
+       do i=iMin,iMax
+       if (hFacC(i,j,k,bi,bj) .GT. 0.) then
         CALL DARWIN_TEMPFUNC(Theta(i,j,k,bi,bj),
      &         photoTempFunc, hetTempFunc, grazTempFunc,
      &         reminTempFunc, mortTempFunc, mort2TempFunc,
@@ -465,9 +513,7 @@ C === plankton =========================================================
      I                 mortTempFunc, mort2TempFunc,
      I                 uptakeTempFunc,
 #ifdef DARWIN_DEBUG
-     I                 myxgloballo+(bi-1)*sNx+i-1,
-     I                 myygloballo+(bj-1)*sNy+j-1,
-     I                 k, dTsub(k),
+     I                 iG+i, jG, k, dTsub(k),
 #endif
      I                 subTime, myIter, myThid )
         DO l=1,darwin_nDiag
@@ -501,8 +547,8 @@ C === plankton =========================================================
         DO iTr=1,nDarwin
          gPtr(i, j, k, iTr) = gtr(iTr)
         ENDDO
-      endif
-      enddo
+       endif
+       enddo
       enddo
       enddo
       CALL TIMER_STOP('DARWIN_PLANKTON [DARWIN_FORCING]',myThid)
