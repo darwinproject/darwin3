@@ -302,6 +302,9 @@ C for grazing
       _RL graz2CDOM, exude_CDOM
 #endif
 
+      _RL DARWIN_EPS
+      PARAMETER(DARWIN_EPS=1 _d -38)
+
 C=======================================================================
 C==== Precompute a few things ==========================================
 
@@ -343,7 +346,7 @@ C fixed carbon quota, for now 1.0 (may change later)
 C other elements get quota from corresponding ptracer or set to fixed
 c ratio if not variable.
 #ifdef DARWIN_ALLOW_NQUOTA
-        IF (X(j) .GT. 0 _d 0) THEN
+        IF (X(j) .GT. DARWIN_EPS) THEN
           Qn(j) = MAX(0 _d 0, Ptr(in+j-1))/X(j)
         ELSE
           Qn(j) = Qnmax(j)
@@ -352,7 +355,7 @@ c ratio if not variable.
         Qn(j) = R_NC(j)
 #endif
 #ifdef DARWIN_ALLOW_PQUOTA
-        IF (X(j) .GT. 0 _d 0) THEN
+        IF (X(j) .GT. DARWIN_EPS) THEN
           Qp(j) = MAX(0 _d 0, Ptr(ip+j-1))/X(j)
         ELSE
           Qp(j) = Qpmax(j)
@@ -361,7 +364,7 @@ c ratio if not variable.
         Qp(j) = R_PC(j)
 #endif
 #ifdef DARWIN_ALLOW_SIQUOTA
-        IF (X(j) .GT. 0 _d 0) THEN
+        IF (X(j) .GT. DARWIN_EPS) THEN
           Qsi(j) = MAX(0 _d 0, Ptr(isi+j-1))/X(j)
         ELSE
           Qsi(j) = Qsimax(j)
@@ -370,7 +373,7 @@ c ratio if not variable.
         Qsi(j) = R_SiC(j)
 #endif
 #ifdef DARWIN_ALLOW_FEQUOTA
-        IF (X(j) .GT. 0 _d 0) THEN
+        IF (X(j) .GT. DARWIN_EPS) THEN
           Qfe(j) = MAX(0 _d 0, Ptr(ife+j-1))/X(j)
         ELSE
           Qfe(j) = Qfemax(j)
@@ -381,7 +384,7 @@ c ratio if not variable.
       ENDDO
 #ifdef DARWIN_ALLOW_CHLQUOTA
       DO j = 1, nPhoto
-        IF (X(j) .GT. 0 _d 0) THEN
+        IF (X(j) .GT. DARWIN_EPS) THEN
           QChl(j) = MAX(0 _d 0, Ptr(iChl+j-1))/X(j)
         ELSE
           QChl(j) = chl2cmax(j)
@@ -390,7 +393,7 @@ c ratio if not variable.
 #endif
 #ifdef DARWIN_ALLOW_CSTORE
       DO j = 1, nPhoto
-        IF (X(j) .GT. 0 _d 0) THEN
+        IF (X(j) .GT. DARWIN_EPS) THEN
           Qch(j) = MAX(0 _d 0, Ptr(ich+j-1))/X(j)
         ELSE
           Qch(j) = 0 _d 0
@@ -588,7 +591,7 @@ c       linear limitation
      &   (combNO(j)*NO2 + NO3 + ksatNO3(j))*inhibNH4
         limitn = limitNH4 + limitNO2 + limitNO3
 C       normalize to sum 1
-        IF (limitn .GT. 0 _d 0) THEN
+        IF (limitn .GT. DARWIN_EPS) THEN
           fracNH4 = limitNH4/limitn
           fracNO2 = limitNO2/limitn
           fracNO3 = limitNO3/limitn
