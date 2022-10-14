@@ -9,10 +9,7 @@ C !INTERFACE: ==========================================================
      O     chlout, diags,
      I     PAR, photoTempFunc, hetTempFunc, grazTempFunc, reminTempFunc,
      I     mortTempFunc, mort2TempFunc, uptakeTempFunc,
-#ifdef DARWIN_DEBUG
-     I     iG, jG, k, dT,
-#endif
-     I     myTime,myIter,myThid)
+     I     k_debug,myTime,myIter,myThid)
 
 C !DESCRIPTION:
 
@@ -44,12 +41,9 @@ C  myThid :: thread number
       _RL grazTempFunc(nplank)
       _RL mortTempFunc
       _RL mort2TempFunc
-      INTEGER myThid, myIter
       _RL myTime
-#ifdef DARWIN_DEBUG
-      INTEGER iG, jG, k
-      _RL dT
-#endif
+      INTEGER k_debug
+      INTEGER myThid, myIter
 
 C !INPUT/OUTPUT PARAMETERS: ============================================
 C  gTr    :: accumulates computed tendencies
@@ -854,8 +848,8 @@ C==== Apply phototrophy tendencies =====================================
 #endif
 
 #ifdef DARWIN_DEBUG
-        IF (iG.eq.iDEBUG.and.jG.eq.jDEBUG) THEN
-         print*,'uptake',myiter,k,j,
+        IF (k_debug.GT.0) THEN
+         print*,'uptake',myiter,k_debug,j,
      &     uptakeDIC,
      &     uptakeNH4,
      &     uptakeNO2,
