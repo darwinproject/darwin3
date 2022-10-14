@@ -106,6 +106,7 @@ C  k                    :: vertical level
       _RL uptakeTempFunc
       _RL tmp, tmpFac
       _RL sedFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      INTEGER k_debug
 #ifdef DARWIN_DEBUG
       INTEGER iG, jG
       INTEGER iBase, jBase
@@ -491,6 +492,14 @@ C-      default (face fit into global-IO-array)
 
        do i=iMin,iMax
        if (hFacC(i,j,k,bi,bj) .GT. 0.) then
+        k_debug = 0
+#ifdef DARWIN_DEBUG
+        IF (iG+i.eq.iDEBUG.and.jG.eq.jDEBUG) THEN
+         IF (kDEBUG.EQ.0 .OR. k.EQ.kDebug) THEN
+          k_debug = k
+         ENDIF
+        ENDIF
+#endif
         CALL DARWIN_TEMPFUNC(Theta(i,j,k,bi,bj),
      &         photoTempFunc, hetTempFunc, grazTempFunc,
      &         reminTempFunc, mortTempFunc, mort2TempFunc,
@@ -512,9 +521,7 @@ C-      default (face fit into global-IO-array)
      I                 reminTempFunc,
      I                 mortTempFunc, mort2TempFunc,
      I                 uptakeTempFunc,
-#ifdef DARWIN_DEBUG
-     I                 iG+i, jG, k, dTsub(k),
-#endif
+     I                 k_debug,
      I                 subTime, myIter, myThid )
         DO l=1,darwin_nDiag
          diags(i, j, k, l) = diagsl(l)
