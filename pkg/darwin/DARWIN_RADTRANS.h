@@ -82,6 +82,26 @@ C     darwin_scatSlopeLarge    :: []           slope for large plankton
       _RL darwin_scatSlopeSmall(nlam)
       _RL darwin_scatSlopeLarge(nlam)
 
+C     COMMON /DARWIN_RT_DEPPARAMS_r/
+C     aw               :: [m^-1]             absorption coefficient for water
+C     bw               :: [m^-1]             total scattering coefficient for water
+C     aphy_chl_type    :: [m^2 (mg Chl)^-1]  phytoplankton Chl-specific absorption coefficient by optical type
+C     aphy_chl_ps_type :: [m^2 (mg Chl)^-1]  part of aphy_chl_type that is available for phtosynthesis
+C     aphy_mgC_type    :: [m^2 (mg C)^-1]    plankton carbon-specific absorption coefficient by optical type
+C     bphy_mgC_type    :: [m^2 (mg C)^-1]    carbon-specific total scttering coefficient by optical type
+C     bbphy_mgC_type   :: [m^2 (mg C)^-1]    carbon-specific backscattering coefficient by optical type
+C     asize            :: [um]               reference cell diameter for aphy_chl_type
+C     apsize           :: [um]               reference cell diameter for aphy_chl_ps_type
+C     asize_mgC        :: [um]               reference cell diameter for aphy_mgC_type
+C     bsize            :: [um]               reference cell diameter for bphy_mgC_type
+C     bbsize           :: [um]               reference cell diameter for bbphy_mgC_type
+C     apart            :: [m^-1]             absorption coefficient for detritus read in from file
+C     bpart            :: [m^-1]             total scattering coefficient for detritus read in from file
+C     bbpart           :: [m^-1]             backscattering coefficient for detritus read in from file
+C     apart_P          :: [m^2 (mmol P)^-1]  P-specific absorption coefficient for detritus
+C     bpart_P          :: [m^2 (mmol P)^-1]  P-specific total scattering coefficient for detritus
+C     bbpart_P         :: [m^2 (mmol P)^-1]  P-specific backscattering coefficient for detritus
+C     exCDOM           :: [ ]                wavelength-dependent part of CDOM absorption spectrum
       COMMON /DARWIN_RT_DEPPARAMS_r/
      &    aw,
      &    bw,
@@ -142,6 +162,8 @@ C     bbphy_mgC   :: [m^2 (mg C)^-1]    carbon-specific backscattering coefficie
 
 #endif /* ALLOW_RADTRANS */
 
+C     COMMON /DARWIN_RT_DEPTRAITS_r/
+C     alphachl :: [mmol C m^2 (uEin mg Chl)^-1]  Chlorophyll-specific initial slope for photosynthesis
       COMMON /DARWIN_RT_DEPTRAITS_r/
      &    alphachl
       _RL alphachl(nplank,nlam)
