@@ -29,6 +29,15 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#ifdef DARWIN_DEBUG
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif
+#include "GRID.h"
+#endif
 #include "PARAMS.h"
 #include "EXF_PARAM.h"
 #include "PTRACERS_SIZE.h"
@@ -117,6 +126,16 @@ CCOG[[[end]]] (checksum: 1916d588f1c9768c75358b16b3668716)
       INTEGER n_DARWIN
       LOGICAL addBlkLn
       CHARACTER*1 blkLin
+#ifdef DARWIN_DEBUG
+      INTEGER np,bi,bj,i
+      INTEGER iG,jG
+      INTEGER iBase,jBase
+      INTEGER iGjLoc,jGjLoc
+      _R8 bufl(3), bufg(3,nPx*nPy)
+#ifdef ALLOW_EXCH2
+      INTEGER tN
+#endif /* ALLOW_EXCH2 */
+#endif /* DARWIN_DEBUG */
 
       NAMELIST/DARWIN_INDICES/
 CCOG[[[cog
@@ -2716,10 +2735,99 @@ C     Log plankton types with ptracer indices
       ENDDO
 #endif
 
-      _END_MASTER(myThid)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Find and log debugging location
+
+#ifdef DARWIN_DEBUG
+      DO np = 1, nPx*nPy
+        DO bj=1,nSy
+         DO bi=1,nSx
+           iGjLoc = 0
+           jGjLoc = 1
+#ifdef ALLOW_USE_MPI
+           iBase = mpi_myXGlobalLo(np)-1 + (bi-1)*sNx
+           jBase = mpi_myYGlobalLo(np)-1 + (bj-1)*sNy
+#else
+           iBase = myXGlobalLo-1 + (bi-1)*sNx
+           jBase = myYGlobalLo-1 + (bj-1)*sNy
+#endif
+#ifdef ALLOW_EXCH2
+           IF ( W2_useE2ioLayOut ) THEN
+             tN = W2_procTileList(bi,bj,np)
+             iBase = exch2_txGlobalo(tN)-1
+             jBase = exch2_tyGlobalo(tN)-1
+             IF   ( exch2_mydNx(tN) .GT. exch2_global_Nx ) THEN
+C-           face x-size larger than glob-size : fold it
+               iGjLoc = 0
+               jGjLoc = exch2_mydNx(tN) / exch2_global_Nx
+             ELSEIF ( exch2_tNy(tN) .GT. exch2_global_Ny ) THEN
+C-           tile y-size larger than glob-size : make a long line
+               iGjLoc = exch2_mydNx(tN)
+               jGjLoc = 0
+             ELSE
+C-           default (face fit into global-IO-array)
+               iGjLoc = 0
+               jGjLoc = 1
+             ENDIF
+           ENDIF
+#endif /* ALLOW_EXCH2 */
+           DO j=1,sNy
+             iG = iBase + (j-1)*iGjLoc
+             jG = jBase + (j-1)*jGjLoc + 1
+             DO i=1,sNx
+              IF (iG+i.EQ.iDEBUG.AND.jG.EQ.jDEBUG) THEN
+                CALL PRINT_MESSAGE(' ',standardMessageUnit,
+     &                             SQUEEZE_RIGHT,myThid)
+                WRITE(msgBuf,'(A,2I10)')'DARWIN_DEBUG: iG jG',
+     &                                  iDEBUG,jDEBUG
+                CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                             SQUEEZE_RIGHT,myThid)
+                WRITE(msgBuf,'(A,I10)')'DARWIN_DEBUG: proc ',np-1
+                CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                             SQUEEZE_RIGHT,myThid)
+                WRITE(msgBuf,'(A,2I10)')'DARWIN_DEBUG: bi bj',bi,bj
+                CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                             SQUEEZE_RIGHT,myThid)
+                WRITE(msgBuf,'(A,2I10)')'DARWIN_DEBUG: i j  ',i,j
+                CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                             SQUEEZE_RIGHT,myThid)
+                WRITE(msgBuf,'(A,2I10)')'DARWIN_DEBUG: iBase jBase',
+     &                                  iBase,jBase
+                CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                             SQUEEZE_RIGHT,myThid)
+                bufl(1) = XC(i,j,bi,bj)
+                bufl(2) = YC(i,j,bi,bj)
+                bufl(3) = R_low(i,j,bi,bj)
+                CALL GATHER_VEC_R8(bufg, bufl, 3, myThid)
+#ifdef ALLOW_USE_MPI
+                IF( mpiMyId .EQ. 0 ) THEN
+#else
+                IF( .TRUE. ) THEN
+#endif
+                  WRITE(msgBuf,'(A,2E24.16)')'DARWIN_DEBUG: XC YC',
+     &                                       bufg(1,np), bufg(2,np)
+                  CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                               SQUEEZE_RIGHT,myThid)
+                  WRITE(msgBuf,'(A,E24.16)')'DARWIN_DEBUG: R_low',
+     &                                      bufg(3,np)
+                  CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                               SQUEEZE_RIGHT,myThid)
+                ENDIF
+              ENDIF
+C            enddo i
+             ENDDO
+C          enddo j
+           ENDDO
+C       enddo bi,bj
+         ENDDO
+        ENDDO
+C     enddo np
+      ENDDO
+#endif /* ALLOW_DEBUG */
+
+      _END_MASTER( myThid )
 
 #endif /* ALLOW_DARWIN */
 
       RETURN
       END
-
