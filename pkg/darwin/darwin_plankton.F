@@ -662,7 +662,6 @@ C a la quota
 #endif
 
 C       carbon-specific growth rate
-C       PC = PCm*(1-EXP(-alpha_I_growth*chl2c/MAX(EPS, PCm)))
         IF (PCm .GT. 0.0 .AND. PARtot .GT. PARmin) THEN
           PC = PCm*(1-EXP(-alpha_I_growth*chl2c/PCm))
         ELSE
@@ -673,8 +672,8 @@ C       PC = PCm*(1-EXP(-alpha_I_growth*chl2c/MAX(EPS, PCm)))
 C         "total" PAR:
           tmp = alpha_I/alpha_mean(j)
           Ek = PCm/(chl2c*alpha_mean(j))
-          EkoverE = Ek / tmp
-          IF (tmp .GE. Ek) THEN
+          IF (tmp .GT. Ek) THEN
+            EkoverE = Ek / tmp
             PC = PC*EkoverE*inhibGeider(j)
           ENDIF
         ENDIF
