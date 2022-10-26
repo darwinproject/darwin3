@@ -41,6 +41,8 @@ C       |-- BBL_CHECK
 C       |
 C       |-- EXF_CHECK
 C       |
+C       |-- LONGSTEP_CHECK
+C       |
 C       |-- PTRACERS_CHECK
 C       |
 C       |-- GCHEM_CHECK
@@ -298,6 +300,10 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useRADTRANS) CALL RADTRANS_CHECK( myThid )
 #else
       IF (useRADTRANS) CALL PACKAGES_ERROR_MSG('RADTRANS',' ',myThid)
+#endif
+
+#ifdef ALLOW_LONGSTEP
+      IF (usePTRACERS) CALL LONGSTEP_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_PTRACERS
