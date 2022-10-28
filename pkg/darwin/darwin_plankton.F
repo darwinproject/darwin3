@@ -1644,19 +1644,20 @@ C to DIC as if it had never been synthesized.
       gTr(iPOSi)=gTr(iPOSi) + exude_POSi
       gTr(iPOFe)=gTr(iPOFe) + exude_POFe
 #ifdef DARWIN_ALLOW_CDOM
-      exude_CDOM = fracCDOM*exude_DOP
-      gTr(iCDOM)=gTr(iCDOM) + exude_CDOM
 # ifdef DARWIN_CDOM_UNITS_CARBON
+      exude_CDOM = fracCDOM*exude_DOC
       gTr(iDOC )=gTr(iDOC ) -           exude_CDOM
       gTr(iDON )=gTr(iDON ) - R_NC_CDOM*exude_CDOM
       gTr(iDOP )=gTr(iDOP ) - R_PC_CDOM*exude_CDOM
       gTr(iDOFe)=gTr(iDOFe) - R_FeC_CDOM*exude_CDOM
 # else
+      exude_CDOM = fracCDOM*exude_DOP
       gTr(iDOC )=gTr(iDOC )              - R_CP_CDOM*exude_CDOM
       gTr(iDON )=gTr(iDON )              - R_NP_CDOM*exude_CDOM
       gTr(iDOP )=gTr(iDOP ) - exude_CDOM
       gTr(iDOFe)=gTr(iDOFe)              - R_FeP_CDOM*exude_CDOM
 # endif
+      gTr(iCDOM)=gTr(iCDOM) + exude_CDOM
 #endif
 
 #endif /* ALLOW_DARWIN */
