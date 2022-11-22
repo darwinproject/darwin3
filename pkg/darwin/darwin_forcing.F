@@ -124,6 +124,16 @@ C  k                    :: vertical level
        ENDDO
       ENDDO
 
+      DO l=1,darwin_nDiag
+       DO k=1,Nr
+        DO j=1,sNy
+         DO i=1,sNx
+          diags(i,j,k,l) = 0 _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
       DO k=1,Nr
        dTsub(k) = PTRACERS_dTLev(k)/nsubtime
       ENDDO
