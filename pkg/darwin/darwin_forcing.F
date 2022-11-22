@@ -118,7 +118,7 @@ C  k                    :: vertical level
 
       DO k=1,Nr
        DO j=1,sNy
-        DO i=1,sNy
+        DO i=1,sNx
          DARWIN_minFeLoss(i,j,k,bi,bj) = 0 _d 0
         ENDDO
        ENDDO
@@ -881,12 +881,12 @@ C     isub
         DO k=1,Nr
          tmpFac = 1 _d 0 / PTRACERS_dTLev(k)
          DO j=1,sNy
-          DO i=1,sNy
+          DO i=1,sNx
            tmp3d(i,j,k) = tmpFac*DARWIN_minFeLoss(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
-        CALL DIAGNOSTICS_FILL(tmp3d,'freeFeLs',0,Nr,3,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(tmp3d,'freeFeLs',0,Nr,2,bi,bj,myThid)
        ENDIF
       ENDIF
 #endif
