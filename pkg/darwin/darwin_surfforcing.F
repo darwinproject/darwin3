@@ -60,7 +60,6 @@ C  gO2  :: O2 tendency due to air-sea exchange
 C !LOCAL VARIABLES: ====================================================
       INTEGER i,j,k,ks
       LOGICAL debugPrt
-      _RL co3dummy
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
       _RL SchmidtNoDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -77,7 +76,13 @@ C local variables for carbon chem
       _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SchmidtNoO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL O2sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL FluxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL CO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fugCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL FluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL VFluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL VFluxAlk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL aTT
       _RL aTK
       _RL aTS
@@ -139,13 +144,13 @@ C NOTE: Be very careful with signs here!
 C Positive EminusPforV => loss of water to atmos and increase
 C in salinity. Thus, also increase in other surface tracers
 C (i.e. positive virtual flux into surface layer)
-         VFluxAlk(i,j,bi,bj) = gsm_ALK*surfaceForcingS(i,j,bi,bj)/gsm_S
+         VFluxAlk(i,j) = gsm_ALK*surfaceForcingS(i,j,bi,bj)/gsm_S
          gALK(i,j) =
-     &     recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)*VFluxAlk(i,j,bi,bj)
+     &     recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)*VFluxAlk(i,j)
          alkVirFlx(i,j,bi,bj) = alkVirFlx(i,j,bi,bj)
-     &                        + VFluxAlk(i,j,bi,bj)*dTsub(ks)
+     &                        + VFluxAlk(i,j)*dTsub(ks)
         ELSE
-         VFluxAlk(i,j,bi,bj) = 0 _d 0
+         VFluxAlk(i,j) = 0 _d 0
         ENDIF
        ENDDO
       ENDDO
@@ -198,16 +203,16 @@ c Convert from ml/l to mmol/m^3
          O2sat(i,j) = o2s/22.3916 _d -3
 
 C Determine flux, inc. correction for local atmos surface pressure
-         FluxO2(i,j,bi,bj) = Kwexch(i,j)*
+         FluxO2(i,j) = Kwexch(i,j)*
      &                     (AtmosP(i,j,bi,bj)*O2sat(i,j)
      &                      - pTracer(i,j,ks,bi,bj,iO2))
 #ifdef DARWIN_ALLOW_CONS
          oxySfcFlx(i,j,bi,bj) = oxySfcFlx(i,j,bi,bj)
-     &                        + FluxO2(i,j,bi,bj)*dTsub(ks)
+     &                        + FluxO2(i,j)*dTsub(ks)
 #endif
 
          gO2(i,j) =
-     &      recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)*FluxO2(i,j,bi,bj)
+     &      recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)*FluxO2(i,j)
         ENDIF
        ENDDO
       ENDDO
@@ -281,7 +286,8 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
             CALL CALC_PCO2_SOLVESAPHE(
      I          surftemp(i,j), surfsalt(i,j),
      I          surfdic, surfphos, surfsi, surfalk,
-     U          pH(i,j,k,bi,bj), pCO2(i,j,k,bi,bj), co3dummy,
+     U          pH(i,j,k,bi,bj),
+     O          pCO2(i,j), CO3(i,j),
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
             debugPrt = .FALSE.
           ELSE
@@ -301,14 +307,16 @@ C Use the original Follows et al. (2006) solver
      I        ak0(i,j,bi,bj),  fugf(i,j,bi,bj),
      I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj), st(i,j,bi,bj), ft(i,j,bi,bj),
-     U        pH(i,j,k,bi,bj), pCO2(i,j,k,bi,bj), co3dummy,
+     U        pH(i,j,k,bi,bj),
+     O        pCO2(i,j), CO3(i,j),
      I        i,j,k,bi,bj,myIter,myThid )
 #ifdef DARWIN_SOLVESAPHE
           ENDIF
 #endif /* DARWIN_SOLVESAPHE */
 
          ELSE
-          pCO2(i,j,k,bi,bj)=0. _d 0
+          pCO2(i,j)=0. _d 0
+          CO3(i,j) = 0. _d 0
          ENDIF
         ENDDO
        ENDDO
@@ -337,20 +345,20 @@ C then account for Schmidt number
      &                   / sqrt(SchmidtNoDIC(i,j)/660.0 _d 0)
 
 C compute fugacity of CO2
-           fugCO2(i,j) = pCO2(i,j,ks,bi,bj)*fugf(i,j,bi,bj)
+           fugCO2(i,j) = pCO2(i,j)*fugf(i,j,bi,bj)
 
 c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
-           FluxCO2(i,j,bi,bj) = Kwexch(i,j)*(
+           FluxCO2(i,j) = Kwexch(i,j)*(
      &      ff(i,j,bi,bj)*apCO2sat(i,j) - fugCO2(i,j)*ak0(i,j,bi,bj)
      &     )
           ELSE
-           FluxCO2(i,j,bi,bj) = 0. _d 0
+           FluxCO2(i,j) = 0. _d 0
           ENDIF
 C convert flux (mol kg-1 m s-1) to (mmol m-2 s-1)
-          FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/m3perkg/ptr2mol
+          FluxCO2(i,j) = FluxCO2(i,j)/m3perkg/ptr2mol
 #ifdef DARWIN_ALLOW_CONS
           carbSfcFlx(i,j,bi,bj) = carbSfcFlx(i,j,bi,bj)
-     &                          + FluxCO2(i,j,bi,bj)*dTsub(ks)
+     &                          + FluxCO2(i,j)*dTsub(ks)
 #endif
 
 #ifdef ALLOW_OLD_VIRTUALFLUX
@@ -362,15 +370,15 @@ C Positive EminusPforV => loss of water to atmos and increase
 C in salinity. Thus, also increase in other surface tracers
 C (i.e. positive virtual flux into surface layer)
 C ...so here, VirtualFLux = dC/dt!
-           VFluxCO2(i,j,bi,bj)=gsm_DIC*surfaceForcingS(i,j,bi,bj)/gsm_S
+           VFluxCO2(i,j)=gsm_DIC*surfaceForcingS(i,j,bi,bj)/gsm_S
            carbVirFlx(i,j,bi,bj) = carbVirFlx(i,j,bi,bj)
-     &                         + VFluxCO2(i,j,bi,bj)*dTsub(ks)
+     &                         + VFluxCO2(i,j)*dTsub(ks)
 c OR
 c let virtual flux be zero
 c        VirtualFlux(i,j)=0.d0
 c
           ELSE
-           VFluxCO2(i,j,bi,bj)=0. _d 0
+           VFluxCO2(i,j)=0. _d 0
           ENDIF
 #endif /* ALLOW_OLD_VIRTUALFLUX */
          ENDDO
@@ -382,9 +390,9 @@ C update tendency
           IF ( maskC(i,j,ks,bi,bj).NE.0. _d 0 ) THEN
            gDIC(i,j) =
      &       recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)*
-     &                ( FluxCO2(i,j,bi,bj)
+     &                ( FluxCO2(i,j)
 #ifdef ALLOW_OLD_VIRTUALFLUX
-     &                + VFluxCO2(i,j,bi,bj)
+     &                + VFluxCO2(i,j)
 #endif
      &                )
           ENDIF
@@ -394,13 +402,14 @@ C update tendency
 #ifdef ALLOW_DIAGNOSTICS
         IF (useDiagnostics) THEN
          CALL DIAGNOSTICS_FILL(atmospCO2,'apCO2   ',0,1,1,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(apCO2sat,'apCO2sat',0,1,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(fugf,    'fugfCO2 ',0,1,1,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(fugCO2,  'fCO2    ',0,1,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(FluxO2,  'fluxO2  ',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(apCO2sat, 'apCO2sat',0,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(fugf,     'fugfCO2 ',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(fugCO2,   'fCO2    ',0,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(FluxO2,   'fluxO2  ',0,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(FluxCO2,  'fluxCO2 ',0,1,2,bi,bj,myThid)
 #ifdef ALLOW_OLD_VIRTUALFLUX
-         CALL DIAGNOSTICS_FILL(VFluxCO2,'VfluxCO2',0,1,1,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(VFluxAlk,'VfluxAlk',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(VFluxCO2,'VfluxCO2',0,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(VFluxAlk,'VfluxAlk',0,1,2,bi,bj,myThid)
 #endif
         ENDIF
 #endif
@@ -408,9 +417,21 @@ C update tendency
 C      k is at surface
        ENDIF
 
+#ifdef ALLOW_DIAGNOSTICS
+       IF (useDiagnostics) THEN
+        CALL DIAGNOSTICS_FILL(pCO2,'pCO2    ',k,1,2,bi,bj,myThid)
+       ENDIF
+#endif
+
 C === k ================================================================
       ENDDO
 C ======================================================================
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF (useDiagnostics) THEN
+       CALL DIAGNOSTICS_FILL(pH,'pH      ',0,Nr,1,bi,bj,myThid)
+      ENDIF
+#endif
 
 #endif /* DARWIN_ALLOW_CARBON */
 #endif /* ALLOW_DARWIN */

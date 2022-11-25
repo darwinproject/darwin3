@@ -338,7 +338,8 @@ C !INTERFACE: ==========================================================
      I                       ksilocal,kflocal,
      I                       k0local, fugflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
-     U                       pHlocal,pCO2surfloc,co3local,
+     U                       pHlocal,
+     O                       pCO2surfloc,co3local,
      I                       i,j,k,bi,bj,myIter,myThid )
 
 C !DESCRIPTION:

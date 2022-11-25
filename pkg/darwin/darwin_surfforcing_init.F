@@ -39,6 +39,7 @@ C  myThid               :: thread number
 C !LOCAL VARIABLES: ====================================================
        LOGICAL debugPrt
        INTEGER i,j,k,it
+       _RL pco2dummy
        _RL co3dummy
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
@@ -180,7 +181,8 @@ C$TAF STORE surfalk, surfphos, surfsi                  = dic_surf
      I         surftemp(i,j),surfsalt(i,j),
      I         surfdic, surfphos,
      I         surfsi,surfalk,
-     U         pH(i,j,k,bi,bj),pCO2(i,j,k,bi,bj),co3dummy,
+     U         pH(i,j,k,bi,bj),
+     O         pco2dummy,co3dummy,
      I         i,j,k,bi,bj, debugPrt, nIter0, myThid )
               debugPrt = .FALSE.
              ELSE
@@ -205,7 +207,8 @@ C$TAF STORE surfalk, surfphos, surfs                   = dic_surf
      I        ak0(i,j,bi,bj), fugf(i,j,bi,bj),
      I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj), st(i,j,bi,bj), ft(i,j,bi,bj),
-     U        pH(i,j,k,bi,bj), pCO2(i,j,k,bi,bj), co3dummy,
+     U        pH(i,j,k,bi,bj),
+     O        pco2dummy, co3dummy,
      I        i,j,k,bi,bj, it ,  myThid )
              ENDDO
 #ifdef DARWIN_SOLVESAPHE
