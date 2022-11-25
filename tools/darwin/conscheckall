@@ -4,12 +4,12 @@ conselems=" C  N  P Fe Si  A  O"
 testoutput_cons() {
     all=""
     for e in $conselems; do
-        f="$(ls $1/darwin_cons_$e.*.txt | tail -n 1)"
-        if [ -e "$f" ]; then
-          yy="$($mydir/conscheck $f 0 -)"
-          yy="$(printf "%2.0f" $yy)"
+        if compgen -G "$1/darwin_cons_$e.*txt" > /dev/null; then
+            f="$(ls "$1"/darwin_cons_$e.*txt | tail -n 1)"
+            yy="$($mydir/conscheck "$f" 0 -)"
+            yy="$(printf "%2.0f" $yy)"
         else
-          yy=" -"
+            yy=" -"
         fi
         all="$all $yy"
     done
