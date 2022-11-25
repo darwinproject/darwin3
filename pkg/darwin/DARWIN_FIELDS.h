@@ -103,24 +103,15 @@ C
       _RL totEPRA
       _RL totEPRO
 # endif
-#endif
+#endif /* DARWIN_ALLOW_CONS */
 
 C Carbon Variables
 
+#ifdef DARWIN_ALLOW_CARBON
        COMMON /CARBON_NEEDS/
-     &   pH, pCO2, Atmosp, FluxCO2, FluxO2
-#ifdef ALLOW_OLD_VIRTUALFLUX
-     &   ,VFluxCO2, VFluxAlk
-#endif
+     &   pH, Atmosp
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  FluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  FluxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef ALLOW_OLD_VIRTUALFLUX
-      _RL  VFluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  VFluxAlk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
 
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
@@ -166,6 +157,7 @@ C   Ksp_TP_Arag = solubility product for aragonite, Ref.: Mucci (1983)
       _RL  aphscale(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* DARWIN_SOLVESAPHE */
+#endif /* DARWIN_ALLOW_CARBON */
 
 CEOP
 #endif /* ALLOW_DARWIN */
