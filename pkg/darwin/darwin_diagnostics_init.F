@@ -157,7 +157,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         WRITE(diagName,'(A,I3.3)')'PARF',j
         WRITE(diagTitle,'(A,I3)')'PAR at W point, waveband ',j
         diagUnits = 'uEin/m^2/s      '
-        diagCode  = 'SMRP    LR      '
+        diagCode  = 'SM P    LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -256,7 +256,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(diagName,'(A)')'PARF'
       WRITE(diagTitle,'(A)')'PAR at top of layer'
       diagUnits = 'uEin/m^2/s      '
-      diagCode  = 'SMRP    LR      '
+      diagCode  = 'SM P    LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -441,7 +441,7 @@ C-      use units & names from data.ptracers :
 
         WRITE(diagName,'(A,I4.4)')'GrGn',j
         WRITE(diagTitle,'(A,I4)')'Grazing gain of plankton ',j
-        diagUnits = '1/s             '
+        diagUnits = 'mmol C/m^3/s    '
         diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -462,7 +462,7 @@ C-      use units & names from data.ptracers :
         WRITE(diagName,'(A,I4.4)')'EXU',j
         WRITE(diagTitle,'(A,I4)')'Exudation plankton ',j
         diagUnits = 'mmol C/m^3/s    '
-        diagCode  = 'SM P    MR      '
+        diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
@@ -471,7 +471,7 @@ C-      use units & names from data.ptracers :
         WRITE(diagName,'(A,I4.4)')'BS',j
         WRITE(diagTitle,'(A,I4)')'Biosynthesis rate plankton ',j
         diagUnits = 'mmol C/m^3/s    '
-        diagCode  = 'SM P    MR      '
+        diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
@@ -481,7 +481,7 @@ C-      use units & names from data.ptracers :
         WRITE(diagTitle,'(A,I4)')
      &        'Carbon demand from N limit plankton ',j
         diagUnits = 'mmol C/m^3/s    '
-        diagCode  = 'SM P    MR      '
+        diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
@@ -491,7 +491,7 @@ C-      use units & names from data.ptracers :
         WRITE(diagTitle,'(A,I4)')
      &        'Carbon demand from P limit plankton ',j
         diagUnits = 'mmol C/m^3/s    '
-        diagCode  = 'SM P    MR      '
+        diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
@@ -501,7 +501,7 @@ C-      use units & names from data.ptracers :
         WRITE(diagTitle,'(A,I4)')
      &        'Carbon demand from Fe limit plankton ',j
         diagUnits = 'mmol C/m^3/s    '
-        diagCode  = 'SM P    MR      '
+        diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
@@ -511,7 +511,7 @@ C-      use units & names from data.ptracers :
         WRITE(diagTitle,'(A,I4)')
      &        'Carbon demand from Si limit plankton ',j
         diagUnits = 'mmol C/m^3/s    '
-        diagCode  = 'SM P    MR      '
+        diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
@@ -520,7 +520,7 @@ C-      use units & names from data.ptracers :
         WRITE(diagName,'(A,I4.4)')'Dmin',j
         WRITE(diagTitle,'(A,I4)')'Minimum carbon demand plankton ',j
         diagUnits = 'mmol C/m^3/s    '
-        diagCode  = 'SM P    MR      '
+        diagCode  = 'SMRP    MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDDO
