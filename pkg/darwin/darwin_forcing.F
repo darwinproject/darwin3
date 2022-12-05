@@ -93,7 +93,7 @@ C  k                    :: vertical level
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
       _RL sedFlxFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL tmp3d(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
-      _RL scv,scav_poc
+      _RL scv,scav_pom
       _RL flx, POCl
       _RL ptr(nDarwin), gtr(nDarwin), PARl(nlam)
       _RL chlout(nPhoto)
@@ -378,12 +378,15 @@ C     scavenging
       DO k=1,Nr
       DO j=jMin,jMax
       DO i=iMin,iMax
+C       compute POM in mg/L
 #ifdef DARWIN_PART_SCAV_POP
-        scav_poc = MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOP))/scav_R_POPPOC
-        scv = scav_rat*scav_inter*(scav_poc**scav_exp)
+        scav_pom = MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOP))/scav_R_POPPOC
+        scv = scav_rat*scav_inter*(scav_pom**scav_exp)
 #elif defined(DARWIN_PART_SCAV)
-        scav_poc = MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOC))
-        scv = scav_rat*scav_inter*(scav_poc**scav_exp)
+        scav_pom = scav_POC_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOC))
+     &           + scav_POSi_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOSi))
+     &           + scav_PIC_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPIC))
+        scv = scav_tau*scav_inter*(scav_pom**scav_exp)
 #else
         scv = scav
 #endif
