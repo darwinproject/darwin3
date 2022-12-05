@@ -69,14 +69,24 @@
      &    mort2TempAe,
      &    uptakeTempAe,
      &    alpfe,
-     &    scav,
      &    ligand_tot,
      &    ligand_stab,
      &    freefemax,
+#ifdef DARWIN_PART_SCAV_POP
      &    scav_rat,
      &    scav_inter,
      &    scav_exp,
      &    scav_R_POPPOC,
+#elif defined(DARWIN_PART_SCAV)
+     &    scav_tau,
+     &    scav_inter,
+     &    scav_exp,
+     &    scav_POC_wgt,
+     &    scav_POSi_wgt,
+     &    scav_PIC_wgt,
+#else
+     &    scav,
+#endif
      &    depthfesed,
      &    fesedflux,
      &    fesedflux_pcm,
@@ -310,14 +320,24 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       mort2TempAe = 0.0438 _d 0
       uptakeTempAe = 0.0 _d 0
       alpfe = 0.04 _d 0
-      scav = 0.4 _d 0/pyear
       ligand_tot = 1. _d -3
       ligand_stab = 2. _d 5
       freefemax = 0.4 _d -3
+#ifdef DARWIN_PART_SCAV_POP
       scav_rat = 0.005 _d 0 / pday
       scav_inter = 0.079 _d 0
       scav_exp = 0.58 _d 0
       scav_R_POPPOC = 1.1321 _d -4
+#elif defined(DARWIN_PART_SCAV)
+      scav_tau = 0.2
+      scav_inter = 0.079 _d 0 / pday
+      scav_exp = 0.58 _d 0
+      scav_POC_wgt = 0.02173 _d 0
+      scav_POSi_wgt = 0.069 _d 0
+      scav_PIC_wgt = 0.100 _d 0
+#else
+      scav = 0.4 _d 0/pyear
+#endif
       depthfesed = -1.0 _d 0
       fesedflux = 1 _d -3 / pday
       fesedflux_pcm = 0.68 _d -3
