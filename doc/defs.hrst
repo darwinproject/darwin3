@@ -1,7 +1,10 @@
+.. |nbsp| unicode:: 0xA0
+   :trim:
+
 .. only:: html
 
-    :math:`\newcommand{\p}[1]{\frac{\partial }{\partial #1}}`
-    :math:`\newcommand{\pp}[2]{\frac{\partial #1}{\partial #2}}`
-    :math:`\newcommand{\dd}[2]{\frac{d #1}{d #2}}`
-    :math:`\newcommand{\h}{\frac{1}{2}}`
-    :math:`\newcommand{\op}[1]{\operatorname{#1}}`
+   :math:`\newcommand{\p}[1]{\frac{\partial }{\partial #1}}`
+   :math:`\newcommand{\pp}[2]{\frac{\partial #1}{\partial #2}}`
+   :math:`\newcommand{\dd}[2]{\frac{d #1}{d #2}}`
+   :math:`\newcommand{\h}{\frac{1}{2}}`
+   :math:`\newcommand{\op}[1]{\operatorname{#1}}`
