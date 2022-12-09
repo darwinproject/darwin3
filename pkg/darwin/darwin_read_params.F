@@ -149,7 +149,10 @@ C----
      &    wFe_sink,
      &    wSi_sink,
      &    wPIC_sink,
+     &    darwin_disscSelect,
      &    Kdissc,
+     &    darwin_KeirCoeff,
+     &    darwin_KeirExp,
 #ifdef DARWIN_ALLOW_CARBON
      &    R_OP,
      &    R_OC,
@@ -406,7 +409,10 @@ C
       wFe_sink = wC_sink
       wSi_sink = wC_sink
       wPIC_sink = 15 _d 0/pday
+      darwin_disscSelect = 0
       Kdissc = 1 _d 0/(300 _d 0*pday)
+      darwin_KeirCoeff = EXP(7.177 _d 0)/100 _d 0/86400 _d 0
+      darwin_KeirExp = 4.54 _d 0
 #ifdef DARWIN_ALLOW_CARBON
       R_OP = 170 _d 0
       R_OC = 170 _d 0/120.0 _d 0
