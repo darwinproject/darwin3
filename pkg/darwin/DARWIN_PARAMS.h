@@ -144,6 +144,7 @@ C     kDEBUG      :: index in z dimension for debug prints
 C     DARWIN_disscSelect   :: Switch for PIC dissolution rate formulation
 C                          :: 0: fixed dissolution rate Kdissc
 C                          :: 1: Keir 1980 power law
+C                          :: 2: Naviaux et al. 2019
       COMMON /DARWIN_PARAMS_i/
      &    darwin_seed,
      &    darwin_disscSelect,

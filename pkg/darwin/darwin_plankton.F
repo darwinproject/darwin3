@@ -1083,7 +1083,18 @@ C     endif O2, NO3 for DARWIN_ALLOW_DENIT
       ENDIF
 #endif
 
-      IF (darwin_disscSelect .EQ. 1) THEN
+      IF (darwin_disscSelect .EQ. 2) THEN
+C      Naviaux et al. 2019, Marine Chemistry dissolution rate law
+       IF (omegaCl .LT. 1.0 _d 0) THEN
+        IF (omegaCl .GT. 0.8272 _d 0) THEN
+          disscPIC = PIC * 5.22 _d -9 * (1 _d 0 - omegaCl)**0.11 _d 0
+        ELSE
+          disscPIC = PIC * 1.65 _d -5 * (1 _d 0 - omegaCl)**4.7 _d 0
+        ENDIF
+       ELSE
+        disscPIC = 0.0 _d 0
+       ENDIF
+      ELSEIF (darwin_disscSelect .EQ. 1) THEN
 C      Keir 1980
        IF (omegaCl .LT. 1.0 _d 0) THEN
         disscPIC = PIC*darwin_KeirCoeff
