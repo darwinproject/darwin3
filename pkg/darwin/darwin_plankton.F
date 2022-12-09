@@ -9,6 +9,7 @@ C !INTERFACE: ==========================================================
      O     chlout, diags,
      I     PAR, photoTempFunc, hetTempFunc, grazTempFunc, reminTempFunc,
      I     mortTempFunc, mort2TempFunc, uptakeTempFunc,
+     I     omegaCl,
      I     k_debug,myTime,myIter,myThid)
 
 C !DESCRIPTION:
@@ -41,6 +42,7 @@ C  myThid :: thread number
       _RL grazTempFunc(nplank)
       _RL mortTempFunc
       _RL mort2TempFunc
+      _RL omegaCl
       _RL myTime
       INTEGER k_debug
       INTEGER myThid, myIter
@@ -1081,7 +1083,17 @@ C     endif O2, NO3 for DARWIN_ALLOW_DENIT
       ENDIF
 #endif
 
-      disscPIC = Kdissc*PIC
+      IF (darwin_disscSelect .EQ. 1) THEN
+C      Keir 1980
+       IF (omegaCl .LT. 1.0 _d 0) THEN
+        disscPIC = PIC*darwin_KeirCoeff
+     &                *(1 _d 0 - omegaCl)**darwin_KeirExp
+       ELSE
+        disscPIC = 0 _d 0
+       ENDIF
+      ELSE
+       disscPIC = Kdissc*PIC
+      ENDIF
 
 C==== Nitrogen chemistry ===============================================
 c NH4 -> NO2 -> NO3 by bacterial action, parameterized

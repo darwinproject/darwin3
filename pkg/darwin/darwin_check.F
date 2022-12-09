@@ -399,6 +399,15 @@ C Carbon store is only implemented without quotas
 # endif
 #endif
 
+#ifndef DARWIN_ALLOW_CARBON
+      IF (darwin_disscSelect .NE. 0) THEN
+       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
+     &  'darwin_disscSelect.NE.0 requires DARWIN_ALLOW_CARBON'
+       CALL PRINT_ERROR( msgBuf , 1)
+       STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+      ENDIF
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Print settings of some CPP flags.
 
@@ -1842,9 +1851,21 @@ C--   Print parameters from DARWIN_PARAMS.h
       CALL WRITE_0D_RL(wPIC_sink,INDEX_NONE,
      &'wPIC_sink =',
      &' /* sinking velocity for PIC (m/s) */')
-      CALL WRITE_0D_RL(Kdissc,INDEX_NONE,
-     &'Kdissc =',
-     &' /* dissolution rate for PIC (1/s) */')
+      CALL WRITE_0D_I(darwin_disscSelect,INDEX_NONE,
+     &'darwin_disscSelect = ',
+     &' /* Switch for PIC dissolution rate formulation */')
+      IF (darwin_disscSelect .EQ. 0) THEN
+       CALL WRITE_0D_RL(Kdissc,INDEX_NONE,
+     & 'Kdissc =',
+     & ' /* dissolution rate for PIC (1/s) */')
+      ELSEIF (darwin_disscSelect .EQ. 1) THEN
+       CALL WRITE_0D_RL(darwin_KeirCoeff,INDEX_NONE,
+     & 'darwin_KeirCoeff =',
+     & ' /* Keir PIC dissolution rate coefficient (1/s) */')
+       CALL WRITE_0D_RL(darwin_KeirExp,INDEX_NONE,
+     & 'darwin_KeirExp =',
+     & ' /* Keir PIC dissolution rate exponent */')
+      ENDIF
 #ifdef DARWIN_ALLOW_CARBON
       CALL WRITE_0D_RL(R_OP,INDEX_NONE,
      &'R_OP =',
