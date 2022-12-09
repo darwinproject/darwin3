@@ -107,6 +107,7 @@ C  k                    :: vertical level
       _RL mortTempFunc
       _RL mort2TempFunc
       _RL uptakeTempFunc
+      _RL omegaCl
       _RL tmp, tmpFac
       _RL sedFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
@@ -589,6 +590,11 @@ C-      default (face fit into global-IO-array)
         DO l=1,nlam
          PARl(l) = MAX(0 _d 0, PAR(i, j, k, l))
         ENDDO
+#ifdef DARWIN_ALLOW_CARBON
+        omegaCl = omegaC(i,j,k,bi,bj)
+#else
+        omegaCl = 0 _d 0
+#endif
         CALL DARWIN_PLANKTON(
      I                 ptr,
      U                 gtr,
@@ -599,6 +605,7 @@ C-      default (face fit into global-IO-array)
      I                 reminTempFunc,
      I                 mortTempFunc, mort2TempFunc,
      I                 uptakeTempFunc,
+     I                 omegaCl,
      I                 k_debug,
      I                 subTime, myIter, myThid )
         DO l=1,darwin_nDiag

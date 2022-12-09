@@ -141,12 +141,17 @@ C     darwin_seed :: seed for random number generator (for DARWIN_RANDOM_TRAITS)
 C     iDEBUG      :: index in x dimension for debug prints
 C     jDEBUG      :: index in y dimension for debug prints
 C     kDEBUG      :: index in z dimension for debug prints
+C     DARWIN_disscSelect   :: Switch for PIC dissolution rate formulation
+C                          :: 0: fixed dissolution rate Kdissc
+C                          :: 1: Keir 1980 power law
       COMMON /DARWIN_PARAMS_i/
      &    darwin_seed,
+     &    darwin_disscSelect,
      &    iDEBUG,
      &    jDEBUG,
      &    kDEBUG
       INTEGER darwin_seed
+      INTEGER darwin_disscSelect
       INTEGER iDEBUG
       INTEGER jDEBUG
       INTEGER kDEBUG
@@ -209,6 +214,8 @@ C     wP_sink           :: [m/s]  sinking velocity for POP
 C     wFe_sink          :: [m/s]  sinking velocity for POFe
 C     wSi_sink          :: [m/s]  sinking velocity for POSi
 C     wPIC_sink         :: [m/s]  sinking velocity for PIC
+C     darwin_KeirCoeff  :: [1/s]  Keir PIC dissolution rate coefficient
+C     darwin_KeirExp    :: [1]    Keir PIC dissolution rate exponent
 C     Kdissc            :: [1/s]  dissolution rate for PIC
 C
 C- Carbon chemistry parameters
@@ -337,6 +344,8 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    wSi_sink,
      &    wPIC_sink,
      &    Kdissc,
+     &    DARWIN_KeirCoeff,
+     &    DARWIN_KeirExp,
 #ifdef DARWIN_ALLOW_CARBON
      &    R_OP,
      &    R_OC,
@@ -454,6 +463,8 @@ C     &    yono2,
       _RL wSi_sink
       _RL wPIC_sink
       _RL Kdissc
+      _RL DARWIN_KeirCoeff
+      _RL DARWIN_KeirExp
 #ifdef DARWIN_ALLOW_CARBON
       _RL R_OP
       _RL R_OC
