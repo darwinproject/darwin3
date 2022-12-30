@@ -44,7 +44,8 @@ C     these load constant forcing fields
 #ifdef USE_EXF_INTERPOLATION
      &     PAR_lon0, PAR_lon_inc,
      &     PAR_lat0, PAR_lat_inc,
-     &     PAR_nlon, PAR_nlat, xC, yC, PAR_interpMethod,
+     &     PAR_nlon, PAR_nlat, xC, yC,
+     &     PAR_interpMethod,
 #endif
      &     mythid )
 
@@ -55,7 +56,8 @@ C     these load constant forcing fields
 #ifdef USE_EXF_INTERPOLATION
      &     iron_lon0, iron_lon_inc,
      &     iron_lat0, iron_lat_inc,
-     &     iron_nlon, iron_nlat, xC, yC, iron_interpMethod,
+     &     iron_nlon, iron_nlat, xC, yC,
+     &     iron_interpMethod,
 #endif
      &     mythid )
 
@@ -66,7 +68,8 @@ C     these load constant forcing fields
 #ifdef USE_EXF_INTERPOLATION
      &     ice_lon0, ice_lon_inc,
      &     ice_lat0, ice_lat_inc,
-     &     ice_nlon, ice_nlat, xC, yC, ice_interpMethod,
+     &     ice_nlon, ice_nlat, xC, yC,
+     &     ice_interpMethod,
 #endif
      &     mythid )
 
@@ -77,7 +80,8 @@ C     these load constant forcing fields
 #ifdef USE_EXF_INTERPOLATION
      &     wind_lon0, wind_lon_inc,
      &     wind_lat0, wind_lat_inc,
-     &     wind_nlon, wind_nlat, xC, yC, wind_interpMethod,
+     &     wind_nlon, wind_nlat, xC, yC,
+     &     wind_interpMethod,
 #endif
      &     mythid )
 
@@ -88,14 +92,26 @@ C     these load constant forcing fields
 #ifdef USE_EXF_INTERPOLATION
      &     pCO2_lon0, pCO2_lon_inc,
      &     pCO2_lat0, pCO2_lat_inc,
-     &     pCO2_nlon, pCO2_nlat, xC, yC, pCO2_interpMethod,
+     &     pCO2_nlon, pCO2_nlat, xC, yC,
+     &     pCO2_interpMethod,
+#endif
+     &     mythid )
+
+      call exf_init_fld (
+     &     'ventHe3', ventHe3file, ventHe3mask,
+     &     ventHe3period, darwin_inscal_ventHe3, ventHe3const,
+     &     ventHe3, ventHe30, ventHe31,
+#ifdef USE_EXF_INTERPOLATION
+     &     ventHe3_lon0, ventHe3_lon_inc,
+     &     ventHe3_lat0, ventHe3_lat_inc,
+     &     ventHe3_nlon, ventHe3_nlat, xC, yC,
+     &     ventHe3_interpMethod,
 #endif
      &     mythid )
 
       call exf_init_fld (
      &     'DOCrunoff', DOCrunofffile, DOCrunoffmask,
-     &     DOCrunoffperiod, darwin_inscal_DOCrunoff,
-     &     DOCrunoffconst,
+     &     DOCrunoffperiod, darwin_inscal_DOCrunoff, DOCrunoffconst,
      &     DOCrunoff, DOCrunoff0, DOCrunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     DOCrunoff_lon0, DOCrunoff_lon_inc,
@@ -107,8 +123,7 @@ C     these load constant forcing fields
 
       call exf_init_fld (
      &     'DONrunoff', DONrunofffile, DONrunoffmask,
-     &     DONrunoffperiod, darwin_inscal_DONrunoff,
-     &     DONrunoffconst,
+     &     DONrunoffperiod, darwin_inscal_DONrunoff, DONrunoffconst,
      &     DONrunoff, DONrunoff0, DONrunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     DONrunoff_lon0, DONrunoff_lon_inc,
@@ -119,9 +134,8 @@ C     these load constant forcing fields
      &     mythid )
 
       call exf_init_fld (
-     &     'DONrunoff', DOPrunofffile, DOPrunoffmask,
-     &     DOPrunoffperiod, darwin_inscal_DOPrunoff,
-     &     DOPrunoffconst,
+     &     'DOPrunoff', DOPrunofffile, DOPrunoffmask,
+     &     DOPrunoffperiod, darwin_inscal_DOPrunoff, DOPrunoffconst,
      &     DOPrunoff, DOPrunoff0, DOPrunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     DOPrunoff_lon0, DOPrunoff_lon_inc,
@@ -133,8 +147,7 @@ C     these load constant forcing fields
 
       call exf_init_fld (
      &     'DINrunoff', DINrunofffile, DINrunoffmask,
-     &     DINrunoffperiod, darwin_inscal_DINrunoff,
-     &     DINrunoffconst,
+     &     DINrunoffperiod, darwin_inscal_DINrunoff, DINrunoffconst,
      &     DINrunoff, DINrunoff0, DINrunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     DINrunoff_lon0, DINrunoff_lon_inc,
@@ -146,8 +159,7 @@ C     these load constant forcing fields
 
       call exf_init_fld (
      &     'IPrunoff', IPrunofffile, IPrunoffmask,
-     &     IPrunoffperiod, darwin_inscal_IPrunoff,
-     &     IPrunoffconst,
+     &     IPrunoffperiod, darwin_inscal_IPrunoff, IPrunoffconst,
      &     IPrunoff, IPrunoff0, IPrunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     IPrunoff_lon0, IPrunoff_lon_inc,
@@ -159,8 +171,7 @@ C     these load constant forcing fields
 
       call exf_init_fld (
      &     'DSirunoff', DSirunofffile, DSirunoffmask,
-     &     DSirunoffperiod, darwin_inscal_DSirunoff,
-     &     DSirunoffconst,
+     &     DSirunoffperiod, darwin_inscal_DSirunoff, DSirunoffconst,
      &     DSirunoff, DSirunoff0, DSirunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     DSirunoff_lon0, DSirunoff_lon_inc,
@@ -172,8 +183,7 @@ C     these load constant forcing fields
 
       call exf_init_fld (
      &     'POCrunoff', POCrunofffile, POCrunoffmask,
-     &     POCrunoffperiod, darwin_inscal_POCrunoff,
-     &     POCrunoffconst,
+     &     POCrunoffperiod, darwin_inscal_POCrunoff, POCrunoffconst,
      &     POCrunoff, POCrunoff0, POCrunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     POCrunoff_lon0, POCrunoff_lon_inc,
@@ -185,8 +195,7 @@ C     these load constant forcing fields
 
       call exf_init_fld (
      &     'POPrunoff', POPrunofffile, POPrunoffmask,
-     &     POPrunoffperiod, darwin_inscal_POPrunoff,
-     &     POPrunoffconst,
+     &     POPrunoffperiod, darwin_inscal_POPrunoff, POPrunoffconst,
      &     POPrunoff, POPrunoff0, POPrunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     POPrunoff_lon0, POPrunoff_lon_inc,
@@ -198,8 +207,7 @@ C     these load constant forcing fields
 
       call exf_init_fld (
      &     'PONrunoff', PONrunofffile, PONrunoffmask,
-     &     PONrunoffperiod, darwin_inscal_PONrunoff,
-     &     PONrunoffconst,
+     &     PONrunoffperiod, darwin_inscal_PONrunoff, PONrunoffconst,
      &     PONrunoff, PONrunoff0, PONrunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     PONrunoff_lon0, PONrunoff_lon_inc,
@@ -211,8 +219,7 @@ C     these load constant forcing fields
 
       call exf_init_fld (
      &     'DICrunoff', DICrunofffile, DICrunoffmask,
-     &     DICrunoffperiod, darwin_inscal_DICrunoff,
-     &     DICrunoffconst,
+     &     DICrunoffperiod, darwin_inscal_DICrunoff, DICrunoffconst,
      &     DICrunoff, DICrunoff0, DICrunoff1,
 #ifdef USE_EXF_INTERPOLATION
      &     DICrunoff_lon0, DICrunoff_lon_inc,
@@ -221,6 +228,7 @@ C     these load constant forcing fields
      &     DICrunoff_interpMethod,
 #endif
      &     mythid )
+
 
       IF (darwin_loadFieldsEarly) THEN
 C       these load time-varying forcing fields
@@ -234,7 +242,8 @@ C       (usually done in darwin_fields_load, but may be needed for chl)
 #ifdef USE_EXF_INTERPOLATION
      &     PAR_lon0, PAR_lon_inc,
      &     PAR_lat0, PAR_lat_inc,
-     &     PAR_nlon, PAR_nlat, xC, yC, PAR_interpMethod,
+     &     PAR_nlon, PAR_nlat, xC, yC,
+     &     PAR_interpMethod,
 #endif
      &     starttime, nIter0, mythid )
 
@@ -247,7 +256,8 @@ C       (usually done in darwin_fields_load, but may be needed for chl)
 #ifdef USE_EXF_INTERPOLATION
      &     iron_lon0, iron_lon_inc,
      &     iron_lat0, iron_lat_inc,
-     &     iron_nlon, iron_nlat, xC, yC, iron_interpMethod,
+     &     iron_nlon, iron_nlat, xC, yC,
+     &     iron_interpMethod,
 #endif
      &     starttime, nIter0, mythid )
 
@@ -260,7 +270,8 @@ C       (usually done in darwin_fields_load, but may be needed for chl)
 #ifdef USE_EXF_INTERPOLATION
      &     ice_lon0, ice_lon_inc,
      &     ice_lat0, ice_lat_inc,
-     &     ice_nlon, ice_nlat, xC, yC, ice_interpMethod,
+     &     ice_nlon, ice_nlat, xC, yC,
+     &     ice_interpMethod,
 #endif
      &     starttime, nIter0, mythid )
 
@@ -273,7 +284,8 @@ C       (usually done in darwin_fields_load, but may be needed for chl)
 #ifdef USE_EXF_INTERPOLATION
      &     wind_lon0, wind_lon_inc,
      &     wind_lat0, wind_lat_inc,
-     &     wind_nlon, wind_nlat, xC, yC, wind_interpMethod,
+     &     wind_nlon, wind_nlat, xC, yC,
+     &     wind_interpMethod,
 #endif
      &     starttime, nIter0, mythid )
 
@@ -286,7 +298,22 @@ C       (usually done in darwin_fields_load, but may be needed for chl)
 #ifdef USE_EXF_INTERPOLATION
      &     pCO2_lon0, pCO2_lon_inc,
      &     pCO2_lat0, pCO2_lat_inc,
-     &     pCO2_nlon, pCO2_nlat, xC, yC, pCO2_interpMethod,
+     &     pCO2_nlon, pCO2_nlat, xC, yC,
+     &     pCO2_interpMethod,
+#endif
+     &     starttime, nIter0, mythid )
+
+        call exf_set_fld(
+     &     'ventHe3', ventHe3file, ventHe3mask,
+     &     ventHe3StartTime, ventHe3period, ventHe3RepCycle,
+     &     darwin_inscal_ventHe3,
+     &     ventHe3_exfremo_intercept, ventHe3_exfremo_slope,
+     &     ventHe3, ventHe30, ventHe31,
+#ifdef USE_EXF_INTERPOLATION
+     &     ventHe3_lon0, ventHe3_lon_inc,
+     &     ventHe3_lat0, ventHe3_lat_inc,
+     &     ventHe3_nlon, ventHe3_nlat, xC, yC,
+     &     ventHe3_interpMethod,
 #endif
      &     starttime, nIter0, mythid )
 
@@ -431,33 +458,20 @@ C       (usually done in darwin_fields_load, but may be needed for chl)
      &     starttime, nIter0, mythid )
 
         _EXCH_XY_RL( surfPAR, myThid )
-
         _EXCH_XY_RL( inputFe, myThid )
-
         _EXCH_XY_RL( iceFrac, myThid )
-
         _EXCH_XY_RL( windSpeed, myThid )
-
         _EXCH_XY_RL( atmospCO2, myThid )
-
+        _EXCH_XY_RL( ventHe3, myThid )
         _EXCH_XY_RL( DOCrunoff, myThid )
-
         _EXCH_XY_RL( DONrunoff, myThid )
-
         _EXCH_XY_RL( DOPrunoff, myThid )
-
         _EXCH_XY_RL( DINrunoff, myThid )
-
         _EXCH_XY_RL( IPrunoff, myThid )
-
         _EXCH_XY_RL( DSirunoff, myThid )
-
         _EXCH_XY_RL( POCrunoff, myThid )
-
         _EXCH_XY_RL( POPrunoff, myThid )
-
         _EXCH_XY_RL( PONrunoff, myThid )
-
         _EXCH_XY_RL( DICrunoff, myThid )
 
       ENDIF

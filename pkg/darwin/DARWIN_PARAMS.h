@@ -15,18 +15,21 @@ C Requires: DARWIN_SIZE.h
 
 C--   COMMON/darwin_forcing_params_l/ darwin parameters related to forcing
 C     darwin_chlInitBalanced :: Initialize Chlorophyll to a balanced value following Geider
-C     darwin_haveSurfPAR     ::
+C     darwin_haveSurfPAR     :: whether PAR forcing fields/constant were given
+C     darwin_haveVentHe3     :: whether hydrothermal vent forcing was given
 C     darwin_useSEAICE       :: whether to use ice area from seaice pkg
 C     darwin_useQsw          :: whether to use model shortwave radiation
 C     darwin_useEXFwind      :: whether to use wind speed from exf package
       COMMON/darwin_forcing_params_l/
      &    darwin_chlInitBalanced,
      &    darwin_haveSurfPAR,
+     &    darwin_haveVentHe3,
      &    darwin_useSEAICE,
      &    darwin_useQsw,
      &    darwin_useEXFwind
       LOGICAL darwin_chlInitBalanced
       LOGICAL darwin_haveSurfPAR
+      LOGICAL darwin_haveVentHe3
       LOGICAL darwin_useSEAICE
       LOGICAL darwin_useQsw
       LOGICAL darwin_useEXFwind

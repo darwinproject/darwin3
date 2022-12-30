@@ -121,6 +121,9 @@ C       Print some statistics about input forcing fields
         CALL MON_WRITESTATS_RL( 1, atmospCO2, 'atmospCO2',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 
+        CALL MON_WRITESTATS_RL( 1, ventHe3, 'ventHe3',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+
         CALL MON_WRITESTATS_RL( 1, DOCrunoff, 'DOCrunoff',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 

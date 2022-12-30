@@ -16,6 +16,7 @@ C Requires: SIZE.h
      &    icefile,
      &    windfile,
      &    pCO2file,
+     &    ventHe3file,
      &    DOCrunofffile,
      &    DONrunofffile,
      &    DOPrunofffile,
@@ -32,6 +33,7 @@ C Requires: SIZE.h
       CHARACTER*128 icefile
       CHARACTER*128 windfile
       CHARACTER*128 pCO2file
+      CHARACTER*128 ventHe3file
       CHARACTER*128 DOCrunofffile
       CHARACTER*128 DONrunofffile
       CHARACTER*128 DOPrunofffile
@@ -49,16 +51,17 @@ C Requires: SIZE.h
      &    ice0, ice1, iceFrac,
      &    wind0, wind1, windSpeed,
      &    pCO20, pCO21, atmospCO2,
-     &    DOCrunoff0,DOCrunoff1,DOCrunoff,
-     &    DONrunoff0,DONrunoff1,DONrunoff,
-     &    DOPrunoff0,DOPrunoff1,DOPrunoff,
-     &    DINrunoff0,DINrunoff1,DINrunoff,
-     &    IPrunoff0,IPrunoff1,IPrunoff,
-     &    DSirunoff0,DSirunoff1,DSirunoff,
-     &    POCrunoff0,POCrunoff1,POCrunoff,
-     &    POPrunoff0,POPrunoff1,POPrunoff,
-     &    PONrunoff0,PONrunoff1,PONrunoff,
-     &    DICrunoff0,DICrunoff1,DICrunoff
+     &    ventHe30, ventHe31, ventHe3,
+     &    DOCrunoff0, DOCrunoff1, DOCrunoff,
+     &    DONrunoff0, DONrunoff1, DONrunoff,
+     &    DOPrunoff0, DOPrunoff1, DOPrunoff,
+     &    DINrunoff0, DINrunoff1, DINrunoff,
+     &    IPrunoff0, IPrunoff1, IPrunoff,
+     &    DSirunoff0, DSirunoff1, DSirunoff,
+     &    POCrunoff0, POCrunoff1, POCrunoff,
+     &    POPrunoff0, POPrunoff1, POPrunoff,
+     &    PONrunoff0, PONrunoff1, PONrunoff,
+     &    DICrunoff0, DICrunoff1, DICrunoff
 
       _RL PAR0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL PAR1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -79,6 +82,10 @@ C Requires: SIZE.h
       _RL pCO20(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pCO21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL atmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      _RL ventHe30(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ventHe31(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ventHe3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL DOCrunoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL DOCrunoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

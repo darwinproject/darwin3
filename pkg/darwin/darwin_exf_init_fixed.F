@@ -42,57 +42,74 @@ C     errCount  :: error counter
 
       IF ( PARfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START PAR',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START PAR',
+     &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                           'darwin', 'PAR', PARperiod,
-     I                           PARstartdate1, PARstartdate2,
-     U                           PARStartTime, errCount,
-     I                           myThid )
+     I                         'darwin', 'PAR', PARperiod,
+     I                         PARstartdate1, PARstartdate2,
+     U                         PARStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( ironfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',
+     &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                           'darwin', 'iron', ironperiod,
-     I                           ironstartdate1, ironstartdate2,
-     U                           ironStartTime, errCount,
-     I                           myThid )
+     I                         'darwin', 'iron', ironperiod,
+     I                         ironstartdate1, ironstartdate2,
+     U                         ironStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( icefile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START ice',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START ice',
+     &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                           'darwin', 'ice', iceperiod,
-     I                           icestartdate1, icestartdate2,
-     U                           iceStartTime, errCount,
-     I                           myThid )
+     I                         'darwin', 'ice', iceperiod,
+     I                         icestartdate1, icestartdate2,
+     U                         iceStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( windfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START wind',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START wind',
+     &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                           'darwin', 'wind', windperiod,
-     I                           windstartdate1, windstartdate2,
-     U                           windStartTime, errCount,
-     I                           myThid )
+     I                         'darwin', 'wind', windperiod,
+     I                         windstartdate1, windstartdate2,
+     U                         windStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( pCO2file .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',
+     &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                           'darwin', 'pCO2', pCO2period,
-     I                           pCO2startdate1, pCO2startdate2,
-     U                           pCO2StartTime, errCount,
-     I                           myThid )
+     I                         'darwin', 'pCO2', pCO2period,
+     I                         pCO2startdate1, pCO2startdate2,
+     U                         pCO2StartTime, errCount,
+     I                         myThid )
+      ENDIF
+
+      IF ( ventHe3file .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START ventHe3',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'darwin', 'ventHe3', ventHe3period,
+     I                         ventHe3startdate1, ventHe3startdate2,
+     U                         ventHe3StartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( DOCrunofffile .NE. ' ' ) THEN
@@ -101,10 +118,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'DOCrunoff', DOCrunoffperiod,
-     I  DOCrunoffstartdate1, DOCrunoffstartdate2,
-     U  DOCrunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'DOCrunoff', DOCrunoffperiod,
+     I                         DOCrunoffstartdate1, DOCrunoffstartdate2,
+     U                         DOCrunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( DONrunofffile .NE. ' ' ) THEN
@@ -113,10 +130,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'DONrunoff', DONrunoffperiod,
-     I  DONrunoffstartdate1, DONrunoffstartdate2,
-     U  DONrunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'DONrunoff', DONrunoffperiod,
+     I                         DONrunoffstartdate1, DONrunoffstartdate2,
+     U                         DONrunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( DOPrunofffile .NE. ' ' ) THEN
@@ -125,10 +142,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'DOPrunoff', DOPrunoffperiod,
-     I  DOPrunoffstartdate1, DOPrunoffstartdate2,
-     U  DOPrunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'DOPrunoff', DOPrunoffperiod,
+     I                         DOPrunoffstartdate1, DOPrunoffstartdate2,
+     U                         DOPrunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( DINrunofffile .NE. ' ' ) THEN
@@ -137,10 +154,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'DINrunoff', DINrunoffperiod,
-     I  DINrunoffstartdate1, DINrunoffstartdate2,
-     U  DINrunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'DINrunoff', DINrunoffperiod,
+     I                         DINrunoffstartdate1, DINrunoffstartdate2,
+     U                         DINrunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( IPrunofffile .NE. ' ' ) THEN
@@ -149,10 +166,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'IPrunoff', IPrunoffperiod,
-     I  IPrunoffstartdate1, IPrunoffstartdate2,
-     U  IPrunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'IPrunoff', IPrunoffperiod,
+     I                         IPrunoffstartdate1, IPrunoffstartdate2,
+     U                         IPrunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( DSirunofffile .NE. ' ' ) THEN
@@ -161,10 +178,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'DSirunoff', DSirunoffperiod,
-     I  DSirunoffstartdate1, DSirunoffstartdate2,
-     U  DSirunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'DSirunoff', DSirunoffperiod,
+     I                         DSirunoffstartdate1, DSirunoffstartdate2,
+     U                         DSirunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( POCrunofffile .NE. ' ' ) THEN
@@ -173,10 +190,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'POCrunoff', POCrunoffperiod,
-     I  POCrunoffstartdate1, POCrunoffstartdate2,
-     U  POCrunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'POCrunoff', POCrunoffperiod,
+     I                         POCrunoffstartdate1, POCrunoffstartdate2,
+     U                         POCrunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( POPrunofffile .NE. ' ' ) THEN
@@ -185,10 +202,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'POPrunoff', POPrunoffperiod,
-     I  POPrunoffstartdate1, POPrunoffstartdate2,
-     U  POPrunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'POPrunoff', POPrunoffperiod,
+     I                         POPrunoffstartdate1, POPrunoffstartdate2,
+     U                         POPrunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( PONrunofffile .NE. ' ' ) THEN
@@ -197,10 +214,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'PONrunoff', PONrunoffperiod,
-     I  PONrunoffstartdate1, PONrunoffstartdate2,
-     U  PONrunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'PONrunoff', PONrunoffperiod,
+     I                         PONrunoffstartdate1, PONrunoffstartdate2,
+     U                         PONrunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( DICrunofffile .NE. ' ' ) THEN
@@ -209,10 +226,10 @@ C     errCount  :: error counter
      &  myThid)
 # endif
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I  'darwin', 'DICrunoff', DICrunoffperiod,
-     I  DICrunoffstartdate1, DICrunoffstartdate2,
-     U  DICrunoffStartTime, errCount,
-     I  myThid )
+     I                         'darwin', 'DICrunoff', DICrunoffperiod,
+     I                         DICrunoffstartdate1, DICrunoffstartdate2,
+     U                         DICrunoffStartTime, errCount,
+     I                         myThid )
       ENDIF
 
       IF ( errCount.GE.1 ) THEN
