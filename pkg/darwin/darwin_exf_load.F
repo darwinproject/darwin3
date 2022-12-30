@@ -41,6 +41,7 @@ c--   read forcing fields from files and temporal interpolation
 
       IF (.NOT.(darwin_loadFieldsEarly.AND.myiter.EQ.niter0)) THEN
 
+
        call exf_set_fld(
      &     'PAR', PARfile, PARmask,
      &     PARStartTime, PARperiod, PARRepCycle,
@@ -50,7 +51,8 @@ c--   read forcing fields from files and temporal interpolation
 #ifdef USE_EXF_INTERPOLATION
      &     PAR_lon0, PAR_lon_inc,
      &     PAR_lat0, PAR_lat_inc,
-     &     PAR_nlon, PAR_nlat, xC, yC, PAR_interpMethod,
+     &     PAR_nlon, PAR_nlat, xC, yC,
+     &     PAR_interpMethod,
 #endif
      &     mytime, myiter, mythid )
 
@@ -63,7 +65,8 @@ c--   read forcing fields from files and temporal interpolation
 #ifdef USE_EXF_INTERPOLATION
      &     iron_lon0, iron_lon_inc,
      &     iron_lat0, iron_lat_inc,
-     &     iron_nlon, iron_nlat, xC, yC, iron_interpMethod,
+     &     iron_nlon, iron_nlat, xC, yC,
+     &     iron_interpMethod,
 #endif
      &     mytime, myiter, mythid )
 
@@ -76,7 +79,8 @@ c--   read forcing fields from files and temporal interpolation
 #ifdef USE_EXF_INTERPOLATION
      &     ice_lon0, ice_lon_inc,
      &     ice_lat0, ice_lat_inc,
-     &     ice_nlon, ice_nlat, xC, yC, ice_interpMethod,
+     &     ice_nlon, ice_nlat, xC, yC,
+     &     ice_interpMethod,
 #endif
      &     mytime, myiter, mythid )
 
@@ -89,7 +93,8 @@ c--   read forcing fields from files and temporal interpolation
 #ifdef USE_EXF_INTERPOLATION
      &     wind_lon0, wind_lon_inc,
      &     wind_lat0, wind_lat_inc,
-     &     wind_nlon, wind_nlat, xC, yC, wind_interpMethod,
+     &     wind_nlon, wind_nlat, xC, yC,
+     &     wind_interpMethod,
 #endif
      &     mytime, myiter, mythid )
 
@@ -102,7 +107,22 @@ c--   read forcing fields from files and temporal interpolation
 #ifdef USE_EXF_INTERPOLATION
      &     pCO2_lon0, pCO2_lon_inc,
      &     pCO2_lat0, pCO2_lat_inc,
-     &     pCO2_nlon, pCO2_nlat, xC, yC, pCO2_interpMethod,
+     &     pCO2_nlon, pCO2_nlat, xC, yC,
+     &     pCO2_interpMethod,
+#endif
+     &     mytime, myiter, mythid )
+
+       call exf_set_fld(
+     &     'ventHe3', ventHe3file, ventHe3mask,
+     &     ventHe3StartTime, ventHe3period, ventHe3RepCycle,
+     &     darwin_inscal_ventHe3,
+     &     ventHe3_exfremo_intercept, ventHe3_exfremo_slope,
+     &     ventHe3, ventHe30, ventHe31,
+#ifdef USE_EXF_INTERPOLATION
+     &     ventHe3_lon0, ventHe3_lon_inc,
+     &     ventHe3_lat0, ventHe3_lat_inc,
+     &     ventHe3_nlon, ventHe3_nlat, xC, yC,
+     &     ventHe3_interpMethod,
 #endif
      &     mytime, myiter, mythid )
 
@@ -247,33 +267,20 @@ c--   read forcing fields from files and temporal interpolation
      &     mytime, myiter, mythid )
 
         _EXCH_XY_RL( surfPAR, myThid )
-
         _EXCH_XY_RL( inputFe, myThid )
-
         _EXCH_XY_RL( iceFrac, myThid )
-
         _EXCH_XY_RL( windSpeed, myThid )
-
         _EXCH_XY_RL( atmospCO2, myThid )
-
+        _EXCH_XY_RL( ventHe3, myThid )
         _EXCH_XY_RL( DOCrunoff, myThid )
-
         _EXCH_XY_RL( DONrunoff, myThid )
-
         _EXCH_XY_RL( DOPrunoff, myThid )
-
         _EXCH_XY_RL( DINrunoff, myThid )
-
         _EXCH_XY_RL( IPrunoff, myThid )
-
         _EXCH_XY_RL( DSirunoff, myThid )
-
         _EXCH_XY_RL( POCrunoff, myThid )
-
         _EXCH_XY_RL( POPrunoff, myThid )
-
         _EXCH_XY_RL( PONrunoff, myThid )
-
         _EXCH_XY_RL( DICrunoff, myThid )
 
       ENDIF
