@@ -48,6 +48,7 @@ C !LOCAL VARIABLES: ====================================================
       _RL tileminFeLoss(nSx,nSy)
       _RL tilesfcflxFe(nSx,nSy)
       _RL tilesedflxFe(nSx,nSy)
+      _RL tileventflxFe(nSx,nSy)
       _RL tilesfcflxC(nSx,nSy)
       _RL tilevirflxC(nSx,nSy)
 #ifdef DARWIN_BOTTOM_SINK
@@ -98,6 +99,7 @@ C !LOCAL VARIABLES: ====================================================
       _RL tmpminFeLoss
       _RL tmpsfcflxFe
       _RL tmpsedflxFe
+      _RL tmpventflxFe
       _RL tmpsfcflxC
       _RL tmpvirflxC
       _RL tmpBotSnkC
@@ -146,6 +148,7 @@ C !LOCAL VARIABLES: ====================================================
       tmpminFeLoss = 0 _d 0
       tmpsfcflxFe = 0 _d 0
       tmpsedflxFe = 0 _d 0
+      tmpventflxFe = 0 _d 0
       tmpsfcflxC = 0 _d 0
       tmpvirflxC = 0 _d 0
       tmpBotSnkC = 0 _d 0
@@ -191,6 +194,7 @@ C !LOCAL VARIABLES: ====================================================
        tileminFeLoss(bi,bj) = 0. _d 0
        tilesfcflxFe(bi,bj) = 0. _d 0
        tilesedflxFe(bi,bj) = 0. _d 0
+       tileventflxFe(bi,bj) = 0. _d 0
        tilesfcflxC(bi,bj) = 0. _d 0
        tilevirflxC(bi,bj) = 0. _d 0
 #ifdef DARWIN_BOTTOM_SINK
@@ -392,6 +396,10 @@ c-----------------------------------------------------------------------
         IF (stage .EQ. 0) THEN
         tilesedflxFe(bi,bj)=tilesedflxFe(bi,bj)+ironSedFlx(i,j,bi,bj)
      &                                         *area
+#ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
+        tileventflxFe(bi,bj)=tileventflxFe(bi,bj)+ironVentFlx(i,j,bi,bj)
+     &                                           *area
+#endif
 #ifdef DARWIN_ALLOW_CARBON
         tilesfcflxC(bi,bj)=tilesfcflxC(bi,bj)+carbSfcFlx(i,j,bi,bj)*area
         tilesfcflxO(bi,bj)=tilesfcflxO(bi,bj)+oxySfcFlx(i,j,bi,bj)*area
@@ -624,6 +632,7 @@ c Silica NLFS fluxes
        CALL GLOBAL_SUM_TILE_RL(tiletotscavFe,tmptotscavFe,myThid)
        CALL GLOBAL_SUM_TILE_RL(tileminFeLoss,tmpminFeLoss,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilesedflxFe,tmpsedflxFe,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tileventflxFe,tmpventflxFe,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilesfcflxC,tmpsfcflxC,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilevirflxC,tmpvirflxC,myThid)
 #ifdef DARWIN_ALLOW_CARBON
@@ -694,8 +703,9 @@ C do not write ecosystem non-conservation terms before they are applied
      &      'runoff'
          WRITE(DAR_cons_P_unit,'(A1,A11,A6,A20,4A24)')'#','iter',
      &      'stage','tot','mean','botsnk','EvPrRn','runoff'
-         WRITE(DAR_cons_Fe_unit,'(A1,A11,A6,A20,8A24)')'#','iter',
+         WRITE(DAR_cons_Fe_unit,'(A1,A11,A6,A20,9A24)')'#','iter',
      &      'stage','tot','mean','minFeLoss','scav','sfcflx','sedflx',
+     &      'ventflx',
      &      'botsnk','EvPrRn','runoff'
          WRITE(DAR_cons_Si_unit,'(A1,A11,A6,A20,4A24)')'#','iter',
      &      'stage','tot','mean','botsnk','EvPrRn',
@@ -716,9 +726,10 @@ C do not write ecosystem non-conservation terms before they are applied
      &     -tmpBotSnkN, tmpEPRN, tmprunoffN
         WRITE(DAR_cons_P_unit,'(I12,I2,5E24.16)') myIter, stage,
      &     tmptotP, tmptotP/voltot, -tmpBotSnkP, tmpEPRP, tmprunoffP
-        WRITE(DAR_cons_Fe_unit,'(I12,I2,9E24.16)') myIter, stage,
+        WRITE(DAR_cons_Fe_unit,'(I12,I2,10E24.16)') myIter, stage,
      &     tmptotFe, tmptotFe/voltot, -tmpminFeLoss, -tmptotscavFe,
-     &     tmpsfcflxFe, tmpsedflxFe, -tmpBotSnkFe, tmpEPRFe, tmprunoffFe
+     &     tmpsfcflxFe, tmpsedflxFe, tmpventflxFe, -tmpBotSnkFe,
+     &     tmpEPRFe, tmprunoffFe
         WRITE(DAR_cons_Si_unit,'(I12,I2,5E24.16)') myIter, stage,
      &     tmptotSi, tmptotSi/voltot, -tmpBotSnkSi, tmpEPRSi,
      &     tmprunoffSi

@@ -106,6 +106,9 @@ C  k                    :: vertical level
       _RL uptakeTempFunc
       _RL tmp, tmpFac
       _RL sedFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
+      _RL ventFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
       INTEGER k_debug
 #ifdef DARWIN_DEBUG
       INTEGER iG, jG
@@ -358,6 +361,8 @@ C === nutrient runoff ==================================================
 #endif
 
 C === iron =============================================================
+
+C     compute (and limit if DARWIN_MINFE) free iron
       CALL TIMER_START('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
       CALL DARWIN_FE_CHEM(
      U                 Ptracer(1-OLx,1-OLy,1,bi,bj,iFeT),
@@ -366,6 +371,7 @@ C === iron =============================================================
      I                 bi, bj, iMin, iMax, jMin, jMax, myThid)
       CALL TIMER_STOP ('DARWIN_FE_CHEM [DARWIN_FORCING]',myThid)
 
+C ----------------------------------------------------------------------
 C     scavenging
       CALL TIMER_START('DARWIN_FE_SCAV [DARWIN_FORCING]',myThid)
       DO k=1,Nr
@@ -391,6 +397,7 @@ C     scavenging
       ENDDO
       CALL TIMER_STOP ('DARWIN_FE_SCAV [DARWIN_FORCING]',myThid)
 
+C ----------------------------------------------------------------------
 C     iron dust input
       CALL TIMER_START('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
       DO j=jMin,jMax
@@ -415,14 +422,20 @@ C-    Account for change in level thickness
       ENDDO
       CALL TIMER_STOP ('DARWIN_FE_DUST [DARWIN_FORCING]',myThid)
 
+C ----------------------------------------------------------------------
 C     iron sediment source (in bottom grid cell above kMaxFeSed)
       CALL TIMER_START('DARWIN_FE_SED [DARWIN_FORCING]',myThid)
-      DO k = kMinFeSed, kMaxFeSed
-       kdn = MIN(Nr, k+1)
+      DO k=1,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF (hFacC(i,j,k,bi,bj) .GT. 0. .AND.
-     &       (hFacC(i,j,kdn,bi,bj) .EQ. 0. .OR. k .EQ. Nr)) THEN
+         sedFe(i,j,k) = 0 _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        k = kLowC(i,j,bi,bj)
+        IF (k .GE. kMinFeSed .AND. k .LE. kMaxFeSed) THEN
 #ifdef DARWIN_IRON_SED_SOURCE_VARIABLE
 # ifdef DARWIN_IRON_SED_SOURCE_POP
           flx = fesedflux_pcm*wp_sink*R_CP_fesed*
@@ -439,11 +452,10 @@ C     iron sediment source (in bottom grid cell above kMaxFeSed)
 #ifdef DARWIN_ALLOW_CONS
           ironSedFlx(i,j,bi,bj) = ironSedFlx(i,j,bi,bj) + dTsub(k)*flx
 #endif
-         ELSE
-          sedFe(i,j,k) = 0 _d 0
-         ENDIF
-        ENDDO
+        ENDIF
        ENDDO
+      ENDDO
+      DO k=kMinFeSed, kMaxFeSed
 #ifdef NONLIN_FRSURF
 C-    Account for change in level thickness
        IF (nonlinFreeSurf.GT.0) THEN
@@ -460,6 +472,52 @@ C-    Account for change in level thickness
        ENDDO
       ENDDO
       CALL TIMER_STOP ('DARWIN_FE_SED [DARWIN_FORCING]',myThid)
+
+C ----------------------------------------------------------------------
+C     iron sediment source (in bottom grid cell above kMaxFeSed)
+C     iron source due to hydrothermal input into bottom layer below
+C     kMinFeVents (ventHe3 flux is mmol.m-2.s-1)
+#ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
+      IF (darwin_haveVentHe3) THEN
+       CALL TIMER_START('DARWIN_FE_VENT [DARWIN_FORCING]',myThid)
+       DO k=1,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          ventFe(i,j,k) = 0 _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         k = kLowC(i,j,bi,bj)
+         IF (k .GE. kMinFeVent) THEN
+          flx = solFeVent*R_FeHe3_vent*ventHe3(i,j,bi,bj)
+          ventFe(i,j,k) = flx*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+# ifdef DARWIN_ALLOW_CONS
+          ironVentFlx(i,j,bi,bj)=ironVentFlx(i,j,bi,bj) + dTsub(k)*flx
+# endif
+         ENDIF
+        ENDDO
+       ENDDO
+       DO k=kMinFeVent,Nr
+# ifdef NONLIN_FRSURF
+C-    Account for change in level thickness
+        IF (nonlinFreeSurf.GT.0) THEN
+         CALL FREESURF_RESCALE_G(
+     I                            bi, bj, k,
+     U                            ventFe,
+     I                            myThid )
+        ENDIF
+# endif /* NONLIN_FRSURF */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) + ventFe(i,j,k)
+         ENDDO
+        ENDDO
+       ENDDO
+       CALL TIMER_STOP ('DARWIN_FE_VENT [DARWIN_FORCING]',myThid)
+      ENDIF
+#endif
 
 C === plankton =========================================================
       CALL TIMER_START('DARWIN_PLANKTON [DARWIN_FORCING]',myThid)

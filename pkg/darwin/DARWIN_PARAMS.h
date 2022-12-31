@@ -178,6 +178,9 @@ C     fesedflux         :: [mmol Fe /m2/s]     fixed iron flux from sediment
 C     fesedflux_pcm     :: [mmol Fe / mmol C]  iron input per POC sinking into bottom for DARWIN_IRON_SED_SOURCE_VARIABLE
 C     fesedflux_min     :: [mmol Fe /s]        min iron input rate subtracted from fesedflux_pcm*wc_sink*POC
 C     R_CP_fesed        :: [mmol C / mmol P]   POC:POP conversion for DARWIN_IRON_SED_SOURCE_POP
+C     depthFeVent       :: [m]                 depth below which iron from hydrothermal vents is added
+C     solFeVent         :: []                  solubility of iron from hydrothermal vents
+C     R_FeHe3_vent      :: [mmol Fe / mmol He3]  Fe:He3 ratio for hydrothermal vents
 C
 C     Knita             :: [1/s]               ammonia oxidation rate
 C     Knitb             :: [1/s]               nitrite oxidation rate
@@ -295,6 +298,9 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    fesedflux_pcm,
      &    fesedflux_min,
      &    R_CP_fesed,
+     &    depthFeVent,
+     &    solFeVent,
+     &    R_FeHe3_vent,
      &    Knita,
      &    Knitb,
      &    PAR_oxi,
@@ -399,6 +405,9 @@ C     &    yono2,
       _RL fesedflux_pcm
       _RL fesedflux_min
       _RL R_CP_fesed
+      _RL depthFeVent
+      _RL solFeVent
+      _RL R_FeHe3_vent
       _RL Knita
       _RL Knitb
       _RL PAR_oxi
@@ -526,9 +535,10 @@ C                                       (with #undef DARWIN_CDOM_UNITS_CARBON)
 #endif
 
 C--   COMMON /DARWIN_DEPENDENT_PARAMS_i/
-C     laCDOM    :: index of reference waveband for CDOM absorption spectrum
-C     kMinFeSed :: minimum level index for iron sedimentation
-C     kMaxFeSed :: maximum level index for iron sedimentation
+C     laCDOM     :: index of reference waveband for CDOM absorption spectrum
+C     kMinFeSed  :: minimum level index for iron sedimentation
+C     kMaxFeSed  :: maximum level index for iron sedimentation
+C     kMinFeVent :: minimum level index for hydrothermal vents
       COMMON /DARWIN_DEPENDENT_PARAMS_i/
      &    darwin_dependent_i_dummy,
 #ifdef ALLOW_RADTRANS
@@ -538,7 +548,8 @@ C     kMaxFeSed :: maximum level index for iron sedimentation
 #endif
 #endif
      &    kMinFeSed,
-     &    kMaxFeSed
+     &    kMaxFeSed,
+     &    kMinFeVent
       INTEGER darwin_dependent_i_dummy
 #ifdef ALLOW_RADTRANS
 #ifdef DARWIN_ALLOW_CDOM
@@ -548,6 +559,7 @@ C     kMaxFeSed :: maximum level index for iron sedimentation
 #endif
       INTEGER kMinFeSed
       INTEGER kMaxFeSed
+      INTEGER kMinFeVent
 
 
 #endif /* ALLOW_DARWIN */

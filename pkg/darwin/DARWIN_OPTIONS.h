@@ -131,6 +131,9 @@ C enable variable iron sediment source
 C revert to old variable iron sediment source in terms of POP
 #undef  DARWIN_IRON_SED_SOURCE_POP
 
+C add iron source from hydrothermal vents
+#undef  DARWIN_ALLOW_HYDROTHERMAL_VENTS
+
 
 C diagnostics
 

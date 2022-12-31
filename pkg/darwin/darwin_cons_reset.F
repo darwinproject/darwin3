@@ -45,6 +45,9 @@ C     !LOCAL VARIABLES:
         DO j=1,sNy
          DO i=1,sNx
           ironSedFlx(i,j,bi,bj) = 0 _d 0
+#ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
+          ironVentFlx(i,j,bi,bj) = 0 _d 0
+#endif
           carbSfcFlx(i,j,bi,bj) = 0 _d 0
           carbVirFlx(i,j,bi,bj) = 0 _d 0
           oxySfcFlx(i,j,bi,bj) = 0 _d 0

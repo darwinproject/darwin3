@@ -932,8 +932,13 @@ C--   Print forcing parameters.
       CALL WRITE_0D_L(darwin_useEXFwind,INDEX_NONE,
      &'darwin_useEXFwind =',
      &' /* whether to use wind speed from exf package */')
+#ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
+      CALL WRITE_0D_L(darwin_haveVentHe3,INDEX_NONE,
+     &'darwin_haveVentHe3 =',
+     &' /* have ventHe3file or ventHe3const */')
       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
+#endif
 
 C--   For each data set used the summary prints the calendar data
 C     and the corresponding file from which the data will be read.
@@ -1120,6 +1125,45 @@ C--   pCO2
 
       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
+
+C--   ventHe3
+#ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
+      IF (darwin_haveVentHe3) THEN
+       CALL EXF_FLD_SUMMARY( 'ventHe3 forcing',
+     I      ventHe3file, ventHe3RepCycle, ventHe3period,
+     I      ventHe3StartTime, useExfYearlyFields, addBlkLn, myThid )
+#ifdef USE_EXF_INTERPOLATION
+       CALL EXF_PRINT_INTERP( 'ventHe3',
+     &  ventHe3_lon0, ventHe3_lon_inc, ventHe3_lat0, ventHe3_lat
+     &_inc,
+     &  ventHe3_nlon, ventHe3_nlat, ventHe3_interpMethod, myThid )
+#endif
+       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       CALL WRITE_0D_RL(ventHe3_exfremo_intercept,INDEX_NONE,
+     &   'ventHe3_exfremo_intercept =',
+     &   ' /* intercept for ventHe3 forcing mean removal */')
+       CALL WRITE_0D_RL(ventHe3_exfremo_slope,INDEX_NONE,
+     &   'ventHe3_exfremo_slope =',
+     &   ' /* slope for ventHe3 forcing trend removal */')
+       CALL WRITE_0D_RL(darwin_inscal_ventHe3,INDEX_NONE,
+     &   'darwin_inscal_ventHe3 =',
+     &   ' /* scaling factor for ventHe3 fields */')
+      ELSE
+       CALL WRITE_0D_RL(ventHe3const,INDEX_NONE,
+     &   'ventHe3const =',
+     &   ' /* constant ventHe3 forcing */')
+      ENDIF
+
+      IF ( ventHe3file.NE.' ' .OR. ventHe3const.NE.0 _d 0 ) THEN
+       CALL WRITE_0D_C(ventHe3mask,-1,INDEX_NONE,
+     &   'ventHe3mask =',
+     &   ' /* mask for ventHe3 forcing */')
+      ENDIF
+
+      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+#endif
 
 C--   DOCrunoff
       IF ( DOCrunofffile.NE.' ' ) THEN
@@ -1711,6 +1755,16 @@ C--   Print parameters from DARWIN_PARAMS.h
      &'R_CP_fesed =',
      &' /* POC:POP conversion for DARWIN_IRON_SED_SOURCE_POP (mmol C / m
      &mol P) */')
+      CALL WRITE_0D_RL(depthFeVent,INDEX_NONE,
+     &'depthFeVent =',
+     &' /* depth below which iron from hydrothermal vents is added (m) '
+     &'*/')
+      CALL WRITE_0D_RL(solFeVent,INDEX_NONE,
+     &'solFeVent = ',
+     &' /* solubility of iron from hydrothermal vents */')
+      CALL WRITE_0D_RL(R_FeHe3_vent,INDEX_NONE,
+     &'R_FeHe3_vent =',
+     &' /* Fe:He3 ratio for hydrothermal vents (mol Fe / mol He3) */')
       CALL WRITE_0D_RL(Knita,INDEX_NONE,
      &'Knita =',
      &' /* ammonia oxidation rate (1/s) */')
@@ -2001,6 +2055,9 @@ C--   Print parameters from DARWIN_PARAMS.h
       CALL WRITE_0D_I(kMaxFeSed,INDEX_NONE,
      &'kMaxFeSed =',
      &' /* maximum level index for iron sedimentation */')
+      CALL WRITE_0D_I(kMinFeVent,INDEX_NONE,
+     &'kMinFeVent =',
+     &' /* minimum level index for hydrothermal vents */')
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Print traits from DARWIN_TRAITS.h
