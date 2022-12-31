@@ -82,6 +82,9 @@
      &    fesedflux_pcm,
      &    fesedflux_min,
      &    R_CP_fesed,
+     &    depthFeVent,
+     &    solFeVent,
+     &    R_FeHe3_vent,
      &    Knita,
      &    Knitb,
      &    PAR_oxi,
@@ -320,6 +323,11 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       fesedflux_pcm = 0.68 _d -3
       fesedflux_min = 0.5 _d -3 / pday
       R_CP_fesed = 106 _d 0
+C These values for hydrothermal input of iron from Tagliabue et al (2014)       
+      R_FeHe3_vent = 4.5 _d 8
+      solFeVent = 2 _d -3
+      depthFeVent = 750 _d 0
+C
       Knita = 1 _d 0/(0.5 _d 0*pday)
       Knitb = 1 _d 0/(10 _d 0*pday)
       PAR_oxi = 10 _d 0

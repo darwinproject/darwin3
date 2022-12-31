@@ -56,11 +56,17 @@ C
 
       COMMON /DARWIN_CONS_2D/
      &      ironSedFlx,
+#ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
+     &      ironVentFlx,
+#endif
      &      carbSfcFlx,
      &      carbVirFlx,
      &      oxySfcFlx,
      &      alkVirFlx
       _RL ironSedFlx(sNx,sNy,nSx,nSy)
+#ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
+      _RL ironVentFlx(sNx,sNy,nSx,nSy)
+#endif
       _RL carbSfcFlx(sNx,sNy,nSx,nSy)
       _RL carbVirFlx(sNx,sNy,nSx,nSy)
       _RL oxySfcFlx(sNx,sNy,nSx,nSy)
