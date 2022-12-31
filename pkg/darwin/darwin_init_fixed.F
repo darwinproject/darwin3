@@ -68,6 +68,13 @@ C     !LOCAL VARIABLES:
         IF (RF(k) .GT. -depthFeSed) kMaxFeSed = k
       ENDDO
 
+#ifdef DARWIN_ALLOW_HYDROTHERMAL_VENTS
+      kMinFeVent = Nr + 1
+      DO k=Nr,1,-1
+        IF (RC(k) .LE. -depthFeVent) kMinFeVent = k
+      ENDDO
+#endif
+
 
 #ifdef ALLOW_RADTRANS
 
