@@ -10,7 +10,9 @@ C Contains fields for darwin package read through exf
 C
 C Requires: SIZE.h
 
-      COMMON /darwin_fields_c/
+C--   COMMON /DARWIN_FIELDS_C/
+C     ventHe3file   :: file with He3 flux from hydrothermal vents (mmol He/m2/s)
+      COMMON /DARWIN_FIELDS_C/
      &    PARfile,
      &    ironfile,
      &    icefile,
@@ -45,7 +47,9 @@ C Requires: SIZE.h
       CHARACTER*128 PONrunofffile
       CHARACTER*128 DICrunofffile
 
-      COMMON /darwin_fields_r/
+C--   COMMON /DARWIN_FIELDS_R/
+C     ventHe3   :: He3 flux from hydrothermal vents (mmol He/m2/s)
+      COMMON /DARWIN_FIELDS_R/
      &    PAR0, PAR1, surfPAR,
      &    iron0, iron1, inputFe,
      &    ice0, ice1, iceFrac,
