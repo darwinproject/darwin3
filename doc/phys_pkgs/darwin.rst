@@ -151,6 +151,7 @@ To use spectral light, compile the radtrans package, see
    :varlink:`DARWIN_MINFE`                      & restrict maximum free iron (sic)
    :varlink:`DARWIN_PART_SCAV`                  & enable particle scavenging code
    :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`   & enable variable iron sediment source
+   :varlink:`DARWIN_ALLOW_HYDROTHERMAL_VENTS`   & include code for iron input from hydrothermal vents
    :varlink:`DARWIN_DIAG_PERTYPE`               & enable per-type diagnostics PP####, GR####, GrGn####
    :varlink:`DARWIN_DIAG_TENDENCIES`            & enable diagnostics for many tendency terms
    :varlink:`DARWIN_DEBUG`                      & turn on debugging output
@@ -234,6 +235,7 @@ The forcing fields are:
    ice       & 0.0    & m\ :sup:`2`\ /m\ :sup:`2`           & fraction of surface covered by ice; used to reduce non-spectral light and for carbon and oxygen surface forcing; for spectral light, ice fraction has to be given in ``data.radtrans``
    wind      & 5.0    & m/s                                 & wind speed; used for carbon and oxygen surface forcing
    pCO2      & 278E-6 & atm                                 & partial pressure of atmospheric CO\ :sub:`2`; used for carbon and oxygen surface forcing
+   ventHe3   & 0.0    & mmol |nbsp| :sup:`3`\ He m\ :sup:`--2` s\ :sup:`--1` & Helium-3 flux from hydrothermal vents; used for iron input
    DOCrunoff & 0.0    & mmol C  m\ :sup:`--2` s\ :sup:`--1` & surface flux of DOC from runoff
    DONrunoff & 0.0    & mmol N  m\ :sup:`--2` s\ :sup:`--1` & surface flux of DON from runoff
    DOPrunoff & 0.0    & mmol P  m\ :sup:`--2` s\ :sup:`--1` & surface flux of DOP from runoff
@@ -372,6 +374,10 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`fesedflux_pcm`          & 0.68D-3               & mmol Fe / mmol C                 & iron input per POC sinking into bottom for :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`
    :varlink:`fesedflux_min`          & 0.5D-3 / day          & mmol Fe /s                       & min iron input rate subtracted from fesedflux_pcm*wc_sink*POC
    :varlink:`R_CP_fesed`             & 106                   & mmol C / mmol P                  & POC:POP conversion for :varlink:`DARWIN_IRON_SED_SOURCE_POP`
+   :varlink:`depthFeVent`            & 750                   & m                                & depth below which iron from hydrothermal vents is added
+   :varlink:`solFeVent`              & 0.002                 &                                  & solubility of iron from hydrothermal vents
+   :varlink:`R_FeHe3_vent`           & 4.5E8                 & mol Fe / mol :sup:`3`\ He & Fe:\ :sup:`3`\ He ratio for hydrothermal vents
+
    :varlink:`Knita`                  & 1/(0.5 days)          & 1/s                              & ammonia oxidation rate
    :varlink:`Knitb`                  & 1/(10 days)           & 1/s                              & nitrite oxidation rate
    :varlink:`PAR_oxi`                & 10                    & μEin/m\ :sup:`2`/s               & critical light level after which oxidation starts
