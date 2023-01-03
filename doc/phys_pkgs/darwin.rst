@@ -362,13 +362,15 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`uptakeTempAe`           & 0.0                   & 1/K                              & temperature coefficient for uptake (TEMP_VERSION 4)
    :varlink:`alpfe`                  & 0.04                  &                                  & solubility of Fe dust
    :varlink:`scav`                   & 0.4/year              & 1/s                              & fixed iron scavenging rate
+   :varlink:`scav_tau`               & 0.2                   &                                  & factor for converting Th scavenging rates to iron ones
+   :varlink:`scav_inter`             & 0.079 / day           & L\ :sup:`e` mg\ :sup:`-e` s\ :sup:`-1` & intercept of scavenging power law (e=e\ :sub:`scav`)
+   :varlink:`scav_exp`               & 0.58                  &                                  & exponent of scavenging power law
+   :varlink:`scav_POC_wgt`           & 0.02173               & g/mmol |nbsp| C                  & weight POC contributes to POM
+   :varlink:`scav_POSi_wgt`          & 0.069                 & g/mmol |nbsp| Si                 & weight POSi contributes to POM
+   :varlink:`scav_PIC_wgt`           & 0.100                 & g/mmol |nbsp| C                  & weight PIC contributes to POM
    :varlink:`ligand_tot`             & 1D-3                  & mol/m\ :sup:`3`                  & total ligand concentration
    :varlink:`ligand_stab`            & 2D5                   & m\ :sup:`3`/mol                  & ligand stability rate ratio
    :varlink:`freefemax`              & 0.4D-3                & mol/m\ :sup:`3`                  & max concentration of free iron
-   :varlink:`scav_rat`               & 0.005 / day           & 1/s                              & rate of POM-based iron scavenging
-   :varlink:`scav_inter`             & 0.079                 &                                  & intercept of scavenging power law
-   :varlink:`scav_exp`               & 0.58                  &                                  & exponent of scavenging power law
-   :varlink:`scav_R_POPPOC`          & 1.1321D-4             & mmol P / mmol C                  & POP\:POC ratio for :varlink:`DARWIN_PART_SCAV_POP`
    :varlink:`depthfesed`             & -1.0                  & m                                & depth above which to add sediment source (was -1000)
    :varlink:`fesedflux`              & 1D-3 / day            & mmol Fe /m\ :sup:`2`/s           & fixed iron flux from sediment
    :varlink:`fesedflux_pcm`          & 0.68D-3               & mmol Fe / mmol C                 & iron input per POC sinking into bottom for :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`
