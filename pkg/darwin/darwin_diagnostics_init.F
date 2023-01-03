@@ -541,6 +541,13 @@ C-      use units & names from data.ptracers :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      WRITE(diagName,'(A)')'scavRate'
+      WRITE(diagTitle,'(A)')'Iron scavenging rate'
+      diagUnits = '1/s             '
+      diagCode  = 'SMRP    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       WRITE(diagName,'(A)')'sedFe'
       WRITE(diagTitle,'(A)')'Iron input from sediment'
       diagUnits = 'mmol Fe/m3/s    '
