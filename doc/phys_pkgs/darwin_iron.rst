@@ -88,21 +88,42 @@ The scavenging rate for free iron is
 .. math::
 
    r_{{\text{scav}}}= \begin{cases}
-       r_{{\text{scav}}}I_{{\text{scav}}}\op{POC}^{e_{{\text{scav}}}}
-       & \text{for POM-based scavenging,} \\
        \op{scav}
-       & \text{for constant scavenging.}
+       & \text{for fixed-rate scavenging,} \\
+       \tau_{{\text{scav}}}I_{{\text{scav}}}\op{POM}^{e_{{\text{scav}}}}
+       & \text{for particle-based scavenging.}
        \end{cases}
 
-To select POM-based scavenging, #define :varlink:`DARWIN_PART_SCAV`.
-If :varlink:`DARWIN_PART_SCAV_POP` is defined, :math:`\op{POC}` is
-replaced by :math:`\op{POP}\!/R^{\op{POP}:\op{POC}}_{{\text{scav}}}`.
+To select particle-based scavenging following Parekh et al. (2005)
+:cite:`parekh:2005`, define :varlink:`DARWIN_PART_SCAV`.  POM is the
+concentration of particulate organic matter in units of mg/L.  It is
+parameterized in terms of POC, POSi and PIC,
 
-The concentration of free iron is determined following
-Parekh et al. (2004) :cite:`parekh:2004` and
-Dutkiewicz et al. (2005) :cite:`dutkiewicz:2005`.  Free dissolved iron,
-Fe', is assumed to be in equilibrium with dissolved iron bound
-to ligands, FeL,
+.. math::
+
+   \op{POM} = w^{\text{scav}}_{\text{POC}} \op{POC}
+            + w^{\text{scav}}_{\text{POSi}} \op{POSi}
+            + w^{\text{scav}}_{\text{PIC}} \op{PIC}
+   \;.
+
+The value for :math:`w^{\text{scav}}_{\text{POC}}` is taken from Rios et al.
+(1998) :cite:`rios:1998` as the weight of as detritus without opal per mol of
+carbon.  :math:`w^{\text{scav}}_{\text{POSi}}` and
+:math:`w^{\text{scav}}_{\text{PIC}}` are just the molecular weights of opal
+(per mol Si) and calcium carbonate, see
+:numref:`tab_phys_pkgs_darwin_iron_params`.
+
+The old (and deprecated) formulation of scavenging in terms of POP can be
+recovered by defining :varlink:`DARWIN_PART_SCAV_POP`, in which case
+:math:`\op{POM}` is replaced by
+:math:`\op{POP}\!/R^{\op{POP}:\op{POC}}_{{\text{scav}}}`.  Parameter names and
+defaults are different in this case, see
+:numref:`tab_phys_pkgs_darwin_scav_pop`.
+
+The concentration of free iron, Fe', is determined following Parekh et al.
+(2004) :cite:`parekh:2004` and Dutkiewicz et al. (2005)
+:cite:`dutkiewicz:2005`.  Free dissolved iron is assumed to be in equilibrium
+with dissolved iron bound to ligands, FeL,
 
 .. math:: \op{Fe}' + L' \rightleftharpoons \op{FeL}
 
@@ -133,6 +154,7 @@ and after each biogeochemical subtimestep.
    :delim: &
    :widths: auto
    :header: Parameter, Symbol, Default, Units, Description
+   :name: tab_phys_pkgs_darwin_iron_params
 
    :varlink:`alpfe`         & :math:`\alpha_{\op{Fe}}`             & 0.04        &                        & solubility of Fe dust
    :varlink:`depthfesed`    & :math:`d_{\op{sed}}`                 & -1.0        & m                      & depth above which to add sediment source
@@ -144,10 +166,24 @@ and after each biogeochemical subtimestep.
    :varlink:`solFeVent`     & :math:`\alpha_{\op{Fe}}^{\op{vents}}` & 0.002      &                        & solubility of iron from hydrothermal vents
    :varlink:`R_FeHe3_vent`  & :math:`R^{\op{Fe:^3He}}_{\op{vents}}` & 4.5E8      & mol Fe / mol :sup:`3`\ He & Fe:\ :sup:`3`\ He ratio for hydrothermal vents
    :varlink:`scav`          & scav                                 & 0.4/year    & 1/s                    & fixed iron scavenging rate
-   :varlink:`scav_rat`      & :math:`r_{\op{scav}}`                & 0.005 / day & 1/s                    & rate of POM-based iron scavenging
-   :varlink:`scav_inter`    & :math:`I_{\op{scav}}`                & 0.079       &                        & intercept of scavenging power law
+   :varlink:`scav_tau`      & :math:`\tau_{\op{scav}}`             & 0.2         &                        & factor for converting Th scavenging rates to iron ones
+   :varlink:`scav_inter`    & :math:`I_{\op{scav}}`                & 0.079 / day & L\ :sup:`e` mg\ :sup:`-e` s\ :sup:`-1` & intercept of scavenging power law (e=e\ :sub:`scav`)
    :varlink:`scav_exp`      & :math:`e_{\op{scav}}`                & 0.58        &                        & exponent of scavenging power law
-   :varlink:`scav_R_POPPOC` & :math:`R^{\op{POP:POC}}_{\op{scav}}` & 1.1321E-4   & mmol P / mmol C        & POP\:POC ratio for :varlink:`DARWIN_PART_SCAV_POP`
+   :varlink:`scav_POC_wgt`  & :math:`w^{\op{scav}}_{\op{POC}}`     & 0.02173     & g/mmol |nbsp| C        & weight POC contributes to POM
+   :varlink:`scav_POSi_wgt` & :math:`w^{\op{scav}}_{\op{POSi}}`    & 0.069       & g/mmol |nbsp| Si       & weight POSi contributes to POM
+   :varlink:`scav_PIC_wgt`  & :math:`w^{\op{scav}}_{\op{PIC}}`     & 0.100       & g/mmol |nbsp| C        & weight PIC contributes to POM
    :varlink:`ligand_tot`    & :math:`L_{\op{T}}`                   & 1E-3        & mmol/m\ :sup:`3`       & total ligand concentration
-   :varlink:`ligand_stab`   & :math:`\beta_{\op{stab}}`            & .2E6        & m\ :sup:`3`/mmol       & ligand stability rate ratio
+   :varlink:`ligand_stab`   & :math:`\beta_{\op{stab}}`            & 0.2E6       & m\ :sup:`3`/mmol       & ligand stability rate ratio
    :varlink:`freefemax`     & :math:`\op{Fe}'_{\op{max}}`          & 0.4E-3      & mmol/m\ :sup:`3`       & max concentration of free iron
+
+
+.. csv-table:: Iron parameters for :varlink:`DARWIN_PART_SCAV_POP`
+   :delim: &
+   :widths: auto
+   :header: Parameter, Symbol, Default, Units, Description
+   :name: tab_phys_pkgs_darwin_scav_pop
+
+   :varlink:`scav_rat`      & :math:`\tau_{\op{scav}}`             & 0.005 / day & 1/s                       & rate factor
+   :varlink:`scav_inter`    & :math:`I_{\op{scav}}`                & 0.079       & L\ :sup:`e` mg\ :sup:`-e` & intercept of scavenging power law (e=e\ :sub:`scav`)
+   :varlink:`scav_exp`      & :math:`e_{\op{scav}}`                & 0.58        &                           & exponent of scavenging power law
+   :varlink:`scav_R_POPPOC` & :math:`R^{\op{POP:POC}}_{\op{scav}}` & 1.1321E-4   & mmol |nbsp| P / g         & POP\:POC ratio
