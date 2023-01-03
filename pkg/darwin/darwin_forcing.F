@@ -93,6 +93,7 @@ C  k                    :: vertical level
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
       _RL sedFlxFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL tmp3d(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
+      _RL scavRate(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
       _RL scavLoss(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
       _RL scv,scav_pom
       _RL flx, POCl
@@ -391,6 +392,7 @@ C       compute POM in mg/L
 #else
         scv = scav
 #endif
+        scavRate(i,j,k) = scv
         scavLoss(i,j,k) = scv*MAX(0 _d 0, freefe(i,j,k))
         gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) - scavLoss(i,j,k)
 #ifdef DARWIN_ALLOW_CONS
@@ -895,6 +897,7 @@ C      diags(iCons*) for convenience
        ENDDO
 #endif
 #endif
+       CALL DIAGNOSTICS_FILL(scavRate,'scavRate',0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(scavLoss,'scvLosFe',0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(sedFe,   'sedFe   ',0,Nr,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(sedFlxFe,'sedFlxFe',0,1,2,bi,bj,myThid)
