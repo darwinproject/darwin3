@@ -807,7 +807,7 @@ Diagnostics
 
 .. tabularcolumns:: |\Y{.16}|\Y{.16}|\Y{.18}|\Y{.5}|
 
-.. csv-table:: Darwin package diagnstic fields
+.. csv-table:: Darwin package diagnostic fields
    :delim: &
    :widths: auto
    :class: longtable
@@ -819,8 +819,15 @@ Diagnostics
    Nfix       & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & N fixation
    Denit      & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & Denitrification
    DenitN     & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & Nitrogen loss due to denitrification
+   EXU        & ``SM_P____MR`` & mmol C /m\ :sup:`3`/s           & Carbon exudation
+   BioSyn     & ``SM_P____MR`` & mmol C /m\ :sup:`3`/s           & Biosynthesis rate
+   DmdN       & ``SM_P____MR`` & mmol C /m\ :sup:`3`/s           & Carbon demand from N limit
+   DmdP       & ``SM_P____MR`` & mmol C /m\ :sup:`3`/s           & Carbon demand from P limit
+   DmdFe      & ``SM_P____MR`` & mmol C /m\ :sup:`3`/s           & Carbon demand from Fe limit
+   DmdSi      & ``SM_P____MR`` & mmol C /m\ :sup:`3`/s           & Carbon demand from Si limit
+   Dmdmin     & ``SM_P____MR`` & mmol C /m\ :sup:`3`/s           & Minimum carbon demand
    PAR###     & ``SMRP____MR`` & µEin/m\ :sup:`2`/s              & PAR waveband ###
-   PARF###    & ``SMRP____LR`` & µEin/m\ :sup:`2`/s              & PAR at W point, waveband ###
+   PARF###    & ``SM_P____LR`` & µEin/m\ :sup:`2`/s              & PAR at W point, waveband ###
    a###       & ``SMRP____MR`` & 1/m                             & total absorption for waveband ###
    bt###      & ``SMRP____MR`` & 1/m                             & total scattering for waveband ###
    bb###      & ``SMRP____MR`` & 1/m                             & total backscattering for waveband ###
@@ -832,7 +839,7 @@ Diagnostics
    bbprt###   & ``SMRP____MR`` & 1/m                             & backscattering by particles for waveband ###
    aCDOM###   & ``SMRP____MR`` & 1/m                             & absorption by CDOM for waveband ###
    atten      & ``SMRP____MR`` & 1                               & attenuation in layer
-   PARF       & ``SMRP____LR`` & µEin/m\ :sup:`2`/s              & PAR at top of layer
+   PARF       & ``SM_P____LR`` & µEin/m\ :sup:`2`/s              & PAR at top of layer
    PAR        & ``SMRP____MR`` & µEin/m\ :sup:`2`/s              & total PAR at layer center
    C_DIN      & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & consumption of DIN: :math:`\sum_j(U^{\op{NO3}}_j+U^{\op{NO2}}_j+U^{\op{NH4}}_j)`
    C_NO3      & ``SMRP____MR`` & mmol N /m\ :sup:`3`/s           & consumption of NO3: :math:`\sum_j U^{\op{NO3}}_j`
@@ -857,9 +864,19 @@ Diagnostics
    GR####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Grazing loss of plankton ####
    GrGn####   & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Grazing gain of plankton ####
    GrGC####   & ``SMRP____MR`` & 1/s                             & Carbon-specific grazing rate plankton ####
+   EXU####    & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Exudation plankton ####
+   BS####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Biosynthesis rate plankton ####
+   DN####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Carbon demand from N limit plankton ####
+   DP####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Carbon demand from P limit plankton ####
+   DFe####    & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Carbon demand from Fe limit plankton ####
+   DSi####    & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Carbon demand from Si limit plankton ####
+   Dmin####   & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Minimum carbon demand plankton ####
    sfcSolFe   & ``SM_P____L1`` & mmol Fe /m\ :sup:`2`/s          & Soluble iron input at sea surface
-   sedFe      & ``SM_P____MR`` & mmol Fe /m\ :sup:`2`/s          & Iron input from sediment
+   scvLosFe   & ``SMRP____MR`` & mmol Fe /m\ :sup:`3`/s          & Iron loss from scavenging
+   scavRate   & ``SMRP____MR`` & 1/s                             & Iron scavenging rate
+   sedFe      & ``SMRP____MR`` & mmol Fe /m\ :sup:`3`/s          & Iron input from sediment
    freeFeLs   & ``SMRP____MR`` & mmol Fe /m\ :sup:`3`/s          & Iron loss due to free iron limit
+   sedFlxFe   & ``SM_P____U1`` & mmol Fe /m\ :sup:`2`/s          & Iron sediment flux
    pH         & ``SMR_____MR`` & 1                               & pH
    pCO2       & ``SMRP____MR`` & atm                             & Partial Pressure of CO2
    fugfCO2    & ``SM_P____L1`` & 1                               & Fugacity factor of CO2 at surface
