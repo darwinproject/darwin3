@@ -165,14 +165,18 @@ C     uptakeTempAe      :: [1/K]            temperature coefficient for uptake (
 C
 C- Iron parameters
 C     alpfe             :: []                  solubility of Fe dust
-C     scav              :: [1/s]               fixed iron scavenging rate
+C     scav              :: [1/s]               fixed iron scavenging rate (#undef DARWIN_PART_SCAV)
 C     ligand_tot        :: [mol/m3]            total ligand concentration
 C     ligand_stab       :: [m3/mol]            ligand stability rate ratio
 C     freefemax         :: [mol/m3]            max concentration of free iron
-C     scav_rat          :: [1/s]               rate of POM-based iron scavenging
-C     scav_inter        :: []                  intercept of scavenging power law
-C     scav_exp          :: []                  exponent of scavenging power law
-C     scav_R_POPPOC     :: [mmol P / mmol C]   POP:POC ratio for DARWIN_PART_SCAV_POP
+C     scav_tau          :: [1]                 factor to go from Th scavenging rate to iron
+C     scav_inter        :: [L^e mg^-e s^-1]    intercept of scavenging power law (e=scav_exp)
+C     scav_exp          :: [1]                 exponent of scavenging power law
+C     scav_POC_wgt      :: [g / mmol C]        weight POC contributes to POM for scavenging
+C     scav_POSi_wgt     :: [g / mmol Si]       weight POSi contributes to POM for scavenging
+C     scav_PIC_wgt      :: [g / mmol C]        weight PIC contributes to POM for scavenging
+C     scav_rat          :: [1]                 factor Th to iron for DARWIN_PART_SCAV_POP
+C     scav_R_POPPOC     :: [mmol P / g C]      POP:POC ratio for DARWIN_PART_SCAV_POP
 C     depthfesed        :: [m]                 depth above which to add sediment source (was -1000)
 C     fesedflux         :: [mmol Fe /m2/s]     fixed iron flux from sediment
 C     fesedflux_pcm     :: [mmol Fe / mmol C]  iron input per POC sinking into bottom for DARWIN_IRON_SED_SOURCE_VARIABLE
@@ -285,14 +289,24 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    mort2TempAe,
      &    uptakeTempAe,
      &    alpfe,
-     &    scav,
      &    ligand_tot,
      &    ligand_stab,
      &    freefemax,
+#ifdef DARWIN_PART_SCAV_POP
      &    scav_rat,
      &    scav_inter,
      &    scav_exp,
      &    scav_R_POPPOC,
+#elif defined(DARWIN_PART_SCAV)
+     &    scav_tau,
+     &    scav_inter,
+     &    scav_exp,
+     &    scav_POC_wgt,
+     &    scav_POSi_wgt,
+     &    scav_PIC_wgt,
+#else
+     &    scav,
+#endif
      &    depthfesed,
      &    fesedflux,
      &    fesedflux_pcm,
@@ -392,14 +406,24 @@ C     &    yono2,
       _RL mort2TempAe
       _RL uptakeTempAe
       _RL alpfe
-      _RL scav
       _RL ligand_tot
       _RL ligand_stab
       _RL freefemax
+#ifdef DARWIN_PART_SCAV_POP
       _RL scav_rat
       _RL scav_inter
       _RL scav_exp
       _RL scav_R_POPPOC
+#elif defined(DARWIN_PART_SCAV)
+      _RL scav_tau
+      _RL scav_inter
+      _RL scav_exp
+      _RL scav_POC_wgt
+      _RL scav_POSi_wgt
+      _RL scav_PIC_wgt
+#else
+      _RL scav
+#endif
       _RL depthfesed
       _RL fesedflux
       _RL fesedflux_pcm

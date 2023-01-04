@@ -91,8 +91,11 @@ C  k                    :: vertical level
       _RL gO2(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL surfFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL freeFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
+      _RL sedFlxFe(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL tmp3d(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
-      _RL scv,scav_poc
+      _RL scavRate(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
+      _RL scavLoss(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
+      _RL scv,scav_pom
       _RL flx, POCl
       _RL ptr(nDarwin), gtr(nDarwin), PARl(nlam)
       _RL chlout(nPhoto)
@@ -377,20 +380,24 @@ C     scavenging
       DO k=1,Nr
       DO j=jMin,jMax
       DO i=iMin,iMax
+C       compute POM in mg/L
 #ifdef DARWIN_PART_SCAV_POP
-        scav_poc = MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOP))/scav_R_POPPOC
-        scv = scav_rat*scav_inter*(scav_poc**scav_exp)
+        scav_pom = MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOP))/scav_R_POPPOC
+        scv = scav_rat*scav_inter*(scav_pom**scav_exp)
 #elif defined(DARWIN_PART_SCAV)
-        scav_poc = MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOC))
-        scv = scav_rat*scav_inter*(scav_poc**scav_exp)
+        scav_pom = scav_POC_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOC))
+     &           + scav_POSi_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOSi))
+     &           + scav_PIC_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPIC))
+        scv = scav_tau*scav_inter*(scav_pom**scav_exp)
 #else
         scv = scav
 #endif
-        gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) -
-     &                     scv*MAX(0 _d 0, freefe(i,j,k))
+        scavRate(i,j,k) = scv
+        scavLoss(i,j,k) = scv*MAX(0 _d 0, freefe(i,j,k))
+        gPtr(i,j,k,iFeT) = gPtr(i,j,k,iFeT) - scavLoss(i,j,k)
 #ifdef DARWIN_ALLOW_CONS
         DARWIN_partScav(i,j,k,bi,bj) = DARWIN_partScav(i,j,k,bi,bj)
-     &                    + dTsub(k)*scv*MAX(0 _d 0, freefe(i,j,k))
+     &                               + dTsub(k)*scavLoss(i,j,k)
 #endif
       ENDDO
       ENDDO
@@ -448,10 +455,13 @@ C     iron sediment source (in bottom grid cell above kMaxFeSed)
 #else
           flx = fesedflux
 #endif
+          sedFlxFe(i,j) = flx
           sedFe(i,j,k) = flx/(drF(k)*hFacC(i,j,k,bi,bj))
 #ifdef DARWIN_ALLOW_CONS
           ironSedFlx(i,j,bi,bj) = ironSedFlx(i,j,bi,bj) + dTsub(k)*flx
 #endif
+        ELSE
+         sedFlxFe(i,j) = 0 _d 0
         ENDIF
        ENDDO
       ENDDO
@@ -887,7 +897,10 @@ C      diags(iCons*) for convenience
        ENDDO
 #endif
 #endif
-       CALL DIAGNOSTICS_FILL(sedFe, 'sedFe   ',0,Nr,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(scavRate,'scavRate',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(scavLoss,'scvLosFe',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(sedFe,   'sedFe   ',0,Nr,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(sedFlxFe,'sedFlxFe',0,1,2,bi,bj,myThid)
        IF (DIAGNOSTICS_IS_ON('sfcSolFe', myThid)) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax

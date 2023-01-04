@@ -1713,9 +1713,6 @@ C--   Print parameters from DARWIN_PARAMS.h
       CALL WRITE_0D_RL(alpfe,INDEX_NONE,
      &'alpfe =',
      &' /* solubility of Fe dust */')
-      CALL WRITE_0D_RL(scav,INDEX_NONE,
-     &'scav =',
-     &' /* fixed iron scavenging rate (1/s) */')
       CALL WRITE_0D_RL(ligand_tot,INDEX_NONE,
      &'ligand_tot =',
      &' /* total ligand concentration (mol/m3) */')
@@ -1725,18 +1722,43 @@ C--   Print parameters from DARWIN_PARAMS.h
       CALL WRITE_0D_RL(freefemax,INDEX_NONE,
      &'freefemax =',
      &' /* max concentration of free iron (mol/m3) */')
+#ifdef DARWIN_PART_SCAV_POP
       CALL WRITE_0D_RL(scav_rat,INDEX_NONE,
      &'scav_rat =',
-     &' /* rate of POM-based iron scavenging (1/s) */')
+     &' /* rate conversion Th to iron (1/s) */')
       CALL WRITE_0D_RL(scav_inter,INDEX_NONE,
      &'scav_inter =',
-     &' /* intercept of scavenging power law */')
+     &' /* intercept of scavenging power law (L^e mg^-e) */')
       CALL WRITE_0D_RL(scav_exp,INDEX_NONE,
      &'scav_exp =',
-     &' /* exponent of scavenging power law */')
+     &' /* exponent e of scavenging power law */')
       CALL WRITE_0D_RL(scav_R_POPPOC,INDEX_NONE,
      &'scav_R_POPPOC =',
-     &' /* POP:POC ratio for DARWIN_PART_SCAV_POP (mmol P / mmol C) */')
+     &' /* POP:POC ratio for scavenging (mmol P / g) */')
+#elif defined(DARWIN_PART_SCAV)
+      CALL WRITE_0D_RL(scav_tau,INDEX_NONE,
+     &'scav_tau =',
+     &' /* factor to go from Th scavenging rate to iron */')
+      CALL WRITE_0D_RL(scav_inter,INDEX_NONE,
+     &'scav_inter =',
+     &' /* intercept of scavenging power law (L^e mg^-e s^-1) */')
+      CALL WRITE_0D_RL(scav_exp,INDEX_NONE,
+     &'scav_exp =',
+     &' /* exponent e of scavenging power law */')
+      CALL WRITE_0D_RL(scav_POC_wgt,INDEX_NONE,
+     &'scav_POC_wgt =',
+     &' /* weight of POC in POM for scavenging (g / mmol C) */')
+      CALL WRITE_0D_RL(scav_POSi_wgt,INDEX_NONE,
+     &'scav_POSi_wgt =',
+     &' /* weight of POSi in POM for scavenging (g / mmol Si) */')
+      CALL WRITE_0D_RL(scav_PIC_wgt,INDEX_NONE,
+     &'scav_PIC_wgt =',
+     &' /* weight of PIC in POM for scavenging (g / mmol C) */')
+#else
+      CALL WRITE_0D_RL(scav,INDEX_NONE,
+     &'scav =',
+     &' /* fixed iron scavenging rate (1/s) */')
+#endif
       CALL WRITE_0D_RL(depthfesed,INDEX_NONE,
      &'depthfesed =',
      &' /* depth above which to add sediment source (was -1000) (m) */')
