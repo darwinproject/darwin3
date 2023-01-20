@@ -23,6 +23,7 @@ ecosystem model is split over a number of pages:
    darwin_remin
    darwin_denit
    darwin_cdom
+   darwin_airsea
    darwin_carbon
    darwin_iron
    darwin_resp
@@ -42,37 +43,66 @@ tracers (or a subset, depending on the configuration):
 .. table::
    :widths: auto
 
-   =============  ==============================  =================================================
-   Name           Units                           Description
-   =============  ==============================  =================================================
-   DIC            mmol C  m\ :sup:`--3`           concentration of dissolved inorganic carbon
-   NO3            mmol N  m\ :sup:`--3`           concentration of nitrate
-   NO2            mmol N  m\ :sup:`--3`           concentration of nitrite
-   NH4            mmol N  m\ :sup:`--3`           concentration of ammonia
-   PO4            mmol P  m\ :sup:`--3`           concentration of phosphate
-   FeT            mmol Fe m\ :sup:`--3`           concentration of total dissolved iron
-   SiO2           mmol Si m\ :sup:`--3`           concentration of inorganic silica
-   DOC            mmol C  m\ :sup:`--3`           concentration of dissolved organic carbon
-   DON            mmol N  m\ :sup:`--3`           concentration of dissolved organic nitrogen
-   DOP            mmol P  m\ :sup:`--3`           concentration of dissolved organic phosphorus
-   DOFe           mmol Fe m\ :sup:`--3`           concentration of dissolved organic iron
-   POC            mmol C  m\ :sup:`--3`           concentration of particulate organic carbon
-   PON            mmol N  m\ :sup:`--3`           concentration of particulate organic nitrogen
-   POP            mmol P  m\ :sup:`--3`           concentration of particulate organic phosphorus
-   POFe           mmol Fe m\ :sup:`--3`           concentration of particulate organic iron
-   POSi           mmol Si m\ :sup:`--3`           concentration of particulate organic silica
-   PIC            mmol C  m\ :sup:`--3`           concentration of particulate inorganic carbon
-   ALK            meq m\ :sup:`--3`               alkalinity
-   O2             mmol O\ :sub:`2` m\ :sup:`--3`  concentration of oxygen
-   CDOM           | mmol P  m\ :sup:`--3`         | concentration of colored dissolved organic matter
-                  | mmol C  m\ :sup:`--3`         | - if #define DARWIN_CDOM_UNITS_CARBON
-   c\ :sub:`j`    mmol C  m\ :sup:`--3`           concentration of carbon in plankton type j
-   n\ :sub:`j`    mmol N  m\ :sup:`--3`           concentration of nitrogen in plankton type j
-   p\ :sub:`j`    mmol P  m\ :sup:`--3`           concentration of phosphorus in plankton type j
-   fe\ :sub:`j`   mmol Fe m\ :sup:`--3`           concentration of iron in plankton type j
-   si\ :sub:`j`   mmol Si m\ :sup:`--3`           concentration of silica in plankton type j
-   Chl\ :sub:`j`  mg Chl a m\ :sup:`--3`          concentration of Chlorophyll-a in plankton type j
-   =============  ==============================  =================================================
+   +---------------+--------------------------------+---------------------------------------------------+
+   | Name          | Units                          | Description                                       |
+   +===============+================================+===================================================+
+   | DIC           | mmol C  m\ :sup:`--3`          | concentration of dissolved inorganic carbon       |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | NO3           | mmol N  m\ :sup:`--3`          | concentration of nitrate                          |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | NO2           | mmol N  m\ :sup:`--3`          | concentration of nitrite                          |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | NH4           | mmol N  m\ :sup:`--3`          | concentration of ammonia                          |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | PO4           | mmol P  m\ :sup:`--3`          | concentration of phosphate                        |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | FeT           | mmol Fe m\ :sup:`--3`          | concentration of total dissolved iron             |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | SiO2          | mmol Si m\ :sup:`--3`          | concentration of inorganic silica                 |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | DOC           | mmol C  m\ :sup:`--3`          | concentration of dissolved organic carbon         |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | DON           | mmol N  m\ :sup:`--3`          | concentration of dissolved organic nitrogen       |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | DOP           | mmol P  m\ :sup:`--3`          | concentration of dissolved organic phosphorus     |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | DOFe          | mmol Fe m\ :sup:`--3`          | concentration of dissolved organic iron           |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | POC           | mmol C  m\ :sup:`--3`          | concentration of particulate organic carbon       |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | PON           | mmol N  m\ :sup:`--3`          | concentration of particulate organic nitrogen     |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | POP           | mmol P  m\ :sup:`--3`          | concentration of particulate organic phosphorus   |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | POFe          | mmol Fe m\ :sup:`--3`          | concentration of particulate organic iron         |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | POSi          | mmol Si m\ :sup:`--3`          | concentration of particulate organic silica       |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | PIC           | mmol C  m\ :sup:`--3`          | concentration of particulate inorganic carbon     |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | ALK           | meq m\ :sup:`--3`              | alkalinity                                        |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | O2            | mmol O\ :sub:`2` m\ :sup:`--3` | concentration of oxygen                           |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | CDOM          | mmol C  m\ :sup:`--3`          | concentration of colored dissolved organic matter |
+   |               |                                |                                                   |
+   |               | (mmol P  m\ :sup:`--3`)\ [*]_  |                                                   |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | c\ :sub:`j`   | mmol C  m\ :sup:`--3`          | concentration of carbon in plankton type j        |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | n\ :sub:`j`   | mmol N  m\ :sup:`--3`          | concentration of nitrogen in plankton type j      |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | p\ :sub:`j`   | mmol P  m\ :sup:`--3`          | concentration of phosphorus in plankton type j    |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | fe\ :sub:`j`  | mmol Fe m\ :sup:`--3`          | concentration of iron in plankton type j          |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | si\ :sub:`j`  | mmol Si m\ :sup:`--3`          | concentration of silica in plankton type j        |
+   +---------------+--------------------------------+---------------------------------------------------+
+   | Chl\ :sub:`j` | mg Chl a m\ :sup:`--3`         | concentration of Chlorophyll-a in plankton type j |
+   +---------------+--------------------------------+---------------------------------------------------+
+
+.. [*] units of CDOM are mmol C m\ :sup:`--3` if #define DARWIN_CDOM_UNITS_CARBON (default),
+       mmol P m\ :sup:`--3` otherwise
 
 Phyto- and zooplankton are not distinguished except that certain source terms
 will not be active, dependening on whether a plankton type can engage in
@@ -126,15 +156,18 @@ To use spectral light, compile the radtrans package, see
    :varlink:`DARWIN_ALLOW_CHLQUOTA`             & enable chlorophyll quotas for all *phototrophs*
    :varlink:`DARWIN_ALLOW_CDOM`                 & enable a dynamic CDOM tracer
    :varlink:`DARWIN_CDOM_UNITS_CARBON`          & measure CDOM in units of mmol C/m\ :sup:`3` and follow organic carbon instead of phosphorus
+   :varlink:`DARWIN_ALLOW_CSTORE`               & enable internal carbon store and exudation for all phototrophs
+   :varlink:`DARWIN_ALLOW_CSTORE_DIAGS`         & enable diagnostics for internal carbon store
    :varlink:`DARWIN_ALLOW_CARBON`               & enable air-sea carbon exchange and ALK and O\ :math:`_2` tracers
+   :varlink:`DARWIN_SOLVESAPHE`                 & compile Munhoven "Solvesaphe" pH/pOC2 solver package
    :varlink:`DARWIN_TOTALPHSCALE`               & consistently use the total pH scale for carbon chemistry coefficients
+   :varlink:`DARWIN_USE_PLOAD`                  & take atmospheric pressure from coupled atmospheric model
+   :varlink:`DARWIN_ALLOW_RADI`                 & enable RADI sediment model
    :varlink:`DARWIN_ALLOW_DENIT`                & enable denitrification code
    :varlink:`DARWIN_ALLOW_EXUDE`                & enable exudation of individual quotas
    :varlink:`ALLOW_OLD_VIRTUALFLUX`             & enable old virtualflux code for DIC and ALK
    :varlink:`DARWIN_NITRATE_FELIMIT`            & reduce nitrate uptake by iron limitation factor
    :varlink:`DARWIN_BOTTOM_SINK`                & allow organic matter to sink into bottom (sedimentize)
-   :varlink:`DARWIN_ALLOW_CSTORE`               & enable internal carbon store and exudation for all phototrophs
-   :varlink:`DARWIN_ALLOW_CSTORE_DIAGS`         & enable diagnostics for internal carbon store
    :varlink:`DARWIN_NUTRIENT_RUNOFF`            & include code for reading nutrient runoff from files
    :varlink:`DARWIN_AVPAR`                      & compute average PAR in layer, assuming exponential decay (%)
    :varlink:`DARWIN_ALLOW_GEIDER`               & enable GEIDER light code (required for radtrans)
@@ -877,51 +910,25 @@ Diagnostics
    sedFe      & ``SMRP____MR`` & mmol Fe /m\ :sup:`3`/s          & Iron input from sediment
    freeFeLs   & ``SMRP____MR`` & mmol Fe /m\ :sup:`3`/s          & Iron loss due to free iron limit
    sedFlxFe   & ``SM_P____U1`` & mmol Fe /m\ :sup:`2`/s          & Iron sediment flux
-   pH         & ``SMR_____MR`` & 1                               & pH
-   pCO2       & ``SMRP____MR`` & atm                             & Partial Pressure of CO2
-   fugfCO2    & ``SM_P____L1`` & 1                               & Fugacity factor of CO2 at surface
-   fCO2       & ``SM_P____L1`` & atm                             & Fugacity of CO2 (atm)
-   fluxCO2    & ``SM______L1`` & mmol C /m\ :sup:`2`/s           & Flux of CO2 - air-sea exch
-   fluxO2     & ``SM______L1`` & mmol O2 /m\ :sup:`2`/s          & Flux of O2 - air-sea exch
-   VfluxCO2   & ``SM______L1`` & mmol C /m\ :sup:`2`/s           & Virtual flux of CO2
-   VfluxAlk   & ``SM______L1`` & meq/m\ :sup:`2`/s               & Virtual flux of alkalinity
-   gDICsurf   & ``SM______L1`` & mmol C /m\ :sup:`3`/s           & Tendency of DIC due to air-sea exch + oldvirt.flux
    gDICEpr    & ``SM______L1`` & mmol C /m\ :sup:`3`/s           & Tendency of DIC due to E/P/runoff
-   gALKEpr    & ``SM______L1`` & mmol eq./m\ :sup:`3`/s          & Tendency of ALK due to E/P/runoff
-   gO2Epr     & ``SM______L1`` & mmol eq./m\ :sup:`3`/s          & Tendency of O2 due to E/P/runoff
    gNO3Epr    & ``SM______L1`` & mmol N /m\ :sup:`3`/s           & Tendency of DIC due to E/P/runoff
    gNO2Epr    & ``SM______L1`` & mmol N /m\ :sup:`3`/s           & Tendency of DIC due to E/P/runoff
    gNH4Epr    & ``SM______L1`` & mmol N /m\ :sup:`3`/s           & Tendency of DIC due to E/P/runoff
    gPO4Epr    & ``SM______L1`` & mmol P /m\ :sup:`3`/s           & Tendency of PO4 due to E/P/runoff
-   gFeTEpr    & ``SM______L1`` & mmol C /m\ :sup:`3`/s           & Tendency of FeT due to E/P/runoff
+   gFeTEpr    & ``SM______L1`` & mmol Fe /m\ :sup:`3`/s          & Tendency of FeT due to E/P/runoff
    gSiO2Epr   & ``SM______L1`` & mmol Si /m\ :sup:`3`/s          & Tendency of SiO2 due to E/P/runoff
-   gALKsurf   & ``SM______L1`` & meq/m\ :sup:`3`/s               & Tendency of ALK due to oldvirt.flux
-   gO2surf    & ``SM______L1`` & mmol O2 /m\ :sup:`3`/s          & Tendency of O2 due to air-sea exch
-   C_DIC      & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & Consumption of DIC
-   C_DICPIC   & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & Consumption of DIC due to PIC
-   respDIC    & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & DIC due to respiration
-   rDIC_DOC   & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & DIC due to remineralization of DOC
-   rDIC_POC   & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & DIC due to remineralization of POC
-   dDIC_PIC   & ``SMR_____MR`` & mmol C /m\ :sup:`3`/s           & DIC due to dissolution of PIC
-   C_ALK      & ``SMR_____MR`` & mmol eq./m\ :sup:`3`/s          & Consumption of alkalinity
-   S_ALK      & ``SMR_____MR`` & mmol eq./m\ :sup:`3`/s          & Non-transport source of alkalinity
-   C_O2       & ``SMR_____MR`` & mmol O /m\ :sup:`3`/s           & Consumption of oxygen
-   S_O2       & ``SMR_____MR`` & mmol O /m\ :sup:`3`/s           & Non-transport source of oxygen
+   gALKEpr    & ``SM______L1`` & meq/m\ :sup:`3`/s               & Tendency of ALK due to E/P/runoff
+   gO2Epr     & ``SM______L1`` & mmol O2 /m\ :sup:`3`/s          & Tendency of O2 due to E/P/runoff
    surfPAR    & ``SM_P____L1`` & µEin/m\ :sup:`2`/s              & PAR forcing at surface
    surfiron   & ``SM_P____L1`` & mmol Fe /m\ :sup:`2`/s          & iron forcing at surface
    DARice     & ``SM_P____L1`` & m\ :sup:`2`/m\ :sup:`2`         & ice area fraction
    DARwind    & ``SM_P____L1`` & m/s                             & wind speed used for carbon exchange
    surfpCO2   & ``SM_P____L1`` & mol/mol                         & atmospheric surface pCO2
-   apCO2      & ``SM_P____L1`` & atm                             & atmospheric pCO2
-   apCO2sat   & ``SM_P____L1`` & atm                             & atmospheric pCO2 sat
 
 .. [#a] does not include free iron adjustment for FeT tracer
 
-The sign convention for the fluxCO2, gDICsurf, gALKsurf and gO2surf diagnostics
-is such that positive values increase the concentration in the ocean.  Note
-that the units vary: gDICsurf, gALKsurf and gO2surf are tracer tendencies,
-i.e., change rates of concentration, while fluxCO2 is a flux per area of
-sea surface.
+Diagnostics related to carbon chemistry are listed in
+:numref:`CarbonChemistryDiagnostics`.
 
 Also of interest are the following diagnostics from the ptracers and gchem packages:
 
@@ -976,11 +983,23 @@ Call Tree
                 darwin_exf_init_varia
                 darwin_read_pickup
                 darwin_init_chl
-                  darwin_light_radtrans
                   darwin_light
                     darwin_insol
+                  darwin_light_radtrans
                 darwin_surfforcing_init
+                  darwin_coeffs_surf
+                  darwin_coeffs_deep
                   darwin_carbon_coeffs
+                  ahini_for_at
+                  calc_pco2_solvesaphe
+                    solve_at_general
+                      anw_infsup
+                      equation_at
+                    solve_at_general_sec
+                      anw_infsup
+                      equation_at
+                    solve_at_fast
+                      equation_at
                   darwin_calc_pco2_approx
           do_the_model_io
             gchem_output
@@ -992,16 +1011,23 @@ Call Tree
                 darwin_fields_load
                   darwin_exf_load
                   darwin_monitor
+            gchem_cons
+              darwin_cons
             gchem_forcing_sep
               darwin_conserve_surface
               darwin_cons
+              darwin_cons_reset
               darwin_nut_supply
               darwin_forcing
                 darwin_light_radtrans
                 darwin_light...
                 darwin_surfforcing
+                  darwin_coeffs_surf
+                  darwin_coeffs_deep
                   darwin_carbon_coeffs
+                  calc_pco2_solvesaphe...
                   darwin_calc_pco2_approx
+                darwin_add_surfforc
                 darwin_fe_chem
                 darwin_tempfunc
                 darwin_plankton
@@ -1012,20 +1038,3 @@ Call Tree
               packages_write_pickup
                 gchem_write_pickup
                   darwin_write_pickup
-
-
-Differences to darwin2
-^^^^^^^^^^^^^^^^^^^^^^
-
-Not up-to-date!
-
--  Particulate/dissolved split of plankton mortality products is not
-   allometric or element-dependent as it was in quota.
-
--  grazing and mortality temperature dependent with TEMP_VERSION 2.
-
--  chl2cmin affects acclim.
-
-Bug fixes:
-
--  1e-3 replaced by 1 _d -3 in conversion of tracers for pH solver.

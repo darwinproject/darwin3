@@ -4,11 +4,9 @@ Model equations
 ^^^^^^^^^^^^^^^
 
 The basic model equations are (omitting transport terms handled by the ptracers
-package, sinking and swimming terms discussed in
-:numref:`para_phys_pkg_darwin_sink`, terms correcting conservation with the
-linear free surface formulation discussed in
-:numref:`para_phys_pkg_darwin_cons`) and surface fluxes related to
-:ref:`CarbonChemistry`:
+package, :ref:`para_phys_pkg_darwin_sink`, :ref:`AirSea` and terms correcting
+conservation with the linear free surface formulation discussed in
+:numref:`para_phys_pkg_darwin_cons`):
 
 .. math::
 
@@ -17,7 +15,7 @@ linear free surface formulation discussed in
                                          + R^{\mathrm{DIC}}_j
                                   \bigr)
                            + R_{\mathrm{DOC}} + [R_{\mathrm{POC}}]
-                           + \kappa^{{\text{diss}}}_{\mathrm{C}}\op{PIC} \\
+                           + D_{\mathrm{PIC}} \\
    \partial_t\op{PO}_4  &= \sum_j \bigl( -U^{\mathrm{PO4}}_j + R^{\mathrm{P}}_j + R^{\mathrm{PO4}}_j \bigr)
                            + R_{\mathrm{DOP}} + [R_{\mathrm{POP}}] \\
    \partial_t\op{NH}_4  &= \sum_j \bigl( -U^{\mathrm{NH4}}_j + R^{\mathrm{N,NH4}}_j + R^{\mathrm{NH4}}_j \bigr)
@@ -40,14 +38,14 @@ linear free surface formulation discussed in
    \partial_t\op{DOP}   &= \sum_j M_j^{\mathrm{DOM}} Q_j^{{\mathrm{P}}} + g^{\mathrm{DOP}}  + \sum_j \left( H^{\mathrm{POP}}_j - U^{\mathrm{DOP}}_j \right) - R_{\mathrm{DOP}} - S_{\mathrm{CDOM}} \\
    \partial_t\op{DON}   &= \sum_j M_j^{\mathrm{DOM}} Q_j^{{\mathrm{N}}} + g^{\mathrm{DON}}  + \sum_j \left( H^{\mathrm{PON}}_j - U^{\mathrm{DON}}_j \right) - R_{\mathrm{DON}} - S_{\mathrm{CDOM}} R^{{\mathrm{N}}:{\mathrm{P}}}_{\mathrm{CDOM}} \\
    \partial_t\op{DOFe}  &= \sum_j M_j^{\mathrm{DOM}} Q_j^{\mathrm{Fe}}      + g^{\mathrm{DOFe}} + \sum_j \left( H^{\mathrm{POFe}}_j- U^{\mathrm{DOFe}}_j\right) - R_{\mathrm{DOFe}}- S_{\mathrm{CDOM}} R^{{\mathrm{Fe}}:{\mathrm{P}}}_{\mathrm{CDOM}} \\
-   \partial_t\op{PIC}   &= \sum_j M_j     R_j^{\text{PIC:POC}}      + g^{\mathrm{PIC}} - \kappa^{{\text{diss}}}_{\mathrm{C}}\op{PIC} \\
+   \partial_t\op{PIC}   &= \sum_j M_j     R_j^{\text{PIC:POC}}      + g^{\mathrm{PIC}} - D_{\mathrm{PIC}} \\
    \partial_t\op{POC}   &= \sum_j M_j^{\mathrm{POM}} \;\;\;\;\;         + g^{\mathrm{POC}}  - \sum_j U^{\mathrm{POC}}_j  - R_{\mathrm{POC}} \\
    \partial_t\op{POP}   &= \sum_j M_j^{\mathrm{POM}} Q_j^{{\mathrm{P}}} + g^{\mathrm{POP}}  - \sum_j U^{\mathrm{POP}}_j  - R_{\mathrm{POP}} \\
    \partial_t\op{PON}   &= \sum_j M_j^{\mathrm{POM}} Q_j^{{\mathrm{N}}} + g^{\mathrm{PON}}  - \sum_j U^{\mathrm{PON}}_j  - R_{\mathrm{PON}} \\
    \partial_t\op{POFe}  &= \sum_j M_j^{\mathrm{POM}} Q_j^{\mathrm{Fe}}      + g^{\mathrm{POFe}} - \sum_j U^{\mathrm{POFe}}_j - R_{\mathrm{POFe}} \\
    \partial_t\op{POSi}  &= \sum_j M_j Q_j^{\mathrm{Si}} \;\;\;\;\;      + g^{\mathrm{POSi}}                          - R_{\mathrm{POSi}} \\
    \partial_t\op{ALK}   &= -\biggl( P_{\mathrm{NO3}} - \sum_j U^{\mathrm{NO3}}_j \biggr)
-       - 2\biggl( \sum_j U^{\mathrm{DIC}}_j R^{{\text{PIC:POC}}}_j - \kappa^{{\text{diss}}}_{\mathrm{C}}\op{PIC}\biggr)
+       - 2\biggl( \sum_j U^{\mathrm{DIC}}_j R^{{\text{PIC:POC}}}_j - D_{\mathrm{PIC}} \biggr)
        + D_{\mathrm{NO3}} \\
    \partial_t{\mathrm{O}}_2 &= R_{\mathrm{O}_2:\mathrm{P}} \biggl(
                                    \sum_j U^{\mathrm{PO4}}_j
@@ -66,7 +64,8 @@ abbreviated source terms are described in sections below:
 - :math:`R^{\mathrm{C}}`: :ref:`Respiration`
 - :math:`H`, :math:`R_j`: bacterial hydrolysis and remineralization, see :ref:`Bacteria`
 - :math:`R`, :math:`P`: parameterized :ref:`Remineralization`
-- :math:`D`: denitrification, see :ref:`Denitrification`
+- :math:`D_{\mathrm{NO3}}`: denitrification, see :ref:`Denitrification`
+- :math:`D_{\mathrm{PIC}}`: dissolution of PIC, see :ref:`CarbonChemistry`
 - :math:`g`, :math:`G`: grazing gains and losses, see :ref:`Grazing`
 - :math:`S^{\mathrm{Chl}}`: synthesis, see :ref:`Synthesis`
 - :math:`S_{\mathrm{Fe}}`: iron sources, see :ref:`Iron`
@@ -75,6 +74,7 @@ abbreviated source terms are described in sections below:
 With :varlink:`DARWIN_ALLOW_CDOM`, all particulate remineralization terms
 (in square brackets [...]) except Si are absent.
 Without :varlink:`DARWIN_ALLOW_CDOM`, :math:`f_{\mathrm{CDOM}}=0` and there is no CDOM tracer.
+The Alk and O\ :sub:`2` tracers are only present with :varlink:`DARWIN_ALLOW_CARBON`.
 
 
 .. csv-table:: General parameters
@@ -83,7 +83,6 @@ Without :varlink:`DARWIN_ALLOW_CDOM`, :math:`f_{\mathrm{CDOM}}=0` and there is n
    :class: longtable
    :header: Trait, Param, Symbol, Default, Units, Description
 
-                       & :varlink:`Kdissc`     & :math:`\kappa^{\text{diss}}_{\mathrm{C}}` & 1/(300 days) & 1/s                       & dissolution rate for PIC
    :varlink:`R_PICPOC` & :varlink:`a_R_PICPOC` & :math:`R^{\text{PIC:POC}}_j`              & 0.8          & mmol PIC / mmol POC       & inorganic-organic carbon ratio
                        & :varlink:`R_OP`       & :math:`R_{\mathrm{O}_2:\mathrm{P}}`       & 170          & mmol O\ :sub:`2` / mmol P & O\ :sub:`2`:P ratio for respiration and consumption
 
