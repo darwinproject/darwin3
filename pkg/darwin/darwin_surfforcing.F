@@ -113,13 +113,13 @@ C Compute AtmosP and Kwexch0 which are used for flux of CO2 and O2
        DO i=imin,imax
         IF (maskC(i,j,ks,bi,bj).NE.0. _d 0) THEN
 
-#ifdef USE_PLOAD
+#ifdef DARWIN_USE_PLOAD
 C Convert anomalous pressure pLoad (in Pa) from atmospheric model
 C to total pressure (in Atm)
 C Note: it is assumed the reference atmospheric pressure is 1Atm=1013mb
 C       rather than the actual ref. pressure from Atm. model so that on
 C       average AtmosP is about 1 Atm.
-         AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
+         AtmosP(i,j,bi,bj)= (surf_pRef + pLoad(i,j,bi,bj))/Pa2Atm
 #endif
 
 C Pre-compute part of exchange coefficient: pisvel*(1-fice)
