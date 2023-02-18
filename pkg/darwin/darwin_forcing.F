@@ -97,6 +97,26 @@ C  k                    :: vertical level
       _RL scavLoss(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
       _RL scv,scav_pom
       _RL flx, POCl
+#ifdef DARWIN_ALLOW_CARBON
+#ifdef DARWIN_ALLOW_RADI
+C     Sediment fluxes
+      _RL DICFsediment(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ALKFsediment(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL O2Fsediment(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL POCFsediment(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL CALFsediment(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     Test variable for a diffusive temperature correction factor
+C     (for now only implemented in the O2 flux)
+      _RL TcorrO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL TcorrDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL TcorrALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     Dependent variables for sediment flux for validation
+      _RL OmegaC0(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fluxPIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fluxPOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL absT
+#endif
+#endif
       _RL ptr(nDarwin), gtr(nDarwin), PARl(nlam)
       _RL chlout(nPhoto)
       _RL diagsl(darwin_nDiag)
@@ -658,6 +678,83 @@ C === pre-sinking diags ================================================
       ENDIF
 #endif
 
+C === Sediment fluxes ==========================================================
+#ifdef DARWIN_ALLOW_CARBON
+#ifdef DARWIN_ALLOW_RADI
+      DO j=jMin,jMax
+      DO i=iMin,iMax
+C      grid cell just above sea floor
+       k = kLowC(i,j,bi,bj)
+       IF (k .GT. 0) THEN
+
+C       Correction factor of diffusive flux with T, to potentially better
+C       resolve sediment fluxes at coastal regions
+        absT = ABS(Theta(i,j,k,bi,bj))
+        TcorrO2(i,j) = (0.031558 _d 0+0.001428 _d 0*absT)/0.0335572 _d 0
+        TcorrDIC(i,j) = (0.015179 _d 0+0.000795 _d 0*absT)/0.016292 _d 0
+        TcorrALK(i,j) = (0.015179 _d 0+0.000795 _d 0*absT)/0.016292 _d 0
+
+C       Dependent variables
+        fluxPIC(i,j) = wPIC_sink*MAX(0.0,Ptracer(i,j,k,bi,bj,iPIC))
+        fluxPOC(i,j) = wC_sink*MAX(0.0,Ptracer(i,j,k,bi,bj,iPOC))
+
+        OmegaC0(i,j) = omegaC(i,j,k,bi,bj)
+
+        DICFsediment(i,j) = (sed_a1*omegaC0(i,j)*sed_c +
+     &                       sed_b1*fluxPOC(i,j) +
+     &                       sed_c1*fluxPIC(i,j) +
+     &                       sed_d1*sed_c)*TcorrDIC(i,j)
+
+        ALKFsediment(i,j) = (sed_a2*omegaC0(i,j)*sed_c +
+     &                       sed_b2*fluxPOC(i,j) +
+     &                       sed_c2*fluxPIC(i,j) +
+     &                       sed_d2*sed_c)*TcorrALK(i,j)
+
+        O2Fsediment(i,j) = (sed_a3*omegaC0(i,j)*sed_c +
+     &                      sed_b3*fluxPOC(i,j) +
+     &                      sed_c3*fluxPIC(i,j) +
+     &                      sed_d3*sed_c)*TcorrO2(i,j)
+
+C       Set the buried fluxes to 0 if positive
+        CALFsediment(i,j) = MIN(0 _d 0, -(sed_a5*omegaC0(i,j)*sed_c +
+     &    sed_b5*fluxPOC(i,j) + sed_c5*fluxPIC(i,j) + sed_d5*sed_c))
+
+        POCFsediment(i,j) = MIN(0 _d 0, -(sed_a4*omegaC0(i,j)*sed_c +
+     &    sed_b4*fluxPOC(i,j) + sed_c4*fluxPIC(i,j) + sed_d4*sed_c))
+
+C       Calculate concentration changes at the deepest depth level
+        gPtr(i,j,k,iDIC) = gPtr(i,j,k,iDIC)
+     &       + DICFsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+
+        gPtr(i,j,k,iALK) = gPtr(i,j,k,iALK)
+     &       + ALKFsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+
+        gPtr(i,j,k,iO2) = gPtr(i,j,k,iO2)
+     &       + O2Fsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+
+        gPtr(i,j,k,iPOC) = gPtr(i,j,k,iPOC)
+     &       + POCFsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+
+        gPtr(i,j,k,iPIC) = gPtr(i,j,k,iPIC)
+     &       + CALFsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+
+       ELSE
+
+        TcorrO2(i,j) = 0. _d 0
+        TcorrDIC(i,j) = 0. _d 0
+        TcorrALK(i,j) = 0. _d 0
+        DICFsediment(i,j) = 0. _d 0
+        ALKFsediment(i,j) = 0. _d 0
+        O2Fsediment(i,j) = 0. _d 0
+        CALFsediment(i,j) = 0. _d 0
+        POCFsediment(i,j) = 0. _d 0
+
+       ENDIF
+      ENDDO
+      ENDDO
+#endif
+#endif
+
 C === sinking ==========================================================
       CALL TIMER_START('DARWIN_SINKING [DARWIN_FORCING]',myThid)
       CALL DARWIN_SINKING( Ptracer,gPtr,dTsub,bi,bj,iMin,iMax,jMin,jMax,
@@ -925,6 +1022,19 @@ C      diags(iCons*) for convenience
        CALL DIAGNOSTICS_FILL(gDIC,   'gDICsurf',0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(gALK,   'gALKsurf',0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(gO2,    'gO2surf ',0,1,2,bi,bj,myThid)
+#ifdef DARWIN_ALLOW_RADI
+       CALL DIAGNOSTICS_FILL(DICFsediment,'DICFsed ',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(ALKFsediment,'ALKFsed ',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(O2Fsediment, 'O2Fsed  ',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(POCFsediment,'POCFbur ',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(CALFsediment,'CALFbur ',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(fluxPIC,     'sedFlPIC',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(fluxPOC,     'sedFlPOC',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(TcorrO2,     'TcorrO2 ',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(TcorrDIC,    'TcorrDIC',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(TcorrALK,    'TcorrALK',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(OmegaC0,     'OmegCbot',0,1,2,bi,bj,myThid)
+#endif
 #endif
 
 #ifdef DARWIN_DIAG_TENDENCIES

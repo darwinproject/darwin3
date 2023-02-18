@@ -334,6 +334,31 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       oB2 = -1.03410 _d -2
       oB3 = -8.17083 _d -3
       oC0 = -4.88682 _d -7
+
+#ifdef DARWIN_ALLOW_RADI
+C for sediment model
+      sed_a1 = -0.101 _d 0
+      sed_b1 = 1.04 _d 0
+      sed_c1 = 0.128 _d 0
+      sed_d1 = 0.125 _d 0
+      sed_a2 = -0.225 _d 0
+      sed_b2 = 0.581 _d 0
+      sed_c2 = 0.273 _d 0
+      sed_d2 = 0.211 _d 0
+      sed_a3 = -0.018 _d 0
+      sed_b3 = -0.8 _d 0
+      sed_c3 = 0.011 _d 0
+      sed_d3 = -0.033 _d 0
+      sed_a4 = 0. _d 0
+      sed_b4 = 0.027 _d 0
+      sed_c4 = 0.012 _d 0
+      sed_d4 = -0.001 _d 0
+      sed_a5 = 0.117 _d 0
+      sed_b5 = -0.251 _d 0
+      sed_c5 = 0.852 _d 0
+      sed_d5 = -0.127 _d 0
+      sed_c = 3.17 _d -5
+#endif
 #endif
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
