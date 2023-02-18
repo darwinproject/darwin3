@@ -270,49 +270,49 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c nutrient consumption
       WRITE(diagName,'(A)')'C_DIN'
       WRITE(diagTitle,'(A)')'consumption of DIN'
-      diagUnits = 'mmolN/m3/s      '
+      diagUnits = 'mmol N/m3/s     '
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_NO3'
       WRITE(diagTitle,'(A)')'consumption of NO3'
-      diagUnits = 'mmolN/m3/s      '
+      diagUnits = 'mmol N/m3/s     '
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_NO2'
       WRITE(diagTitle,'(A)')'consumption of NO2'
-      diagUnits = 'mmolN/m3/s      '
+      diagUnits = 'mmol N/m3/s     '
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_NH4'
       WRITE(diagTitle,'(A)')'consumption of NH4'
-      diagUnits = 'mmolN/m3/s      '
+      diagUnits = 'mmol N/m3/s     '
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_PO4'
       WRITE(diagTitle,'(A)')'consumption of PO4'
-      diagUnits = 'mmolP/m3/s      '
+      diagUnits = 'mmol P/m3/s     '
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_Si'
       WRITE(diagTitle,'(A)')'consumption of Si'
-      diagUnits = 'mmolSi/m3/s      '
+      diagUnits = 'mmol Si/m3/s    '
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_Fe'
       WRITE(diagTitle,'(A)')'consumption of Fe'
-      diagUnits = 'mmolFe/m3/s      '
+      diagUnits = 'mmol Fe/m3/s    '
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -320,49 +320,49 @@ c nutrient consumption
 c additional source terms of nutrients
       WRITE(diagName,'(A)')'S_DIN'
       WRITE(diagTitle,'(A)')'non-transport source of DIN'
-      diagUnits = 'mmolN/m3/s      '
+      diagUnits = 'mmol N/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_NO3'
       WRITE(diagTitle,'(A)')'non-transport source of NO3'
-      diagUnits = 'mmolN/m3/s      '
+      diagUnits = 'mmol N/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_NO2'
       WRITE(diagTitle,'(A)')'non-transport source of NO2'
-      diagUnits = 'mmolN/m3/s      '
+      diagUnits = 'mmol N/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_NH4'
       WRITE(diagTitle,'(A)')'non-transport source of NH4'
-      diagUnits = 'mmolN/m3/s      '
+      diagUnits = 'mmol N/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_PO4'
       WRITE(diagTitle,'(A)')'non-transport source of PO4'
-      diagUnits = 'mmolP/m3/s      '
+      diagUnits = 'mmol P/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_Si'
       WRITE(diagTitle,'(A)')'non-transport source of Si'
-      diagUnits = 'mmolSi/m3/s      '
+      diagUnits = 'mmol Si/m3/s    '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_Fe'
       WRITE(diagTitle,'(A)')'non-transport source of Fe'
-      diagUnits = 'mmolFe/m3/s      '
+      diagUnits = 'mmol Fe/m3/s    '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -667,7 +667,7 @@ C-      use units & names from data.ptracers :
       WRITE(diagName,'(A)')'gALKEpr'
       WRITE(diagTitle,'(A)')
      &            'Tendency of ALK due to E/P/runoff'
-      diagUnits = 'mmol eq./m3/s     '
+      diagUnits = 'meq/m3/s        '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -675,7 +675,7 @@ C-      use units & names from data.ptracers :
       WRITE(diagName,'(A)')'gO2Epr'
       WRITE(diagTitle,'(A)')
      &            'Tendency of O2 due to E/P/runoff'
-      diagUnits = 'mmol eq./m3/s     '
+      diagUnits = 'meq/m3/s        '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -723,7 +723,7 @@ C-      use units & names from data.ptracers :
       WRITE(diagName,'(A)')'gSiO2Epr'
       WRITE(diagTitle,'(A)')
      &            'Tendency of SiO2 due to E/P/runoff'
-      diagUnits = 'mmol Si/m3/s     '
+      diagUnits = 'mmol Si/m3/s    '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -745,70 +745,70 @@ C-      use units & names from data.ptracers :
 
       WRITE(diagName,'(A)')'C_DIC'
       WRITE(diagTitle,'(A)')'Consumption of DIC'
-      diagUnits = 'mmol C/m3/s    '
+      diagUnits = 'mmol C/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_DICPIC'
       WRITE(diagTitle,'(A)')'Consumption of DIC due to PIC'
-      diagUnits = 'mmol C/m3/s    '
+      diagUnits = 'mmol C/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'respDIC'
       WRITE(diagTitle,'(A)')'DIC due to respiration'
-      diagUnits = 'mmol C/m3/s    '
+      diagUnits = 'mmol C/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'rDIC_DOC'
       WRITE(diagTitle,'(A)')'DIC due to remineralization of DOC'
-      diagUnits = 'mmol C/m3/s    '
+      diagUnits = 'mmol C/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'rDIC_POC'
       WRITE(diagTitle,'(A)')'DIC due to remineralization of POC'
-      diagUnits = 'mmol C/m3/s    '
+      diagUnits = 'mmol C/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'dDIC_PIC'
       WRITE(diagTitle,'(A)')'DIC due to dissolution of PIC'
-      diagUnits = 'mmol C/m3/s    '
+      diagUnits = 'mmol C/m3/s     '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_ALK'
       WRITE(diagTitle,'(A)')'Consumption of alkalinity'
-      diagUnits = 'mmol eq./m3/s    '
+      diagUnits = 'meq/m3/s        '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_ALK'
       WRITE(diagTitle,'(A)')'Non-transport source of alkalinity'
-      diagUnits = 'mmol eq./m3/s    '
+      diagUnits = 'meq/m3/s        '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'C_O2'
       WRITE(diagTitle,'(A)')'Consumption of oxygen'
-      diagUnits = 'mmol O/m3/s    '
+      diagUnits = 'mmol O2/m3/s    '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'S_O2'
       WRITE(diagTitle,'(A)')'Non-transport source of oxygen'
-      diagUnits = 'mmol O/m3/s    '
+      diagUnits = 'mmol O2/m3/s    '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -844,7 +844,7 @@ C-      use units & names from data.ptracers :
 
       WRITE(diagName,'(A)')'CALFbur '
       WRITE(diagTitle,'(A)')'Calcite buried flux'
-      diagUnits = 'mmol/m2/s    '
+      diagUnits = 'mmol C/m2/s     '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
