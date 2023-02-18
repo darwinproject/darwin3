@@ -48,6 +48,9 @@ C  can still select Follows et al (2006) solver in data.darwin,
 C  but will use solvesaphe dissociation coefficient options.
 #undef  DARWIN_SOLVESAPHE
 
+C enable RADI sediment model
+#undef  DARWIN_ALLOW_RADI
+
 
 C optional bits
 
