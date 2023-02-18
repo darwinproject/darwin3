@@ -118,6 +118,74 @@ C     oC0 :: Coefficient for determining saturation O2
       _RL oB2
       _RL oB3
       _RL oC0
+
+# ifdef DARWIN_ALLOW_RADI
+C--   COMMON /DARWIN_SED_CONSTANTS_R/ Coefficients for sediment model
+C     sed_a1 :: coefficient for sediment model
+C     sed_b1 :: coefficient for sediment model
+C     sed_c1 :: coefficient for sediment model
+C     sed_d1 :: coefficient for sediment model
+C     sed_a2 :: coefficient for sediment model
+C     sed_b2 :: coefficient for sediment model
+C     sed_c2 :: coefficient for sediment model
+C     sed_d2 :: coefficient for sediment model
+C     sed_a3 :: coefficient for sediment model
+C     sed_b3 :: coefficient for sediment model
+C     sed_c3 :: coefficient for sediment model
+C     sed_d3 :: coefficient for sediment model
+C     sed_a4 :: coefficient for sediment model
+C     sed_b4 :: coefficient for sediment model
+C     sed_c4 :: coefficient for sediment model
+C     sed_d4 :: coefficient for sediment model
+C     sed_a5 :: coefficient for sediment model
+C     sed_b5 :: coefficient for sediment model
+C     sed_c5 :: coefficient for sediment model
+C     sed_d5 :: coefficient for sediment model
+C     sed_c :: coefficient for sediment model
+      COMMON /DARWIN_SED_CONSTANTS_R/
+     &    sed_a1,
+     &    sed_b1,
+     &    sed_c1,
+     &    sed_d1,
+     &    sed_a2,
+     &    sed_b2,
+     &    sed_c2,
+     &    sed_d2,
+     &    sed_a3,
+     &    sed_b3,
+     &    sed_c3,
+     &    sed_d3,
+     &    sed_a4,
+     &    sed_b4,
+     &    sed_c4,
+     &    sed_d4,
+     &    sed_a5,
+     &    sed_b5,
+     &    sed_c5,
+     &    sed_d5,
+     &    sed_c
+      _RL sed_a1
+      _RL sed_b1
+      _RL sed_c1
+      _RL sed_d1
+      _RL sed_a2
+      _RL sed_b2
+      _RL sed_c2
+      _RL sed_d2
+      _RL sed_a3
+      _RL sed_b3
+      _RL sed_c3
+      _RL sed_d3
+      _RL sed_a4
+      _RL sed_b4
+      _RL sed_c4
+      _RL sed_d4
+      _RL sed_a5
+      _RL sed_b5
+      _RL sed_c5
+      _RL sed_d5
+      _RL sed_c
+# endif
 #endif
 
 C     COMMON /DARWIN_PARAMS_c/ General parameters (same for all plankton)
