@@ -94,6 +94,7 @@ C local variables for carbon chem
       _RL ttemp
       _RL stemp
       _RL oCnew
+      _RL calcium
 CEOP
 
       ks = 1
@@ -314,10 +315,26 @@ C Use the original Follows et al. (2006) solver
           ENDIF
 #endif /* DARWIN_SOLVESAPHE */
 
+C Compute calcite saturation ratio omegaC
+#ifdef DARWIN_SOLVESAPHE
+          calcium = cat(i,j,bi,bj)
+#else
+C         calcium concentration in mol/kg-SW
+          calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
+#endif
+C         [calcium] = mol/kg
+C         [CO3] = mol/kg
+C         [Ksp_TP_Calc] = mol^2/kg^2
+          omegaC(i,j,k,bi,bj) = MAX(0 _d 0, calcium * CO3(i,j)) /
+     &                          Ksp_TP_Calc(i,j,bi,bj)
+
          ELSE
           pCO2(i,j)=0. _d 0
           CO3(i,j) = 0. _d 0
+          omegaC(i,j,k,bi,bj) = 0 _d 0
          ENDIF
+
+C      enddo i,j
         ENDDO
        ENDDO
 
