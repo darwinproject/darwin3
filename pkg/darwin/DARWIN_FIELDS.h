@@ -108,9 +108,12 @@ C
 C Carbon Variables
 
 #ifdef DARWIN_ALLOW_CARBON
+C-     COMMON /CARBON_NEEDS/ main carbon chem arrays
+C  omegaC           :: Local saturation state with respect to calcite
        COMMON /CARBON_NEEDS/
-     &   pH, Atmosp
+     &   pH, omegaC, Atmosp
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
        COMMON /CARBON_CHEM/
