@@ -584,6 +584,27 @@ C-      use units & names from data.ptracers :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      WRITE(diagName,'(A)')'CO3'
+      WRITE(diagTitle,'(A)')'Concentration of carbonate'
+      diagUnits = 'mol/kg          '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'KspTPClc'
+      WRITE(diagTitle,'(A)')'Solubility product for calcite'
+      diagUnits = 'mol^2/kg^2      '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'OmegaC'
+      WRITE(diagTitle,'(A)')'Calcite saturation ratio'
+      diagUnits = '1               '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       WRITE(diagName,'(A)')'fugfCO2'
       WRITE(diagTitle,'(A)')'Fugacity factor of CO2 at surface'
       diagUnits = '1               '
