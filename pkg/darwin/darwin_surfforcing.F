@@ -436,7 +436,9 @@ C      k is at surface
 
 #ifdef ALLOW_DIAGNOSTICS
        IF (useDiagnostics) THEN
-        CALL DIAGNOSTICS_FILL(pCO2,'pCO2    ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(pCO2,       'pCO2    ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(CO3,        'CO3     ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(Ksp_TP_Calc,'KspTPClc',k,1,1,bi,bj,myThid)
        ENDIF
 #endif
 
@@ -446,7 +448,8 @@ C ======================================================================
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
-       CALL DIAGNOSTICS_FILL(pH,'pH      ',0,Nr,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(pH,    'pH      ',0,Nr,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(omegaC,'OmegaC  ',0,Nr,1,bi,bj,myThid)
       ENDIF
 #endif
 
