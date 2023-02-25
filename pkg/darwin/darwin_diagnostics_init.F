@@ -570,6 +570,20 @@ C-      use units & names from data.ptracers :
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #ifdef DARWIN_ALLOW_CARBON
+      WRITE(diagName,'(A)')'apCO2'
+      WRITE(diagTitle,'(A)')'atmospheric pCO2'
+      diagUnits = 'atm             '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'apCO2sat'
+      WRITE(diagTitle,'(A)')'atmospheric pCO2 sat'
+      diagUnits = 'atm             '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       WRITE(diagName,'(A)')'pH'
       WRITE(diagTitle,'(A)')'pH'
       diagUnits = '1               '
@@ -578,7 +592,7 @@ C-      use units & names from data.ptracers :
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       WRITE(diagName,'(A)')'pCO2'
-      WRITE(diagTitle,'(A)')'Partial Pressure of CO2'
+      WRITE(diagTitle,'(A)')'Partial Pressure of CO2 in the ocean'
       diagUnits = 'atm             '
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -654,80 +668,6 @@ C-      use units & names from data.ptracers :
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-# ifdef DARWIN_DIAG_TENDENCIES
-      WRITE(diagName,'(A)')'gDICEpr'
-      WRITE(diagTitle,'(A)')
-     &            'Tendency of DIC due to E/P/runoff'
-      diagUnits = 'mmol C/m3/s     '
-      diagCode  = 'SM      L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'gALKEpr'
-      WRITE(diagTitle,'(A)')
-     &            'Tendency of ALK due to E/P/runoff'
-      diagUnits = 'meq/m3/s        '
-      diagCode  = 'SM      L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'gO2Epr'
-      WRITE(diagTitle,'(A)')
-     &            'Tendency of O2 due to E/P/runoff'
-      diagUnits = 'meq/m3/s        '
-      diagCode  = 'SM      L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'gNO3Epr'
-      WRITE(diagTitle,'(A)')
-     &            'Tendency of DIC due to E/P/runoff'
-      diagUnits = 'mmol N/m3/s     '
-      diagCode  = 'SM      L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'gNO2Epr'
-      WRITE(diagTitle,'(A)')
-     &            'Tendency of DIC due to E/P/runoff'
-      diagUnits = 'mmol N/m3/s     '
-      diagCode  = 'SM      L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'gNH4Epr'
-      WRITE(diagTitle,'(A)')
-     &            'Tendency of DIC due to E/P/runoff'
-      diagUnits = 'mmol N/m3/s     '
-      diagCode  = 'SM      L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'gPO4Epr'
-      WRITE(diagTitle,'(A)')
-     &            'Tendency of PO4 due to E/P/runoff'
-      diagUnits = 'mmol P/m3/s     '
-      diagCode  = 'SM      L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'gFeTEpr'
-      WRITE(diagTitle,'(A)')
-     &            'Tendency of FeT due to E/P/runoff'
-      diagUnits = 'mmol C/m3/s     '
-      diagCode  = 'SM      L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'gSiO2Epr'
-      WRITE(diagTitle,'(A)')
-     &            'Tendency of SiO2 due to E/P/runoff'
-      diagUnits = 'mmol Si/m3/s    '
-      diagCode  = 'SM      L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-# endif /* DARWIN_DIAG_TENDENCIES */
 
       WRITE(diagName,'(A)')'gALKsurf'
       WRITE(diagTitle,'(A)')'Tendency of ALK due to oldvirt.flux'
@@ -896,6 +836,82 @@ C-      use units & names from data.ptracers :
 # endif /* DARWIN_ALLOW_RADI */
 #endif /* DARWIN_ALLOW_CARBON */
 
+#ifdef DARWIN_DIAG_TENDENCIES
+      WRITE(diagName,'(A)')'gDICEpr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of DIC due to E/P/runoff'
+      diagUnits = 'mmol C/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gNO3Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of DIC due to E/P/runoff'
+      diagUnits = 'mmol N/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gNO2Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of DIC due to E/P/runoff'
+      diagUnits = 'mmol N/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gNH4Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of DIC due to E/P/runoff'
+      diagUnits = 'mmol N/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gPO4Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of PO4 due to E/P/runoff'
+      diagUnits = 'mmol P/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gFeTEpr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of FeT due to E/P/runoff'
+      diagUnits = 'mmol Fe/m3/s    '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gSiO2Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of SiO2 due to E/P/runoff'
+      diagUnits = 'mmol Si/m3/s    '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+# ifdef DARWIN_ALLOW_CARBON
+      WRITE(diagName,'(A)')'gALKEpr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of ALK due to E/P/runoff'
+      diagUnits = 'meq/m3/s        '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gO2Epr'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of O2 due to E/P/runoff'
+      diagUnits = 'mmol O2/m3/s    '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+# endif
+#endif /* DARWIN_DIAG_TENDENCIES */
+
 #ifdef ALLOW_EXF
       WRITE(diagName,'(A)')'surfPAR'
       WRITE(diagTitle,'(A)')'PAR forcing at surface'
@@ -931,21 +947,6 @@ C-      use units & names from data.ptracers :
       diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'apCO2'
-      WRITE(diagTitle,'(A)')'atmospheric pCO2'
-      diagUnits = 'atm             '
-      diagCode  = 'SM P    L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'apCO2sat'
-      WRITE(diagTitle,'(A)')'atmospheric pCO2 sat'
-      diagUnits = 'atm             '
-      diagCode  = 'SM P    L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
 #endif
 
 #endif /* ALLOW_DIAGNOSTICS */
