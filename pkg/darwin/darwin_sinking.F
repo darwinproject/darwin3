@@ -51,7 +51,7 @@ c !LOCAL VARIABLES: ====================================================
        DO j=jMin,jMax
         DO i=iMin,iMax
          IF (maskC(i,j,k,bi,bj) .NE. zeroRS .AND.
-             maskC(i,j,k+1,bi,bj) .NE. zeroRS) THEN
+     &       maskC(i,j,k+1,bi,bj) .NE. zeroRS) THEN
           upf(i,j,k)=recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
           dnf(i,j,k+1)=recip_drF(k+1)*recip_hFacC(i,j,k+1,bi,bj)
          ELSE
