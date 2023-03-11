@@ -466,8 +466,10 @@ C     iron sediment source (in bottom grid cell above kMaxFeSed)
         IF (k .GE. kMinFeSed .AND. k .LE. kMaxFeSed) THEN
 #ifdef DARWIN_IRON_SED_SOURCE_VARIABLE
 # ifdef DARWIN_IRON_SED_SOURCE_POP
+C         mask is needed to make sure k-1 isn't an ice shelf
           flx = fesedflux_pcm*wp_sink*R_CP_fesed*
      &            MAX(0 _d 0, Ptracer(i,j,k-1,bi,bj,iPOP))
+     &            *maskC(i,j,k-1,bi,bj)
 # else
           POCl = MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOC))
           flx = fesedflux_pcm*wc_sink*POCl - fesedflux_min
