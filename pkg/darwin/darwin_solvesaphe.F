@@ -282,10 +282,10 @@ c Note: mol/kg are actually what the body of this routine uses
 c for calculations.  Units are reconverted back to mol/m^3 at the
 c end of this routine.
 c To convert input in mol/m^3 -> mol/kg
-      z_po4tot=z_po4tot*ptr2molkg
-      z_siltot=z_siltot*ptr2molkg
-      z_alktot=z_alktot*ptr2molkg
-      z_dictot=z_dictot*ptr2molkg
+      z_po4tot=z_po4tot*m3perkg
+      z_siltot=z_siltot*m3perkg
+      z_alktot=z_alktot*m3perkg
+      z_dictot=z_dictot*m3perkg
 
 C Load from the carbon_chem common block
       z_so4tot = st(i,j,bi,bj)
@@ -366,13 +366,15 @@ c bug fix by Bennington
 
 C ----------------------------------------------------------------
 C Reconvert from mol/kg -> mol/m^3
-      z_po4tot = z_po4tot/ptr2molkg
-      z_siltot = z_siltot/ptr2molkg
-      z_alktot = z_alktot/ptr2molkg
-      z_dictot = z_dictot/ptr2molkg
-      z_hco3   = z_hco3/ptr2molkg
-      z_co3    = z_co3/ptr2molkg
-      z_co2aq  = z_co2s/ptr2molkg
+      z_po4tot = z_po4tot/m3perkg
+      z_siltot = z_siltot/m3perkg
+      z_alktot = z_alktot/m3perkg
+      z_dictot = z_dictot/m3perkg
+      z_hco3   = z_hco3/m3perkg
+C     keep co3 in mol/kg just like Follows et al solver
+C      z_co3    = z_co3/m3perkg
+C     note: this is not passed back
+      z_co2aq  = z_co2s/m3perkg
 
 #endif /* DARWIN_SOLVESAPHE */
       RETURN

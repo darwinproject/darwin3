@@ -164,8 +164,8 @@ C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #endif
 C call AHINI_FOR_AT to get better initial guess of pH
               CALL AHINI_FOR_AT(
-     I           surfalk*ptr2molkg,
-     I           surfdic*ptr2molkg,
+     I           surfalk*m3perkg,
+     I           surfdic*m3perkg,
      I           bt(i,j,bi,bj),
      U           pH(i,j,k,bi,bj),
      I           i,j,k,bi,bj,nIter0,myThid )
