@@ -26,8 +26,6 @@ C              coupled to atmospheric model) into Atm.
 C              Default assumes pLoad in Pascal: 1 Atm = 1.01325e5 Pa = 1013.25 mb
 C ptr2mol   :: set carbon mmol/m3 <---> mol/m3 conversion factor
 C              default permil = 1 _d -3
-C ptr2molkg :: set carbon mmol/m3 <---> mol/kg conversion factor
-C              default permil = 1 _d -3 / (1024.5 kg/m3)
 C  selectBTconst :: estimates borate concentration from salinity:
 C     =1 :: use default formulation of Uppström (1974)(same as S/R CARBON_COEFFS)
 C     =2 :: use new formulation from Lee et al (2010)
@@ -59,7 +57,6 @@ C----
       NAMELIST/CARBON_CONSTANTS/
      &    Pa2Atm,
      &    ptr2mol,
-     &    ptr2molkg,
      &    sca1,
      &    sca2,
      &    sca3,
@@ -314,7 +311,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 #ifdef DARWIN_ALLOW_CARBON
       Pa2Atm = 1.01325 _d 5
       ptr2mol = 1.0 _d -3
-      ptr2molkg = ptr2mol / 1024.5 _d 0
       sca1 = 2073.1 _d 0
       sca2 = -125.62 _d 0
       sca3 = 3.6276 _d 0
