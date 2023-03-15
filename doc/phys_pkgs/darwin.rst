@@ -43,66 +43,66 @@ tracers (or a subset, depending on the configuration):
 .. table::
    :widths: auto
 
-   +---------------+--------------------------------+---------------------------------------------------+
-   | Name          | Units                          | Description                                       |
-   +===============+================================+===================================================+
-   | DIC           | mmol C  m\ :sup:`--3`          | concentration of dissolved inorganic carbon       |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | NO3           | mmol N  m\ :sup:`--3`          | concentration of nitrate                          |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | NO2           | mmol N  m\ :sup:`--3`          | concentration of nitrite                          |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | NH4           | mmol N  m\ :sup:`--3`          | concentration of ammonia                          |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | PO4           | mmol P  m\ :sup:`--3`          | concentration of phosphate                        |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | FeT           | mmol Fe m\ :sup:`--3`          | concentration of total dissolved iron             |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | SiO2          | mmol Si m\ :sup:`--3`          | concentration of inorganic silica                 |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | DOC           | mmol C  m\ :sup:`--3`          | concentration of dissolved organic carbon         |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | DON           | mmol N  m\ :sup:`--3`          | concentration of dissolved organic nitrogen       |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | DOP           | mmol P  m\ :sup:`--3`          | concentration of dissolved organic phosphorus     |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | DOFe          | mmol Fe m\ :sup:`--3`          | concentration of dissolved organic iron           |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | POC           | mmol C  m\ :sup:`--3`          | concentration of particulate organic carbon       |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | PON           | mmol N  m\ :sup:`--3`          | concentration of particulate organic nitrogen     |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | POP           | mmol P  m\ :sup:`--3`          | concentration of particulate organic phosphorus   |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | POFe          | mmol Fe m\ :sup:`--3`          | concentration of particulate organic iron         |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | POSi          | mmol Si m\ :sup:`--3`          | concentration of particulate organic silica       |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | PIC           | mmol C  m\ :sup:`--3`          | concentration of particulate inorganic carbon     |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | ALK           | meq m\ :sup:`--3`              | alkalinity                                        |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | O2            | mmol O\ :sub:`2` m\ :sup:`--3` | concentration of oxygen                           |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | CDOM          | mmol C  m\ :sup:`--3`          | concentration of colored dissolved organic matter |
-   |               |                                |                                                   |
-   |               | (mmol P  m\ :sup:`--3`)\ [*]_  |                                                   |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | c\ :sub:`j`   | mmol C  m\ :sup:`--3`          | concentration of carbon in plankton type j        |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | n\ :sub:`j`   | mmol N  m\ :sup:`--3`          | concentration of nitrogen in plankton type j      |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | p\ :sub:`j`   | mmol P  m\ :sup:`--3`          | concentration of phosphorus in plankton type j    |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | fe\ :sub:`j`  | mmol Fe m\ :sup:`--3`          | concentration of iron in plankton type j          |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | si\ :sub:`j`  | mmol Si m\ :sup:`--3`          | concentration of silica in plankton type j        |
-   +---------------+--------------------------------+---------------------------------------------------+
-   | Chl\ :sub:`j` | mg Chl a m\ :sup:`--3`         | concentration of Chlorophyll-a in plankton type j |
-   +---------------+--------------------------------+---------------------------------------------------+
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | Name          | Units                          | Description                                             |
+   +===============+================================+=========================================================+
+   | DIC           | mmol C  m\ :sup:`--3`          | concentration of dissolved inorganic carbon             |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | NO3           | mmol N  m\ :sup:`--3`          | concentration of nitrate                                |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | NO2           | mmol N  m\ :sup:`--3`          | concentration of nitrite                                |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | NH4           | mmol N  m\ :sup:`--3`          | concentration of ammonia                                |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | PO4           | mmol P  m\ :sup:`--3`          | concentration of phosphate                              |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | FeT           | mmol Fe m\ :sup:`--3`          | concentration of total dissolved iron                   |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | SiO2          | mmol Si m\ :sup:`--3`          | concentration of inorganic silica                       |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | DOC           | mmol C  m\ :sup:`--3`          | concentration of dissolved organic carbon               |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | DON           | mmol N  m\ :sup:`--3`          | concentration of dissolved organic nitrogen             |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | DOP           | mmol P  m\ :sup:`--3`          | concentration of dissolved organic phosphorus           |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | DOFe          | mmol Fe m\ :sup:`--3`          | concentration of dissolved organic iron                 |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | POC           | mmol C  m\ :sup:`--3`          | concentration of particulate organic carbon             |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | PON           | mmol N  m\ :sup:`--3`          | concentration of particulate organic nitrogen           |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | POP           | mmol P  m\ :sup:`--3`          | concentration of particulate organic phosphorus         |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | POFe          | mmol Fe m\ :sup:`--3`          | concentration of particulate organic iron               |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | POSi          | mmol Si m\ :sup:`--3`          | concentration of particulate organic silica             |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | PIC           | mmol C  m\ :sup:`--3`          | concentration of particulate inorganic carbon           |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | ALK           | meq m\ :sup:`--3`              | alkalinity                                              |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | O2            | mmol O\ :sub:`2` m\ :sup:`--3` | concentration of oxygen                                 |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | CDOM          | mmol C  m\ :sup:`--3`          | concentration of colored dissolved organic matter [#a]_ |
+   |               |                                |                                                         |
+   |               | (mmol P  m\ :sup:`--3`)        |                                                         |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | c\ :sub:`j`   | mmol C  m\ :sup:`--3`          | concentration of carbon in plankton type j              |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | n\ :sub:`j`   | mmol N  m\ :sup:`--3`          | concentration of nitrogen in plankton type j            |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | p\ :sub:`j`   | mmol P  m\ :sup:`--3`          | concentration of phosphorus in plankton type j          |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | fe\ :sub:`j`  | mmol Fe m\ :sup:`--3`          | concentration of iron in plankton type j                |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | si\ :sub:`j`  | mmol Si m\ :sup:`--3`          | concentration of silica in plankton type j              |
+   +---------------+--------------------------------+---------------------------------------------------------+
+   | Chl\ :sub:`j` | mg Chl a m\ :sup:`--3`         | concentration of Chlorophyll-a in plankton type j       |
+   +---------------+--------------------------------+---------------------------------------------------------+
 
-.. [*] units of CDOM are mmol C m\ :sup:`--3` if #define DARWIN_CDOM_UNITS_CARBON (default),
-       mmol P m\ :sup:`--3` otherwise
+.. [#a] units of CDOM are mmol C m\ :sup:`--3` if #define DARWIN_CDOM_UNITS_CARBON (default),
+        mmol P m\ :sup:`--3` otherwise
 
 Phyto- and zooplankton are not distinguished except that certain source terms
 will not be active, dependening on whether a plankton type can engage in
@@ -888,8 +888,8 @@ Diagnostics
    S_PO4      & ``SMR_____MR`` & mmol P /m\ :sup:`3`/s           & non-transport source of PO4: :math:`r_{\op{DOP}}\op{DOP}+[r_{\op{POP}}\op{POP}]`
    S_Si       & ``SMR_____MR`` & mmol Si /m\ :sup:`3`/s          & non-transport source of Si: :math:`r_{\op{POSi}}\op{POSi}`
    S_Fe       & ``SMR_____MR`` & mmol Fe /m\ :sup:`3`/s          & non-transport source of Fe: :math:`r_{\op{DOFe}}\op{DOFe}+[r_{\op{POFe}}\op{POFe}]+S_{\op{Fe}}`
-   gDAR##     & ``SMR_____MR`` & [TRAC##]/s                      & ptracer ## tendency from DARWIN [#a]_
-   gECO##     & ``SMR_____MR`` & [TRAC##]/s                      & ptracer ## tendency from DARWIN w/o sink/swim [#a]_
+   gDAR##     & ``SMR_____MR`` & [TRAC##]/s                      & ptracer ## tendency from DARWIN [#b]_
+   gECO##     & ``SMR_____MR`` & [TRAC##]/s                      & ptracer ## tendency from DARWIN w/o sink/swim [#b]_
    PP####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Primary Production plankton ####
    PC####     & ``SMRP____MR`` & 1/s                             & Carbon-specific phototrophic growth rate plankton ####
    HP####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Heterotrophic production plankton ####
@@ -925,7 +925,7 @@ Diagnostics
    DARwind    & ``SM_P____L1`` & m/s                             & wind speed used for carbon exchange
    surfpCO2   & ``SM_P____L1`` & mol/mol                         & atmospheric surface pCO2
 
-.. [#a] does not include free iron adjustment for FeT tracer
+.. [#b] does not include free iron adjustment for FeT tracer
 
 Diagnostics related to carbon chemistry are listed in
 :numref:`CarbonChemistryDiagnostics`.
@@ -949,21 +949,21 @@ package, see :numref:`ptracers_diagnostics` for value larger than 99.
 Call Tree
 ~~~~~~~~~
 
-::
+.. parsed-literal::
 
     the_model_main
       initialise_fixed
         packages_readparms
           gchem_readparms
-            darwin_readparms
+            **darwin_readparms**
               darwin_exf_readparms
               darwin_read_params
               darwin_read_traitparams
             gchem_tr_register
-              darwin_tr_register
+              **darwin_tr_register**
         packages_init_fixed
           gchem_init_fixed
-            darwin_init_fixed
+            **darwin_init_fixed**
               darwin_exf_init_fixed
               darwin_diagnostics_init
               darwin_random_init
@@ -974,12 +974,12 @@ Call Tree
               darwin_read_traits
         packages_check
           gchem_check
-            darwin_check
+            **darwin_check**
       the_main_loop
         initialise_varia
           packages_init_variables
             gchem_init_vari
-              darwin_init_varia
+              **darwin_init_varia**
                 darwin_exf_init_varia
                 darwin_read_pickup
                 darwin_init_chl
@@ -1003,22 +1003,22 @@ Call Tree
                   darwin_calc_pco2_approx
           do_the_model_io
             gchem_output
-              darwin_diags
+              **darwin_diags**
         main_do_loop
           forward_step
             load_fields_driver
               gchem_fields_load
-                darwin_fields_load
+                **darwin_fields_load**
                   darwin_exf_load
                   darwin_monitor
             gchem_cons
-              darwin_cons
+              **darwin_cons**
             gchem_forcing_sep
-              darwin_conserve_surface
-              darwin_cons
-              darwin_cons_reset
-              darwin_nut_supply
-              darwin_forcing
+              **darwin_conserve_surface**
+              **darwin_cons**
+              **darwin_cons_reset**
+              **darwin_nut_supply**
+              **darwin_forcing**
                 darwin_light_radtrans
                 darwin_light...
                 darwin_surfforcing
@@ -1032,9 +1032,9 @@ Call Tree
                 darwin_tempfunc
                 darwin_plankton
                 darwin_sinking
-              darwin_atmos
+              **darwin_atmos**
             do_the_model_io...
             do_write_pickup
               packages_write_pickup
                 gchem_write_pickup
-                  darwin_write_pickup
+                  **darwin_write_pickup**
