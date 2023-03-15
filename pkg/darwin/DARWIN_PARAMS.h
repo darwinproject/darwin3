@@ -50,7 +50,6 @@ C     rad2deg ::
 C--   COMMON /CARBON_CONSTANTS_r/ Coefficients for DIC chemistry
 C     Pa2Atm :: Convert pressure in Pascal to atm
 C     ptr2mol :: convert ptracers (in mmol/m3) to mol/m3
-C     ptr2molkg :: convert ptracers (in mmol/m3) to mol/kg
 C-
 C     sca1 :: Schmidt no. coefficient for CO2
 C     sca2 :: Schmidt no. coefficient for CO2
@@ -76,7 +75,6 @@ C     oC0 :: Coefficient for determining saturation O2
       COMMON /CARBON_CONSTANTS_r/
      &    Pa2Atm,
      &    ptr2mol,
-     &    ptr2molkg,
      &    sca1,
      &    sca2,
      &    sca3,
@@ -98,7 +96,6 @@ C     oC0 :: Coefficient for determining saturation O2
      &    oC0
       _RL Pa2Atm
       _RL ptr2mol
-      _RL ptr2molkg
       _RL sca1
       _RL sca2
       _RL sca3
