@@ -120,6 +120,11 @@ recovered by defining :varlink:`DARWIN_PART_SCAV_POP`, in which case
 defaults are different in this case, see
 :numref:`tab_phys_pkgs_darwin_scav_pop`.
 
+The faulty formulation in terms of POC only that existed before 2022-12-05 can
+be recovered by setting scav_POC_wgt=1, scav_PIC_wgt=0 and scav_POSi_wgt=0 and
+making sure the product scav_tau*scav_inter has the same value as
+scav_rat*scav_inter before.
+
 The concentration of free iron, Fe', is determined following Parekh et al.
 (2004) :cite:`parekh:2004` and Dutkiewicz et al. (2005)
 :cite:`dutkiewicz:2005`.  Free dissolved iron is assumed to be in equilibrium
