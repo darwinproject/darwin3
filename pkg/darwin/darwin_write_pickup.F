@@ -36,7 +36,7 @@ CEOP
 
 #ifdef ALLOW_DARWIN
 C add more ALLOWs here for other fields in pickup
-#if defined(DARWIN_ALLOW_CARBON) || (defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA))
+#if defined(DARWIN_ALLOW_CARBON) || ((defined(DARWIN_ALLOW_GEIDER) || defined(ALLOW_RADTRANS)) && !defined(DARWIN_ALLOW_CHLQUOTA))
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -63,7 +63,7 @@ c     IF ( DARWIN_pickup_write_mdsio ) THEN
         IF (ifld.LE.listDim) wrFldList(ifld) = 'pH'
 #endif
 
-#if defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA)
+#if (defined(DARWIN_ALLOW_GEIDER) || defined(ALLOW_RADTRANS)) && !defined(DARWIN_ALLOW_CHLQUOTA)
 #ifdef ALLOW_RADTRANS
         DO np = 1, nPhoto
         ifld = ifld + 1
