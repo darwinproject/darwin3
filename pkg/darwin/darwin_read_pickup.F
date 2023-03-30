@@ -27,7 +27,7 @@ C     myThid            :: thread number
       INTEGER myThid
 
 #ifdef ALLOW_DARWIN
-#if defined(DARWIN_ALLOW_CARBON) || (defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA))
+#if defined(DARWIN_ALLOW_CARBON) || ((defined(DARWIN_ALLOW_GEIDER) || defined(ALLOW_RADTRANS)) && !defined(DARWIN_ALLOW_CHLQUOTA))
 
 C     !LOCAL VARIABLES:
 C     fn          :: character buffer for creating filename
@@ -125,7 +125,7 @@ C---    read DARWIN 3-D fields for restart
         fldName = 'pH'
         CALL READ_MFLDS_3D_RL( fldName, pH, nj, fp, Nr, myIter, myThid )
 #endif
-#if defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA)
+#if (defined(DARWIN_ALLOW_GEIDER) || defined(ALLOW_RADTRANS)) && !defined(DARWIN_ALLOW_CHLQUOTA)
 #ifdef ALLOW_RADTRANS
         DO np = 1, nPhoto
          fldName(1:6) = 'ChlPhy'
