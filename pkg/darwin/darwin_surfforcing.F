@@ -241,7 +241,8 @@ c put bounds on tracers so pH solver doesn't blow up
 C Calculate carbon coefficients
        CALL DARWIN_COEFFS_SURF(
      I                          surftemp, surfsalt,
-     I                          bi,bj,iMin,iMax,jMin,jMax,myThid)
+     I                          bi,bj,iMin,iMax,jMin,jMax,
+     I                          k,myThid)
 
 C Now correct the coefficients for pressure dependence
        CALL DARWIN_COEFFS_DEEP(
