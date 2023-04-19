@@ -385,7 +385,8 @@ C      =========================================================================
 C      =========================================================================
       SUBROUTINE DARWIN_COEFFS_SURF(
      &                   ttemp,stemp,
-     &                   bi,bj,iMin,iMax,jMin,jMax,myThid)
+     &                   bi,bj,iMin,iMax,jMin,jMax,
+     &                   Klevel,myThid)
 
 C     Determine coefficients for surface carbon chemistry,
 C     loaded into common block
@@ -403,7 +404,7 @@ C     MITgcm GLobal variables
 
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER bi,bj,iMin,iMax,jMin,jMax,myThid
+      INTEGER bi,bj,iMin,iMax,jMin,jMax,Klevel,myThid
 
 #ifdef DARWIN_SOLVESAPHE
 
@@ -434,7 +435,7 @@ C conversions for different pH scales
 
         do i=imin,imax
          do j=jmin,jmax
-          if (hFacC(i,j,1,bi,bj).gt.0. _d 0) then
+          if (hFacC(i,j,Klevel,bi,bj).gt.0. _d 0) then
            t = ttemp(i,j)
            s = stemp(i,j)
 C terms used more than once for:
