@@ -113,9 +113,19 @@ C      (usually initialized to 0 if darwin_chlInitBalanced)
 C      do not fill diagnostics,
 C      do not take ice into account for backwards compatibility
 # ifdef ALLOW_RADTRANS
+#  ifdef ALLOW_OASIM
+       IF ( useOASIM ) THEN
+#   ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OASIM_FIELDS_LOAD',myThid)
+#   endif /* ALLOW_DEBUG */
+        CALL TIMER_START('OASIM_FIELDS_LOAD  [DARWIN_INIT_CHL]',myThid)
+        CALL OASIM_FIELDS_LOAD( .FALSE., myTime, myIter, myThid )
+        CALL TIMER_STOP ('OASIM_FIELDS_LOAD  [DARWIN_INIT_CHL]',myThid)
+       ENDIF
+#  endif /* ALLOW_OASIM */
        j = -1
        CALL DARWIN_LIGHT_RADTRANS(PAR,myTime,bi,bj,1-OLx,sNx+OLx,
-     &                         1-OLy,sNy+OLy,myTime,j,myThid)
+     &                            1-OLy,sNy+OLy,myTime,j,myThid)
 # else
        j = -99
        CALL DARWIN_LIGHT(PAR,myTime,bi,bj,1-OLx,sNx+OLx,1-OLy,sNy+OLy,
