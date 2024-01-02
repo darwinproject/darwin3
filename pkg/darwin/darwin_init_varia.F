@@ -35,7 +35,7 @@ CEOP
 #ifdef ALLOW_DARWIN
 C     !LOCAL VARIABLES:
       _RL dTsub(Nr)
-      INTEGER i,j,k,bi,bj,jp
+      INTEGER i,j,k,l,bi,bj,jp
       CHARACTER*(MAX_LEN_FNAM) fnam
 
       CALL DARWIN_EXF_INIT_VARIA(myThid)
@@ -144,6 +144,10 @@ C     !LOCAL VARIABLES:
        CALL DARWIN_READ_PICKUP(nIter0, myThid)
       ENDIF
 
+#ifdef DARWIN_ALLOW_CARBON
+      CALL DARWIN_SURFFORCING_INIT( myThid )
+#endif
+
       IF (nIter0 .EQ. darwin_chlIter0) THEN
 C      Initialize Chl from balanced-growth Chl:C if requested
 C      and check Chl:C bounds.
@@ -153,11 +157,22 @@ C      use current time for insol
         CALL DARWIN_INIT_CHL(bi, bj, startTime, nIter0, myThid)
        ENDDO
        ENDDO
-      ENDIF
 
-#ifdef DARWIN_ALLOW_CARBON
-      CALL DARWIN_SURFFORCING_INIT( myThid )
+C      exchange (needed with OASIM)
+#ifdef DARWIN_ALLOW_CHLQUOTA
+       DO jp=1,nPhoto
+       _EXCH_XYZ_RL(pTracer(1-OLx,1-OLy,1,1,1,iChl+jp-1),myThid)
+       ENDDO
+#else
+# ifdef ALLOW_RADTRANS
+       DO jp=1,nPhoto
+        _EXCH_XYZ_RL(chlPrev(1-OLx,1-OLy,1,1,1,jp),myThid)
+       ENDDO
+# else
+       _EXCH_XYZ_RL(chlPrev,myThid)
+# endif
 #endif
+      ENDIF
 
 #ifdef DARWIN_ALLOW_CONS
       IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
