@@ -69,10 +69,10 @@ C     !LOCAL VARIABLES:
 #endif
 
       IF (nIter0.EQ.PTRACERS_Iter0) THEN
-       DO jp=1,nplank
+       DO bj=myByLo(mythid),myByHi(myThid)
+       DO bi=myBxLo(mythid),myBxHi(myThid)
+        DO jp=1,nplank
         IF (diazo(jp) .EQ. 1) THEN
-         DO bj=myByLo(mythid),myByHi(myThid)
-         DO bi=myBxLo(mythid),myBxHi(myThid)
          DO k=1,Nr
          DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -94,17 +94,31 @@ C     !LOCAL VARIABLES:
           Ptracer(i,j,k,bi,bj,isi+jp-1)=Ptracer(i,j,k,bi,bj,isi+jp-1)*
      &                                  diaz_ini_fac
 #endif
-#ifdef DARWIN_ALLOW_CHLQUOTA
-          Ptracer(i,j,k,bi,bj,ichl+jp-1)=Ptracer(i,j,k,bi,bj,ichl+jp-1)*
-     &                                   diaz_ini_fac
-#endif
-         ENDDO
-         ENDDO
          ENDDO
          ENDDO
          ENDDO
         ENDIF
+        ENDDO
        ENDDO
+       ENDDO
+#ifdef DARWIN_ALLOW_CHLQUOTA
+       DO bj=myByLo(mythid),myByHi(myThid)
+       DO bi=myBxLo(mythid),myBxHi(myThid)
+        DO jp=1,nPhoto
+        IF (diazo(jp) .EQ. 1) THEN
+         DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          Ptracer(i,j,k,bi,bj,ichl+jp-1)=Ptracer(i,j,k,bi,bj,ichl+jp-1)*
+     &                                   diaz_ini_fac
+         ENDDO
+         ENDDO
+         ENDDO
+        ENDIF
+        ENDDO
+       ENDDO
+       ENDDO
+#endif
       ENDIF
 
       IF (darwin_read_phos .AND. nIter0.EQ.PTRACERS_Iter0) THEN
