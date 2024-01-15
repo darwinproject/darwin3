@@ -91,6 +91,14 @@ C     need sun package unless using mean cos(solz)
       ENDIF
 #endif
 
+      IF (RT_useNoonSolz.AND.RT_useMeanCosSolz)THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** RADTRANS_CHECK: ',
+     &       'Only one of RT_useMeanCosSolz, RT_useNoonSolz can be set'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R RADTRANS_CHECK'
+      ENDIF
+
 C ----------------------------------------------------------------------
 C     check for unsupported forcing configurations
       errCount = 0
