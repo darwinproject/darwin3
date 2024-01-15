@@ -105,6 +105,7 @@ C
      &    RT_wbRefWLs,
      &    RT_kmax,
      &    RT_useMeanCosSolz,
+     &    RT_useNoonSolz,
      &    RT_sfcIrrThresh
 
       NAMELIST/RADTRANS_DEPENDENT/
@@ -192,6 +193,7 @@ C     these are taken from Ackleson, et al. 1994 (JGR)
       ENDDO
       RT_kmax = Nr
       RT_useMeanCosSolz = .FALSE.
+      RT_useNoonSolz = .FALSE.
       RT_sfcIrrThresh = 1 _d -4
 
       WRITE(msgBuf,'(A)') ' RADTRANS_READPARMS: opening data.radtrans'

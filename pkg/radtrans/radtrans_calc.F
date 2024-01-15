@@ -116,8 +116,12 @@ C     from day-time average of cosine of zenith angle
       ELSE
 C     compute zenith angle at local noon
 
+        IF (RT_useNoonSolz) THEN
+         isec = 12*3600
+        ELSE
+         isec = -1
+        ENDIF
 #ifdef ALLOW_SUN
-        isec = 12*3600
         CALL SUN_SFCSOLZ(
      O                    solz,
      I                    isec, bi, bj, iMin, iMax, jMin, jMax,

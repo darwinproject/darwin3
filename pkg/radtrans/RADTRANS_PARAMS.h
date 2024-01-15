@@ -95,8 +95,9 @@ C                       diffuse irradiance
 C  RT_sfcIrrThresh   :: minimum irradiance for radiative transfer
 C                       computations [W/m^2]
 C  RT_kmax           :: maximum depth index for radtrans computations
-C  RT_useMeanCosSolz :: flag for using mean daytime cosine of solar
-C                       zenith angle; if false use noon zenith angle
+C  RT_useMeanCosSolz :: flag for using mean daytime cosine of solar zenith angle
+C  RT_useNoonSolz    :: flag for using noon solar zenith angle;
+C                       if false use angle at actual time
 
       COMMON/radtrans_params_r/
      &    RT_refract_water,
@@ -123,9 +124,11 @@ C                       zenith angle; if false use noon zenith angle
 
       COMMON/radtrans_params_l/
      &    RT_useMeanCosSolz,
+     &    RT_useNoonSolz,
      &    RT_useSEAICE,
      &    RT_haveIce
       LOGICAL RT_useMeanCosSolz
+      LOGICAL RT_useNoonSolz
       LOGICAL RT_useSEAICE
       LOGICAL RT_haveIce
 CEOP
