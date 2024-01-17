@@ -17,6 +17,7 @@ C     !USES: ===========================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "SUN_FIELDS.h"
 
 C     !INPUT PARAMETERS: ===============================================
@@ -42,7 +43,7 @@ C     !FUNCTIONS: ======================================================
 C     !LOCAL VARIABLES: ================================================
       INTEGER i,j,l
       INTEGER iyr,imon,iday,isecnow,lp,wd,myDate(4)
-      _RL sec, suni(3), sung(3), sunv, sunn, sune, rs, gha
+      _RL sec, suni(3), sung(3), sunv, sunn, sune, rs, gha, rlon
       _RL rjd, t
       _RL xls, gs, xlm, asc, dpsi, eps
 
@@ -74,28 +75,61 @@ C  Get Greenwich mean sidereal angle
       CALL SUN_GHA2000 (t,dpsi,eps,gha)
       gha = gha*deg2rad
 
-C  Transform Sun vector into geocentric rotating frame
-      sung(1) = suni(1)*COS(gha) + suni(2)*SIN(gha)
-      sung(2) = suni(2)*COS(gha) - suni(1)*SIN(gha)
-      sung(3) = suni(3)
+      IF ( isec .GE. 0 )THEN
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+
+C        isec is in local time, need to transform gha
+         rlon = XC(i,j,bi,bj)*deg2rad
+
+C  Transform Sun vector into geocentric rotating frame
+         sung(1) = suni(1)*COS(gha-rlon) + suni(2)*SIN(gha-rlon)
+         sung(2) = suni(2)*COS(gha-rlon) - suni(1)*SIN(gha-rlon)
+         sung(3) = suni(3)
+
 C  Compute components of spacecraft and sun vector in the
 C  vertical (up), North (no), and East (ea) vectors frame
-        sunv = 0 _d 0
-        sunn = 0 _d 0
-        sune = 0 _d 0
-        DO l=1,3
-         sunv = sunv + sung(l)*SUN_up(i,j,bi,bj,l)
-         sunn = sunn + sung(l)*SUN_no(i,j,bi,bj,l)
-         sune = sune + sung(l)*SUN_ea(i,j,bi,bj,l)
-        ENDDO
+         sunv = 0 _d 0
+         sunn = 0 _d 0
+         sune = 0 _d 0
+         DO l=1,3
+          sunv = sunv + sung(l)*SUN_up(i,j,bi,bj,l)
+          sunn = sunn + sung(l)*SUN_no(i,j,bi,bj,l)
+          sune = sune + sung(l)*SUN_ea(i,j,bi,bj,l)
+         ENDDO
 
 C  Compute the solar zenith
-        solz(i,j) = ATAN2(SQRT(sunn*sunn+sune*sune), sunv)/deg2rad
+         solz(i,j) = ATAN2(SQRT(sunn*sunn+sune*sune), sunv)/deg2rad
+        ENDDO
        ENDDO
-      ENDDO
+
+      ELSE
+
+C  Transform Sun vector into geocentric rotating frame
+       sung(1) = suni(1)*COS(gha) + suni(2)*SIN(gha)
+       sung(2) = suni(2)*COS(gha) - suni(1)*SIN(gha)
+       sung(3) = suni(3)
+
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+C  Compute components of spacecraft and sun vector in the
+C  vertical (up), North (no), and East (ea) vectors frame
+         sunv = 0 _d 0
+         sunn = 0 _d 0
+         sune = 0 _d 0
+         DO l=1,3
+          sunv = sunv + sung(l)*SUN_up(i,j,bi,bj,l)
+          sunn = sunn + sung(l)*SUN_no(i,j,bi,bj,l)
+          sune = sune + sung(l)*SUN_ea(i,j,bi,bj,l)
+         ENDDO
+
+C  Compute the solar zenith
+         solz(i,j) = ATAN2(SQRT(sunn*sunn+sune*sune), sunv)/deg2rad
+        ENDDO
+       ENDDO
+
+      ENDIF
 
 #endif /* ALLOW_SUN */
 
