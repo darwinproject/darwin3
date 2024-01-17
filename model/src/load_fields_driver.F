@@ -37,6 +37,8 @@ C       |-- CHEAPAML_FIELDS_LOAD
 C       |
 C       |-- EXTERNAL_FIELDS_LOAD
 C       |
+C       |-- OASIM_FIELDS_LOAD
+C       |
 C       |-- RADTRANS_FIELDS_LOAD
 C       |
 C       |-- GCHEM_FIELDS_LOAD
@@ -183,6 +185,17 @@ CADJ STORE Qsw    = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif
       ENDIF
+
+#ifdef ALLOW_OASIM
+      IF ( useOASIM ) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OASIM_FIELDS_LOAD',myThid)
+#endif /* ALLOW_DEBUG */
+        CALL TIMER_START('OASIM_FIELDS_LOAD  [LOAD_FLDS_DRIVER]',myThid)
+        CALL OASIM_FIELDS_LOAD( .TRUE., myTime, myIter, myThid )
+        CALL TIMER_STOP ('OASIM_FIELDS_LOAD  [LOAD_FLDS_DRIVER]',myThid)
+      ENDIF
+#endif /* ALLOW_OASIM */
 
 #ifdef ALLOW_RADTRANS
       IF ( useRADTRANS ) THEN

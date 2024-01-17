@@ -1045,6 +1045,7 @@ C-- Logical flags for selecting packages
       LOGICAL useRADTRANS
       LOGICAL usePTRACERS
       LOGICAL useGCHEM
+      LOGICAL useOASIM
       LOGICAL useRBCS
       LOGICAL useOffLine
       LOGICAL useMATRIX
@@ -1080,7 +1081,7 @@ C-- Logical flags for selecting packages
      &        useStreamIce, useICEFRONT, useThSIce, useLand,
      &        useATM2D, useAIM, useAtm_Phys, useFizhi, useGridAlt,
      &        useDiagnostics, useREGRID, useLayers, useMNC,
-     &        useRunClock, useEMBED_FILES,
+     &        useRunClock, useEMBED_FILES, useOASIM,
      &        useMYPACKAGE
 
 CEH3 ;;; Local Variables: ***
