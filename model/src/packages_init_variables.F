@@ -64,7 +64,11 @@ C       |-- CHEAPAML_INIT_VARIA
 C       |
 C       |-- FLT_INIT_VARIA
 C       |
-C       |-- RADTRANS_INIT_VARI
+C       |-- SUN_INIT_VARIA
+C       |
+C       |-- OASIM_INIT_VARIA
+C       |
+C       |-- RADTRANS_INIT_VARIA
 C       |
 C       |-- PTRACERS_INIT_VARIA
 C       |
@@ -322,6 +326,12 @@ C--   Initialise float position
 #ifdef ALLOW_SUN
       CALL SUN_INIT_VARIA( myThid )
 #endif /* ALLOW_SUN */
+
+#ifdef ALLOW_OASIM
+      IF (useOASIM) THEN
+        CALL OASIM_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_OASIM */
 
 #ifdef ALLOW_RADTRANS
       IF (useRADTRANS) THEN

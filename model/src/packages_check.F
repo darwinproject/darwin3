@@ -296,6 +296,12 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useFLT) CALL PACKAGES_ERROR_MSG('FLT',' ',myThid)
 #endif
 
+#ifdef ALLOW_OASIM
+      IF (useOASIM) CALL OASIM_CHECK( myThid )
+#else
+      IF (useOASIM) CALL PACKAGES_ERROR_MSG('OASIM',' ',myThid)
+#endif
+
 #ifdef ALLOW_RADTRANS
       IF (useRADTRANS) CALL RADTRANS_CHECK( myThid )
 #else
