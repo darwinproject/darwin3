@@ -1,0 +1,26 @@
+OASIM package
+=============
+
+The following variables are automatically computed and can be used by
+including OASIM_SIZE.h and OASIM_FIELDS.h:
+
+  OASIM_lam     :: wavelengths of wavebands (nm)
+  OASIM_solz    :: above-water solar zenith angle (degrees)
+  OASIM_rmud    :: inverse cosine of below-water solar zenith angle
+  OASIM_Edabove :: downwelling beam irradiance above sea surface
+  OASIM_Esabove :: downwelling diffuse irradiance above sea surface
+  OASIM_Edbelow :: downwelling beam irradiance below sea surface
+  OASIM_Esbelow :: downwelling diffuse irradiance below sea surface
+
+This package is based on the OASIM software available here:
+https://gmao.gsfc.nasa.gov/reanalysis/MERRA-NOBM/software/
+
+[1] Gregg, Watson and Carder, K. L., Limnology and Oceanography 35 (1990) 1657-1675.
+[2] Gregg, Watson W. and Casey, Nancy W., Journal of Marine Systems 76 (2009) 49-63.
+
+Copyright © 2003-2007  United States Government as represented by the Administrator
+of the National Aeronautics and Space Administration.  All Rights Reserved.
+
+For details, see the file NASA_Open_Source_Agreement_1.3.txt.
+
+Modifications by O. Jahn, MIT, 2021-2024.

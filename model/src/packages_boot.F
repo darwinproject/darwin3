@@ -72,6 +72,7 @@ C     data.pkg namelists
      &          useRADTRANS,
      &          usePTRACERS,
      &          useGCHEM,
+     &          useOASIM,
      &          useRBCS,
      &          useOffLine,
      &          useMATRIX,
@@ -137,6 +138,7 @@ c     useGAD          =.FALSE.
       useRADTRANS     =.FALSE.
       usePTRACERS     =.FALSE.
       useGCHEM        =.FALSE.
+      useOASIM        =.FALSE.
       useRBCS         =.FALSE.
       useOffLine      =.FALSE.
       useMATRIX       =.FALSE.

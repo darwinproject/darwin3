@@ -168,75 +168,79 @@ C--   RT_E
 
       addBlkLn = .FALSE.
 
-      haveAny = .FALSE.
-      haveAll = .FALSE.
-      DO l=1,nlam
-       IF ( RT_EdFile(l).EQ.' ' ) THEN
-        haveAll = .FALSE.
-       ELSE
-        haveAny = .TRUE.
-        WRITE(msgBuf,'(A,I3.3,A)')'RT_Ed',l,' forcing'
-        iL = ILNBLNK(msgBuf)
-        CALL EXF_FLD_SUMMARY( msgBuf(1:iL),
-     I       RT_EdFile(l), RT_E_RepCycle, RT_E_period,
-     I       RT_E_StartTime, useExfYearlyFields, addBlkLn, myThid )
-       ENDIF
-      ENDDO
-
-      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid )
-
-      DO l=1,nlam
-       IF ( RT_EsFile(l).EQ.' ' ) THEN
-        haveAll = .FALSE.
-       ELSE
-        haveAny = .TRUE.
-        WRITE(msgBuf,'(A,I3.3,A)')'RT_Es',l,' forcing'
-        iL = ILNBLNK(msgBuf)
-        CALL EXF_FLD_SUMMARY( msgBuf(1:iL),
-     I       RT_EsFile(l), RT_E_RepCycle, RT_E_period,
-     I       RT_E_StartTime, useExfYearlyFields, addBlkLn, myThid )
-       ENDIF
-      ENDDO
-
-      IF (haveAny) THEN
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT , myThid )
-       CALL WRITE_1D_RL(RT_Ed_exfremo_intercept,nlam,INDEX_NONE,
-     &  'RT_Ed_exfremo_intercept =',
-     &  ' /* intercept for RT_Ed forcing mean removal */')
-       CALL WRITE_1D_RL(RT_Ed_exfremo_slope,nlam,INDEX_NONE,
-     &  'RT_Ed_exfremo_slope =',
-     &  ' /* slope for RT_Ed forcing trend removal */')
-       CALL WRITE_1D_RL(RT_inscal_Ed,nlam,INDEX_NONE,
-     &  'RT_inscal_Ed =',
-     &  ' /* scaling factor for RT_Ed fields */')
+      IF ( .NOT.useOASIM ) THEN
+       haveAny = .FALSE.
+       haveAll = .FALSE.
+       DO l=1,nlam
+        IF ( RT_EdFile(l).EQ.' ' ) THEN
+         haveAll = .FALSE.
+        ELSE
+         haveAny = .TRUE.
+         WRITE(msgBuf,'(A,I3.3,A)')'RT_Ed',l,' forcing'
+         iL = ILNBLNK(msgBuf)
+         CALL EXF_FLD_SUMMARY( msgBuf(1:iL),
+     I        RT_EdFile(l), RT_E_RepCycle, RT_E_period,
+     I        RT_E_StartTime, useExfYearlyFields, addBlkLn, myThid )
+        ENDIF
+       ENDDO
 
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
 
-       CALL WRITE_1D_RL(RT_Es_exfremo_intercept,nlam,INDEX_NONE,
-     &  'RT_Es_exfremo_intercept =',
-     &  ' /* intercept for RT_Es forcing mean removal */')
-       CALL WRITE_1D_RL(RT_Es_exfremo_slope,nlam,INDEX_NONE,
-     &  'RT_Es_exfremo_slope =',
-     &  ' /* slope for RT_Es forcing trend removal */')
-       CALL WRITE_1D_RL(RT_inscal_Es,nlam,INDEX_NONE,
-     &  'RT_inscal_Es =',
-     &  ' /* scaling factor for RT_Es fields */')
-      ENDIF
-      IF (.NOT.haveAll) THEN
-       CALL WRITE_1D_RL(RT_Ed_const,nlam,INDEX_NONE,
-     &  'RT_Ed_const =',
-     &  ' /* constant RT_Ed forcing */')
-       CALL WRITE_1D_RL(RT_Es_const,nlam,INDEX_NONE,
-     &  'RT_Es_const =',
-     &  ' /* constant RT_Es forcing */')
-      ENDIF
+       DO l=1,nlam
+        IF ( RT_EsFile(l).EQ.' ' ) THEN
+         haveAll = .FALSE.
+        ELSE
+         haveAny = .TRUE.
+         WRITE(msgBuf,'(A,I3.3,A)')'RT_Es',l,' forcing'
+         iL = ILNBLNK(msgBuf)
+         CALL EXF_FLD_SUMMARY( msgBuf(1:iL),
+     I        RT_EsFile(l), RT_E_RepCycle, RT_E_period,
+     I        RT_E_StartTime, useExfYearlyFields, addBlkLn, myThid )
+        ENDIF
+       ENDDO
 
-      CALL WRITE_0D_C(RT_E_mask,-1,INDEX_NONE,
-     &  'RT_E_mask =',
-     &  ' /* mask for RT_E forcing */')
+       IF (haveAny) THEN
+        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        CALL WRITE_1D_RL(RT_Ed_exfremo_intercept,nlam,INDEX_NONE,
+     &   'RT_Ed_exfremo_intercept =',
+     &   ' /* intercept for RT_Ed forcing mean removal */')
+        CALL WRITE_1D_RL(RT_Ed_exfremo_slope,nlam,INDEX_NONE,
+     &   'RT_Ed_exfremo_slope =',
+     &   ' /* slope for RT_Ed forcing trend removal */')
+        CALL WRITE_1D_RL(RT_inscal_Ed,nlam,INDEX_NONE,
+     &   'RT_inscal_Ed =',
+     &   ' /* scaling factor for RT_Ed fields */')
+
+        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+
+        CALL WRITE_1D_RL(RT_Es_exfremo_intercept,nlam,INDEX_NONE,
+     &   'RT_Es_exfremo_intercept =',
+     &   ' /* intercept for RT_Es forcing mean removal */')
+        CALL WRITE_1D_RL(RT_Es_exfremo_slope,nlam,INDEX_NONE,
+     &   'RT_Es_exfremo_slope =',
+     &   ' /* slope for RT_Es forcing trend removal */')
+        CALL WRITE_1D_RL(RT_inscal_Es,nlam,INDEX_NONE,
+     &   'RT_inscal_Es =',
+     &   ' /* scaling factor for RT_Es fields */')
+       ENDIF
+       IF (.NOT.haveAll) THEN
+        CALL WRITE_1D_RL(RT_Ed_const,nlam,INDEX_NONE,
+     &   'RT_Ed_const =',
+     &   ' /* constant RT_Ed forcing */')
+        CALL WRITE_1D_RL(RT_Es_const,nlam,INDEX_NONE,
+     &   'RT_Es_const =',
+     &   ' /* constant RT_Es forcing */')
+       ENDIF
+
+       CALL WRITE_0D_C(RT_E_mask,-1,INDEX_NONE,
+     &   'RT_E_mask =',
+     &   ' /* mask for RT_E forcing */')
+
+C     endif .NOT.useOASIM
+      ENDIF
 
       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )

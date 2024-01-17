@@ -63,6 +63,8 @@ C       |-- CHEAPAML_READPARMS
 C       |
 C       |-- FLT_READPARMS
 C       |
+C       |-- OASIM_READPARMS
+C       |
 C       |-- RADTRANS_READPARMS
 C       |
 C       |-- LONGSTEP_READPARMS
@@ -238,6 +240,10 @@ C--   if useCheapAML=T, set CheapAML parameters; otherwise just return
 C--   if useFLT=T, set Floats (FLT) parameters; otherwise just return
       CALL FLT_READPARMS( myThid )
 #endif /* ALLOW_FLT */
+
+#ifdef ALLOW_OASIM
+      IF (useOASIM) CALL OASIM_READPARMS( myThid )
+#endif
 
 #ifdef ALLOW_RADTRANS
 C--   if useRADTRANS=T, set RADTRANS parameters; otherwise just return
