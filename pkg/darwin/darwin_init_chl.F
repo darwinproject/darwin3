@@ -13,8 +13,8 @@ C     balanced growth following Geider, Macintyre, Kana 1997.
 C     If DARWIN_CHL_INIT_LEGACY,
 C     - with radtrans, use zero light for backwards compatibility
 C       (code for using radtrans lite is included).
-C     - without radtrans, use PARfile if given, else use 200 uEin/m2 and
-C       attenuate assuming pure water (no orgamic matter)
+C     - without radtrans, use PARfile if given, else use 200 uEin/m2/s
+C       and attenuate assuming pure water (no orgamic matter)
 C     If not DARWIN_CHL_INIT_LEGACY, compute light using initial Chl
 C     (usually 0 if darwin_chlInitBalanced).
 C     For backwards compatibility, ice is taken into account only
