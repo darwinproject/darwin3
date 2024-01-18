@@ -108,7 +108,8 @@ C                       if false use angle at actual time
      &    RT_wbTotalWidth,
      &    RT_WtouEins,
      &    RT_rmus, RT_rmuu, RT_rd, RT_ru,
-     &    RT_sfcIrrThresh
+     &    RT_sfcIrrThresh,
+     &    RT_oasimWgt
       _RL RT_refract_water
       _RL RT_rmud_max
       _RL RT_wbRefWLs(nlam)
@@ -118,15 +119,18 @@ C                       if false use angle at actual time
       _RL RT_WtouEins(nlam)
       _RL RT_rmus, RT_rmuu, RT_rd, RT_ru
       _RL RT_sfcIrrThresh
+      _RL RT_oasimWgt(nlam)
 
       COMMON/radtrans_params_i/ RT_kmax
       INTEGER RT_kmax
 
       COMMON/radtrans_params_l/
+     &    RT_useOASIMrmud,
      &    RT_useMeanCosSolz,
      &    RT_useNoonSolz,
      &    RT_useSEAICE,
      &    RT_haveIce
+      LOGICAL RT_useOASIMrmud
       LOGICAL RT_useMeanCosSolz
       LOGICAL RT_useNoonSolz
       LOGICAL RT_useSEAICE

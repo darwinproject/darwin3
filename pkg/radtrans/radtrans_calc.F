@@ -20,6 +20,10 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_OASIM
+#include "OASIM_SIZE.h"
+#include "OASIM_FIELDS.h"
+#endif
 #include "RADTRANS_SIZE.h"
 #include "RADTRANS_PARAMS.h"
 #include "RADTRANS_FIELDS.h"
@@ -67,6 +71,9 @@ C  k                    :: vertical level
       _RL x_k(Nr), y_k(Nr)
       _RL r1_k(Nr), r2_k(Nr)
       _RL kappa1_k(Nr), kappa2_k(Nr)
+#ifdef ALLOW_OASIM
+      INTEGER loa
+#endif
 
       _RL Ed(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nlam)
       _RL Es(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nlam)
@@ -106,15 +113,18 @@ C ======================================================================
 C ======================================================================
 C--   compute solar zenith angles
 
-      IF (RT_useMeanCosSolz) THEN
-C     from day-time average of cosine of zenith angle
+C     OASIM computes its own
+      IF (.NOT.(useOASIM .AND. RT_useOASIMrmud)) THEN
+
+       IF (RT_useMeanCosSolz) THEN
+C      from day-time average of cosine of zenith angle
 
         CALL RADTRANS_DECLINATION_SPENCER(delta, myTime, myIter, myThid)
         CALL RADTRANS_SOLZ_DAYTIME(solz, delta, bi, bj,
      &                             iMin, iMax, jMin, jMax, myThid)
 
-      ELSE
-C     compute zenith angle at local noon
+       ELSE
+C      compute zenith angle at local noon
 
         IF (RT_useNoonSolz) THEN
          isec = 12*3600
@@ -128,10 +138,13 @@ C     compute zenith angle at local noon
      I                    myTime, myIter, myThid )
 #endif
 
-      ENDIF
+       ENDIF
 
-c     compute 1/cos(zenith) for direct light below surface
-      CALL RADTRANS_RMUD_BELOW(rmud,solz,iMin,iMax,jMin,jMax,myThid)
+c      compute 1/cos(zenith) for direct light below surface
+       CALL RADTRANS_RMUD_BELOW(rmud,solz,iMin,iMax,jMin,jMax,myThid)
+
+C     not useOASIM
+      ENDIF
 
 C ======================================================================
       DO j=jMin,jMax
@@ -145,14 +158,41 @@ C ----------------------------------------------------------------------
 
         DO l = 1,nlam
 
+#ifdef ALLOW_OASIM
+         IF (useOASIM) THEN
+
+C use light computed in the oasim package
+          DO loa = 1,nlt
+           IF (nint(RT_wbRefWLs(l)) .EQ. oasim_lam(loa)) EXIT
+          ENDDO
+          IF (loa .gt. nlt) THEN
+            print*,'RADTRANS_CALC: waveband not found in OASIM:',
+     &             RT_wbRefWLs(l)
+            STOP 'RADTRANS_CALC: waveband not found in OASIM'
+          ENDIF
+          Edwsf = oasim_edbelow(i,j,bi,bj,loa)*RT_oasimWgt(l)
+          Eswsf = oasim_esbelow(i,j,bi,bj,loa)*RT_oasimWgt(l)
+
+          IF (RT_useOASIMrmud) THEN
+           rmud(i,j) = OASIM_rmud(i,j,bi,bj)
+          ENDIF
+
+         ELSE
+#else
+         IF (.TRUE.) THEN
+#endif /* ALLOW_OASIM */
+
 C use read-in light
           Edwsf = RT_Ed_sfc(i,j,bi,bj,l)
           Eswsf = RT_Es_sfc(i,j,bi,bj,l)
 
-          IF (myiter .ge. 0) THEN
-           Edwsf = Edwsf*(1.0 _d 0 - RT_iceFrac(i,j,bi,bj))
-           Eswsf = Eswsf*(1.0 _d 0 - RT_iceFrac(i,j,bi,bj))
-          ENDIF
+C endif useOASIM
+         ENDIF
+
+         IF (myiter .ge. 0) THEN
+          Edwsf = Edwsf*(1.0 _d 0 - RT_iceFrac(i,j,bi,bj))
+          Eswsf = Eswsf*(1.0 _d 0 - RT_iceFrac(i,j,bi,bj))
+         ENDIF
 
          DO k=1,Nr
           a_k(k) = a(i,j,k,l)

@@ -40,7 +40,7 @@ C     !FUNCTIONS:
 
 C !LOCAL VARIABLES: ====================================================
       LOGICAL haveAny,haveAll,addBlkLn
-      INTEGER oUnit, l, iL, errCount
+      INTEGER oUnit, l, iL, errCount, cnt
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*1 blkLin
 
@@ -78,9 +78,9 @@ C ----------------------------------------------------------------------
 C     need sun package unless using mean cos(solz)
 
 #ifndef ALLOW_SUN
-      IF (.NOT.RT_useMeanCosSolz) THEN
+      IF (.NOT.(RT_useMeanCosSolz.OR.RT_useOASIMrmud)) THEN
         WRITE(msgBuf,'(2A)') 'RADTRANS_CALC: need to compile the sun ',
-     &   'package unless RT_useMeanCosSolz is used.'
+     &   'package unless RT_useMeanCosSolz or oasim pkg is used.'
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R RADTRANS_CHECK'
@@ -90,9 +90,28 @@ C     need sun package unless using mean cos(solz)
 C ----------------------------------------------------------------------
 C     requirements for various solar zenith angle definitions
 
-      IF (RT_useNoonSolz.AND.RT_useMeanCosSolz)THEN
+      IF (RT_useOASIMrmud .AND. .NOT.useOASIM) THEN
+        WRITE(msgBuf,'(2A)') 'RADTRANS_CHECK: ',
+     &       'RT_useOASIMrmud requires the OASIM package'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R RADTRANS_CHECK'
+      ENDIF
+
+      IF (useOASIM .AND. .NOT.RT_useOASIMrmud) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** RADTRANS_CHECK: ',
-     &       'Only one of RT_useMeanCosSolz, RT_useNoonSolz can be set'
+     &       'RT_useOASIMrmud=.FALSE. but is recommended with useOASIM'
+        CALL PRINT_MESSAGE(msgBuf,errorMessageUnit,SQUEEZE_RIGHT,myThid)
+      ENDIF
+
+C     make sure only on solz option is set
+      cnt = 0
+      IF (RT_useOASIMrmud) cnt = cnt + 1
+      IF (RT_useMeanCosSolz) cnt = cnt + 1
+      IF (RT_useNoonSolz) cnt = cnt + 1
+      IF (cnt .GT. 1) THEN
+        WRITE(msgBuf,'(2A)') 'RADTRANS_CHECK: only one of ',
+     &  'RT_useOASIMrmud, RT_useMeanCosSolz, RT_useNoonSolz can be set'
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R RADTRANS_CHECK'
@@ -297,6 +316,9 @@ C--   ice
       CALL WRITE_0D_I(RT_kmax,INDEX_NONE,
      &'RT_kmax =',
      &' /* maximum depth index for radtrans computations */')
+      CALL WRITE_0D_L(RT_useOASIMrmud,INDEX_NONE,
+     &'RT_useOASIMrmud =',
+     &' /* use mean solar zenith angle from OASIM */')
       CALL WRITE_0D_L(RT_useMeanCosSolz,INDEX_NONE,
      &'RT_useMeanCosSolz =',
      &' /* flag for using mean daytime cosine of solar zenith angle */')
@@ -306,6 +328,9 @@ C--   ice
       CALL WRITE_0D_RL(RT_sfcIrrThresh,INDEX_NONE,
      &'RT_sfcIrrThresh =',
      &' /* minimum irradiance for radiative transfer computations */')
+      CALL WRITE_1D_RL(RT_oasimWgt,nlam,INDEX_NONE,
+     &'RT_oasimWgt =',
+     &' /* weight multiplying each waveband from OASIM */')
       CALL WRITE_0D_RL(RT_rmus,INDEX_NONE,
      &'RT_rmus =',
      &' /* mean inv. cosine of zenith angle for dwnwrd diff. irr. */')
