@@ -79,7 +79,7 @@ C     need sun package unless using mean cos(solz)
 
 #ifndef ALLOW_SUN
       IF (.NOT.(RT_useMeanCosSolz.OR.RT_useOASIMrmud)) THEN
-        WRITE(msgBuf,'(2A)') 'RADTRANS_CALC: need to compile the sun ',
+        WRITE(msgBuf,'(2A)') 'RADTRANS_CHECK: need to compile the sun ',
      &   'package unless RT_useMeanCosSolz or oasim pkg is used.'
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( 0 )
