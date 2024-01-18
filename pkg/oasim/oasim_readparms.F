@@ -57,6 +57,23 @@ C     iUnit      :: Work variable for IO unit number
 
       _BEGIN_MASTER(myThid)
 
+C-----------------------------------------------------------------------
+C     check prerequisites indepent of oasim runtime parameters
+#ifndef OASIM_READ_UNFORMATTED
+#ifdef ALLOW_EXF
+      IF (.NOT.useEXF) THEN
+#else
+      IF (.TRUE.) THEN
+#endif
+        WRITE(msgBuf,'(2A)') 'OASIM_CHECK: need the exf package or ',
+     &   'define OASIM_READ_UNFORMATTED.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R OASIM_CHECK'
+      ENDIF
+#endif
+
+C-----------------------------------------------------------------------
 C     default values
       oasim_atmoFile       = ' '
       oasim_waterFile      = ' '
