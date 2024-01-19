@@ -95,6 +95,7 @@ C                       diffuse irradiance
 C  RT_sfcIrrThresh   :: minimum irradiance for radiative transfer
 C                       computations [W/m^2]
 C  RT_kmax           :: maximum depth index for radtrans computations
+C  RT_useOASIMrmud   :: flag for using cosine of solar zenith angle from oasim pkg
 C  RT_useMeanCosSolz :: flag for using mean daytime cosine of solar zenith angle
 C  RT_useNoonSolz    :: flag for using noon solar zenith angle;
 C                       if false use angle at actual time
