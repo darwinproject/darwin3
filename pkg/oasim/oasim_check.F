@@ -423,8 +423,7 @@ C--   wv
 
       CALL WRITE_0D_C(oasim_atmoFile,-1,INDEX_NONE,
      &'oasim_atmoFile =',
-     &' /* filename for spectra of extraterrestrial irradiance and'
-     &' atomspheric gases */')
+     &' /* filename for spectra of extraterr. irr. and atm. gases */')
       CALL WRITE_0D_C(oasim_waterFile,-1,INDEX_NONE,
      &'oasim_waterFile =',
      &' /* filename for water absorption and scattering spectra */')
