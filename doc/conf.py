@@ -56,7 +56,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'MITgcm'
+project = u'Darwin3'
 copyright = u'1997-, MITgcm contributors'
 # When updating the list of authors, remember to also
 # change the LaTeX list below and the list in index.rst
