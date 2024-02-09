@@ -48,6 +48,8 @@ C     == global variables ==
 #include "EXF_INTERP_SIZE.h"
 #include "EXF_INTERP_PARAM.h"
 #endif
+#include "OASIM_SIZE.h"
+#include "OASIM_EXF_PARAMS.h"
 
 C !INPUT/OUTPUT PARAMETERS:
 C     fldName        :: field short name (to print mesg)
@@ -144,12 +146,12 @@ C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
 #endif /* ALLOW_CAL */
          ELSEIF ( useCal .AND. fldperiod .EQ. -1.) THEN
 C-    fldPeriod=-1 means fields are monthly means.
-C     With useExfYearlyFields=.TRUE., each yearly input file contains
+C     With useOasimYearlyFields=.TRUE., each yearly input file contains
 C     12 monthly mean records.  Otherwise, a single input file contains
 C     monthly mean records starting at the month fldStartTime falls in.
 #ifdef ALLOW_CAL
             CALL OASIM_GetMonthsRec(
-     I           fldStartTime, useExfYearlyFields, fldTimeOrder,
+     I           fldStartTime, useOasimYearlyFields, fldTimeOrder,
      O           fac, first, changed,
      O           count0, count1, year0, year1,
      I           myTime, myIter, myThid )
@@ -165,7 +167,7 @@ C     monthly mean records starting at the month fldStartTime falls in.
 C-    get record numbers and interpolation factor for this field
             CALL EXF_GetFFieldRec(
      I           fldStartTime, fldPeriod, fldRepeatCycle,
-     I           fldName, useExfYearlyFields,
+     I           fldName, useOasimYearlyFields,
      O           fac, first, changed,
      O           count0, count1, year0, year1,
      I           myTime, myIter, myThid )
@@ -186,7 +188,7 @@ C-    get record numbers and interpolation factor for this field
 
          IF ( first ) THEN
             CALL exf_GetYearlyFieldName(
-     I         useExfYearlyFields, twoDigitYear, fldPeriod, year0,
+     I         useOasimYearlyFields, twoDigitYear, fldPeriod, year0,
      I         fldFile,
      O         locFile0,
      I         myTime, myIter, myThid )
@@ -246,7 +248,7 @@ C-    end if ( first ) block
             CALL exf_SwapFFields( fld0, fld1, myThid )
 
             CALL exf_GetYearlyFieldName(
-     I         useExfYearlyFields, twoDigitYear, fldPeriod, year1,
+     I         useOasimYearlyFields, twoDigitYear, fldPeriod, year1,
      I         fldFile,
      O         locFile1,
      I         myTime, myIter, myThid )

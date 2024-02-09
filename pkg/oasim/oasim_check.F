@@ -61,8 +61,8 @@ C     log OASIM runtime parameters
 C ======================================================================
 C     exf forcing parameters
 
-      CALL WRITE_0D_L(useoasimYearlyFields,INDEX_NONE,
-     &'useoasimYearlyFields =',
+      CALL WRITE_0D_L(useOasimYearlyFields,INDEX_NONE,
+     &'useOasimYearlyFields =',
      &' /* whether files are per year with _YYYY suffix */')
 
       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
@@ -72,7 +72,7 @@ C--   aerTau
       IF ( aerTaufile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'aerTau forcing',
      I      aerTaufile, aerTauRepCycle, aerTauperiod,
-     I      aerTauStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      aerTauStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_1D_RL(aerTau_exfremo_intercept,nlt,INDEX_NONE,
@@ -107,7 +107,7 @@ C--   asymp
       IF ( asympfile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'asymp forcing',
      I      asympfile, asympRepCycle, asympperiod,
-     I      asympStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      asympStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_1D_RL(asymp_exfremo_intercept,nlt,INDEX_NONE,
@@ -142,7 +142,7 @@ C--   ssalb
       IF ( ssalbfile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'ssalb forcing',
      I      ssalbfile, ssalbRepCycle, ssalbperiod,
-     I      ssalbStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      ssalbStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_1D_RL(ssalb_exfremo_intercept,nlt,INDEX_NONE,
@@ -177,7 +177,7 @@ C--   cldcov
       IF ( cldcovfile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'cldcov forcing',
      I      cldcovfile, cldcovRepCycle, cldcovperiod,
-     I      cldcovStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      cldcovStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_0D_RL(cldcov_exfremo_intercept,INDEX_NONE,
@@ -208,7 +208,7 @@ C--   cldlwp
       IF ( cldlwpfile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'cldlwp forcing',
      I      cldlwpfile, cldlwpRepCycle, cldlwpperiod,
-     I      cldlwpStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      cldlwpStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_0D_RL(cldlwp_exfremo_intercept,INDEX_NONE,
@@ -239,7 +239,7 @@ C--   cldre
       IF ( cldrefile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'cldre forcing',
      I      cldrefile, cldreRepCycle, cldreperiod,
-     I      cldreStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      cldreStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_0D_RL(cldre_exfremo_intercept,INDEX_NONE,
@@ -270,7 +270,7 @@ C--   pres
       IF ( presfile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'pres forcing',
      I      presfile, presRepCycle, presperiod,
-     I      presStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      presStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_0D_RL(pres_exfremo_intercept,INDEX_NONE,
@@ -301,7 +301,7 @@ C--   oawind
       IF ( oawindfile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'oawind forcing',
      I      oawindfile, oawindRepCycle, oawindperiod,
-     I      oawindStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      oawindStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_0D_RL(oawind_exfremo_intercept,INDEX_NONE,
@@ -332,7 +332,7 @@ C--   relhum
       IF ( relhumfile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'relhum forcing',
      I      relhumfile, relhumRepCycle, relhumperiod,
-     I      relhumStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      relhumStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_0D_RL(relhum_exfremo_intercept,INDEX_NONE,
@@ -363,7 +363,7 @@ C--   ozone
       IF ( ozonefile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'ozone forcing',
      I      ozonefile, ozoneRepCycle, ozoneperiod,
-     I      ozoneStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      ozoneStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_0D_RL(ozone_exfremo_intercept,INDEX_NONE,
@@ -394,7 +394,7 @@ C--   wv
       IF ( wvfile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'wv forcing',
      I      wvfile, wvRepCycle, wvperiod,
-     I      wvStartTime, useExfYearlyFields, addBlkLn, myThid )
+     I      wvStartTime, useOasimYearlyFields, addBlkLn, myThid )
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL WRITE_0D_RL(wv_exfremo_intercept,INDEX_NONE,
