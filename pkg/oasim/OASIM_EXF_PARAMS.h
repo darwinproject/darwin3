@@ -14,8 +14,8 @@ CEOP
 C--   COMMON/oasim_forcing_exf_params_l/
 C     useOasimYearlyFields :: whether files are per year with _YYYY suffix
       COMMON/oasim_forcing_exf_params_l/
-     &    useoasimYearlyFields
-      LOGICAL useoasimYearlyFields
+     &    useOasimYearlyFields
+      LOGICAL useOasimYearlyFields
 
 C--   COMMON/oasim_forcing_exf_params_i/
 C     oasim_timeInterp :: order for time interpolation: 0 or 1
