@@ -46,22 +46,20 @@ C     oasim_am           :: air-mass parameter for navaer aerosol model
 C     oasim_Vi           :: visibility for navaer aerosol model [km]
 C     oasim_fixedSolz    :: fixed solar zenith angle to use (for debugging)
 C     oasim_fixedLon     :: fixed longitude to use (for legacy mode)
+C     oasim_rmus         :: inverse mean zenith cosine of diffuse downwelling irradiance
 C     oasim_monitorFreq  :: monitor frequency for OASIM package
       _RL oasim_dTsolz
       _RL oasim_am, oasim_Vi
       _RL oasim_fixedSolz
       _RL oasim_fixedLon
+      _RL oasim_rmus
       _RL oasim_monitorFreq
       COMMON /OASIM_PARAMS_R/
      &       oasim_dTsolz,
      &       oasim_am, oasim_Vi,
      &       oasim_fixedSolz,
      &       oasim_fixedLon,
+     &       oasim_rmus,
      &       oasim_monitorFreq
 
-C--   COMMON /OASIM_3STREAM_PARAMS/
-C     oasim_rmus       :: inverse mean zenith cosine of diffuse downwelling irradiance
-      _RL oasim_rmus
-      COMMON /OASIM_3STREAM_PARAMS/
-     &       oasim_rmus
 #endif /* ALLOW_OASIM */

@@ -53,8 +53,7 @@ C     iUnit      :: Work variable for IO unit number
       NAMELIST /OASIM_PARM/ oasim_monitorFreq
       NAMELIST /OASIM_PARM/ oasim_fixedLon
       NAMELIST /OASIM_PARM/ oasim_PARwgt
-
-      NAMELIST /OASIM_3STREAM_PARM/ oasim_rmus
+      NAMELIST /OASIM_PARM/ oasim_rmus
 
       _BEGIN_MASTER(myThid)
 
@@ -81,8 +80,8 @@ C     default values
       oasim_fixedLon       = UNSET_RL
       oasim_monitorFreq    = monitorFreq
       oasim_PARwgt(:)      = 0 _d 0
-
       oasim_rmus           = 1./0.83 _d 0
+
       WRITE(msgBuf,'(A)') 'OASIM_READPARMS: opening data.oasim'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -97,7 +96,6 @@ C     default values
 
 C     Read parameters from open data file
       READ(UNIT=iUnit,NML=OASIM_PARM)
-      READ(UNIT=iUnit,NML=OASIM_3STREAM_PARM)
       WRITE(msgBuf,'(A)')
      &    'OASIM_READPARMS: finished reading data.oasim'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
