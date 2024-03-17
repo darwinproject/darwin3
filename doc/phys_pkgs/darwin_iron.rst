@@ -113,17 +113,23 @@ carbon.  :math:`w^{\text{scav}}_{\text{POSi}}` and
 (per mol Si) and calcium carbonate, see
 :numref:`tab_phys_pkgs_darwin_iron_params`.
 
-The old (and deprecated) formulation of scavenging in terms of POP can be
-recovered by defining :varlink:`DARWIN_PART_SCAV_POP`, in which case
-:math:`\op{POM}` is replaced by
-:math:`\op{POP}\!/R^{\op{POP}:\op{POC}}_{{\text{scav}}}`.  Parameter names and
-defaults are different in this case, see
-:numref:`tab_phys_pkgs_darwin_scav_pop`.
+.. admonition:: deprecated formulations
 
-The faulty formulation in terms of POC only that existed before 2022-12-05 can
-be recovered by setting scav_POC_wgt=1, scav_PIC_wgt=0 and scav_POSi_wgt=0 and
-making sure the product scav_tau*scav_inter has the same value as
-scav_rat*scav_inter before.
+   The old (and deprecated) formulation of scavenging in terms of POP can be
+   recovered by defining :varlink:`DARWIN_PART_SCAV_POP`, in which case
+   :math:`\op{POM}` is replaced by
+   :math:`\op{POP}\!/R^{\op{POP}:\op{POC}}_{{\text{scav}}}`.  Parameter names
+   and defaults are different in this case, see
+   :numref:`tab_phys_pkgs_darwin_scav_pop`.  For comparison: this formulation
+   with its default parameters could also be recovered in the new formulation
+   (with new default parameters) by setting
+   :math:`\op{POM}=w^{\text{scav}}_{\text{POP}} \op{POP}` where
+   :math:`w^{\text{scav}}_{\text{POP}}\approx 15.274` g/mmol P.
+
+   The faulty formulation in terms of POC only that existed before 2022-12-05
+   can be recovered by setting scav_POC_wgt=1, scav_PIC_wgt=0 and
+   scav_POSi_wgt=0 and making sure the product scav_tau*scav_inter has the same
+   value as scav_rat*scav_inter before.
 
 The concentration of free iron, Fe', is determined following Parekh et al.
 (2004) :cite:`parekh:2004` and Dutkiewicz et al. (2005)
