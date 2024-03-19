@@ -85,7 +85,7 @@ where :math:`A_{{\mathrm{e}}}=0.05/{}^\circ{\rm C}` [#Ae]_ and
 DARWIN_TEMP_VERSION 4
 '''''''''''''''''''''
 
-Temperature functions are exponetial, with an optional restriction on their range,
+Temperature functions are exponential, with an optional restriction on their range,
 
 .. math::
 
@@ -130,11 +130,25 @@ where
    \quad \text{or} \quad
    A_{\text{e}} = \tfrac{1}{10\,^\circ\mathrm{C}} \ln Q_{10}
 
-The parameters of all temperature functions are summarized in :numref:`pkg_darwin_temperature_params`.
+The default value corresponds to :math:`Q_{10}\approx1.55`.
+
+Note that while the temperature dependences of versions 2, 3 and 4 are similar,
+versions 3 and 4 yield rates about 70% higher than version 2 with the default
+TempCoeffArr.  The magnitude of version 1 functions is similar to version 2
+ones.  :ref:`fig_phys_pkg_darwin_tempfunc` shows the phytoplankton temperature
+functions with default parameters for the four versions.
+
+.. figure:: figs/phytotempfunc.*
+    :name: fig_phys_pkg_darwin_tempfunc
+
+    Default phytoplankton temperature functions for all DARWIN_TEMP_VERSION.
+
+The parameters of all temperature functions are summarized in
+:numref:`tab_phys_pkg_darwin_tempparams`.
 
 
 .. table:: Temperature function parameters
-   :name: pkg_darwin_temperature_params
+   :name: tab_phys_pkg_darwin_tempparams
 
    +-----------------------------+-------------------------------+----------------------------------------------------------------------+
    | **Trait**                   | **Parameter**                 | **Default Value**                                                    |

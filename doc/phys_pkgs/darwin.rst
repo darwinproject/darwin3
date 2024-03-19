@@ -571,20 +571,20 @@ Traits are generated from the parameters in ``&DARWIN_TRAIT_PARAMS``
    :varlink:`ExportFracMort`   & :math:`f^{\op{exp}\op{mort}}_j`        &                                               & fraction of linear mortality to POM
    :varlink:`ExportFracMort2`  & :math:`f^{\op{exp}\op{mort2}}_j`       &                                               & fraction of quadratic mortality to POM
    :varlink:`ExportFracExude`  & :math:`f^{\op{exp}\op{exude}}_j`       &                                               & fraction of exudation to POM
-   :varlink:`phytoTempCoeff`   & :math:`c_j`                            &                                               & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`phytoTempExp1`    & :math:`e_{1j}`                         & exp(1/°C)                                     & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`phytoTempAe`      & :math:`A^{\op{phy}}_{\op{e}j}`         & 1/°C                                          & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`phytoTempExp2`    & :math:`e_{2j}`                         &                                               & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`phytoTempOptimum` & :math:`T^{\op{opt}}_j`                 & °C                                            & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`phytoDecayPower`  & :math:`p_j`                            &                                               & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`hetTempAe`        & :math:`A^{\op{het}}_{\op{e}j}`         & 1/°C                                          & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`hetTempExp2`      & :math:`e^{\op{het}}_{2j}`              &                                               & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`hetTempOptimum`   & :math:`T^{\op{opt het}}_j`             & °C                                            & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`hetDecayPower`    & :math:`p^{\op{het}}_j`                 &                                               & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`grazTempAe`       & :math:`A^{\op{graz}}_{\op{e}j}`        & 1/°C                                          & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`grazTempExp2`     & :math:`e^{\op{graz}}_{2j}`             &                                               & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`grazTempOptimum`  & :math:`T^{\op{opt graz}}_j`            & °C                                            & see :numref:`pkg_darwin_temperature_params`
-   :varlink:`grazDecayPower`   & :math:`p^{\op{graz}}_j`                &                                               & see :numref:`pkg_darwin_temperature_params`
+   :varlink:`phytoTempCoeff`   & :math:`c_j`                            &                                               & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`phytoTempExp1`    & :math:`e_{1j}`                         & exp(1/°C)                                     & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`phytoTempAe`      & :math:`A^{\op{phy}}_{\op{e}j}`         & 1/°C                                          & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`phytoTempExp2`    & :math:`e_{2j}`                         &                                               & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`phytoTempOptimum` & :math:`T^{\op{opt}}_j`                 & °C                                            & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`phytoDecayPower`  & :math:`p_j`                            &                                               & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`hetTempAe`        & :math:`A^{\op{het}}_{\op{e}j}`         & 1/°C                                          & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`hetTempExp2`      & :math:`e^{\op{het}}_{2j}`              &                                               & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`hetTempOptimum`   & :math:`T^{\op{opt het}}_j`             & °C                                            & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`hetDecayPower`    & :math:`p^{\op{het}}_j`                 &                                               & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`grazTempAe`       & :math:`A^{\op{graz}}_{\op{e}j}`        & 1/°C                                          & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`grazTempExp2`     & :math:`e^{\op{graz}}_{2j}`             &                                               & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`grazTempOptimum`  & :math:`T^{\op{opt graz}}_j`            & °C                                            & see :numref:`tab_phys_pkg_darwin_tempparams`
+   :varlink:`grazDecayPower`   & :math:`p^{\op{graz}}_j`                &                                               & see :numref:`tab_phys_pkg_darwin_tempparams`
    :varlink:`R_NC`             & :math:`R^{\op{N}:\op{C}}_j`            & mmol N (mmol C)\ :sup:`-1`                    & nitrogen-carbon ratio (not used with DARWIN_ALLOW_NQUOTA)
    :varlink:`R_PC`             & :math:`R^{\op{P}:\op{C}}_j`            & mmol P (mmol C)\ :sup:`-1`                    & phosphorus-carbon ratio (not used with DARWIN_ALLOW_PQUOTA)
    :varlink:`R_SiC`            & :math:`R^{\op{Si}:\op{C}}_j`           & mmol Si (mmol C)\ :sup:`-1`                   & silica-carbon ratio (not used with DARWIN_ALLOW_SIQUOTA)
