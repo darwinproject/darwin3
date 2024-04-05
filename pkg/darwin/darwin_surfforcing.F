@@ -275,7 +275,7 @@ c put bounds on tracers so pH solver doesn't blow up
           surfphos = ptr2mol * MAX(surfPO4Min,
      &               MIN(surfPO4Max, Ptracer(i,j,k,bi,bj,iPO4)))
      &               * maskC(i,j,k,bi,bj)
-          surfsi   = ptr2mol * MAX(surfSiMinINit,
+          surfsi   = ptr2mol * MAX(surfSiMin,
      &               MIN(surfSiMax, Ptracer(i,j,k,bi,bj,iSiO2)))
      &               * maskC(i,j,k,bi,bj)
 
