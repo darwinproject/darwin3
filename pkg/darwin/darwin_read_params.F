@@ -189,7 +189,7 @@ C----
      &    NO3crit,
      &    PARmin,
      &    aphy_chl_ave,
-     &    chl2nmax,
+     &    Chl2Nmax,
      &    synthcost,
      &    inhib_graz,
      &    inhib_graz_exp,
@@ -476,7 +476,7 @@ C     O2crit from Lipschultz et al 1990, DSR 37, 1513-1541:
       NO3crit = 1. _d -2
       PARmin = 0.1 _d 0
       aphy_chl_ave = 0.02 _d 0
-      chl2nmax = 3.00 _d 0
+      Chl2Nmax = 3.00 _d 0
       synthcost = 0.0 _d 0
       inhib_graz = 1.0 _d 0
       inhib_graz_exp = 0.0 _d 0
