@@ -1989,8 +1989,8 @@ C--   Print parameters from DARWIN_PARAMS.h
       CALL WRITE_0D_RL(aphy_chl_ave,INDEX_NONE,
      &'aphy_chl_ave =',
      &' /* Chl-specific absorption coefficient (m2/mg Chl) */')
-      CALL WRITE_0D_RL(chl2nmax,INDEX_NONE,
-     &'chl2nmax =',
+      CALL WRITE_0D_RL(Chl2Nmax,INDEX_NONE,
+     &'Chl2Nmax =',
      &' /* max Chl:N ratio for Chl synthesis following Moore 2002 (mg Ch
      &l / mmol N) */')
       CALL WRITE_0D_RL(synthcost,INDEX_NONE,
