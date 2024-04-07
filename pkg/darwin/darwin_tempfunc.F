@@ -184,7 +184,7 @@ cswd -- temperature range
 c ++++++++++++++ END VERSION 4 +++++++++++++++++++++++++++++++++++++++
 
 #else
-#error "DARWIN_TEMP_VERSION must be 1, 2, 3 or 4.  Define in DARWIN_OPTIONS.h"
+#error "DARWIN_TEMP_VERSION must be 1, 2, 3 or 4 in DARWIN_OPTIONS.h"
 #endif
 
 #ifdef DARWIN_NOZOOTEMP
