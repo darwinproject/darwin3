@@ -521,6 +521,7 @@ c big/small phyto mortality rates..
         ExportFracExude(np)=DARWIN_UNINIT_RL
 #endif
       ENDIF
+      FracExudeC(np) = 0.3 _d 0
 #ifdef DARWIN_TWO_SPECIES_SETUP
       IF(physize(np) .EQ. 1)then
         mortdays = Bigmort
@@ -556,6 +557,7 @@ c generate phyto Temperature Function parameters
 c.......................................................
       phytoTempCoeff(np) = tempcoeff1
       phytoTempExp1(np) = tempcoeff3
+      phytoTempAe(np) = 0.0438 _d 0
       IF(physize(np) .EQ. 1)then
         phytoTempExp2(np) = tempcoeff2_big
       ELSE
@@ -881,6 +883,11 @@ c       chl2cmin(np) = 0.003  _d 0 * 12. _d 0  ! mg Chl a/mmol C
         ksatDOP(np) = 1.0 _d 0
         ksatDOFe(np) = 1.0 _d 0
 
+        hetTempAe(np) = 0.0438 _d 0
+        hetTempExp2(np) = 0.001 _d 0
+        hetTempOptimum(np) = 2 _d 0
+        hetDecayPower(np) = 4 _d 0
+
       ENDDO  ! np
 
 #ifdef ALLOW_RADTRANS
@@ -937,6 +944,8 @@ c assume zoo(1) = small, zoo(2) = big
        ExportFracExude(iMinPred) = DARWIN_UNINIT_RL
        ExportFracExude(iMaxPred) = DARWIN_UNINIT_RL
 #endif
+       FracExudeC(iMinPred) = 0.3 _d 0
+       FracExudeC(iMaxPred) = 0.3 _d 0
        mort(iMinPred) = ZoomortSmall
        mort(iMaxPred) = ZoomortBig
        mort2(iMinPred) = ZoomortSmall2
@@ -990,6 +999,7 @@ c     not oldTwoGrazers
 #else
         ExportFracExude(nz) = DARWIN_UNINIT_RL
 #endif
+        FracExudeC(nz) = 0.3 _d 0
         mort(nz) = Zoomort
         mort2(nz) = Zoomort2
         dmzoo(nz) = ZooDM
@@ -1019,6 +1029,10 @@ C zooplankton do have temperature-dependent mortality
         tempMort(nz) = 0
         tempMort2(nz) = 0
         tempGraz(nz) = 0
+        grazTempAe(nz) = 0.0438 _d 0
+        grazTempExp2(nz) = 0.001 _d 0
+        grazTempOptimum(nz) = 2 _d 0
+        grazDecayPower(nz) = 4 _d 0
 
         respRate(nz) = 0.0 _d 0
         biosink(nz) = 0.0 _d 0
