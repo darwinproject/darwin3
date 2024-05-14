@@ -1,9 +1,7 @@
-""" Cog code generation tool.
+""" Cog content generation tool.
     http://nedbatchelder.com/code/cog
 
-    Copyright 2004-2012, Ned Batchelder.
+    Copyright 2004-2024, Ned Batchelder.
 """
 
-from __future__ import absolute_import
-
-from .cogapp import *
+from .cogapp import Cog, CogUsageError, main
