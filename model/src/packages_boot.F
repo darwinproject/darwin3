@@ -80,6 +80,7 @@ C     data.pkg namelists
      &          useSEAICE,
      &          useSALT_PLUME,
      &          useShelfIce,
+     &          useSTIC,
      &          useStreamIce,
      &          useICEFRONT,
      &          useThSIce,
@@ -146,6 +147,7 @@ c     useGAD          =.FALSE.
       useSEAICE       =.FALSE.
       useSALT_PLUME   =.FALSE.
       useShelfIce     =.FALSE.
+      useSTIC         =.FALSE.
       useStreamIce    =.FALSE.
       useICEFRONT     =.FALSE.
       useThSIce       =.FALSE.
@@ -362,6 +364,9 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
 #endif
 #ifdef ALLOW_SHELFICE
       CALL PACKAGES_PRINT_MSG( useShelfIce,   'ShelfIce',    ' ' )
+#endif
+#ifdef ALLOW_STEEP_ICECAVITY
+      CALL PACKAGES_PRINT_MSG( useSTIC,   'STEEP_ICECAVITY', ' ' )
 #endif
 #ifdef ALLOW_STREAMICE
       CALL PACKAGES_PRINT_MSG( useStreamIce,  'StreamIce',   ' ' )

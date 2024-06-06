@@ -43,5 +43,6 @@ ecco		+mdsio		+cal
 tapenade	+autodiff
 grdchk		+autodiff	+cost		+ctrl
 showflops	+runclock
+steep_cavity    +shelfice
 sun             +cal
 radtrans        +exf
