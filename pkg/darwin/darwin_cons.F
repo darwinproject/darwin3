@@ -93,6 +93,9 @@ C !LOCAL VARIABLES: ====================================================
       _RL tileO2cons(nSx,nSy)
       _RL tilesfcflxO(nSx,nSy)
       _RL tilevirflxA(nSx,nSy)
+      _RL tilesedflxC(nSx,nSy)
+      _RL tilesedflxA(nSx,nSy)
+      _RL tilesedflxO(nSx,nSy)
       _RL tileFSA(nSx,nSy)
       _RL tileFSO(nSx,nSy)
       _RL tileEPRA(nSx,nSy)
@@ -112,6 +115,9 @@ C !LOCAL VARIABLES: ====================================================
       _RL tmpventflxFe
       _RL tmpsfcflxC
       _RL tmpvirflxC
+      _RL tmpsedflxC
+      _RL tmpsedflxA
+      _RL tmpsedflxO
       _RL tmpBotSnkC
       _RL tmpBotSnkN
       _RL tmpBotSnkP
@@ -168,6 +174,9 @@ C !LOCAL VARIABLES: ====================================================
       tmpventflxFe = 0 _d 0
       tmpsfcflxC = 0 _d 0
       tmpvirflxC = 0 _d 0
+      tmpsedflxC = 0 _d 0
+      tmpsedflxA = 0 _d 0
+      tmpsedflxO = 0 _d 0
       tmpBotSnkC = 0 _d 0
       tmpBotSnkN = 0 _d 0
       tmpBotSnkP = 0 _d 0
@@ -257,6 +266,9 @@ C !LOCAL VARIABLES: ====================================================
        tileO2cons(bi,bj) = 0. _d 0
        tilesfcflxO(bi,bj) = 0. _d 0
        tilevirflxA(bi,bj) = 0. _d 0
+       tilesedflxC(bi,bj) = 0. _d 0
+       tilesedflxA(bi,bj) = 0. _d 0
+       tilesedflxO(bi,bj) = 0. _d 0
        tileFSA(bi,bj) = 0. _d 0
        tileFSO(bi,bj) = 0. _d 0
        tileEPRA(bi,bj) = 0. _d 0
@@ -439,6 +451,11 @@ C 2-d conservation corrections
 #ifdef ALLOW_OLD_VIRTUALFLUX
         tilevirflxC(bi,bj)=tilevirflxC(bi,bj)+carbVirFlx(i,j,bi,bj)*area
         tilevirflxA(bi,bj)=tilevirflxA(bi,bj)+alkVirFlx(i,j,bi,bj)*area
+#endif
+#ifdef DARWIN_ALLOW_RADI
+        tilesedflxC(bi,bj)=tilesedflxC(bi,bj)+radiFluxC(i,j,bi,bj)*area
+        tilesedflxA(bi,bj)=tilesedflxA(bi,bj)+radiFluxA(i,j,bi,bj)*area
+        tilesedflxO(bi,bj)=tilesedflxO(bi,bj)+radiFLuxO(i,j,bi,bj)*area
 #endif
 #endif
 #ifdef DARWIN_BOTTOM_SINK
@@ -1005,6 +1022,9 @@ C Combine per-tile sums
        CALL GLOBAL_SUM_TILE_RL(tileO2cons,tmpO2cons,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilesfcflxO,tmpsfcflxO,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilevirflxA,tmpvirflxA,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilesedflxC,tmpsedflxC,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilesedflxA,tmpsedflxA,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilesedflxO,tmpsedflxO,myThid)
 #endif
 #ifdef DARWIN_BOTTOM_SINK
        CALL GLOBAL_SUM_TILE_RL(tileBotSnkC,tmpBotSnkC,myThid)
@@ -1362,9 +1382,9 @@ C do not write ecosystem non-conservation terms before they are applied
         IF ((myIter.EQ.nIter0 .OR.
      &       (staggerTimeStep.AND.myIter.EQ.nIter0+1)) .AND.
      &      stage.EQ.0) THEN
-         WRITE(DAR_cons_C_unit,'(A1,A11,A6,A20,7A24)')'#','iter',
+         WRITE(DAR_cons_C_unit,'(A1,A11,A6,A20,8A24)')'#','iter',
      &      'stage','tot','mean','sfcflx','virtflx','botsnk','impFS',
-     &      'EPR','runoff'
+     &      'EPR','runoff','sed'
          WRITE(DAR_cons_N_unit,'(A1,A11,A6,A20,7A24)')'#','iter',
      &      'stage','tot','mean','Nfix','Ndenit','botsnk','impFS','EPR',
      &      'runoff'
@@ -1377,17 +1397,19 @@ C do not write ecosystem non-conservation terms before they are applied
      &      'stage','tot','mean','botsnk','impFS','EPR','runoff'
 
 #ifdef DARWIN_ALLOW_CARBON
-         WRITE(DAR_cons_A_unit,'(A1,A11,A6,A20,6A24)')'#','iter',
+         WRITE(DAR_cons_A_unit,'(A1,A11,A6,A20,7A24)')'#','iter',
      &      'stage','tot','mean','sfcflx','AlkSrc','impFS','EPR',
      &      'runoff'
-         WRITE(DAR_cons_O_unit,'(A1,A11,A6,A20,6A24)')'#','iter',
+     &     ,'sed'
+         WRITE(DAR_cons_O_unit,'(A1,A11,A6,A20,7A24)')'#','iter',
      &     'stage','tot','mean','sfcflx','O2prod','O2cons','impFS','EPR'
+     &     ,'sed'
 #endif
         ENDIF
 
-        WRITE(DAR_cons_C_unit,'(I12,I2,8E24.16)') myIter, stage,
+        WRITE(DAR_cons_C_unit,'(I12,I2,9E24.16)') myIter, stage,
      &     tmptotC, tmptotC/voltot, tmpsfcflxC, tmpvirflxC, -tmpBotSnkC,
-     &     tmpFSC, tmpEPRC, tmprunoffC
+     &     tmpFSC, tmpEPRC, tmprunoffC, tmpsedflxC
         WRITE(DAR_cons_N_unit,'(I12,I2,8E24.16)') myIter, stage,
      &     tmptotN, tmptotN/voltot, tmptotNfix, -tmptotNdenit,
      &     -tmpBotSnkN, tmpFSN, tmpEPRN, tmprunoffN
@@ -1402,12 +1424,12 @@ C do not write ecosystem non-conservation terms before they are applied
      &     tmptotSi, tmptotSi/voltot, -tmpBotSnkSi, tmpFSSi, tmpEPRSi,
      &     tmprunoffSi
 #ifdef DARWIN_ALLOW_CARBON
-        WRITE(DAR_cons_A_unit,'(I12,I2,7E24.16)') myIter, stage,
+        WRITE(DAR_cons_A_unit,'(I12,I2,8E24.16)') myIter, stage,
      &     tmptotA, tmptotA/voltot, tmpvirflxA, tmpAlkSrc, tmpFSA,
-     &     tmpEPRA, tmprunoffA
-        WRITE(DAR_cons_O_unit,'(I12,I2,7E24.16)') myIter, stage,
+     &     tmpEPRA, tmprunoffA, tmpsedflxA
+        WRITE(DAR_cons_O_unit,'(I12,I2,8E24.16)') myIter, stage,
      &     tmptotO, tmptotO/voltot, tmpsfcflxO, tmpO2prod, -tmpO2cons,
-     &     tmpFSO, tmpEPRO
+     &     tmpFSO, tmpEPRO, tmpsedflxO
 #endif
       ENDIF
 

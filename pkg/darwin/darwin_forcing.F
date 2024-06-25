@@ -724,6 +724,17 @@ C       Set the buried fluxes to 0 if positive
         POCFsediment(i,j) = MIN(0 _d 0, -(sed_a4*omegaC0(i,j)*sed_c +
      &    sed_b4*fluxPOC(i,j) + sed_c4*fluxPIC(i,j) + sed_d4*sed_c))
 
+#ifdef DARWIN_ALLOW_CONS
+C       Accumulate for conservation check
+        radiFluxC(i,j,bi,bj) = radiFluxC(i,j,bi,bj) +
+     &       (DICFsediment(i,j) + POCFsediment(i,j) + CALFsediment(i,j))
+     &       *dTsub(k)*maskC(i,j,k,bi,bj)
+        radiFluxA(i,j,bi,bj) = radiFluxA(i,j,bi,bj) +
+     &        ALKFsediment(i,j)*dTsub(k)*maskC(i,j,k,bi,bj)
+        radiFluxO(i,j,bi,bj) = radiFluxO(i,j,bi,bj) +
+     &        O2Fsediment(i,j)*dTsub(k)*maskC(i,j,k,bi,bj)
+#endif
+
        ELSE
 
         TcorrO2(i,j) = 0. _d 0
@@ -734,6 +745,9 @@ C       Set the buried fluxes to 0 if positive
         O2Fsediment(i,j) = 0. _d 0
         CALFsediment(i,j) = 0. _d 0
         POCFsediment(i,j) = 0. _d 0
+        radiFluxC(i,j,bi,bj) = 0. _d 0
+        radiFluxA(i,j,bi,bj) = 0. _d 0
+        radiFluxO(i,j,bi,bj) = 0. _d 0
 
        ENDIF
       ENDDO
