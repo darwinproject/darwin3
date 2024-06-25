@@ -724,22 +724,6 @@ C       Set the buried fluxes to 0 if positive
         POCFsediment(i,j) = MIN(0 _d 0, -(sed_a4*omegaC0(i,j)*sed_c +
      &    sed_b4*fluxPOC(i,j) + sed_c4*fluxPIC(i,j) + sed_d4*sed_c))
 
-C       Calculate concentration changes at the deepest depth level
-        gPtr(i,j,k,iDIC) = gPtr(i,j,k,iDIC)
-     &       + DICFsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
-
-        gPtr(i,j,k,iALK) = gPtr(i,j,k,iALK)
-     &       + ALKFsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
-
-        gPtr(i,j,k,iO2) = gPtr(i,j,k,iO2)
-     &       + O2Fsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
-
-        gPtr(i,j,k,iPOC) = gPtr(i,j,k,iPOC)
-     &       + POCFsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
-
-        gPtr(i,j,k,iPIC) = gPtr(i,j,k,iPIC)
-     &       + CALFsediment(i,j)*recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
-
        ELSE
 
         TcorrO2(i,j) = 0. _d 0
@@ -754,6 +738,39 @@ C       Calculate concentration changes at the deepest depth level
        ENDIF
       ENDDO
       ENDDO
+
+C     Calculate concentration changes at the deepest depth level
+C     and rescale for nonlinear free surface if appropriate
+      CALL DARWIN_ADD_BOTFORC(
+     U                        gPtr(1-OLx,1-OLy,1,iDIC),
+     I                        DICFsediment, oneRL,
+     I                        bi, bj, iMin, iMax, jMin, jMax,
+     I                        myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_BOTFORC(
+     U                        gPtr(1-OLx,1-OLy,1,iALK),
+     I                        ALKFsediment, oneRL,
+     I                        bi, bj, iMin, iMax, jMin, jMax,
+     I                        myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_BOTFORC(
+     U                        gPtr(1-OLx,1-OLy,1,iO2),
+     I                        O2Fsediment, oneRL,
+     I                        bi, bj, iMin, iMax, jMin, jMax,
+     I                        myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_BOTFORC(
+     U                        gPtr(1-OLx,1-OLy,1,iPIC),
+     I                        CALFsediment, oneRL,
+     I                        bi, bj, iMin, iMax, jMin, jMax,
+     I                        myIter, myTime, myThid )
+
+      CALL DARWIN_ADD_BOTFORC(
+     U                        gPtr(1-OLx,1-OLy,1,iPOC),
+     I                        POCFsediment, oneRL,
+     I                        bi, bj, iMin, iMax, jMin, jMax,
+     I                        myIter, myTime, myThid )
+
 #endif
 #endif
 
