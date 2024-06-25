@@ -86,6 +86,17 @@ C
       _RL botSnkSi(sNx,sNy,nSx,nSy)
 # endif
 
+#ifdef DARWIN_ALLOW_CARBON
+#ifdef DARWIN_ALLOW_RADI
+C     Sediment fluxes
+      COMMON /DARWIN_CONS_RADI/
+     &      radiFLuxC, radiFLuxA, radiFLuxO
+      _RL radiFluxC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL radiFluxA(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL radiFluxO(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#endif
+
       COMMON /DARWIN_CONS_IMPFS/
      &      totFS,
      &      totFSC,
