@@ -214,6 +214,8 @@ C Determine flux, inc. correction for local atmos surface pressure
 
          gO2(i,j) =
      &      recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)*FluxO2(i,j)
+        ELSE
+         FluxO2(i,j) = 0. _d 0
         ENDIF
        ENDDO
       ENDDO
@@ -370,6 +372,8 @@ c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
      &      ff(i,j,bi,bj)*apCO2sat(i,j) - fugCO2(i,j)*ak0(i,j,bi,bj)
      &     )
           ELSE
+           apCO2sat(i,j) = 0. _d 0
+           fugCO2(i,j) = 0. _d 0
            FluxCO2(i,j) = 0. _d 0
           ENDIF
 C convert flux (mol kg-1 m s-1) to (mmol m-2 s-1)
