@@ -745,6 +745,9 @@ C       Accumulate for conservation check
         O2Fsediment(i,j) = 0. _d 0
         CALFsediment(i,j) = 0. _d 0
         POCFsediment(i,j) = 0. _d 0
+        fluxPIC(i,j) = 0. _d 0
+        fluxPOC(i,j) = 0. _d 0
+        OmegaC0(i,j) = 0. _d 0
         radiFluxC(i,j,bi,bj) = 0. _d 0
         radiFluxA(i,j,bi,bj) = 0. _d 0
         radiFluxO(i,j,bi,bj) = 0. _d 0
