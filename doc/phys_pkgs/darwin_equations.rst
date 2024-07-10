@@ -61,8 +61,8 @@ abbreviated source terms are described in sections below:
 - :math:`U`: uptake, see :ref:`Uptake` and :ref:`Bacteria`,
   also :ref:`Growth`, :ref:`CarbonStore`, :ref:`Light` and :ref:`Spectral`
 - :math:`M`: :ref:`Mortality`
-- :math:`R^{\mathrm{C}}`: :ref:`Respiration`
-- :math:`H`, :math:`R_j`: bacterial hydrolysis and remineralization, see :ref:`Bacteria`
+- :math:`R^{\mathrm{C}}`, :math:`R^{\mathrm{P}}`, ...: :ref:`Respiration`
+- :math:`H`, :math:`R^{\mathrm{DIC}}`, ...: bacterial hydrolysis and remineralization, see :ref:`Bacteria`
 - :math:`R`, :math:`P`: parameterized :ref:`Remineralization`
 - :math:`D_{\mathrm{NO3}}`: denitrification, see :ref:`Denitrification`
 - :math:`D_{\mathrm{PIC}}`: dissolution of PIC, see :ref:`CarbonChemistry`
