@@ -38,8 +38,8 @@ jobs:
 
      - name: Get a docker image and set it running
        run: |
-         docker pull mitgcm/testreport-images:ubuntu_18_04_villon
-         docker run  -v `pwd`:/MITgcm --name ubuntu_18_04-testreport -t -d mitgcm/testreport-images:ubuntu_18_04_villon /bin/bash
+         docker pull oliverjahn/testreport-images:ubuntu_18_04_villon
+         docker run  -v `pwd`:/MITgcm --name ubuntu_18_04-testreport -t -d oliverjahn/testreport-images:ubuntu_18_04_villon /bin/bash
 
      - name: Run a test
        env:
@@ -64,8 +64,8 @@ jobs:
 
      - name: Get a docker image and set it running
        run: |
-         docker pull mitgcm/mitgcm-openad-test:centos-test
-         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
+         docker pull oliverjahn/mitgcm-openad-test:centos-test
+         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm oliverjahn/mitgcm-openad-test:centos-test /bin/bash
 
      - name: Run testreport
        env:
@@ -100,8 +100,8 @@ jobs:
 
      - name: Get a docker image and set it running
        run: |
-         docker pull mitgcm/mitgcm-openad-test:centos-test
-         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
+         docker pull oliverjahn/mitgcm-openad-test:centos-test
+         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm oliverjahn/mitgcm-openad-test:centos-test /bin/bash
 
      - name: Run testreport
        env:

@@ -1,8 +1,12 @@
 FROM centos:centos7
 LABEL maintainer=mitgcm-devel@mitgcm.org
 
-RUN yum -y update; yum clean all
-RUN yum -y install epel-release wget csh; yum clean all
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+RUN yum -y update
+RUN yum clean all
+RUN yum -y install epel-release wget csh python3
+RUN yum clean all
 RUN yum -y groupinstall "Development Tools"
 RUN cd /root; wget http://www.mcs.anl.gov/%7Eutke/OpenAD_tars/493/OpenAD_2014-03-15.tgz; tar -xzvf OpenAD_2014-03-15.tgz
 COPY pfile /root/pfile
