@@ -92,22 +92,22 @@ C ======================================================================
        DO i=iMin,iMax
         DO k=1,Nr
 
-         part = MAX(Ptracer(i,j,k,bi,bj,iPOP), 0. _d 0)
-         part = part + (darwin_RPOC/120. _d 0)
+         part = MAX(Ptracer(i,j,k,bi,bj,iPOP), 0 _d 0)
+         part = part + (darwin_RPOC/120 _d 0)
          DO jp=1,nPhoto
 #ifdef DARWIN_ALLOW_CHLQUOTA
-          phychl(jp)=MAX(Ptracer(i,j,k,bi,bj,iChl+jp-1),0.)
+          phychl(jp)=MAX(Ptracer(i,j,k,bi,bj,iChl+jp-1),0 _d 0)
 #else
-          phychl(jp)=MAX(chlPrev(i,j,k,bi,bj,jp), 0.)
+          phychl(jp)=MAX(chlPrev(i,j,k,bi,bj,jp), 0 _d 0)
 #endif
          ENDDO
          DO jp=1,nPlank
-          plankcar(jp)=MAX(Ptracer(i,j,k,bi,bj,ic+jp-1),0.)
+          plankcar(jp)=MAX(Ptracer(i,j,k,bi,bj,ic+jp-1),0 _d 0)
          ENDDO
 
 #ifdef DARWIN_ALLOW_CDOM
 c use cdom-like tracer
-         CDOM = MAX(Ptracer(i,j,k,bi,bj,iCDOM), 0.0 _d 0)
+         CDOM = MAX(Ptracer(i,j,k,bi,bj,iCDOM), 0 _d 0)
          CDOM = CDOM + darwin_rCDOM
          DO l = 1,nlam
           aCDOM(i,j,k,l) = CDOMcoeff*CDOM*exCDOM(l)

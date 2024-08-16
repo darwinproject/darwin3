@@ -42,19 +42,19 @@ CEOP
 
 C  Sun Mean Longitude 		
       xls = 280.46592 _d 0 + 0.9856473516 _d 0*t
-      xls = MOD(xls,360.0)
+      xls = MOD(xls,360 _d 0)
 
 C  Sun Mean Anomaly		
       gs = 357.52772 _d 0 + 0.9856002831 _d 0*t
-      gs = MOD(gs,360.0)
+      gs = MOD(gs,360 _d 0)
 
 C  Moon Mean Longitude		
       xlm = 218.31643 _d 0 + 13.17639648 _d 0*t
-      xlm = MOD(xlm,360.0)
+      xlm = MOD(xlm,360 _d 0)
 
 C  Ascending Node of Moons Mean Orbit 	
       asc = 125.04452 _d 0 - 0.0529537648 _d 0*t
-      asc = MOD(asc,360.0)
+      asc = MOD(asc,360 _d 0)
 
 #endif /* ALLOW_SUN */
 
