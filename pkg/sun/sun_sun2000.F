@@ -54,15 +54,15 @@ C  Constant of aberration
 C  Compute planet mean anomalies
 C   Venus Mean Anomaly 	
       g2 = 50.40828 _d 0 + 1.60213022 _d 0*t
-      g2 = MOD(g2,360.0)
+      g2 = MOD(g2,360 _d 0)
 
 C   Mars Mean Anomaly 		
       g4 = 19.38816 _d 0 + 0.52402078 _d 0*t
-      g4 = MOD(g4,360.0)
+      g4 = MOD(g4,360 _d 0)
 
 C  Jupiter Mean Anomaly
       g5 = 20.35116 _d 0 + 0.08309121 _d 0*t
-      g5 = MOD(g5,360.0)
+      g5 = MOD(g5,360 _d 0)
 
 C  Compute solar distance (AU)
       rs = 1.00014 _d 0 - 0.01671 _d 0*COS(gs*deg2rad)
