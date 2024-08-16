@@ -78,70 +78,70 @@ C-    Account for change in level thickness
          upfc = upf(i,j,k)
          dnfc = dnf(i,j,k+1)
          IF (dnfc .GT. 0 _d 0) THEN
-          flux = wPIC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPIC))
+          flux = wPIC_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPIC))
           gTr(i,j,k  ,iPIC ) = gTr(i,j,k  ,iPIC ) - flux*upfc
           gTr(i,j,k+1,iPIC ) = gTr(i,j,k+1,iPIC ) + flux*dnfc
-          flux = wC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOC))
+          flux = wC_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPOC))
           gTr(i,j,k  ,iPOC ) = gTr(i,j,k  ,iPOC ) - flux*upfc
           gTr(i,j,k+1,iPOC ) = gTr(i,j,k+1,iPOC ) + flux*dnfc
-          flux = wN_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPON))
+          flux = wN_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPON))
           gTr(i,j,k  ,iPON ) = gTr(i,j,k  ,iPON ) - flux*upfc
           gTr(i,j,k+1,iPON ) = gTr(i,j,k+1,iPON ) + flux*dnfc
-          flux = wP_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOP))
+          flux = wP_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPOP))
           gTr(i,j,k  ,iPOP ) = gTr(i,j,k  ,iPOP ) - flux*upfc
           gTr(i,j,k+1,iPOP ) = gTr(i,j,k+1,iPOP ) + flux*dnfc
-          flux = wSi_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOSi))
+          flux = wSi_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPOSi))
           gTr(i,j,k  ,iPOSi) = gTr(i,j,k  ,iPOSi) - flux*upfc
           gTr(i,j,k+1,iPOSi) = gTr(i,j,k+1,iPOSi) + flux*dnfc
-          flux = wFe_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOFe))
+          flux = wFe_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPOFe))
           gTr(i,j,k  ,iPOFe) = gTr(i,j,k  ,iPOFe) - flux*upfc
           gTr(i,j,k+1,iPOFe) = gTr(i,j,k+1,iPOFe) + flux*dnfc
           DO l = 1, nplank
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ic+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,ic+l-1))
            gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) - flux*upfc
            gTr(i,j,k+1,ic+l-1 )=gTr(i,j,k+1,ic+l-1 ) + flux*dnfc
-           flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,ic+l-1))
+           flux = bioswim(l)*MAX(0 _d 0, Ptr(i,j,k+1,bi,bj,ic+l-1))
            gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) + flux*upfc
            gTr(i,j,k+1,ic+l-1 )=gTr(i,j,k+1,ic+l-1 ) - flux*dnfc
 #ifdef DARWIN_ALLOW_NQUOTA
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,in+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,in+l-1))
            gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) - flux*upfc
            gTr(i,j,k+1,in+l-1 )=gTr(i,j,k+1,in+l-1 ) + flux*dnfc
-           flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,in+l-1))
+           flux = bioswim(l)*MAX(0 _d 0, Ptr(i,j,k+1,bi,bj,in+l-1))
            gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) + flux*upfc
            gTr(i,j,k+1,in+l-1 )=gTr(i,j,k+1,in+l-1 ) - flux*dnfc
 #endif
 #ifdef DARWIN_ALLOW_PQUOTA
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ip+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,ip+l-1))
            gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) - flux*upfc
            gTr(i,j,k+1,ip+l-1 )=gTr(i,j,k+1,ip+l-1 ) + flux*dnfc
-           flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,ip+l-1))
+           flux = bioswim(l)*MAX(0 _d 0, Ptr(i,j,k+1,bi,bj,ip+l-1))
            gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) + flux*upfc
            gTr(i,j,k+1,ip+l-1 )=gTr(i,j,k+1,ip+l-1 ) - flux*dnfc
 #endif
 #ifdef DARWIN_ALLOW_SIQUOTA
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,isi+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,isi+l-1))
            gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) - flux*upfc
            gTr(i,j,k+1,isi+l-1)=gTr(i,j,k+1,isi+l-1) + flux*dnfc
-           flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,isi+l-1))
+           flux = bioswim(l)*MAX(0 _d 0, Ptr(i,j,k+1,bi,bj,isi+l-1))
            gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) + flux*upfc
            gTr(i,j,k+1,isi+l-1)=gTr(i,j,k+1,isi+l-1) - flux*dnfc
 #endif
 #ifdef DARWIN_ALLOW_FEQUOTA
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ife+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,ife+l-1))
            gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) - flux*upfc
            gTr(i,j,k+1,ife+l-1)=gTr(i,j,k+1,ife+l-1) + flux*dnfc
-           flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,ife+l-1))
+           flux = bioswim(l)*MAX(0 _d 0, Ptr(i,j,k+1,bi,bj,ife+l-1))
            gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) + flux*upfc
            gTr(i,j,k+1,ife+l-1)=gTr(i,j,k+1,ife+l-1) - flux*dnfc
 #endif
           ENDDO
 #ifdef DARWIN_ALLOW_CHLQUOTA
           DO l = 1, nPhoto
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,iChl+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iChl+l-1))
            gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)-flux*upfc
            gTr(i,j,k+1,iChl+l-1)=gTr(i,j,k+1,iChl+l-1)+flux*dnfc
-           flux = bioswim(l)*MAX(0.0, Ptr(i,j,k+1,bi,bj,iChl+l-1))
+           flux = bioswim(l)*MAX(0 _d 0, Ptr(i,j,k+1,bi,bj,iChl+l-1))
            gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)+flux*upfc
            gTr(i,j,k+1,iChl+l-1)=gTr(i,j,k+1,iChl+l-1)-flux*dnfc
           ENDDO
@@ -180,43 +180,43 @@ C-    Account for change in level thickness
         DO i=iMin,iMax
          upfc = upf(i,j,k)
          IF (upfc .GT. 0 _d 0) THEN
-          flux = wPIC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPIC))
+          flux = wPIC_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPIC))
           gTr(i,j,k  ,iPIC ) = gTr(i,j,k  ,iPIC ) - flux*upfc
 #ifdef DARWIN_ALLOW_CONS
           botSnkC(i,j,bi,bj) = botSnkC(i,j,bi,bj) + dTsub(k)*flux
 #endif
 C
-          flux = wC_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOC))
+          flux = wC_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPOC))
           gTr(i,j,k  ,iPOC ) = gTr(i,j,k  ,iPOC ) - flux*upfc
 #ifdef DARWIN_ALLOW_CONS
           botSnkC(i,j,bi,bj) = botSnkC(i,j,bi,bj) + dTsub(k)*flux
 #endif
 C
-          flux = wN_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPON))
+          flux = wN_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPON))
           gTr(i,j,k  ,iPON ) = gTr(i,j,k  ,iPON ) - flux*upfc
 #ifdef DARWIN_ALLOW_CONS
           botSnkN(i,j,bi,bj) = botSnkN(i,j,bi,bj) + dTsub(k)*flux
 #endif
 C
-          flux = wP_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOP))
+          flux = wP_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPOP))
           gTr(i,j,k  ,iPOP ) = gTr(i,j,k  ,iPOP ) - flux*upfc
 #ifdef DARWIN_ALLOW_CONS
           botSnkP(i,j,bi,bj) = botSnkP(i,j,bi,bj) + dTsub(k)*flux
 #endif
 C
-          flux = wFe_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOFe))
+          flux = wFe_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPOFe))
           gTr(i,j,k  ,iPOFe) = gTr(i,j,k  ,iPOFe) - flux*upfc
 #ifdef DARWIN_ALLOW_CONS
           botSnkFe(i,j,bi,bj) = botSnkFe(i,j,bi,bj) + dTsub(k)*flux
 #endif
 C
-          flux = wSi_sink*MAX(0.0, Ptr(i,j,k,bi,bj,iPOSi))
+          flux = wSi_sink*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iPOSi))
           gTr(i,j,k  ,iPOSi) = gTr(i,j,k  ,iPOSi) - flux*upfc
 #ifdef DARWIN_ALLOW_CONS
           botSnkSi(i,j,bi,bj) = botSnkSi(i,j,bi,bj) + dTsub(k)*flux
 #endif
           DO l = 1, nplank
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ic+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,ic+l-1))
            gTr(i,j,k  ,ic+l-1 )=gTr(i,j,k  ,ic+l-1 ) - flux*upfc
 #ifdef DARWIN_ALLOW_CONS
            botSnkC(i,j,bi,bj) = botSnkC(i,j,bi,bj) + dTsub(k)*flux
@@ -240,7 +240,7 @@ C
 #endif
 C
 #ifdef DARWIN_ALLOW_NQUOTA
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,in+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,in+l-1))
            gTr(i,j,k  ,in+l-1 )=gTr(i,j,k  ,in+l-1 ) - flux*upfc
 # ifdef DARWIN_ALLOW_CONS
            botSnkN(i,j,bi,bj) = botSnkN(i,j,bi,bj) + dTsub(k)*flux
@@ -248,7 +248,7 @@ C
 #endif
 C
 #ifdef DARWIN_ALLOW_PQUOTA
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ip+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,ip+l-1))
            gTr(i,j,k  ,ip+l-1 )=gTr(i,j,k  ,ip+l-1 ) - flux*upfc
 # ifdef DARWIN_ALLOW_CONS
            botSnkP(i,j,bi,bj) = botSnkP(i,j,bi,bj) + dTsub(k)*flux
@@ -256,7 +256,7 @@ C
 #endif
 C
 #ifdef DARWIN_ALLOW_FEQUOTA
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,ife+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,ife+l-1))
            gTr(i,j,k  ,ife+l-1)=gTr(i,j,k  ,ife+l-1) - flux*upfc
 # ifdef DARWIN_ALLOW_CONS
            botSnkFe(i,j,bi,bj) = botSnkFe(i,j,bi,bj) + dTsub(k)*flux
@@ -264,7 +264,7 @@ C
 #endif
 C
 #ifdef DARWIN_ALLOW_SIQUOTA
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,isi+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,isi+l-1))
            gTr(i,j,k  ,isi+l-1)=gTr(i,j,k  ,isi+l-1) - flux*upfc
 # ifdef DARWIN_ALLOW_CONS
            botSnkSi(i,j,bi,bj) = botSnkSi(i,j,bi,bj) + dTsub(k)*flux
@@ -273,7 +273,7 @@ C
           ENDDO
 #ifdef DARWIN_ALLOW_CHLQUOTA
           DO l = 1, nPhoto
-           flux = biosink(l)*MAX(0.0, Ptr(i,j,k,bi,bj,iChl+l-1))
+           flux = biosink(l)*MAX(0 _d 0, Ptr(i,j,k,bi,bj,iChl+l-1))
            gTr(i,j,k  ,iChl+l-1)=gTr(i,j,k  ,iChl+l-1)-flux*upfc
           ENDDO
 #endif

@@ -697,8 +697,8 @@ C       resolve sediment fluxes at coastal regions
         TcorrALK(i,j) = (0.015179 _d 0+0.000795 _d 0*absT)/0.016292 _d 0
 
 C       Dependent variables
-        fluxPIC(i,j) = wPIC_sink*MAX(0.0,Ptracer(i,j,k,bi,bj,iPIC))
-        fluxPOC(i,j) = wC_sink*MAX(0.0,Ptracer(i,j,k,bi,bj,iPOC))
+        fluxPIC(i,j) = wPIC_sink*MAX(0 _d 0,Ptracer(i,j,k,bi,bj,iPIC))
+        fluxPOC(i,j) = wC_sink*MAX(0 _d 0,Ptracer(i,j,k,bi,bj,iPOC))
 
         OmegaC0(i,j) = omegaC(i,j,k,bi,bj)
 
