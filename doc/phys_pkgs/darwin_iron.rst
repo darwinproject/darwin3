@@ -97,39 +97,29 @@ The scavenging rate for free iron is
 To select particle-based scavenging following Parekh et al. (2005)
 :cite:`parekh:2005`, define :varlink:`DARWIN_PART_SCAV`.  POM is the
 concentration of particulate organic matter in units of mg/L.  It is
-parameterized in terms of POC, POSi and PIC,
+parameterized in terms of POC, PSi and PIC,
 
 .. math::
 
    \op{POM} = w^{\text{scav}}_{\text{POC}} \op{POC}
-            + w^{\text{scav}}_{\text{POSi}} \op{POSi}
+            + w^{\text{scav}}_{\text{PSi}} \op{PSi}
             + w^{\text{scav}}_{\text{PIC}} \op{PIC}
+            + \op{rPOM}
    \;.
 
-The value for :math:`w^{\text{scav}}_{\text{POC}}` is taken from Rios et al.
-(1998) :cite:`rios:1998` as the weight of as detritus without opal per mol of
-carbon.  :math:`w^{\text{scav}}_{\text{POSi}}` and
-:math:`w^{\text{scav}}_{\text{PIC}}` are just the molecular weights of opal
-(per mol Si) and calcium carbonate, see
+By default, only POC contributes, see
 :numref:`tab_phys_pkgs_darwin_iron_params`.
 
-.. admonition:: deprecated formulations
+.. admonition:: deprecated formulation
 
    The old (and deprecated) formulation of scavenging in terms of POP can be
    recovered by defining :varlink:`DARWIN_PART_SCAV_POP`, in which case
    :math:`\op{POM}` is replaced by
    :math:`\op{POP}\!/R^{\op{POP}:\op{POC}}_{{\text{scav}}}`.  Parameter names
    and defaults are different in this case, see
-   :numref:`tab_phys_pkgs_darwin_scav_pop`.  For comparison: this formulation
-   with its default parameters could also be recovered in the new formulation
-   (with new default parameters) by setting
-   :math:`\op{POM}=w^{\text{scav}}_{\text{POP}} \op{POP}` where
-   :math:`w^{\text{scav}}_{\text{POP}}\approx 15.274` g/mmol P.
-
-   The faulty formulation in terms of POC only that existed before 2022-12-05
-   can be recovered by setting scav_POC_wgt=1, scav_PIC_wgt=0 and
-   scav_POSi_wgt=0 and making sure the product scav_tau*scav_inter has the same
-   value as scav_rat*scav_inter before.
+   :numref:`tab_phys_pkgs_darwin_scav_pop`.  The new formulation with default
+   parameters closely approximates the old formulation with its default
+   parameters when POC:POP is 120:1.
 
 The concentration of free iron, Fe', is determined following Parekh et al.
 (2004) :cite:`parekh:2004` and Dutkiewicz et al. (2005)
@@ -180,9 +170,10 @@ and after each biogeochemical subtimestep.
    :varlink:`scav_tau`      & :math:`\tau_{\op{scav}}`             & 0.2         &                        & factor for converting Th scavenging rates to iron ones
    :varlink:`scav_inter`    & :math:`I_{\op{scav}}`                & 0.079 / day & L\ :sup:`e` mg\ :sup:`-e` s\ :sup:`-1` & intercept of scavenging power law (e=e\ :sub:`scav`)
    :varlink:`scav_exp`      & :math:`e_{\op{scav}}`                & 0.58        &                        & exponent of scavenging power law
-   :varlink:`scav_POC_wgt`  & :math:`w^{\op{scav}}_{\op{POC}}`     & 0.02173     & g/mmol |nbsp| C        & weight POC contributes to POM
-   :varlink:`scav_POSi_wgt` & :math:`w^{\op{scav}}_{\op{POSi}}`    & 0.069       & g/mmol |nbsp| Si       & weight POSi contributes to POM
-   :varlink:`scav_PIC_wgt`  & :math:`w^{\op{scav}}_{\op{PIC}}`     & 0.100       & g/mmol |nbsp| C        & weight PIC contributes to POM
+   :varlink:`scav_POC_wgt`  & :math:`w^{\op{scav}}_{\op{POC}}`     & 0.12728     & g/mmol |nbsp| C        & weight POC contributes to POM
+   :varlink:`scav_PSi_wgt`  & :math:`w^{\op{scav}}_{\op{PSi}}`     & 0.0         & g/mmol |nbsp| Si       & weight PSi contributes to POM
+   :varlink:`scav_PIC_wgt`  & :math:`w^{\op{scav}}_{\op{PIC}}`     & 0.0         & g/mmol |nbsp| C        & weight PIC contributes to POM
+   :varlink:`scav_rPOM`     & :math:`\op{rPOM}`                    & 0.0         & g/m\ :sup:`3`          & concentration of non-labile POM for scavenging
    :varlink:`ligand_tot`    & :math:`L_{\op{T}}`                   & 1E-3        & mmol/m\ :sup:`3`       & total ligand concentration
    :varlink:`ligand_stab`   & :math:`\beta_{\op{stab}}`            & 0.2E6       & m\ :sup:`3`/mmol       & ligand stability rate ratio
    :varlink:`freefemax`     & :math:`\op{Fe}'_{\op{max}}`          & 0.4E-3      & mmol/m\ :sup:`3`       & max concentration of free iron
