@@ -247,8 +247,9 @@ C     scav_tau          :: [1]                 factor to go from Th scavenging r
 C     scav_inter        :: [L^e mg^-e s^-1]    intercept of scavenging power law (e=scav_exp)
 C     scav_exp          :: [1]                 exponent of scavenging power law
 C     scav_POC_wgt      :: [g / mmol C]        weight POC contributes to POM for scavenging
-C     scav_POSi_wgt     :: [g / mmol Si]       weight POSi contributes to POM for scavenging
+C     scav_PSi_wgt      :: [g / mmol Si]       weight PSi contributes to POM for scavenging
 C     scav_PIC_wgt      :: [g / mmol C]        weight PIC contributes to POM for scavenging
+C     scav_degrPOM      :: [g/m3]              concentration of non-labile POM for scavenging
 C     scav_rat          :: [1]                 factor Th to iron for DARWIN_PART_SCAV_POP
 C     scav_R_POPPOC     :: [mmol P / g C]      POP:POC ratio for DARWIN_PART_SCAV_POP
 C     depthfesed        :: [m]                 depth above which to add sediment source (was -1000)
@@ -378,8 +379,9 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    scav_inter,
      &    scav_exp,
      &    scav_POC_wgt,
-     &    scav_POSi_wgt,
+     &    scav_PSi_wgt,
      &    scav_PIC_wgt,
+     &    scav_degrPOM,
 #else
      &    scav,
 #endif
@@ -497,8 +499,9 @@ C     &    yono2,
       _RL scav_inter
       _RL scav_exp
       _RL scav_POC_wgt
-      _RL scav_POSi_wgt
+      _RL scav_PSi_wgt
       _RL scav_PIC_wgt
+      _RL scav_degrPOM
 #else
       _RL scav
 #endif

@@ -407,8 +407,9 @@ C       compute POM in mg/L
         scv = scav_rat*scav_inter*(scav_pom**scav_exp)
 #elif defined(DARWIN_PART_SCAV)
         scav_pom = scav_POC_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOC))
-     &           + scav_POSi_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOSi))
+     &           + scav_PSi_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPOSi))
      &           + scav_PIC_wgt*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,iPIC))
+     &           + scav_degrPOM
         scv = scav_tau*scav_inter*(scav_pom**scav_exp)
 #else
         scv = scav
