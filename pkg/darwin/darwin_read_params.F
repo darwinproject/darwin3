@@ -115,8 +115,9 @@ C----
      &    scav_inter,
      &    scav_exp,
      &    scav_POC_wgt,
-     &    scav_POSi_wgt,
+     &    scav_PSi_wgt,
      &    scav_PIC_wgt,
+     &    scav_degrPOM,
 #else
      &    scav,
 #endif
@@ -393,12 +394,13 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       scav_exp = 0.58 _d 0
       scav_R_POPPOC = 1.1321 _d -4
 #elif defined(DARWIN_PART_SCAV)
-      scav_tau = 0.2
+      scav_tau = 0.2 _d 0
       scav_inter = 0.079 _d 0 / pday
       scav_exp = 0.58 _d 0
-      scav_POC_wgt = 0.02173 _d 0
-      scav_POSi_wgt = 0.069 _d 0
-      scav_PIC_wgt = 0.100 _d 0
+      scav_POC_wgt = 0.12728 _d 0
+      scav_PSi_wgt = 0 _d 0
+      scav_PIC_wgt = 0 _d 0
+      scav_degrPOM = 0 _d 0
 #else
       scav = 0.4 _d 0/pyear
 #endif
