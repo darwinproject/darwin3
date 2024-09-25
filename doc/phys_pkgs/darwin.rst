@@ -897,6 +897,15 @@ Diagnostics
    GR####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Grazing loss of plankton ####
    GrGn####   & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Grazing gain of plankton ####
    GrGC####   & ``SMRP____MR`` & 1/s                             & Carbon-specific grazing rate plankton ####
+   Mort####   & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Mortality loss plankton ####
+   Resp####   & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Respiration loss plankton ####
+   limN####   & ``SMRP____MR`` & [0/1]                           & N growth limitation plankton ####
+   limP####   & ``SMRP____MR`` & [0/1]                           & P growth limitation plankton ####
+   limF####   & ``SMRP____MR`` & [0/1]                           & Fe growth limitation plankton ####
+   limS####   & ``SMRP____MR`` & [0/1]                           & Si growth limitation plankton ####
+   fnut####   & ``SMRP____MR`` & [0/1]                           & Nutrient growth factor plankton ####
+   fIph####   & ``SMRP____MR`` & [0/1]                           & Light growth factor plankton ####
+   fTph####   & ``SMRP____MR`` & [0/1]                           & Temperature growth factor plankton ####
    EXU####    & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Exudation plankton ####
    BS####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Biosynthesis rate plankton ####
    DN####     & ``SMRP____MR`` & mmol C /m\ :sup:`3`/s           & Carbon demand from N limit plankton ####
