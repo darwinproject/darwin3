@@ -686,7 +686,7 @@ or decreasing precedence),
 
    V_j = \begin{cases}
        \op{grp\_biovol(i,g)} &  \\
-       V_{\log}(\op{grp\_biovolind(i,g)}) \\
+       V_{\log}(\op{grp\_logvolind(i,g)}) \\
        V_{\log}(\op{logvol0ind(g)}+i-1) \\
        V_{0 g} f_g^{i-1}
      \end{cases}
