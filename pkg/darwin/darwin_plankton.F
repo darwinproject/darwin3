@@ -668,9 +668,9 @@ C a la quota
 
 C       carbon-specific growth rate
         IF (PCm .GT. 0.0 .AND. PARtot .GT. PARmin) THEN
-          PC = PCm*(1-EXP(-alpha_I_growth*chl2c/PCm))
+          limitI = 1 _d 0 - EXP(-alpha_I_growth*chl2c/PCm)
         ELSE
-          PC = 0.0 _d 0
+          limitI = 0 _d 0
         ENDIF
 
         IF (inhibGeider(j) .GT. 0.0) THEN
@@ -679,9 +679,11 @@ C         "total" PAR:
           Ek = PCm/(chl2c*alpha_mean(j))
           IF (tmp .GT. Ek) THEN
             EkoverE = Ek / tmp
-            PC = PC*EkoverE*inhibGeider(j)
+            limitI = limitI*EkoverE*inhibGeider(j)
           ENDIF
         ENDIF
+
+        PC = PCm*limitI
 
 #else /* not DARWIN_ALLOW_GEIDER */
 
@@ -691,6 +693,7 @@ C         only 1 waveband without DARWIN_ALLOW_GEIDER
      &             EXP(-PARtot*kinhPAR(j)) * normI(j)
           PC = PCmax(j)*limitnut*limitI*photoTempFunc(j)*limitpCO2
         ELSE
+          limitI = 0 _d 0
           PC = 0.0 _d 0
         ENDIF
         synthChl = 0.0
@@ -708,6 +711,9 @@ C Zooplankton respiration is handled in the mortality/exudation loop.
         respir_c = respRate(j)*Xe*reminTempFunc
         respir = respir + respir_c
         uptakeDIC = photoSyn - respir_c
+#ifdef DARWIN_DIAG_PERTYPE
+        diags(iResp+j-1) = respir_c
+#endif
 
 C==== Growth ===========================================================
 C Growth is growth rate of functional internal carbon
@@ -806,6 +812,15 @@ C==== Nutrient consumption =============================================
 #ifdef DARWIN_DIAG_PERTYPE
         diags(iPPplank+j-1) = diags(iPPplank+j-1) + uptakeDIC
         diags(iPCplank+j-1) = diags(iPCplank+j-1) + PC
+C  which nutrient is limiting growth?
+        IF (limitnut==limitn) diags(ilimN+j-1) = 1 _d 0
+        IF (limitnut==limitp) diags(ilimP+j-1) = 1 _d 0
+        IF (limitnut==limitfe) diags(ilimF+j-1) = 1 _d 0
+        IF (limitnut==limitsi) diags(ilimS+j-1) = 1 _d 0
+C factors that go into growth equation
+        diags(ifIph+j-1) = limitI
+        diags(ifTph+j-1) = photoTempFunc(j)
+        diags(ifnut+j-1) = limitnut
 #endif
         IF (diazo(j) .GT. 0.0 _d 0) THEN
          diags(iNfix)=diags(iNfix)+uptakeN-uptakeNH4-uptakeNO2-uptakeNO3
@@ -1566,6 +1581,9 @@ C to DIC as if it had never been synthesized.
         IF (isPhoto(jp) .EQ. 0) THEN
          respir_c = respRate(jp)*Xe*reminTempFunc
          gTr(ic+jp-1) = gTr(ic+jp-1) - respir_c
+#ifdef DARWIN_DIAG_PERTYPE
+         diags(iResp+jp-1) = respir_c
+#endif
          respir = respir + respir_c*(1 _d 0 + R_PICPOC(jp))
 #ifndef DARWIN_ALLOW_NQUOTA
          respirN = respirN + respir_c*R_NC(jp)
@@ -1594,6 +1612,10 @@ C to DIC as if it had never been synthesized.
 #ifdef DARWIN_ALLOW_FEQUOTA
         gTr(ife+jp-1)=gTr(ife+jp-1) - mort_c(jp)*Qfe(jp)
 #endif
+#ifdef DARWIN_DIAG_PERTYPE
+        diags(iMort+jp-1) = mort_c(jp)
+#endif
+
 
 #ifdef DARWIN_ALLOW_EXUDE
         exude_DOC =
