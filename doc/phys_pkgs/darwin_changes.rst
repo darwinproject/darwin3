@@ -5,6 +5,83 @@ Change Log
 
 (bug fixes and breaking changes in bold)
 
+darwin_ckpt69b
+
+- 2024-10-04 **Revert scavenging defaults to POP-based equivalents: only POC scavenges**
+- 2024-10-04 Add per-type diagnostics for limitation factors etc
+
+darwin_ckpt68z
+
+- 2024-06-25 Fix diagnostics call for sedFe
+- 2024-06-25 Add RADI sediment fluxes to cons check
+- 2024-06-25 **Rescale RADI sediment fluxes for NLFS**
+
+darwin_ckpt68x
+
+- 2024-04-05 **Really use surfSiMin**
+
+darwin_ckpy68v
+
+- 2024-01-18 Add oasim package
+- 2024-01-18 Add option to use diel solar zenith angle
+- 2024-01-17 **Fix case RT_useMeanCosSolz=.FALSE.**
+
+darwin_ckpt68p
+
+- 2023-04-19 Add cons check for implicit linear free surface
+- 2023-04-19 **Write Chlorophyll to pickup with radtrans**
+- 2023-04-19 **Mask POP-based sediment source with shelfice**
+- 2023-04-19 **Use mask at actual k for saphe coeffs**
+- 2023-03-16 **Fix unit conversion for Munhoven solver**
+- 2023-03-16 **Mask sinking properly with shelfice**
+
+darwin_ckpt68o
+
+- 2023-02-27 **Update use pload option, use surf_pRef**
+- 2023-02-26 Add RADI sediment model
+- 2023-02-25 Add Naviaux calcite dissolution rate
+- 2023-02-25 Add Keir calcite dissolution rate
+- 2023-02-25 Add carbonate and calcite saturation diags
+- 2023-02-25 Compute calcite saturation ratio OmegaC
+- 2023-02-21 Add Munhoven solver
+
+darwin_ckpt68n
+
+- 2023-01-03 **Add scavenging by POC, POSi and PIC**
+- 2023-01-03 Add iron source from hydrothermal vents
+- 2023-01-03 Add ventHe3 forcing
+
+darwin_ckpt68m
+
+- 2022-11-25 **Fix freeFeLs diagnostic**
+- 2022-10-31 **Avoid division by very small numbers**
+- 2022-10-31 Only write darwin cons info at beginning of longstep
+- 2022-10-28 **Fix mortality source for CDOM in carbon units**
+
+darwin_ckpt68l
+
+- 2022-10-19 Avoid division by zero with inhibGeider
+- 2022-10-17 **Add missing initialization for LS_fwFlux**
+- 2022-09-26 Add nutrient runoff to conservation check
+- 2022-09-23 Add nutrient runoff forcing
+
+darwin_ckpt68k
+
+- 2022-08-23 Fix O2 consumption diag and cons check
+- 2022-06-29 Add cons correction from precip, evap, runoff with non-linear free surface
+- 2022-06-29 Add cons correction due to bottom sinking
+- 2022-06-29 Rescale sinking fluxes for nonlinear free surface
+- 2022-06-29 Rescale surface and sediment fluxes for NLFS
+- 2022-06-29 Rescale alkalinity flux by hFacC
+- 2022-06-29 Overhaul conservation check
+- 2022-06-29 Add conservation check before thermodynamics
+- 2022-06-29 Only call second darwin_fe_chem if DARWIN_MINFE
+- 2022-06-29 Always include PIC code
+- 2022-06-29 Check that bacteria do not have silica
+- 2022-06-29 Maintain bacterial elemental ratios with quotas
+
+darwin_ckpt68i
+
 - 2022-03-30 Add code for internal carbon store and exudation
 - 2022-03-30 **Fix conservation of non-quota elems with parameterized respiration**
 - 2022-03-30 **Adjust uptake of non-quota elements for synthcost**
