@@ -1,0 +1,181 @@
+#include "DARWIN_OPTIONS.h"
+#include "EXF_OPTIONS.h"
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: DARWIN_INIT_VARIA
+
+C     !INTERFACE:
+      SUBROUTINE DARWIN_INIT_VARIA( myThid )
+
+C     !DESCRIPTION:
+C     Initialize DARWIN constants
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "GRID.h"
+#include "PARAMS.h"
+#include "EXF_PARAM.h"
+#include "EXF_FIELDS.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
+#include "DARWIN_SIZE.h"
+#include "DARWIN_INDICES.h"
+#include "DARWIN_PARAMS.h"
+#include "DARWIN_TRAITS.h"
+#include "DARWIN_EXF_FIELDS.h"
+#include "DARWIN_FIELDS.h"
+
+C     !INPUT PARAMETERS:
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_DARWIN
+C     !LOCAL VARIABLES:
+      _RL dTsub(Nr)
+      INTEGER i,j,k,bi,bj,jp
+
+      CALL DARWIN_EXF_INIT_VARIA(myThid)
+
+      IF (DARWIN_useEXFwind) THEN
+       DO bj=myByLo(mythid),myByHi(myThid)
+        DO bi=myBxLo(mythid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           windSpeed(i,j,bi,bj) = wspeed(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+
+#ifdef DARWIN_ALLOW_CARBON
+      DO bj=myByLo(mythid),myByHi(myThid)
+       DO bi=myBxLo(mythid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         AtmosP(i,j,bi,bj) = 1.0 _d 0
+        ENDDO
+        ENDDO
+        IF (pCO2File .EQ. ' ') THEN
+         DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          atmospCO2(i,j,bi,bj) = darwin_atmos_pCO2
+         ENDDO
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDDO
+#endif
+
+#ifndef DARWIN_ALLOW_CHLQUOTA
+      chlPrev = 0.0 _d 0
+#endif
+
+      IF (nIter0.EQ.PTRACERS_Iter0) THEN
+       DO jp=1,nplank
+        IF (diazo(jp) .EQ. 1) THEN
+         DO bj=myByLo(mythid),myByHi(myThid)
+         DO bi=myBxLo(mythid),myBxHi(myThid)
+         DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          Ptracer(i,j,k,bi,bj,ic+jp-1)=Ptracer(i,j,k,bi,bj,ic+jp-1)*
+     &                                 diaz_ini_fac
+#ifdef DARWIN_ALLOW_NQUOTA
+          Ptracer(i,j,k,bi,bj,in+jp-1)=Ptracer(i,j,k,bi,bj,in+jp-1)*
+     &                                 diaz_ini_fac
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+          Ptracer(i,j,k,bi,bj,ip+jp-1)=Ptracer(i,j,k,bi,bj,ip+jp-1)*
+     &                                 diaz_ini_fac
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+          Ptracer(i,j,k,bi,bj,ife+jp-1)=Ptracer(i,j,k,bi,bj,ife+jp-1)*
+     &                                  diaz_ini_fac
+#endif
+#ifdef DARWIN_ALLOW_SIQUOTA
+          Ptracer(i,j,k,bi,bj,isi+jp-1)=Ptracer(i,j,k,bi,bj,isi+jp-1)*
+     &                                  diaz_ini_fac
+#endif
+#ifdef DARWIN_ALLOW_CHLQUOTA
+          Ptracer(i,j,k,bi,bj,ichl+jp-1)=Ptracer(i,j,k,bi,bj,ichl+jp-1)*
+     &                                   diaz_ini_fac
+#endif
+         ENDDO
+         ENDDO
+         ENDDO
+         ENDDO
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+
+      IF (darwin_read_phos .AND. nIter0.EQ.PTRACERS_Iter0) THEN
+       DO jp=1,nplank
+        DO bj=myByLo(mythid),myByHi(myThid)
+        DO bi=myBxLo(mythid),myBxHi(myThid)
+        DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         Ptracer(i,j,k,bi,bj,ic+jp-1) = Ptracer(i,j,k,bi,bj,ic+jp-1)*
+     &                                  120 _d 0
+        ENDDO
+        ENDDO
+        ENDDO
+        ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+ 
+      IF ( nIter0.GT.PTRACERS_Iter0 .OR.
+     &    (nIter0.EQ.PTRACERS_Iter0 .AND. pickupSuff.NE.' ')
+     &   ) THEN
+       CALL DARWIN_READ_PICKUP(nIter0, myThid)
+      ENDIF
+
+      IF (nIter0 .EQ. darwin_chlIter0) THEN
+C      Initialize Chl from balanced-growth Chl:C if requested
+C      and check Chl:C bounds.
+C      use current time for insol
+       DO bj=myByLo(mythid),myByHi(myThid)
+       DO bi=myBxLo(mythid),myBxHi(myThid)
+        CALL DARWIN_INIT_CHL(bi, bj, startTime, nIter0, myThid)
+       ENDDO
+       ENDDO
+      ENDIF
+
+#ifdef DARWIN_ALLOW_CARBON
+      CALL DARWIN_SURFFORCING_INIT( myThid )
+#endif
+
+#ifdef DARWIN_ALLOW_CONS
+      IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
+       CALL MDSFINDUNIT( DAR_cons_c_unit, mythid )
+       open(DAR_cons_C_unit,file='darwin_cons_C.txt',status='unknown')
+       CALL MDSFINDUNIT( DAR_cons_p_unit, mythid )
+       open(DAR_cons_P_unit,file='darwin_cons_P.txt',status='unknown')
+       CALL MDSFINDUNIT( DAR_cons_n_unit, mythid )
+       open(DAR_cons_N_unit,file='darwin_cons_N.txt',status='unknown')
+       CALL MDSFINDUNIT( DAR_cons_fe_unit, mythid )
+       open(DAR_cons_Fe_unit,file='darwin_cons_Fe.txt',status='unknown')
+       CALL MDSFINDUNIT( DAR_cons_si_unit, mythid )
+       open(DAR_cons_Si_unit,file='darwin_cons_Si.txt',status='unknown')
+#ifdef DARWIN_ALLOW_CARBON
+       CALL MDSFINDUNIT( DAR_cons_a_unit, mythid )
+       open(DAR_cons_A_unit,file='darwin_cons_A.txt',status='unknown')
+       CALL MDSFINDUNIT( DAR_cons_o_unit, mythid )
+       open(DAR_cons_O_unit,file='darwin_cons_O.txt',status='unknown')
+#endif
+c     myProcId and myThid
+      ENDIF
+#endif
+
+#endif /* ALLOW_DARWIN */
+
+      RETURN
+      END
+

@@ -56,6 +56,8 @@ C       |-- CHEAPAML_INIT_VARIA
 C       |
 C       |-- FLT_INIT_VARIA
 C       |
+C       |-- RADTRANS_INIT_VARI
+C       |
 C       |-- PTRACERS_INIT_VARIA
 C       |
 C       |-- LONGSTEP_INIT_VARIA
@@ -276,6 +278,16 @@ C--   Initialise float position
         CALL FLT_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_FLT */
+
+#ifdef ALLOW_SUN
+      CALL SUN_INIT_VARIA( myThid )
+#endif /* ALLOW_SUN */
+
+#ifdef ALLOW_RADTRANS
+      IF (useRADTRANS) THEN
+        CALL RADTRANS_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_RADTRANS */
 
 #ifdef ALLOW_PTRACERS
 # ifndef ALLOW_AUTODIFF

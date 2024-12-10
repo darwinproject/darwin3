@@ -1,0 +1,192 @@
+#!/usr/bin/env python
+'''
+Call this in the build directory (or in any directory with current DARWIN_SIZE.h
+and DARWIN_INDICES.h), and it will print a part of data.ptracers with tracer
+names appropriate for this setup.
+
+Options:
+
+  -r    include "PTRACERS_ref" lines
+  -f    include "PTRACERS_initialFile" lines
+  -u    include "PTRACERS_units" lines
+  -s    print names, units, etc separately
+
+Example:
+
+  mkdarwintracers -r >> data.ptracers
+'''
+import sys
+import os
+import re
+from math import log10
+from fortran import OrderedDict
+from subprocess import Popen, PIPE
+from fortran import readparameters
+
+units = {
+    'DIC':     'mmol C/m^3',
+    'NH4':     'mmol N/m^3',
+    'NO2':     'mmol N/m^3',
+    'NO3':     'mmol N/m^3',
+    'PO4':     'mmol P/m^3',
+    'SiO2':    'mmol Si/m^3',
+    'FeT':     'mmol Fe/m^3',
+    'DOC':     'mmol C/m^3',
+    'DON':     'mmol N/m^3',
+    'DOP':     'mmol P/m^3',
+    'DOFe':    'mmol Fe/m^3',
+    'POC':     'mmol C/m^3',
+    'PON':     'mmol N/m^3',
+    'POP':     'mmol P/m^3',
+    'POSi':    'mmol Si/m^3',
+    'POFe':    'mmol Fe/m^3',
+    'PIC':     'mmol C/m^3',
+    'ALK':     'mmol eq/m^3',
+    'O2':      'mmol O/m^3',
+    'CDOM':    'mmol C/m^3',
+}
+unitsre = {
+    '^c[0-9]':   'mmol C/m^3',
+    '^n[0-9]':   'mmol N/m^3',
+    '^p[0-9]':   'mmol P/m^3',
+    '^si[0-9]':  'mmol Si/m^3',
+    '^fe[0-9]':  'mmol Fe/m^3',
+    '^Chl[0-9]': 'mg Chl a/m^3',
+}
+def getunit(name):
+    try:
+        return units[name]
+    except KeyError:
+        for k,v in unitsre.items():
+            if re.match(k, name):
+                return v
+        else:
+            return None
+
+def findfile(fname):
+    origfname = fname
+    if os.path.exists(fname): return fname
+    fname = os.path.join('..', 'pkg', 'darwin', fname)
+    if os.path.exists(fname): return fname
+    fname = os.path.join('..', fname)
+    if os.path.exists(fname): return fname
+    fname = os.path.join('..', fname)
+    if os.path.exists(fname): return fname
+    raise RuntimeError('File not found: {}\n'.format(origfname))
+
+
+args = sys.argv[1:]
+if '-h' in args or '--help' in args:
+    sys.exit(__doc__)
+printref = '-r' in args
+printfile = '-f' in args
+printunits = '-u' in args
+separate = '-s' in args
+template = None
+for arg in args:
+    if arg not in ['-r', '-f', '-u', '-s']:
+        if template is None:
+            template = arg
+        else:
+            sys.exit(__doc__)
+
+files = []
+for fname in ['DARWIN_OPTIONS.h', 'DARWIN_SIZE.h', 'DARWIN_INDICES.h']:
+    files.append(findfile(fname))
+sys.stderr.write(' '.join(['Using']+files) + '\n')
+pipe1 = Popen(['cat'] + files, stdout=PIPE)
+pipe2 = Popen(['grep', '-v', 'PACKAGES_CONFIG'], stdin=pipe1.stdout, stdout=PIPE)
+pipe1.stdout.close()
+pipe3 = Popen(['grep', '-v', 'CPP_OPTIONS'], stdin=pipe2.stdout, stdout=PIPE)
+pipe2.stdout.close()
+pipe4 = Popen(['cpp', '-DALLOW_DARWIN', '-traditional', '-P'], stdin=pipe3.stdout, stdout=PIPE)
+pipe3.stdout.close()
+p = readparameters(pipe4.stdout)
+pipe4.stdout.close()
+
+digits = int(log10(int(p['nplank']))) + 1
+
+ends = OrderedDict((k[1:], v) for k,v in p.items() if k.startswith('e'))
+starts = OrderedDict((k[1:], v) for k,v in p.items() if k.startswith('i') and k[1:4] not in ['Min', 'Max'])
+cellnames = ends.keys()
+for k in starts:
+    if k not in ends:
+        ends[k] = starts[k]
+
+nptr = max(ends.values())
+
+print " &PTRACERS_PARM01"
+print " PTRACERS_numInUse= {0},".format(nptr)
+
+valdict = {}
+if template is not None:
+    with open(template) as f:
+        for line in f:
+            try:
+                name,val = line.rstrip().split('=')
+            except ValueError:
+                raise ValueError('#{0}#'.format(line.rstrip()))
+            name = name.strip()
+            val = val.strip()
+            if name.startswith('PTRACERS'):
+                print ' ' + line.rstrip().replace('N', str(nptr)) + ','
+            else:
+                valdict[name] = val
+
+files = []
+unitl = []
+refs = []
+for k,s in sorted(starts.items(), key=lambda x:x[1]):
+    e = ends[k]
+    for i in range(s,e+1):
+        if k in cellnames:
+            name = '{0}{1:0{d}d}'.format(k, i-s+1, d=digits)
+        else:
+            name = k
+        out = " PTRACERS_names({0})= '{1}',".format(i, name)
+        if separate:
+            print out
+        else:
+            print "      " + out
+        if name in valdict:
+            val = valdict[name]
+            if val[0] == "'":
+                out = " PTRACERS_initialFile({0})=       {1},".format(i, val)
+                if separate:
+                    files.append(out)
+                else:
+                    print out
+            else:
+                out = " PTRACERS_ref(:,{0})=       {1},".format(i, val)
+                if separate:
+                    refs.append(out)
+                else:
+                    print "      " + out
+        else:
+            if printref:
+                out = " PTRACERS_ref(:,{0})= ".format(i)
+                if separate:
+                    refs.append(out)
+                else:
+                    print "      " + out
+            if printunits:
+                unit = getunit(name)
+                if unit is not None:
+                    out = " PTRACERS_units({0})= '{1}'".format(i, unit)
+                    if separate:
+                        unitl.append(out)
+                    else:
+                        print "      " + out
+            if printfile:
+                out = " PTRACERS_initialFile({0})= '',".format(i)
+                if separate:
+                    files.append(out)
+                else:
+                    print out
+
+if separate:
+    print '\n'.join(['#'] + unitl)
+    print '\n'.join(['#'] + files)
+    print '\n'.join(['#'] + refs)
+
+print " &"

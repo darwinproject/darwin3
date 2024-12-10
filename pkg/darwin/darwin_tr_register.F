@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_tr_register.F,v 1.1 2018/01/19 22:15:20 jahn Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/darwin2/pkg/darwin/darwin_tr_register.F,v 1.1 2018/01/19 22:13:36 jahn Exp $
 C $Name:  $
 
 #include "DARWIN_OPTIONS.h"
@@ -22,6 +22,7 @@ C     !USES:
 C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "DARWIN_SIZE.h"
+#include "DARWIN_INDICES.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     tracer_num :: current number of registered tracers

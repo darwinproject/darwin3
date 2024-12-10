@@ -1,0 +1,17 @@
+SUN package
+===========
+
+Computes the solar zenith angle above the sea surface for all grid center
+locations.
+
+Computation follows Patt and Gregg, 1994, Int. J. Remote Sensing.
+Code adapted from the Ocean-Atmosphere Spectral Irradiance Model (OASIM).
+
+sun_init_varia    creates arrays of up, north, and east vectors
+sun_sfcsolz       computes solar zenith angle above the sea surface
++- sun_jd         converts calendar date to Julian day
++- sun_ephparms   computes ephemeris parameters
++- sun_nutate     computes the nutation in longitude and the obliquity
++- sun_sun2000    computes the sun vector in geocentric inertial coordinates
++- sun_gha2000    computes the Greenwich hour angle in degrees
+

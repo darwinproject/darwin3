@@ -39,8 +39,9 @@ C !USES: ===============================================================
 # include "BLING_VARS.h"
 #endif /* ALLOW_BLING */
 #ifdef ALLOW_DARWIN
-# include "DARWIN_FLUX.h"
 # include "DARWIN_SIZE.h"
+# include "DARWIN_INDICES.h"
+# include "DARWIN_FLUX.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -86,6 +87,13 @@ C--   fill-in tracer diagnostics before any GChem udate
 ccccccccccccccccccccccccc
 c global calculations   c
 ccccccccccccccccccccccccc
+#ifdef ALLOW_DARWIN
+      IF ( useDARWIN ) THEN
+        CALL DARWIN_CONSERVE_SURFACE( myTime, myIter, myThid )
+        CALL DARWIN_CONS( myIter, myTime, myThid )
+      ENDIF
+#endif
+
 #ifdef ALLOW_OLD_VIRTUALFLUX
 #ifdef ALLOW_DIC
 # ifdef ALLOW_AUTODIFF
@@ -123,12 +131,6 @@ c     ENDIF
 #endif
 ccccccccccccccccccccccccccccccccccccccccccc
 #endif /* ALLOW_OLD_VIRTUALFLUX */
-
-#ifdef ALLOW_DARWIN
-      IF ( useDARWIN ) THEN
-        CALL DARWIN_CONS( myIter, myTime, myThid )
-      ENDIF
-#endif
 
 ccccccccccccccccccccccccc
 c chemical forcing      c
@@ -201,6 +203,7 @@ ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
 #endif /* ALLOW_BLING */
 cccccccccccccccccccccccccc END BLING cccccccccccccccccccccccccccccccccc
 
+cccccccccccccccccccccccccc DARWIN ccccccccccccccccccccccccccccccccccccc
 #ifdef ALLOW_DARWIN
         IF ( useDARWIN ) THEN
 #ifdef NUT_SUPPLY
@@ -208,16 +211,16 @@ c articficial supply of nutrients
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('DARWIN_NUT_SUPPLY',myThid)
 #endif
-          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,1),
+          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,iPO4),
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myIter, myTime, myThid )
-          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,2),
+          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,iNO3),
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myIter, myTime, myThid )
-          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,3),
+          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,iFeT),
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myIter, myTime, myThid )
-          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,4),
+          CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,iSiO2),
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myIter, myTime, myThid )
 #endif
@@ -227,11 +230,14 @@ C array because of last (iPtr) index
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('DARWIN_FORCING',myThid)
 #endif
+          CALL TIMER_START('DARWIN_FORCING [GCHEM_FORCING_SEP]',myThid)
           CALL DARWIN_FORCING(  pTracer(1-OLx,1-OLy,1,1,1,1),
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myIter, myTime, myThid )
+          CALL TIMER_STOP ('DARWIN_FORCING [GCHEM_FORCING_SEP]',myThid)
         ENDIF
 #endif /* ALLOW_DARWIN */
+cccccccccccccccccccccccccc END DARWIN ccccccccccccccccccccccccccccccccc
 
 #ifdef ALLOW_OBCS
 C--   Apply (again) open boundary conditions for each passive tracer
@@ -251,15 +257,14 @@ C       tendency multiplied by maskInC)
         ENDIF
 #endif /* ALLOW_OBCS */
 
+C--   end bi,bj loops.
        ENDDO
       ENDDO
 
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
          CALL DARWIN_CONS( myIter, myTime, myThid )
-#ifdef ALLOW_CARBON
-         CALL DIC_ATMOS( 1, myTime, myIter, myThid )
-#endif
+         CALL DARWIN_ATMOS( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_DARWIN */
 

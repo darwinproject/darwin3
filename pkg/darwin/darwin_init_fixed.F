@@ -1,368 +1,515 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_init_fixed.F,v 1.29 2013/03/28 20:29:15 jahn Exp $
-C $Name:  $
-
-#include "CPP_OPTIONS.h"
-#include "PTRACERS_OPTIONS.h"
 #include "DARWIN_OPTIONS.h"
+#include "EXF_OPTIONS.h"
 
-#ifdef ALLOW_PTRACERS
-#ifdef ALLOW_DARWIN
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: DARWIN_INIT_FIXED
 
-c===============================================================================
-C===============================================================================
-CStartofinterface
-      SUBROUTINE DARWIN_INIT_FIXED(myThid)                        
-C     =============== Global data ==========================================
-C     === Global variables ===
-         implicit none
+C     !INTERFACE:
+      SUBROUTINE DARWIN_INIT_FIXED( myThid )
+
+C     !DESCRIPTION:
+C     Initialize wavebands and read in absorption/scattering spectra
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
-#include "GCHEM.h"
+#ifdef ALLOW_RADTRANS
+#include "EXF_PARAM.h"
+#include "RADTRANS_SIZE.h"
+#include "RADTRANS_PARAMS.h"
+#endif
+#ifdef ALLOW_DARWIN
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
-#include "DARWIN_FLUX.h"
+#include "DARWIN_RADTRANS.h"
+#include "DARWIN_PARAMS.h"
+#include "DARWIN_TRAITS.h"
+#endif
 
-        INTEGER myThid
-C============== Local variables ============================================
-C     msgBuf    - Informational/error meesage buffer
+C     !INPUT PARAMETERS:
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_DARWIN
+
+C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL pday
-      INTEGER i,j,k,bi,bj,nz
-      INTEGER tmp
-      INTEGER prec
-      CHARACTER*(MAX_LEN_MBUF) fn
-C     /--------------------------------------------------------------\
-C     |  initialise common block biochemical parameters               |
-C     \--------------------------------------------------------------/
+      integer iUnit, oUnit1, oUnit2, k, jp
+      integer idummy
+#ifdef ALLOW_RADTRANS
+      character*80 title
+      integer ios, i, l, ilambda
+      _RL lambdain, ain, apsin, bin, bbin
+#endif
 
-      WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)') '// Darwin loading parameters'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL DARWIN_EXF_INIT_FIXED(myThid)
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DARWIN_DIAGNOSTICS_INIT( myThid )
+      ENDIF
+#endif
 
-c ANNA set fixed params for WAVEBANDS
-#ifdef WAVEBANDS
-        call wavebands_init_fixed(myThid)
-#endif 
+      _BEGIN_MASTER(myThid)
 
-c c define 1 day in seconds
-         pday = 86400.0 _d 0
+      IF (darwin_linFSConserve) PTRACERS_calcSurfCor = .TRUE.
 
-
-c attenuation coefficients
-c ANNA only if not wavebands
-#ifndef WAVEBANDS
-      k0=        4. _d -2                   !atten coefficient water(m^-1)
-#ifdef GEIDER
-      kc=        4. _d -2                   !atten coefficient chl ((mmol chl/m3)-1)
+#ifdef DARWIN_IRON_SED_SOURCE_VARIABLE
+      kMinFeSed = 2
 #else
-      kc=        4. _d -2*16. _d 0*1. _d 0        !atten coefficient phy((uM m)-1)
+      kMinFeSed = 1
 #endif
-#endif
-c ANNA endif
+      kMaxFeSed = 0
+      DO k=1,Nr
+        IF (RF(k) .GT. -depthFeSed) kMaxFeSed = k
+      ENDDO
 
 
-c par parameters
-      parfrac=  0.4 _d 0                    !fraction Qsw that is PAR
-      parconv= 1. _d 0/0.2174 _d 0             !conversion from W/m2 to uEin/m2/s
-c for chl
-      chlpmax=40. _d 0                      ! mg Chl/mmolP
-      chlpmin=16. _d 0                      ! mg Chl/mmolP
-      istar=90. _d 0                        ! w/m2
-c iron related
-      alpfe=     0.04 _d 0                  !solubility of Fe dust
-      scav=      0.4 _d 0/(360. _d 0*86400. _d 0) !iron chem scavenging rate (s-1)
-      ligand_tot=1. _d -3                   !total ligand (uM)
-      ligand_stab=2. _d 5                   !ligand stability rate ratio
-      freefemax = .4 _d -3                  ! max free fe
+#ifdef ALLOW_RADTRANS
 
-#ifdef IRON_SED_SOURCE
-c iron sediment source
-      depthfesed=1000.0 _d 0       !depth above which to add sediment source
-      fesedflux =1.0 _d 0 * 1.0 _d -3 / (86400.0 _d 0) !iron flux (mmol/m2/s)
-      fesedflux_pcm =0.68 _d 0 * 1.0 _d -3 !iron flux (mmol/m3/s) per
-c                                            mmol POC/m3/s
-#endif
-#ifdef PART_SCAV
-      scav_rat=0.005 _d 0 /(86400.0 _d 0)
-      scav_inter=0.079 _d 0
-      scav_exp=0.58 _d 0
-#endif
-
-c depth for denitrification to start
-      depthdenit=185.0 _d 0
-
-c critical oxygen for O2/NO3 remineralization
-      O2crit = 6.0 _d 0    !(Lipschultz et al 1990, DSR 37, 1513-1541)
-c ratio of no3 to p in denitrification process
-      denit_np = 120.0 _d 0
-
-c
-c oxidation rates for ammonium and nitrite
-c i.e. Knita ...    NH4 -> NO2
-c i.e. Knitb ...    NO2 -> NO3
-       Knita = 1.0 _d 0/(.50 _d 0*pday)
-       Knitb = 1.0 _d 0/(10.0 _d 0*pday)
-c critical light level (muEin/m2/s) after which oxidation starts
-       PAR0 = 10. _d 0
-c
-#ifndef GEIDER
-c set growth days ...small or big organism?
-       Smallgrow = .7 _d 0
-       Biggrow   = .4 _d 0
-       Smallgrowrange = 0. _d 0
-       Biggrowrange = 0. _d 0
-       diaz_growfac = 2. _d 0
-#endif
-c set mort days ...small or big organism?
-       Smallmort = 10. _d 0
-       Bigmort   = 10. _d 0
-       Smallmortrange = 0. _d 0
-       Bigmortrange = 0. _d 0
-c set export fraction ...small or big organism?
-       Smallexport = 0.2 _d 0
-       Bigexport   = 0.5 _d 0
-c set sinking rates (m/s)... small or big organism?
-       SmallSink = 0.0 _d 0/pday
-       BigSink =  0.5 _d 0/pday   !0.5 _d 0/pday
-c set parameters for light function for phyto growth
-#ifndef GEIDER
-       smallksatpar =    0.12 _d 0 ! 0.8 _d 0
-       smallksatparstd = 0.20 _d 0  ! 0.3 _d 0
-       smallkinhib =     6.0 _d 0   ! 2.0 _d 0
-       smallkinhibstd =  0.10 _d 0  ! 0.5 _d 0
-       Bigksatpar =      0.12 _d 0  ! 0.35 _d 0
-       Bigksatparstd =   0.06 _d 0  ! 0.1 _d 0
-       Bigkinhib =       1.0 _d 0   ! 0.5 _d 0
-       Bigkinhibstd =    0.05 _d 0   ! 0.1 _d 0
-#endif
-#ifdef  GEIDER
-c for Pcm -- should be growth rates, but using old variables
-c note these are in terms of days - converted to 1/s later
-       Smallgrow = .7 _d 0
-       Biggrow   = .4 _d 0
-       Smallgrowrange = 0. _d 0
-       Biggrowrange = 0. _d 0
-       diaz_growfac = 2. _d 0
-c
-       smallchl2cmax = 0.2 _d 0      !mg Chl (mmol C)
-       smallchl2cmaxrange = 0.3 _d 0  !mg Chl (mmol C)
-       Bigchl2cmax = 0.5 _d 0         !mg Chl (mmol C)
-       Bigchl2cmaxrange = 0.3 _d 0    !mg Chl (mmol C)
-
-c ANNA_Q units for alpha are same as expected: mmol C (mg chla)-1 (uEin)-1 (m)2
-c       smallalphachl =  1. _d -6     !mmol C (uEin/m-2)-1 (mg Chl)-1 
-c       smallalphachlrange = 1. _d -6 !mmol C (uEin/m-2)-1 (mg Chl)-1
-c       Bigalphachl = 6. _d -7        !mmol C (uEin/m-2)-1 (mg Chl)-1
-c       Bigalphachlrange = 4. _d -7   !mmol C (uEin/m-2)-1 (mg Chl)-1
-c ANNA mQyield vals are from alphachl / aphy_chl which for now is 0.02
-c ANNA ranges for mQyield are same as alphachl but reduced by factor 100
-       smallmQyield = 5. _d -5        !mmol C (uEin)-1
-       smallmQyieldrange = 1. _d -4   !mmol C (uEin)-1
-       BigmQyield = 3. _d -5          !mmol C (uEin)-1
-       BigmQyieldrange = 4. _d -5     !mmol C (uEin)-1
-
-c ANNA value of aphy_chl_ave = 0.02 - its the mean of all spectras used as input data
-       aphy_chl_ave = 0.02 _d 0      !m2 (mg chla)-1 (ie. x chla gives absorption m-1)
-
-c inhib for Prochl?
-C       inhibcoef_geid_val = 1.2 _d 0 !DUMMY VAL
-       inhibcoef_geid_val = 0 _d 0 !DUMMY VAL
-#ifdef DYNAMIC_CHL
-       acclimtimescl = 1./(60. _d 0 *60. _d 0 *24. _d 0 * 20. _d 0)
-#endif
-#endif
-c
-
-c set temperature function
-       tempcoeff1 = 1. _d 0/3. _d 0
-       tempcoeff2_small = 0.001 _d 0
-       tempcoeff2_big   = 0.0003 _d 0
-       tempcoeff3 = 1.04 _d 0
-       tempmax = 30. _d 0      ! 32. _d 0
-       temprange = 32. _d 0    ! 30. _d 0
-       tempnorm = 0.3 _d 0  ! 1. _d 0
-       tempdecay = 4. _d 0
-c set phosphate half stauration constants .. small or big organism
-       SmallPsat=0.015 _d 0
-       BigPsat=0.035 _d 0
-       ProcPsat=0.01 _d 0
-       UniDzPsat=0.012 _d 0
-       SmallPsatrange=0.02 _d 0
-       BigPsatrange=0.02 _d 0
-       ProcPsatrange=0.005 _d 0
-       UniDzPsatrange=0.02 _d 0
-c set NH4/NO2 frac, so that NH4/NO2 can be preferred nitrogen source
-       ksatNH4fac=.50 _d 0
-       ksatNO2fac=1.0 _d 0
-c set prochl lower half-sat (used only for mutants)
-       prochlPsat=.85 _d 0
-c ammonia and nitrite inhibition
-       sig1 = 4.6 _d 0
-       sig2 = 4.6 _d 0
-       sig3 = 4.6 _d 0
-       ngrowfac = 1. _d 0
-       ilight = 2. _d 0
-c set si half sat
-       val_ksatsi=1. _d 0
-c set nutrient ratios for phyto
-       val_R_SiP_diatom=16.0 _d 0  ! 32 for Fanny's runs
-       val_R_NP=16.0 _d 0
-       val_RFeP=1.0 _d -3
-       val_R_NP_diaz=40.0 _d  0
-       val_RFeP_diaz=30.0 _d 0 * val_RFeP
-       val_R_PC=120.0 _d 0
-       val_R_PICPOC=0.8 _d 0
-#ifdef OLD_GRAZE
-c grazing hlaf saturation
-       kgrazesat = 0.1 _d 0
-c set grazing rates .. small or big organism?
-       GrazeFast = 1.0 _d 0/(5.0 _d 0*pday)
-       GrazeSlow = 1.0 _d 0/(30.0 _d 0*pday)
-c set grazing effeciency
-       GrazeEffsmall=0.6 _d 0
-       GrazeEffbig  =0.2 _d 0
-c set grazing of diatom factor
-       diatomgraz = 0.8 _d 0
-       coccograz = 0.7 _d 0
-       olargegraz = 0.9 _d 0
-#else
-c grazing hlaf saturation
-c      kgrazesat = 0.1 _d 0
-       kgrazesat = 0.1 _d 0
-c      phygrazmin = 1 _d -5
-       phygrazmin = 1 _d -10
-c set grazing rates .. small or big organism?
-c      GrazeFast = 1.0 _d 0/(5.0 _d 0*pday)
-       GrazeFast = 1.0 _d 0/(2.0 _d 0*pday)
-c      GrazeSlow = 1.0 _d 0/(30.0 _d 0*pday)
-       GrazeSlow = 1.0 _d 0/(7.0 _d 0*pday)
-c set grazing effeciency
-       GrazeEfflow= 0.2 _d 0
-       GrazeEffmod= 0.5 _d 0
-       GrazeEffhi = 0.7 _d 0
-c set palatibility
-       palathi = 1.0 _d 0
-       palatlo = 0.2 _d 0
-c set palatibilty diatom factor
-       diatomgraz = 0.7 _d 0
-       coccograz = 0.6 _d 0
-       olargegraz = 1.0 _d 0
-c set faction graz to POM
-       ExGrazfracbig = 0.8 _d 0
-       ExGrazfracsmall = 0.8 _d 0
-#endif
-c set zoo mortality
-       ZoomortSmall = 1.0 _d 0/(30.0 _d 0*pday)
-       ZoomortBig = 1.0 _d 0/(30.0 _d 0*pday)
-       ZoomortSmall2 = 0. _d 0
-       ZoomortBig2 = 0. _d 0
-c set zoo exportfrac
-       ZooexfacSmall = 0.2 _d 0
-       ZooexfacBig = 0.7 _d 0
-c minimum phyto (below which grazing and mortality doesn't happen)
-c      phymin = 1 _d -10
-c      phymin = 1 _d -50
-       phymin = 1 _d -20
-c DOM remin rates
-         Kdop = 1.0 _d 0/(100.0 _d 0*pday)
-         Kdon = 1.0 _d 0/(100.0 _d 0*pday)
-         KdoFe = 1.0 _d 0/(100.0 _d 0*pday)
-c Particulate detritus remin rates
-c z* = wx_sink/Kremin_X
-c for e-folding length scale, z* = 300 m
-c choose Kremin_X = 1/30 day-1, wx_sink = 10 m day-1
-         Kpremin_P = 1.0 _d 0/(50.0 _d 0*pday)
-         Kpremin_N = Kpremin_P
-         Kpremin_Fe = Kpremin_P
-         Kpremin_Si = 1.0 _d 0/(300.0 _d 0*pday)
-c sinking rate for particulate matter (m/s)
-         wp_sink = 10.0 _d 0/pday
-         wn_sink = wp_sink
-         wfe_sink = wp_sink
-         wsi_sink = wp_sink
-
-#ifdef ALLOW_CARBON
-         R_OP = 170 _d 0
-         Kdoc = 1.0 _d 0/(100.0 _d 0*pday)
-         Kpremin_C = 1.0 _d 0/(50.0 _d 0*pday)
-         Kdissc =  1.0 _d 0/(300.0 _d 0*pday)
-         wc_sink = wp_sink
-         wpic_sink = 15.0 _d 0/pday
-         permil      = 1. _d 0 / 1024.5 _d 0
-         Pa2Atm      = 1.01325 _d 5
-#endif
-
-C make sure we have reserved enough space in Ptracers
-      IF ( nCompZooMax .LT. 4 ) THEN
-        WRITE(msgBuf,'(A,A,I3)')
-     &    'DARWIN_INIT_FIXED: ERROR: 4 zooplankton components, but ',
-     &    'nCompZooMax = ', nCompZooMax
-        CALL PRINT_ERROR( msgBuf , 1)
+C read water absorption data
+      DO l = 1, nlam
+        aw(l) = -1.0 _d 0
+        bw(l) = -1.0 _d 0
+      ENDDO
+      IF (darwin_waterAbsorbFile .NE. ' '  ) THEN
+        CALL MDSFINDUNIT( iUnit, myThid )
+        OPEN(iUnit,FILE=darwin_waterabsorbFile,
+     &       STATUS='old',FORM='formatted')
+C       skip header
+        DO i = 1,6
+         READ(iUnit,'(A50)')title
+        ENDDO
+        ios = 0
+        DO WHILE (ios .EQ. 0)
+         READ(iUnit,'(I5,F15.4,F10.4)',IOSTAT=ios) ilambda,ain,bin
+         IF (ios .EQ. 0) THEN
+          lambdain = ilambda
+          DO l = 1,nlam
+           IF (lambdain .GE. RT_wbEdges(l) .AND.
+     &         lambdain .LE. RT_wbEdges(l+1)) THEN
+            aw(l) = ain
+            bw(l) = bin
+           ENDIF
+          ENDDO
+         ENDIF
+        ENDDO
+        CLOSE(iUnit)
+      ELSE
+        WRITE(msgBuf,'(A)')
+     &   'DARWIN_INIT_FIXED: need to specify water absorption file'
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
       ENDIF
-      DO nz = 1,nzmax
-        iZooP (nz)  = iZoo +                   (nz-1)*strideTypeZoo
-        iZooN (nz)  = iZoo + 1*strideCompZoo + (nz-1)*strideTypeZoo
-        iZooFe(nz)  = iZoo + 2*strideCompZoo + (nz-1)*strideTypeZoo
-        iZooSi(nz)  = iZoo + 3*strideCompZoo + (nz-1)*strideTypeZoo
+C     check that all wavebands have been read
+      DO l = 1, nlam
+        IF (aw(l) .LT. 0.0) THEN
+          WRITE(msgBuf,'(2A)') 'DARWIN_INIT_FIXED: ',
+     &     "could not read water absorption data for band "
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,I3,2F8.3)') 'DARWIN_INIT_FIXED: ',
+     &     l,RT_wbEdges(l),RT_wbEdges(l+1)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
+        ENDIF
       ENDDO
-#ifdef ALLOW_CARBON
-       DO nz = 1,nzmax
-        iZooC (nz)  = iZoC +                   (nz-1)
+C     write summary
+      WRITE(msgBuf,'(A)') 'DARWIN_INIT_FIXED: water spectra:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,A)') 'DARWIN_INIT_FIXED: ',
+     &     ' lam aw             bw'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      DO l = 1,nlam
+        WRITE(msgBuf,'(A,F4.0,F15.4,F10.4)') 'DARWIN_INIT_FIXED: ',
+     &     RT_wbRefWLs(l), aw(l), bw(l)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      ENDDO
+      WRITE(msgBuf,'(A)') 'DARWIN_INIT_FIXED:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+
+
+C read phyto absorption data
+C   phyto input data files must have a column for absorption by PS pigs
+C   easiest way to 'turn off' PS for growth is to put same values in both abs columns
+      DO i = 1, nopt
+       DO l = 1, nlam
+        aphy_chl_type   (i,l) = -1.0 _d 0
+        aphy_chl_ps_type(i,l) = -1.0 _d 0
+        bphy_mgC_type   (i,l) = -1.0 _d 0
+        bbphy_mgC_type  (i,l) = -1.0 _d 0
+       ENDDO
+      ENDDO
+      IF (darwin_phytoAbsorbFile .NE. ' '  ) THEN
+        CALL MDSFINDUNIT( iUnit, myThid )
+        OPEN(iUnit,FILE=darwin_phytoAbsorbFile,
+     &       STATUS='old',FORM='formatted')
+C       skip global header
+        DO i = 1,6
+         READ(iUnit,'(A50)')title
+        ENDDO
+C       phytoplanktontype header
+        READ(iUnit,'(A50)')title
+        DO i = 1,nopt
+         ios = 0
+         IF (darwin_allomSpectra) THEN
+           READ(iUnit,'(I4,3F10.0,F20.0)')
+     &           idummy, asize(i), apsize(i), bsize(i), bbsize(i)
+         ENDIF
+         DO WHILE (ios .EQ. 0)
+          READ(iUnit,'(I4,3F10.0,F20.0)',IOSTAT=ios)
+     &                ilambda,ain,apsin,bin,bbin
+C         next phyto type header will trigger error and move on to next i
+          IF (ios .EQ. 0) THEN
+           lambdain = ilambda
+           DO l = 1,nlam
+            IF (lambdain .GE. RT_wbEdges(l) .AND.
+     &          lambdain .LE. RT_wbEdges(l+1)) THEN
+             aphy_chl_type   (i,l) = ain
+             aphy_chl_ps_type(i,l) = apsin
+             bphy_mgC_type   (i,l) = bin
+             bbphy_mgC_type  (i,l) = bbin
+            ENDIF
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDDO
+        CLOSE(iUnit)
+      ELSE
+        WRITE(msgBuf,'(A)')
+     &   'DARWIN_INIT_FIXED: need to specify water absorption file'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
+      ENDIF
+C     check that all wavebands have been read
+      DO i = 1, nopt
+       DO l = 1, nlam
+        IF (aphy_chl_type(i,l) .LT. 0.0) THEN
+          WRITE(msgBuf,'(2A)') 'DARWIN_INIT_FIXED: ',
+     &     "could not read phyto absorption data for type,band "
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,2I3,2F8.3)') 'DARWIN_INIT_FIXED: ',
+     &     i,l,RT_wbEdges(l),RT_wbEdges(l+1)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
+        ENDIF
+       ENDDO
+      ENDDO
+C     write summary
+      WRITE(msgBuf,'(A)') 'DARWIN_INIT_FIXED: phyto spectra:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      DO i = 1,nopt
+        WRITE(msgBuf,'(A,I4)') 'DARWIN_INIT_FIXED: type ', i
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+        WRITE(msgBuf,'(A,A)') 'DARWIN_INIT_FIXED: ',
+     &     ' lam ap        ap_ps     bp        bbp'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+        DO l = 1,nlam
+          WRITE(msgBuf,'(A,F4.0,3F10.4,F20.9)') 'DARWIN_INIT_FIXED: ',
+     &     RT_wbRefWLs(l), aphy_chl_type(i,l), aphy_chl_ps_type(i,l),
+     &     bphy_mgC_type(i,l), bbphy_mgC_type(i,l)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+        ENDDO
+        WRITE(msgBuf,'(A)') 'DARWIN_INIT_FIXED:'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      ENDDO
+
+
+C read particle absorption data
+C initialize particle absorption coefficient
+      DO l = 1, nlam
+        apart(l) = -1.0 _d 0
+        bpart(l) = -1.0 _d 0
+        bbpart(l) = -1.0 _d 0
+      ENDDO
+      IF (darwin_particleAbsorbFile .NE. ' '  ) THEN
+        CALL MDSFINDUNIT( iUnit, myThid )
+        OPEN(iUnit,FILE=darwin_particleAbsorbFile,
+     &       STATUS='old',FORM='formatted')
+C       skip header
+        DO i = 1,6
+         READ(iUnit,'(A50)')title
+        ENDDO
+        ios = 0
+        DO WHILE (ios .EQ. 0)
+         READ(iUnit,'(I4,3F15.0)',IOSTAT=ios) ilambda,ain,bin,bbin
+         IF (ios .EQ. 0) THEN
+          lambdain = ilambda
+          DO l = 1,nlam
+           IF (lambdain .GE. RT_wbEdges(l) .AND.
+     &         lambdain .LE. RT_wbEdges(l+1)) THEN
+            apart(l) = ain
+            bpart(l) = bin
+            bbpart(l) = bbin
+            apart_P(l) = ain/darwin_part_size_P
+            bpart_P(l) = bin/darwin_part_size_P
+            bbpart_P(l) = bbin/darwin_part_size_P
+           ENDIF
+          ENDDO
+         ENDIF
+        ENDDO
+        CLOSE(iUnit)
+      ELSE
+        WRITE(msgBuf,'(A)')
+     &   'DARWIN_INIT_FIXED: need to specify particle file'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
+      ENDIF
+C     check that all wavebands have been read
+      DO l = 1, nlam
+        IF (apart(l) .LT. 0.0) THEN
+          WRITE(msgBuf,'(2A)') 'DARWIN_INIT_FIXED: ',
+     &     "could not read particle for band "
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,I3,2F8.3)') 'DARWIN_INIT_FIXED: ',
+     &     l,RT_wbEdges(l),RT_wbEdges(l+1)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
+        ENDIF
+      ENDDO
+C     write summary
+      WRITE(msgBuf,'(A)') 'DARWIN_INIT_FIXED: particulate spectra:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,A)') 'DARWIN_INIT_FIXED: ',
+     &     ' lam apart          bpart          bbpart'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      DO l = 1,nlam
+        WRITE(msgBuf,'(A,F4.0,1P3G15.6)')'DARWIN_INIT_FIXED: ',
+     &     RT_wbRefWLs(l), apart(l), bpart(l), bbpart(l)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      ENDDO
+      WRITE(msgBuf,'(A)') 'DARWIN_INIT_FIXED:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+c
+      WRITE(msgBuf,'(2A)') 'DARWIN_INIT_FIXED: particulate spectra ',
+     &                    'in phosphorus units:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A,A)') 'DARWIN_INIT_FIXED: ',
+     &     ' lam apart_P        bpart_P        bbpart_P'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      DO l = 1,nlam
+        WRITE(msgBuf,'(A,F4.0,2F15.9,F15.12)') 'DARWIN_INIT_FIXED: ',
+     &     RT_wbRefWLs(l), apart_P(l), bpart_P(l), bbpart_P(l)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      ENDDO
+      WRITE(msgBuf,'(A)') 'DARWIN_INIT_FIXED:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+c
+
+
+      DO l = 1,nlam
+        exCDOM(l)=EXP(-darwin_Sdom*(RT_wbRefWLs(l)-darwin_lambda_aCDOM))
+      ENDDO
+#ifndef DARWIN_ALLOW_CDOM
+C initialize CDOM absorption coefficient
+      laCDOM = -1
+      DO l = 1,nlam
+        IF (darwin_lambda_aCDOM .GE. RT_wbEdges(l) .AND.
+     &      darwin_lambda_aCDOM .LE. RT_wbEdges(l+1)) THEN
+          laCDOM = l
+        ENDIF
+      ENDDO
+      IF (laCDOM .LE. 0) THEN
+        WRITE(msgBuf,'(2A)') 'DARWIN_INIT_FIXED: ',
+     &   "could not read find aCDOM reference waveband with frequency"
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A,F8.3)') 'DARWIN_INIT_FIXED: ',
+     &   darwin_lambda_aCDOM
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
+      ELSE
+        WRITE(msgBuf,'(A,I3)')
+     &        'DARWIN_INIT_FIXED: laCDOM = ', laCDOM
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1 )
+      ENDIF
+#endif
+
+#endif /* ALLOW_RADTRANS */
+
+C ======================================================================
+      CALL DARWIN_RANDOM_INIT(darwin_seed, myThid)
+
+#ifdef DARWIN_RANDOM_TRAITS
+      CALL DARWIN_GENERATE_RANDOM(myThid)
+#else
+      CALL DARWIN_GENERATE_ALLOMETRIC(myThid)
+#endif
+
+C ======================================================================
+C read (overrides generated) and write trait namelists
+
+      WRITE(msgBuf,'(A)') ' DARWIN_INIT_FIXED: opening data.traits'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT , 1)
+
+      CALL MDSFINDUNIT( iUnit, myThid )
+      CALL OPEN_COPY_DATA_FILE(
+     I                   'data.traits', 'DARWIN_INIT_FIXED',
+     O                   iUnit,
+     I                   myThid )
+
+      IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
+        CALL MDSFINDUNIT( oUnit1, mythid )
+        open(oUnit1,file='darwin_traits.txt',status='unknown')
+      ELSE
+        oUnit1 = -1
+      ENDIF
+
+      CALL DARWIN_READ_TRAITS(iUnit, oUnit1, myThid)
+
+      IF ( oUnit1 .GE. 0 ) THEN
+        close(oUnit1)
+      ENDIF
+#ifdef SINGLE_DISK_IO
+      CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
+
+      WRITE(msgBuf,'(A)') ' ==================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
+C ======================================================================
+C deprecation checks
+
+#ifndef DARWIN_ALLOW_EXUDE
+      DO jp = 1, nPlank
+       IF (ExportFracExude(jp) .NE. DARWIN_UNINIT_RL) THEN
+        WRITE(msgBuf,'(2A)')'ExportFracExude can only be used with ',
+     &     'DARWIN_ALLOW_EXUDE.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')'Use ExportFracMort and ExportFracMort2 ',
+     &     'for export due to mortality.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R DARWIN_INIT_FIXED'
+       ENDIF
       ENDDO
 #endif
 
-#ifdef DAR_DIAG_DIVER
-c only look at grid point with a minimum biomass
-        diver_thresh0=1 _d -12
-c diver1 - if any type greater than
-        diver_thresh1=1 _d -8
-c diver2 - if more than this proportion of total biomass
-        diver_thresh2=1 _d -3
-c diver3 - fraction of biomass to count
-        diver_thresh3=.999 _d 0
-c diver4 - fraction of maximum species
-        diver_thresh4=1 _d -5
-#endif
+C ======================================================================
+C write some traits to files
 
-c set up diagnostics
-#ifdef ALLOW_MNC
-      IF ( useMNC ) THEN
-        CALL DARWIN_MNC_INIT( myThid )
-#ifdef ALLOW_CARBON
-        CALL DIC_MNC_INIT( myThid )
-#endif
+#ifdef ALLOW_RADTRANS
+
+      IF ( myProcId.EQ.0 ) THEN
+
+
+C set spectra for individual plankton according to optical type
+C file for aptypes assigned via coin flips
+      CALL MDSFINDUNIT( oUnit1, myThid )
+      OPEN(oUnit1,file='p-ini-char-aptype.dat',status='unknown')
+      CALL MDSFINDUNIT( oUnit2, myThid )
+      OPEN(oUnit2,file='p_ini_char_aptype_nohead.dat',status='unknown')
+      WRITE(oUnit1,*)'np   aptype'
+      DO jp = 1,nPhoto
+        WRITE(oUnit1,'(2I5)') jp, aptype(jp)
+        WRITE(oUnit2,'(2I5)') jp, aptype(jp)
+      ENDDO
+      CLOSE(oUnit1)
+      CLOSE(oUnit2)
+
+c file of total absorption spectra
+c rows = pwaves, columns = jp      
+      open(oUnit1,file='p-ini-char-apspec.dat',status='unknown')
+      open(oUnit2,file='p_ini_char_aspec_nohead.dat',status='unknown')
+      write(oUnit1,*)'Rows = pwaves. Columns = jp'
+      write(oUnit1,*)'pwaves found in pwaves-check.dat'
+      write(oUnit1,*)'col_1 to col_<nPhoto>'
+      write(oUnit1,*)'is absorption aphy_chl (m-2 mg chla-1)'
+      do l=1,nlam
+       write(oUnit1,9999)(aphy_chl(jp,l),jp=1,nPhoto)
+       write(oUnit2,9999)(aphy_chl(jp,l),jp=1,nPhoto)
+      enddo
+c make sure outfile is defined above with the correct size
+      close(oUnit1)
+      close(oUnit2)
+
+c file for absorption spectra of PS's only
+c rows = pwaves, columns = jp
+      open(oUnit1,file='p-ini-char-apspec-psc.dat',status='unknown')
+      open(oUnit2,file='p_ini_char_aspec_psc_nohead.dat',
+     &     status='unknown')
+      write(oUnit1,*)'Rows = pwaves. Columns = jp'
+      write(oUnit1,*)'pwaves found in pwaves-check.dat'
+      write(oUnit1,*)'Is absoprtion by photosynthetic'
+      write(oUnit1,*)'pigments only aphy_chl_ps (m-2 mg chla-1)'
+      do l=1,nlam
+       write(oUnit1,9999)(aphy_chl_ps(jp,l),jp=1,nPhoto)
+       write(oUnit2,9999)(aphy_chl_ps(jp,l),jp=1,nPhoto)
+      enddo
+      close(oUnit1)
+      close(oUnit2)
+
+c file of total scattering spectra
+c rows = pwaves, columns = jp
+      open(oUnit1,file='p-ini-char-btspec.dat',status='unknown')
+      open(oUnit2,file='p_ini_char_btspec_nohead.dat',status='unknown')
+      write(oUnit1,*)'Rows = pwaves. Columns = jp'
+      write(oUnit1,*)'pwaves found in pwaves-check.dat'
+      write(oUnit1,*)'col_1 to col_<nPlank>'
+      write(oUnit1,*)'is total scattering bphy_mgC (m-2 mg C-1)'
+      do l=1,nlam
+       write(oUnit1,9999)(bphy_mgC(jp,l),jp=1,nplank)
+       write(oUnit2,9999)(bphy_mgC(jp,l),jp=1,nplank)
+      enddo
+c make sure outfile is defined above with the correct size
+      close(oUnit1)
+      close(oUnit2)
+
+c file of total scattering spectra
+c rows = pwaves, columns = jp
+      open(oUnit1,file='p-ini-char-bbspec.dat',status='unknown')
+      open(oUnit2,file='p_ini_char_bbspec_nohead.dat',status='unknown')
+      write(oUnit1,*)'Rows = pwaves. Columns = jp'
+      write(oUnit1,*)'pwaves found in pwaves-check.dat'
+      write(oUnit1,*)'col_1 to col_<nPlank>'
+      write(oUnit1,*)'is backscattering bphy_mgC*1e4 (m-2 mg C-1)'
+      do l=1,nlam
+       write(oUnit1,9999)(bbphy_mgC(jp,l)*1e4,jp=1,nplank)
+       write(oUnit2,9999)(bbphy_mgC(jp,l)*1e4,jp=1,nplank)
+      enddo
+c make sure outfile is defined above with the correct size
+      close(oUnit1)
+      close(oUnit2)
+
+9999  format(9999f10.4)
+
+C     IF ( myProcId.EQ.0 ) THEN
       ENDIF
-#endif /* ALLOW_MNC */
 
-COJ set up diagnostics
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDIAGNOSTICS ) THEN
-        CALL DARWIN_DIAGNOSTICS_INIT( myThid )
-#ifdef ALLOW_CARBON
-        CALL DIC_DIAGNOSTICS_INIT( myThid )
-#endif
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-COJ
+#endif /* ALLOW_RADTRANS */
 
+C ======================================================================
 
+      _END_MASTER(myThid)
 
-        RETURN
-        END
-C============================================================================
-#endif
-#endif
+C Everyone else must wait for the parameters to be loaded
+      _BARRIER
 
+#endif /* ALLOW_DARWIN */
+
+      RETURN
+      END

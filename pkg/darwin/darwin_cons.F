@@ -1,190 +1,194 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_cons.F,v 1.10 2011/09/22 16:00:42 jahn Exp $
-C $Name:  $
-
-#include "CPP_OPTIONS.h"
-#include "PTRACERS_OPTIONS.h"
 #include "DARWIN_OPTIONS.h"
-
-#ifdef ALLOW_PTRACERS
-#ifdef ALLOW_DARWIN
 
 c=============================================================
 c subroutine DARWIN_cons
 c check conservation in the model
 C==============================================================
-         SUBROUTINE DARWIN_Cons(
-     &                  myIter,myTime,myThid)
+      SUBROUTINE DARWIN_CONS(myIter,myTime,myThid)
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
-#include "GCHEM.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
-#include "DARWIN_IO.h"
-#include "DYNVARS.h"
+#include "DARWIN_INDICES.h"
+#include "DARWIN_PARAMS.h"
+#include "DARWIN_TRAITS.h"
+#include "DARWIN_FIELDS.h"
 
 C     === Global variables ===
-       INTEGER myIter
-       _RL myTime
-       INTEGER myThid
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
-#ifdef CHECK_CONS
+#ifdef DARWIN_ALLOW_CONS
+
 C============== Local variables ============================================
-       _RL tmptotP
-       _RL tmptotN
-       _RL tmptotSi
-       _RL tmptotFe
-#ifdef ALLOW_CARBON
-       _RL tmptotC
-       _RL tmptotA
-       _RL tmptotO
+      _RL tmptotC
+      _RL tmptotP
+      _RL tmptotN
+      _RL tmptotSi
+      _RL tmptotFe
+#ifdef DARWIN_ALLOW_CARBON
+      _RL tmptotA
+      _RL tmptotO
 #endif
-       _RL vol, voltot
+      _RL tmptotNfix
+      _RL tmptotNdenit
+      _RL vol, voltot
 
-       INTEGER i,j,k,bi,bj
-       INTEGER np, nz, npnum
-
-
-      _BEGIN_MASTER(myThid)
+      INTEGER i,j,k,bi,bj
+      INTEGER np, iTr
 c
-         tmptotP=0. _d 0
-         tmptotN=0. _d 0
-         tmptotFe=0. _d 0
-         tmptotSi=0. _d 0
-#ifdef ALLOW_CARBON
-         tmptotC=0. _d 0
-         tmptotA=0. _d 0
-         tmptotO=0. _d 0
+      tmptotC = 0. _d 0
+      tmptotP = 0. _d 0
+      tmptotN = 0. _d 0
+      tmptotFe = 0. _d 0
+      tmptotSi = 0. _d 0
+#ifdef DARWIN_ALLOW_CARBON
+      tmptotA = 0. _d 0
+      tmptotO = 0. _d 0
 #endif
-         voltot=0. _d 0
+      tmptotNfix = 0. _d 0
+      tmptotNdenit = 0. _d 0
+      voltot = 0. _d 0
 
-        DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
+      DO bj=myByLo(myThid),myByHi(myThid)
+      DO bi=myBxLo(myThid),myBxHi(myThid)
  
-         DO i=1,sNx
-         DO j=1,sNy
-          do k= 1, NR
+        DO k=1,Nr
+        DO i=1,sNx
+        DO j=1,sNy
 c-----------------------------------------------------------------
-           vol=rA(i,j,bi,bj)*drF(k)
-           voltot=voltot+vol
-c Phosphorus budget
-           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iPO4)*vol    !PO4
-           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iDOP)*vol    !DOP
-           tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iPOP)*vol   !POP
-           do nz=1,nzmax
-             tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iZooP(nz))*vol    !ZOO1P
-           enddo
-           do np=1,npmax
-              npnum=iPhy+np-1
-              tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,npnum)*vol  !Phy 
-           enddo
-c Nitrogen budget
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iNO3)*vol    !NO3
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iNH4)*vol   !NH4
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iNO2)*vol   !NO2
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iDON)*vol    !DON
-           tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iPON)*vol   !PON
-           do nz=1,nzmax
-             tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iZooN(nz))*vol    !ZOO1N
-           enddo
-           do np=1,npmax
-              npnum=iPhy+np-1
-              tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,npnum)*R_NP(np)*vol  !Phy
-           enddo
-c Iron budget
-           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iFeT)*vol    !Fet
-           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iDOFe)*vol    !DOFe
-           tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iPOFe)*vol   !POFe
-           do nz=1,nzmax
-             tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iZooFe(nz))*vol    !ZOO1Fe
-           enddo
-           do np=1,npmax
-              npnum=iPhy+np-1
-              tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,npnum)*R_FeP(np)*vol  !Phy
-           enddo
-c Silica budget
-           tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iSi)*vol    !Si
-           tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iPOSi)*vol   !POSi
-           do nz=1,nzmax
-             tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iZooSi(nz))*vol    !ZOO1Si
-           enddo
-           do np=1,npmax
-              npnum=iPhy+np-1
-              tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,npnum)*R_SiP(np)*vol  !Phy
-           enddo
-c------------------------------------------------------------
-#ifdef ALLOW_CARBON
+          vol=rA(i,j,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+          voltot=voltot+vol
+
 c carbon budget
-           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iDIC)*vol    !DIC
-           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iDOC)*vol    !DOC
-           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iPOC)*vol   !POC
-           tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iPIC)*vol   !PIC
-           do nz=1,nzmax
-             tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iZooC(nz))*vol    !ZOOC
-           enddo
-           do np=1,npmax
-              npnum=iPhy+np-1
-              tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,npnum)*R_PC(np)*vol  !Phy
-           enddo
+          tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iDIC)*vol
+          tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iDOC)*vol
+          tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iPOC)*vol
+          tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iPIC)*vol
+          DO np=1,nplank
+            iTr=ic+np-1
+            tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iTr)*vol
+          ENDDO
+#ifdef DARWIN_ALLOW_CDOM
+          tmptotC=tmptotC+Ptracer(i,j,k,bi,bj,iCDOM)*R_CP_CDOM*vol
+#endif
+
+c Phosphorus budget
+          tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iPO4)*vol
+          tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iDOP)*vol
+          tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iPOP)*vol
+          DO np=1,nplank
+#ifdef DARWIN_ALLOW_PQUOTA
+            iTr=ip+np-1
+            tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iTr)*vol
+#else
+            iTr=ic+np-1
+            tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iTr)*R_PC(np)*vol
+#endif
+          ENDDO
+#ifdef DARWIN_ALLOW_CDOM
+          tmptotP=tmptotP+Ptracer(i,j,k,bi,bj,iCDOM)*vol
+#endif
+
+c Nitrogen budget
+          tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iNO3)*vol
+          tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iNH4)*vol
+          tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iNO2)*vol
+          tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iDON)*vol
+          tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iPON)*vol
+          DO np=1,nplank
+#ifdef DARWIN_ALLOW_NQUOTA
+            iTr=in+np-1
+            tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iTr)*vol
+#else
+            iTr=ic+np-1
+            tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iTr)*R_NC(np)*vol
+#endif
+          ENDDO
+#ifdef DARWIN_ALLOW_CDOM
+          tmptotN=tmptotN+Ptracer(i,j,k,bi,bj,iCDOM)*R_NP_CDOM*vol
+#endif
+
+c Iron budget
+          tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iFeT)*vol
+          tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iDOFe)*vol
+          tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iPOFe)*vol
+          DO np=1,nplank
+#ifdef DARWIN_ALLOW_FEQUOTA
+            iTr=ife+np-1
+            tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iTr)*vol
+#else
+            iTr=ic+np-1
+            tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iTr)*R_FeC(np)*vol
+#endif
+          ENDDO
+#ifdef DARWIN_ALLOW_CDOM
+          tmptotFe=tmptotFe+Ptracer(i,j,k,bi,bj,iCDOM)*R_FeP_CDOM*vol
+#endif
+
+c Silica budget
+          tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iSiO2)*vol
+          tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iPOSi)*vol
+          DO np=1,nplank
+#ifdef DARWIN_ALLOW_SIQUOTA
+            iTr=isi+np-1
+            tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iTr)*vol
+#else
+            iTr=ic+np-1
+            tmptotSi=tmptotSi+Ptracer(i,j,k,bi,bj,iTr)*R_SiC(np)*vol
+#endif
+          ENDDO
+c------------------------------------------------------------
+#ifdef DARWIN_ALLOW_CARBON
 c alkalinity budget !!!!! NOT FULL BUDGET!!!!!
-           tmptotA=tmptotA+Ptracer(i,j,k,bi,bj,iALK)*vol    !ALK
+          tmptotA=tmptotA+Ptracer(i,j,k,bi,bj,iALK)*vol
 c oxygem budget !!!!!!!! NOT FULL BUDGET !!!!!!!!!!!
-           tmptotO=tmptotO+Ptracer(i,j,k,bi,bj,iO2)*vol    !O2
+          tmptotO=tmptotO+Ptracer(i,j,k,bi,bj,iO2)*vol
 #endif
-          enddo
-         ENDDO
-         ENDDO
+
+          tmptotNfix=tmptotNfix+DARWIN_Nfix(i,j,k,bi,bj)*vol
+          tmptotNdenit=tmptotNdenit+DARWIN_Ndenit(i,j,k,bi,bj)*vol
         ENDDO
         ENDDO
+        ENDDO
+      ENDDO
+      ENDDO
 
-        _GLOBAL_SUM_RL(tmptotP,myThid)
-        _GLOBAL_SUM_RL(tmptotN,myThid)
-        _GLOBAL_SUM_RL(tmptotFe,myThid)
-        _GLOBAL_SUM_RL(tmptotSi,myThid)
-        _GLOBAL_SUM_RL(voltot,myThid)
-#ifdef ALLOW_CARBON
-        _GLOBAL_SUM_RL(tmptotC,myThid)
-        _GLOBAL_SUM_RL(tmptotA,myThid)
-        _GLOBAL_SUM_RL(tmptotO,myThid)
+      _GLOBAL_SUM_RL(tmptotC,myThid)
+      _GLOBAL_SUM_RL(tmptotP,myThid)
+      _GLOBAL_SUM_RL(tmptotN,myThid)
+      _GLOBAL_SUM_RL(tmptotFe,myThid)
+      _GLOBAL_SUM_RL(tmptotSi,myThid)
+      _GLOBAL_SUM_RL(voltot,myThid)
+#ifdef DARWIN_ALLOW_CARBON
+      _GLOBAL_SUM_RL(tmptotA,myThid)
+      _GLOBAL_SUM_RL(tmptotO,myThid)
 #endif
+      _GLOBAL_SUM_RL(tmptotNfix,myThid)
+      _GLOBAL_SUM_RL(tmptotNdenit,myThid)
 
-
-c       print*,'tmptotP',tmptotP
-c       print*,'tmptotN',tmptotN
-c       print*,'tmptotFe',tmptotFe
-c       print*,'tmptotSi',tmptotSi
-#ifdef ALLOW_CARBON
-c       print*,'tmptotC',tmptotC
-c       print*,'tmptotA',tmptotA
-c       print*,'tmptotO',tmptotO
-#endif
-
-      _END_MASTER(myThid)
-
-       IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
-        write(DAR_cons_unit1,*), myIter, tmptotP, tmptotP/voltot
-        write(DAR_cons_unit2,*), myIter, tmptotN, tmptotN/voltot
-        write(DAR_cons_unit3,*), myIter, tmptotFe, tmptotFe/voltot
-        write(DAR_cons_unit4,*), myIter, tmptotSi, tmptotSi/voltot
-#ifdef ALLOW_CARBON
-        write(DAR_cons_unit5,*), myIter, tmptotC, tmptotC/voltot
-        write(DAR_cons_unit6,*), myIter, tmptotA, tmptotA/voltot
-        write(DAR_cons_unit7,*), myIter, tmptotO, tmptotO/voltot
+      IF ( myProcId.EQ.0 .AND. myThid.EQ.1 ) THEN
+        WRITE(DAR_cons_C_unit,*), myIter, tmptotC, tmptotC/voltot
+        WRITE(DAR_cons_P_unit,*), myIter, tmptotP, tmptotP/voltot
+        WRITE(DAR_cons_N_unit,*), myIter, tmptotN, tmptotN/voltot,
+     &                 tmptotNfix/voltot, tmptotNdenit/voltot
+        WRITE(DAR_cons_Fe_unit,*), myIter, tmptotFe, tmptotFe/voltot
+        WRITE(DAR_cons_Si_unit,*), myIter, tmptotSi, tmptotSi/voltot
+#ifdef DARWIN_ALLOW_CARBON
+        WRITE(DAR_cons_A_unit,*), myIter, tmptotA, tmptotA/voltot
+        WRITE(DAR_cons_O_unit,*), myIter, tmptotO, tmptotO/voltot
 #endif
       ENDIF
 
 C--   Everyone else must wait
       _BARRIER
-#endif
-c
-c -----------------------------------------------------
-        RETURN
-        END
-#endif  /*DARWIN*/
-#endif  /*ALLOW_PTRACERS*/
 
-C============================================================================
+#endif /* DARWIN_ALLOW_CONS */
+
+      RETURN
+      END
+

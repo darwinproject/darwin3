@@ -1,222 +1,385 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_diagnostics_init.F,v 1.13 2011/04/12 19:21:36 jahn Exp $
-C $Name:  $
-
-#include "CPP_OPTIONS.h"
-#include "PTRACERS_OPTIONS.h"
 #include "DARWIN_OPTIONS.h"
-
-#ifdef ALLOW_PTRACERS
-#ifdef ALLOW_DARWIN
 
 CBOP
 C     !ROUTINE: DARWIN_DIAGNOSTICS_INIT
+
 C     !INTERFACE:
       SUBROUTINE DARWIN_DIAGNOSTICS_INIT( myThid )
+
 C     !DESCRIPTION:
 C     Routine to initialize Darwin diagnostics
 
 C     !USES:
       IMPLICIT NONE
-C     === Global variables ===
 #include "SIZE.h"
-#include "PTRACERS_SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GCHEM.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
+#ifdef ALLOW_RADTRANS
+#include "RADTRANS_SIZE.h"
+#endif
 #include "DARWIN_SIZE.h"
+#include "DARWIN_INDICES.h"
 
-C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
-C     myThid -  Number of this instance of DARWIN_DIAGNOSTICS_INIT
+C     !INPUT PARAMETERS:
+C     myThid :: Number of this instance of DARWIN_DIAGNOSTICS_INIT
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_DARWIN
 #ifdef ALLOW_DIAGNOSTICS
+
+C     !FUNCTIONS:
+      INTEGER     ILNBLNK
+      EXTERNAL    ILNBLNK
+      CHARACTER*16 DIAGS_MK_UNITS
+      EXTERNAL     DIAGS_MK_UNITS
+
 C     !LOCAL VARIABLES:
-C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf :: Informational/error meesage buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-      INTEGER       diagNum
-      CHARACTER*8   diagName
-      CHARACTER*16  diagCode
-      CHARACTER*16  diagUnits
+      INTEGER j
+      INTEGER        diagNum
+      CHARACTER*8    diagName
+      CHARACTER*16   diagCode
+      CHARACTER*16   diagUnits
       CHARACTER*(80) diagTitle
-
-      INTEGER      np
+      INTEGER      ilnb
+      CHARACTER*7  trcUnits
+      CHARACTER*30 locName
+      CHARACTER*4  diagSufx
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Add diagnostics to the (long) list
-
-C--   Add diagnostic PAR, PP and Nfix
-      diagName = 'PAR     '
-      WRITE(diagTitle, '(A)') 'PAR'
-      diagUnits = 'uEin/m^2/s      '
-      diagCode  = 'SM P    MR      '
+      WRITE(diagName,'(A)')'PP'
+      WRITE(diagTitle,'(A)')'Primary Production'
+      diagUnits = 'mmol C/m^3/s    '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName = 'PP      '
-      WRITE(diagTitle, '(A)') 'Primary Production'
-      diagUnits = 'mmol P/m^3/s    '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName = 'Nfix    '
-      WRITE(diagTitle, '(A)') 'N fixation'
+      WRITE(diagName,'(A)')'Nfix'
+      WRITE(diagTitle,'(A)')'N fixation'
       diagUnits = 'mmol N/m^3/s    '
-      diagCode  = 'SM P    MR      '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName = 'Denit    '
-      WRITE(diagTitle, '(A)') 'Denitrification'
+      WRITE(diagName,'(A)')'Denit'
+      WRITE(diagTitle,'(A)')'Denitrification'
       diagUnits = 'mmol N/m^3/s    '
-      diagCode  = 'SM P    MR      '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef ALLOW_RADTRANS
+      DO j = 1, nlam
+        WRITE(diagName,'(A,I3.3)')'PAR',j
+        WRITE(diagTitle,'(A,I3)')'PAR waveband ',j
+        diagUnits = 'uEin/m^2/s      '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-c ANNA_TAVE 
-#ifdef WAVES_DIAG_PCHL
-      DO np=1,MIN(99,npmax)
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--    Add diagnostics of Pchl
-c ANNA_Q format to allow more Ptracers I2.3 ??
-       WRITE(diagName,'(A,I2.2,A)') 'Pchl',np,' '
-       WRITE(diagTitle,'(A,I2.2)') 'Chl of Phy', np
-       diagUnits = 'mg chl/m^3      '
-       diagCode  = 'SM P    MR      '
-       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+        WRITE(diagName,'(A,I3.3)')'PARF',j
+        WRITE(diagTitle,'(A,I3)')'PAR at W point, waveband ',j
+        diagUnits = 'uEin/m^2/s      '
+        diagCode  = 'SMRP    LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      ENDDO /* np */
-#endif /* WAVES_DIAG_PCHL */
-c ANNA end TAVE
-
-#ifdef DAR_DIAG_RSTAR
-      DO np=1,MIN(99,npmax)
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--    Add diagnostics of Rstar
-       WRITE(diagName,'(A,I2.2,A)') 'Rstar',np,' '
-       WRITE(diagTitle,'(A,I2.2)') 'Rstar^PO4 of Phy', np
-       diagUnits = 'mmol P/m^3      '
-       diagCode  = 'SM P    MR      '
-       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+#ifdef DARWIN_DIAG_IOP
+        WRITE(diagName,'(A,I3.3)')'a',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'total absorption for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      ENDDO /* np */
-#endif /* DAR_DIAG_RSTAR */
-
-#ifdef DAR_DIAG_DIVER
-      diagName = 'Diver1  '
-      WRITE(diagTitle, '(A)')
-     &    '# Phy species over absolute threshold'
-      diagUnits = '1               '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-      
-      diagName = 'Diver2  '
-      WRITE(diagTitle, '(A)')
-     &    '# Phy species over threshold for proportion of biomass'
-      diagUnits = '1               '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-      
-      diagName = 'Diver3  '
-      WRITE(diagTitle, '(A)') 
-     &    '# Phy species constituting bulk of biomass'
-      diagUnits = '1               '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-      
-      diagName = 'Diver4  '
-      WRITE(diagTitle, '(A)')
-     &    '# Phy species over threshold for ratio to maximum species'
-      diagUnits = '1               '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif /* DAR_DIAG_DIVER */
-
-#ifdef ALLOW_DIAZ
-#ifdef DAR_DIAG_NFIXP
-      DO np=1,MIN(99,npmax)
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|C--    Add diagnostics of NFix
-       WRITE(diagName,'(A,I2.2,A)') 'NfixP',np,' '
-       WRITE(diagTitle,'(A,I2.2)') 'Nfix of Phy', np
-       diagUnits = 'mmol N/m^3      '
-       diagCode  = 'SM P    MR      '
-       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+        WRITE(diagName,'(A,I3.3)')'bt',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'total scattering for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|      ENDDO /* np */
-      ENDDO /* np */
-#endif /* DAR_DIAG_NFIXP */
+        WRITE(diagName,'(A,I3.3)')'bb',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'total backscattering for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I3.3)')'aplk',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'absorption by plankton for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I3.3)')'btplk',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'scattering by plankton for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I3.3)')'bbplk',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'backscattering by plankton for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I3.3)')'aprt',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'absorption by particles for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I3.3)')'btprt',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'scattering by particles for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I3.3)')'bbprt',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'backscattering by particles for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        WRITE(diagName,'(A,I3.3)')'aCDOM',j
+        WRITE(diagTitle,'(A,I3)')
+     &        'absorption by CDOM for waveband ',j
+        diagUnits = '1/m             '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif
 
-#ifdef ALLOW_PAR_DAY
-      diagName = 'PARday  '
-      WRITE(diagTitle, '(A)') 'daily-averaged PAR'
+      ENDDO
+#endif /* ALLOW_RADTRANS */
+
+      WRITE(diagName,'(A)')'atten'
+      WRITE(diagTitle,'(A)')'attenuation in layer'
+      diagUnits = '1               '
+      diagCode  = 'SMRP    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'PARF'
+      WRITE(diagTitle,'(A)')'PAR at top of layer'
       diagUnits = 'uEin/m^2/s      '
-      diagCode  = 'SM P    MR      '
+      diagCode  = 'SMRP    LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif /* ALLOW_PAR_DAY */
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifdef DAR_DIAG_CHL
-      diagName = 'ChlGeide'
-      WRITE(diagTitle, '(A)') 'Chlorophyll a concentration a la Geider'
-      diagUnits = 'mg Chla/m^3     '
-      diagCode  = 'SM P    MR      '
+      WRITE(diagName,'(A)')'PAR'
+      WRITE(diagTitle,'(A,I3)')'total PAR at layer center'
+      diagUnits = 'uEin/m^2/s      '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-      diagName = 'Chl2CGei'
-      WRITE(diagTitle, '(A)')'Chlorophyll a to carbon ratio a la Geider'
-      diagUnits = 'mg Chla/mmol C  '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName = 'ChlDoney'
-      WRITE(diagTitle, '(A)') 'Chlorophyll a concentration a la Doney'
-      diagUnits = 'mg Chla/m^3     '
+c nutrient consumption
+      WRITE(diagName,'(A)')'C_DIN'
+      WRITE(diagTitle,'(A)')'consumption of DIN'
+      diagUnits = 'mmolN/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName = 'Chl2CDon'
-      WRITE(diagTitle, '(A)') 'Chlorophyll a to carbon ratio a la Doney'
-      diagUnits = 'mg Chla/mmol C  '
+      WRITE(diagName,'(A)')'C_PO4'
+      WRITE(diagTitle,'(A)')'consumption of PO4'
+      diagUnits = 'mmolP/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName = 'ChlCloer'
-      WRITE(diagTitle, '(A)') 'Chlorophyll a concentration a la Cloern'
-      diagUnits = 'mg Chla/m^3     '
+      WRITE(diagName,'(A)')'C_Si'
+      WRITE(diagTitle,'(A)')'consumption of Si'
+      diagUnits = 'mmolSi/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-      diagName = 'Chl2CClo'
-      WRITE(diagTitle, '(A)')'Chlorophyll a to carbon ratio a la Cloern'
-      diagUnits = 'mg Chla/mmol C  '
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'C_Fe'
+      WRITE(diagTitle,'(A)')'consumption of Fe'
+      diagUnits = 'mmolFe/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+c additional source terms of nutrients
+      WRITE(diagName,'(A)')'S_DIN'
+      WRITE(diagTitle,'(A)')'non-transport source of DIN'
+      diagUnits = 'mmolN/m3/s      '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'S_PO4'
+      WRITE(diagTitle,'(A)')'non-transport source of PO4'
+      diagUnits = 'mmolP/m3/s      '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'S_Si'
+      WRITE(diagTitle,'(A)')'non-transport source of Si'
+      diagUnits = 'mmolSi/m3/s      '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'S_Fe'
+      WRITE(diagTitle,'(A)')'non-transport source of Fe'
+      diagUnits = 'mmolFe/m3/s      '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      DO j = 1, nDarwin
+        WRITE(diagName, '(2A)') 'gDAR', PTRACERS_ioLabel(j)
+C--     Set default name & tracer Units:
+        WRITE(locName,'(A,I4.4,A)') 'Tracer ', j
+        trcUnits  = 'kg/kg  '
+C-      use units & names from data.ptracers :
+        ilnb = ILNBLNK(PTRACERS_units(j))
+        IF ( ilnb.GE.1 ) THEN
+         ilnb = LEN(trcUnits)
+         trcUnits = PTRACERS_units(j)(1:ilnb)
+        ENDIF
+        ilnb = ILNBLNK(PTRACERS_names(j))
+        IF ( ilnb.GE.1 ) THEN
+         ilnb = MIN(LEN(locName),ilnb)
+         WRITE(locName,'(A)') PTRACERS_names(j)(1:ilnb)
+        ENDIF
+        ilnb = MAX(ILNBLNK(locName),1)
+        WRITE(diagTitle,'(2A)') locName(1:ilnb), ' tendency from DARWIN'
+        diagUnits = DIAGS_MK_UNITS( trcUnits//'/s', myThid )
+        diagCode  = 'SMR     MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif /* DAR_DIAG_CHL */
+      ENDDO
+
+      DO j = 1, nPPplank
+        WRITE(diagName,'(A,I4.4)')'PP',j
+        WRITE(diagTitle,'(A,I4)')'Primary Production plankton ',j
+        diagUnits = 'mmol C/m^3/s    '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      ENDDO
+
+      DO j = 1, nGRplank
+        WRITE(diagName,'(A,I4.4)')'GR',j
+        WRITE(diagTitle,'(A,I4)')'Grazing loss of plankton ',j
+        diagUnits = 'mmol C/m^3/s    '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      ENDDO
+
+#ifdef DARWIN_ALLOW_CARBON
+      WRITE(diagName,'(A)')'pH'
+      WRITE(diagTitle,'(A)')'pH'
+      diagUnits = '1               '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'pCO2'
+      WRITE(diagTitle,'(A)')'Partial Pressure of CO2'
+      diagUnits = 'atm             '
+      diagCode  = 'SMRP    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'fluxCO2'
+      WRITE(diagTitle,'(A)')'Flux of CO2 - air-sea exch'
+      diagUnits = 'mmol C/m2/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gDICsurf'
+      WRITE(diagTitle,'(A)')
+     &            'Tendency of DIC due to air-sea exch + oldvirt.flux'
+      diagUnits = 'mmol C/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gALKsurf'
+      WRITE(diagTitle,'(A)')'Tendency of ALK due to oldvirt.flux'
+      diagUnits = 'mmol eq/m3/s    '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'gO2surf'
+      WRITE(diagTitle,'(A)')'Tendency of O2 due to air-sea exch'
+      diagUnits = 'mmol O/m3/s     '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* DARWIN_ALLOW_CARBON */
+
+#ifdef ALLOW_EXF
+      WRITE(diagName,'(A)')'surfPAR'
+      WRITE(diagTitle,'(A)')'PAR forcing at surface'
+      diagUnits = 'uEin/m^2/s      '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'surfiron'
+      WRITE(diagTitle,'(A)')'iron forcing at surface'
+      diagUnits = 'mmol Fe/m^2/s   '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'DARice'
+      WRITE(diagTitle,'(A)')'ice area fraction'
+      diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'DARwind'
+      WRITE(diagTitle,'(A)')'wind speed used for carbon exchange'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'surfpCO2'
+      WRITE(diagTitle,'(A)')'surface pCO2'
+      diagUnits = 'mol/mol         '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 
 #endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_DARWIN */
 
       RETURN
       END
-C============================================================================
-#endif
-#endif
 

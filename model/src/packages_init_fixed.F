@@ -69,6 +69,8 @@ C       |-- PROFILES_INIT_FIXED
 C       |
 C       |-- FLT_INIT_FIXED
 C       |
+C       |-- RADTRANS_INIT_FIXED
+C       |
 C       |-- LONGSTEP_INIT_FIXED
 C       |
 C       |-- PTRACERS_INIT_FIXED
@@ -397,6 +399,15 @@ C--   Initialise fixed array for Float pkg
         IF (debugMode) CALL DEBUG_CALL('FLT_INIT_FIXED',myThid)
 # endif
         CALL FLT_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_RADTRANS
+      IF (useRADTRANS) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('RADTRANS_INIT_FIXED',myThid)
+# endif
+        CALL RADTRANS_INIT_FIXED(myThid)
       ENDIF
 #endif
 

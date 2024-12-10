@@ -56,10 +56,6 @@ C     !LOCAL VARIABLES:
       IF ( useDARWIN ) THEN
         CALL DARWIN_WRITE_PICKUP( permPickup, suff,
      I                            myTime, myIter, myThid )
-#ifdef ALLOW_CARBON
-        CALL DIC_WRITE_PICKUP( permPickup, suff,
-     I                         myTime, myIter, myThid )
-#endif
       ENDIF
 #endif /* ALLOW_DARWIN */
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/DARWIN_OPTIONS.h,v 1.17 2011/04/05 22:56:39 stephd Exp $
-C $Name:  $
-
 #ifndef DARWIN_OPTIONS_H
 #define DARWIN_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
@@ -16,88 +13,136 @@ C    !DESCRIPTION:
 C options for darwin package
 CEOP
 
-#define READ_PAR
-#undef  USE_QSW
-#define MINFE
-#undef  NUT_SUPPLY
-#undef  CONS_SUPP
-#undef  OLD_GRAZE
-#undef  ALLOW_DIAZ
-#undef  ALLOW_DENIT
-#undef  DENIT_RELAX
-#undef  OLD_NSCHEME
-#undef  ALLOW_MUTANTS
-#define PORT_RAND
-#undef  OLDSEED
-#undef  CALC_RATE_TOTALS
+C tracer selection
 
-#undef NOTEMP
-#define TEMP_VERSION 1
-#define TEMP_RANGE
+C enable nitrogen quotas for all plankton
+#undef  DARWIN_ALLOW_NQUOTA
 
-#undef TWO_SPECIES_SETUP
-#undef NINE_SPECIES_SETUP
+C enable phosphorus quotas for all plankton
+#undef  DARWIN_ALLOW_PQUOTA
 
-#undef  GEIDER
-#undef  OASIM
-#undef  WAVEBANDS
-#undef  DAR_CALC_ACDOM
-#undef  DAR_RADTRANS
-#undef  DAR_RADTRANS_USE_MODEL_CALENDAR
-C truncation to 2 downward decreasing modes a la Aas
-#undef  DAR_RADTRANS_DECREASING
-C iterative solution
-#undef  DAR_RADTRANS_ITERATIVE
-C use rmus for all components to convert to scalar irradiance
-C (not recommended)
-#undef  DAR_RADTRANS_RMUS_PAR
-C define this to turn of reading of phyto backscattering spectra
-C and revert to fixed backscat ratios darwin_bbphy(nabp) set in data.darwin
-#undef  DAR_NONSPECTRAL_BACKSCATTERING_RATIO
+C enable iron quotas for all plankton
+#undef  DARWIN_ALLOW_FEQUOTA
 
-#undef  RELAX_NUTS
-#undef  FLUX_NUTS
+C enable silica quotas for all plankton
+#undef  DARWIN_ALLOW_SIQUOTA
 
-#undef  CHECK_CONS
-#undef  DAR_DIAG_RSTAR
-#undef  DAR_DIAG_DIVER
-#undef  DAR_DIAG_GROW
-#undef  DAR_DIAG_ACDOM
-#undef  DAR_DIAG_ABSORP
-#undef  DAR_DIAG_SCATTER
-#undef  DAR_DIAG_PART_SCATTER
-#undef  DAR_DIAG_IRR
+C enable chlorophyll quotas for all phototrophs
+#undef  DARWIN_ALLOW_CHLQUOTA
 
-C diagnostic chlorophyll
-#undef  DAR_DIAG_CHL
+C enable a dynamic CDOM tracer
+#undef  DARWIN_ALLOW_CDOM
 
-C average PAR daily and store previous day
-#undef  ALLOW_PAR_DAY
+C enable air-sea carbon exchange and Alk and O2 tracers
+#undef  DARWIN_ALLOW_CARBON
 
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C dependencies
-c if two or nine species setup we don't want specific temperature ranges
-#ifdef  TWO_SPECIES_SETUP
-#undef TEMP_RANGE
-#endif
-#ifdef  NINE_SPECIES_SETUP
-#undef TEMP_RANGE
-#endif
 
-c can use either denit_relax or allow_denit but not both
-#ifdef ALLOW_DENIT
-#undef DENIT_RELAX
-#endif
+C optional bits
 
-#ifdef DAR_DIAG_CHL
-#define ALLOW_PAR_DAY
-#endif
+C enable denitrification code
+#undef  DARWIN_ALLOW_DENIT
 
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C overrides
-C if you want to override dependent options, do it here:
-C
-C #define TEMP_RANGE
+C enable separate exudation of individual elements
+#undef  DARWIN_ALLOW_EXUDE
+
+C enable old virtualflux code for DIC and Alk
+#undef  ALLOW_OLD_VIRTUALFLUX
+
+C reduce nitrate uptake by iron limitation factor
+#undef DARWIN_NITRATE_FELIMIT
+
+
+C light
+
+C compute average PAR in layer, assuming exponential decay
+C (ignored if ALLOW_RADTRANS)
+#undef  DARWIN_AVPAR
+
+C enable GEIDER light code
+#undef  DARWIN_ALLOW_GEIDER
+
+C use rho instead of acclimated Chl:C for chlorophyll synthesis
+#undef  DARWIN_GEIDER_RHO_SYNTH
+
+C initialize chl as in darwin2 (if GUD_ALLOW_RADTRANS)
+#undef  DARWIN_CHL_INIT_LEGACY
+
+C scattering coefficients are per Chlorophyll (if GUD_ALLOW_RADTRANS)
+#undef  DARWIN_SCATTER_CHL
+
+C make diagnostics for instrinsic optical properties available
+#undef  DARWIN_DIAG_IOP
+
+
+C grazing
+
+C for quadratic grazing as in darwin2+quota
+#undef  DARWIN_GRAZING_SWITCH
+
+C compute palat from size ratios
+#undef  DARWIN_ALLOMETRIC_PALAT
+
+C turn off grazing temperature dependence
+#undef  DARWIN_NOZOOTEMP
+
+
+C temperature
+
+C turn off all temperature dependence
+#undef  DARWIN_NOTEMP
+
+C select temperature version: 1, 2 or 3
+#define DARWIN_TEMP_VERSION 1
+
+C restrict phytoplankton growth to a temperature range
+#undef  DARWIN_TEMP_RANGE
+
+
+C iron
+
+C restrict maximum free iron
+#define DARWIN_MINFE
+
+C enable particle scavenging code
+#undef  DARWIN_PART_SCAV
+
+C enable variable iron sediment source
+#undef  DARWIN_IRON_SED_SOURCE_VARIABLE
+
+
+C debugging
+
+C turn on debugging output
+#undef DARWIN_DEBUG
+
+C compute and print global element totals
+#define DARWIN_ALLOW_CONS
+
+C value for unused traits
+#define DARWIN_UNUSED 0
+
+
+C deprecated
+
+C base particle scavenging on POP as in darwin2
+#undef  DARWIN_PART_SCAV_POP
+
+
+C random trait generation
+
+C assign traits based on random numbers as in darwin2
+#undef  DARWIN_RANDOM_TRAITS
+
+C set traits for darwin2 2-species setup (requires GUD_RANDOM_TRAITS)
+#undef  DARWIN_TWO_SPECIES_SETUP
+
+C set traits for darwin2 9-species setup (requires GUD_RANDOM_TRAITS)
+#undef  DARWIN_NINE_SPECIES_SETUP
+
+C enable diazotrophy when using (requires GUD_RANDOM_TRAITS)
+#undef  DARWIN_ALLOW_DIAZ
+
 
 #endif /* ALLOW_DARWIN */
 #endif /* DARWIN_OPTIONS_H */
+

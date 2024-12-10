@@ -1,1707 +1,1359 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_plankton.F,v 1.46 2013/03/28 23:03:56 stephd Exp $
-C $Name:  $
-
-#include "CPP_OPTIONS.h"
-#include "PTRACERS_OPTIONS.h"
 #include "DARWIN_OPTIONS.h"
 
-#ifdef ALLOW_PTRACERS
-#ifdef ALLOW_DARWIN
+CBOP
+C !ROUTINE: DARWIN_PLANKTON
+C !INTERFACE: ==========================================================
+      SUBROUTINE DARWIN_PLANKTON(
+     I     Ptr,
+     U     gTr,
+     O     chlout, diags,
+     I     PAR, photoTempFunc, grazTempFunc, reminTempFunc,
+     I     mortTempFunc, mort2TempFunc, uptakeTempFunc,
+#ifdef DARWIN_DEBUG
+     I     iG, jG, k, dT,
+#endif
+     I     myTime,myIter,myThid)
 
-c ====================================================================
-c SUBROUTINE DARWIN_PLANKTON
-c 1. Local ecological interactions for models with many phytoplankton
-c    "functional groups"
-c 2. Timestep plankton and nutrients locally
-c 3. Includes explicit DOM and POM
-c 4. Remineralization of detritus also determined in routine
-c 5. Sinking particles and phytoplankton
-c 6. NOT in this routine: iron chemistry
-c
-c       Mick Follows, Scott Grant, Fall/Winter 2005
-c       Stephanie Dutkiewicz Spring/Summer 2006
-c
-c - add extra diagnostics, including R* (#define DAR_DIAG_RSTAR) - Stephanie, Spring 2007
-c - add check for conservation (#define CHECK_CONS) - Stephanie, Spring 2007
-c - improve grazing (#undef OLD_GRAZING) - Stephanie, Spring 2007
-c - add diazotrophy (#define ALLOW_DIAZ) - Stephanie, Spring 2007
-c - add mutation code (#define ALLOW_MUTANTS) - Jason Bragg, Spring/Summer 2007
-c - new nitrogen limiting scheme (#undef OLD_NSCHEME) - Jason Bragg, Summer 2007
-c - fix bug in diazotroph code  - Stephanie, Fall 2007
-c - add additional r* diagnostic for (no3+no2) - Stephanie, Winter 2007
-c - add diversity diagnostics - Stephanie, Winter 2007
-c - add geider chl:c ratio and growth rate dependence,
-c   though has no photo-inhibtion at this point - Stephanie, Spring 2008
-c - add waveband dependence of light attenuation and absorption,
-c   NOTE: need to have geider turned on too  - Anna Hickman, Summer 2008
-c ====================================================================
+C !DESCRIPTION:
 
-c ANNA pass extra variables if WAVEBANDS
-         SUBROUTINE DARWIN_PLANKTON(
-     U                       phyto,
-     I                       zooP, zooN, zooFe, zooSi,
-     O                       PP, Chl, Nfix, denit,
-     I                       PO4local, NO3local, FeTlocal, Silocal,
-     I                       NO2local, NH4local, 
-     I                       DOPlocal, DONlocal, DOFelocal,
-     I                       POPlocal, PONlocal, POFelocal, PSilocal,
-     I                       phytoup, popuplocal, ponuplocal, 
-     I                       pofeuplocal, psiuplocal,
-     I                       PARlocal,Tlocal, Slocal,
-     I                       freefelocal, inputFelocal,
-     I                       bottom, dzlocal,
-     O                       Rstarlocal, RNstarlocal,
-#ifdef DAR_DIAG_GROW
-     O                       Growlocal, Growsqlocal,
+C !USES: ===============================================================
+      IMPLICIT NONE
+#ifdef ALLOW_RADTRANS
+#include "RADTRANS_SIZE.h"
 #endif
-#ifdef ALLOW_DIAZ
-#ifdef DAR_DIAG_NFIXP
-     O                       NfixPlocal,
-#endif
-#endif
-     O                       dphytodt, dzooPdt, dzooNdt, dzooFedt,
-     O                       dzooSidt,
-     O                       dPO4dt, dNO3dt, dFeTdt, dSidt,
-     O                       dNH4dt, dNO2dt,
-     O                       dDOPdt, dDONdt, dDOFedt, 
-     O                       dPOPdt, dPONdt, dPOFedt, dPSidt,
-#ifdef ALLOW_CARBON
-     I                       DIClocal, DOClocal, POClocal, PIClocal,
-     I                       ALKlocal, O2local, ZooClocal,
-     I                       POCuplocal, PICuplocal,
-     O                       dDICdt, dDOCdt, dPOCdt, dPICdt,
-     O                       dALKdt, dO2dt, dZOOCdt,
-#endif
-#ifdef GEIDER
-     I                       phychl, 
-#ifdef DYNAMIC_CHL
-     O                       dphychl, Chlup,
-#endif
-#ifdef WAVEBANDS
-     I                       PARwlocal,
-#endif
-#endif
-#ifdef ALLOW_PAR_DAY
-     I                       PARdaylocal,
-#endif
-#ifdef DAR_DIAG_CHL
-     O                       ChlGeiderlocal, ChlDoneylocal,
-     O                       ChlCloernlocal,
-#endif
-     I                       debug,
-     I                       runtim,
-     I                       MyThid) 
-                  
-
-         implicit none
 #include "DARWIN_SIZE.h"
-#include "SPECTRAL_SIZE.h"
-#include "DARWIN.h"
+#include "DARWIN_INDICES.h"
+#include "DARWIN_DIAGS.h"
+#include "DARWIN_RADTRANS.h"
 #include "DARWIN_PARAMS.h"
-
-c ANNA set wavebands params
-#ifdef WAVEBANDS
-#include "WAVEBANDS_PARAMS.h"
-#endif
-
+#include "DARWIN_TRAITS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-      INTEGER myThid
+C  Ptr    :: darwin model tracers
+C  PAR    :: PAR in uEin/s/m2
+C         :: either non-spectral (tlam=1) or waveband total
+C  myTime :: current time
+C  myIter :: current iteration number
+C  myThid :: thread number
+      _RL Ptr(nDarwin)
+      _RL PAR(nlam)
+      _RL photoTempFunc(nplank)
+      _RL reminTempFunc
+      _RL uptakeTempFunc
+      _RL grazTempFunc(nplank)
+      _RL mortTempFunc
+      _RL mort2TempFunc
+      INTEGER myThid, myIter
+      _RL myTime
+#ifdef DARWIN_DEBUG
+      INTEGER iG, jG, k
+      _RL dT
+#endif
+
+C !INPUT/OUTPUT PARAMETERS: ============================================
+C  gTr    :: accumulates computed tendencies
+      _RL gTr(nDarwin)
+
+C !OUTPUT PARAMETERS: ==================================================
+C  chlout :: computed acclimated chlorophyll if not dynamic
+      _RL chlout(nPhoto)
+      _RL diags(darwin_nDiag)
 CEOP
-c === GLOBAL VARIABLES =====================
-c npmax = no of phyto functional groups
-c nzmax = no of grazer species
-c phyto = phytoplankton
-c zoo   = zooplankton
-         _RL phyto(npmax)
-         _RL zooP(nzmax)
-         _RL zooN(nzmax)
-         _RL zooFe(nzmax)
-         _RL zooSi(nzmax)
-         _RL PP
-         _RL Nfix
-         _RL denit
-         _RL Chl
-         _RL PO4local
-         _RL NO3local
-         _RL FeTlocal
-         _RL Silocal
-         _RL NO2local
-         _RL NH4local
-         _RL DOPlocal
-         _RL DONlocal
-         _RL DOFelocal
-         _RL POPlocal 
-         _RL PONlocal
-         _RL POFelocal
-         _RL PSilocal
-         _RL phytoup(npmax)
-         _RL POPuplocal
-         _RL PONuplocal
-         _RL POFeuplocal
-         _RL PSiuplocal 
-         _RL PARlocal
-         _RL Tlocal
-         _RL Slocal
-         _RL freefelocal
-         _RL inputFelocal
-         _RL bottom
-         _RL dzlocal
-         _RL Rstarlocal(npmax)
-         _RL RNstarlocal(npmax)
-#ifdef DAR_DIAG_GROW
-         _RL Growlocal(npmax)
-         _RL Growsqlocal(npmax)
-#endif
-#ifdef ALLOW_DIAZ
-#ifdef DAR_DIAG_NFIXP
-         _RL NfixPlocal(npmax)
-#endif
-#endif
-         INTEGER debug
-         _RL dphytodt(npmax)
-         _RL dzooPdt(nzmax)
-         _RL dzooNdt(nzmax)
-         _RL dzooFedt(nzmax)
-         _RL dzooSidt(nzmax)
-         _RL dPO4dt
-         _RL dNO3dt
-         _RL dNO2dt
-         _RL dNH4dt
-         _RL dFeTdt
-         _RL dSidt
-         _RL dDOPdt
-         _RL dDONdt
-         _RL dDOFedt
-         _RL dPOPdt
-         _RL dPONdt
-         _RL dPOFedt
-         _RL dPSidt
-#ifdef ALLOW_CARBON
-         _RL DIClocal
-         _RL DOClocal
-         _RL POClocal
-         _RL PIClocal
-         _RL ALKlocal
-         _RL O2local
-         _RL ZooClocal(nzmax)
-         _RL POCuplocal
-         _RL PICuplocal
-         _RL dDICdt
-         _RL dDOCdt
-         _RL dPOCdt
-         _RL dPICdt
-         _RL dALKdt
-         _RL dO2dt
-         _RL dZOOCdt(nzmax)
-#endif
-#ifdef GEIDER
-         _RL phychl(npmax)
-#ifdef DYNAMIC_CHL
-         _RL dphychl(npmax)
-         _RL Chlup(npmax)
-#endif
-#endif
-#ifdef ALLOW_PAR_DAY
-         _RL PARdaylocal
-#endif
-#ifdef DAR_DIAG_CHL
-         _RL ChlGeiderlocal, ChlDoneylocal, ChlCloernlocal
-#endif
-         _RL runtim
 
-c ANNA Global variables for WAVEBANDS
-c ANNA these variables are passed in/out of darwin_forcing.F
-#ifdef WAVEBANDS
-         _RL PARwlocal(tlam)      !PAR at midpoint of previous(in) and local(out) gridcell
-#endif
-c ANNA endif
+#ifdef ALLOW_DARWIN
 
+c !LOCAL VARIABLES: ====================================================
+      INTEGER j, l
+      INTEGER jz, jp
 
+      _RL DIC
+      _RL NH4
+      _RL NO2
+      _RL NO3
+      _RL PO4
+      _RL SiO2
+      _RL FeT
+      _RL DOC
+      _RL DON
+      _RL DOP
+      _RL DOFe
+      _RL POC
+      _RL PON
+      _RL POP
+      _RL POSi
+      _RL POFe
+      _RL pIC
+      _RL O2
 
-
-
-c LOCAL VARIABLES
-c -------------------------------------------------------------
-
-c WORKING VARIABLES
-c np = phytoplankton index
-         integer np
-c nz = zooplankton index
-         integer nz
-
-c variables for phytoplankton growth rate/nutrient limitation
-c phytoplankton specific nutrient limitation term
-         _RL limit(npmax)
-c phytoplankton light limitation term
-         _RL ilimit(npmax)
-         _RL ngrow(npmax)
-         _RL grow(npmax)
-         _RL PspecificPO4(npmax)
-         _RL phytoTempFunction(npmax)
-         _RL mortPTempFunction
-         _RL dummy
-         _RL Ndummy
-         _RL Nsourcelimit(npmax)
-         _RL Nlimit(npmax)
-         _RL NO3limit(npmax)
-         _RL NO2limit(npmax)
-         _RL NH4limit(npmax)
-
-c for check N limit scheme
-         _RL Ndiff
-         _RL NO3limcheck
-         _RL NO2limcheck
-         _RL Ndummy1
-         LOGICAL check_nlim
-
-#ifndef OLD_NSCHEME
-c [jbmodif] some new N terms
-         integer N2only
-         integer noNOdadv
-         integer NOreducost
-         _RL NO2zoNH4
-         _RL NOXzoNH4
+      _RL X(nplank)
+      _RL Xi(nplank)
+      _RL Qc(nplank)
+      _RL Qn(nplank)
+      _RL Qp(nplank)
+      _RL Qsi(nplank)
+      _RL Qfe(nplank)
+#ifdef DARWIN_ALLOW_CHLQUOTA
+      _RL QChl(nPhoto)
 #endif
 
-c varible for mimumum phyto
-         _RL phytomin(npmax)
+      _RL regQ
 
-#ifdef OLD_GRAZE
-c  variables for zooplankton grazing rates
-         _RL zooTempFunction(nzmax)
-         _RL mortZTempFunction
-         _RL mortZ2TempFunction
-         _RL grazing_phyto(npmax)
-         _RL grazingP(nzmax)
-         _RL grazingN(nzmax)
-         _RL grazingFe(nzmax)
-         _RL grazingSi(nzmax)
+      _RL limitpCO2
+      _RL limitNH4
+      _RL limitNO2
+      _RL limitNO3
+      _RL fracNH4
+      _RL fracNO2
+      _RL fracNO3
+      _RL limitn
+      _RL limitp
+      _RL limitsi
+      _RL limitfe
+      _RL limitnut
+      _RL limitI
+      _RL ngrow
+
+      _RL muPON
+      _RL muPOC
+      _RL muPOP
+      _RL muPOFe
+      _RL muDON
+      _RL muDOC
+      _RL muDOP
+      _RL muDOFe
+      _RL muO
+      _RL mu
+
+      _RL uptakeDIC
+      _RL uptakeNH4
+      _RL uptakeNO2
+      _RL uptakeNO3
+      _RL uptakeN
+      _RL uptakePO4
+      _RL uptakeSiO2
+      _RL uptakeFeT
+      _RL consumDIC
+      _RL consumDIC_PIC
+      _RL consumNH4
+      _RL consumNO2
+      _RL consumNO3
+      _RL consumPO4
+      _RL consumSiO2
+      _RL consumFeT
+
+      _RL uptakePON
+      _RL uptakePOP
+      _RL uptakePOC
+      _RL uptakePOFe
+      _RL uptakeDON
+      _RL uptakeDOP
+      _RL uptakeDOC
+      _RL uptakeDOFe
+      _RL uptakeO2
+
+      _RL respPON
+      _RL respPOP
+      _RL respPOC
+      _RL respPOFe
+      _RL respPOSi
+      _RL respDON
+      _RL respDOP
+      _RL respDOC
+      _RL respDOFe
+
+      _RL hydrolPON
+      _RL hydrolPOP
+      _RL hydrolPOC
+      _RL hydrolPOFe
+      _RL solubilPON
+      _RL solubilPOP
+      _RL solubilPOC
+      _RL solubilPOFe
+
+      _RL consumPON
+      _RL consumPOP
+      _RL consumPOC
+      _RL consumPOFe
+      _RL consumPOSi
+      _RL consumDON
+      _RL consumDOP
+      _RL consumDOC
+      _RL consumDOFe
+      _RL consumO2
+
+      _RL inhibNH4
+
+      _RL alpha_I
+      _RL alpha_I_growth
+      _RL PCm
+      _RL PC
+      _RL acclim
+      _RL chl2c
+      _RL growth
+      _RL rhochl
+      _RL Ek
+      _RL EkoverE
+
+      _RL synthChl
+
+      _RL reminDOC
+      _RL reminDON
+      _RL reminDOP
+      _RL reminDOFe
+      _RL reminPOC
+      _RL reminPON
+      _RL reminPOP
+      _RL reminPOSi
+      _RL reminPOFe
+      _RL disscPIC
+
+      _RL prodNO2
+      _RL prodNO3
+
+      _RL PARtot
+
+      _RL tmp
+
+#ifdef DARWIN_ALLOW_CDOM
+      _RL CDOM
+      _RL reminPOC_CDOM
+      _RL reminPON_CDOM
+      _RL reminPOP_CDOM
+      _RL reminPOFe_CDOM
+      _RL degrCDOM_DOC
+      _RL degrCDOM_DON
+      _RL degrCDOM_DOP
+      _RL degrCDOM_DOFe
+#endif
+
+#ifdef DARWIN_ALLOW_DENIT
+      _RL denit, denitNH4
+#endif
+
+C for grazing
+
+      _RL regQc, regQn, regQp, regQfe
+      _RL sumprey, sumpref, grazphy
+
+      _RL preygraz   (nplank)
+      _RL preygrazexp(nplank)
+      _RL predgrazc  (nplank)
+#ifdef DARWIN_ALLOW_NQUOTA
+      _RL predgrazn  (nplank)
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+      _RL predgrazp  (nplank)
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+      _RL predgrazfe (nplank)
+#endif
+
+      _RL predexpc, predexpn, predexpp, predexpfe
+      _RL graz2OC, graz2ON, graz2OP, graz2OFe
+      _RL graz2POC, graz2PON, graz2POP, graz2POSi, graz2POFe
+      _RL graz2PIC
+
+      _RL expfrac
+
+      _RL Xe
+      _RL mortX
+      _RL mortX2
+
+      _RL exude_DOC
+      _RL exude_DON
+      _RL exude_DOP
+      _RL exude_DOFe
+
+      _RL exude_PIC
+      _RL exude_POC
+      _RL exude_PON
+      _RL exude_POP
+      _RL exude_POSi
+      _RL exude_POFe
+
+      _RL mort_c(nplank)
+
+      _RL respir
+      _RL respir_c
+
+#ifdef DARWIN_ALLOW_CDOM
+      _RL graz2CDOM, exude_CDOM
+#endif
+
+      _RL EPS
+
+      PARAMETER (EPS=1D-38)
+
+C==== precompute a few things ==========================================
+
+      PARtot = SUM(PAR)
+
+C==== make all bio fields non-negative and compute quotas ==============
+
+      DIC  = MAX(0., Ptr(iDIC))
+      NH4  = MAX(0., Ptr(iNH4))
+      NO2  = MAX(0., Ptr(iNO2))
+      NO3  = MAX(0., Ptr(iNO3))
+      PO4  = MAX(EPS, Ptr(iPO4))
+      SiO2 = MAX(EPS, Ptr(iSiO2))
+      FeT  = MAX(EPS, Ptr(iFeT))
+
+      DOC  = MAX(0., Ptr(iDOC))
+      DON  = MAX(0., Ptr(iDON))
+      DOP  = MAX(0., Ptr(iDOP))
+      DOFe = MAX(0., Ptr(iDOFe))
+
+      PIC  = MAX(0., Ptr(iPIC))
+      POC  = MAX(0., Ptr(iPOC))
+      PON  = MAX(0., Ptr(iPON))
+      POP  = MAX(0., Ptr(iPOP))
+      POSi = MAX(0., Ptr(iPOSi))
+      POFe = MAX(0., Ptr(iPOFe))
+#ifdef DARWIN_ALLOW_CARBON
+      O2   = MAX(0., Ptr(iO2))
+#endif
+#ifdef DARWIN_ALLOW_CDOM
+      CDOM = MAX(0., Ptr(iCDOM))
+#endif
+
+C==== make all bio fields non-negative and compute quotas ==============
+
+      DO j = 1, nplank
+C fixed carbon quota, for now 1.0 (may change later)
+        Qc(j) = 1.0
+        X(j) = MAX(0., Ptr(ic+j-1))/Qc(j)
+C other elementsj get quota from corresponding ptracer or set to fixed
+c ratio if not variable.
+        Xi(j) = 1.0 _d 0/MAX(EPS, X(j))
+#ifdef DARWIN_ALLOW_NQUOTA
+        Qn(j) = MAX(EPS*R_NC(j), Ptr(in+j-1))*Xi(j)
 #else
-c  variables for zooplankton grazing rates
-         _RL zooTempFunction(nzmax)
-         _RL mortZTempFunction
-         _RL mortZ2TempFunction
-         _RL allphyto(nzmax)
-         _RL grazphy(npmax,nzmax)
-         _RL sumgrazphy(npmax)
-         _RL sumgrazzoo(nzmax)
-         _RL sumgrazzooN(nzmax)
-         _RL sumgrazzooFe(nzmax)
-         _RL sumgrazzooSi(nzmax)
-         _RL sumgrazloss(nzmax)
-         _RL sumgrazlossN(nzmax)
-         _RL sumgrazlossFe(nzmax)
-         _RL sumgrazlossSi(nzmax)
+        Qn(j) = R_NC(j)
 #endif
-
-#ifdef GEIDER
-        _RL alpha_I(npmax)
-        _RL pcarbon(npmax)
-        _RL pcm(npmax)
-        _RL chl2c(npmax)
-#ifdef DYNAMIC_CHL
-        _RL acclim(npmax)
-        _RL psinkchl(npmax)
-        _RL rhochl(npmax)
-#endif
-#endif
-
-#ifdef DAR_DIAG_CHL
-         _RL tmppcm
-         _RL tmpchl2c
-#endif
-c variables for nutrient uptake
-         _RL consumpPO4
-         _RL consumpNO3
-         _RL consumpNO2
-         _RL consumpNH4
-         _RL consumpFeT
-         _RL consumpSi
-
-c variables for reminerlaization of DOM and POM
-         _RL reminTempFunction
-         _RL DOPremin
-         _RL DONremin
-         _RL DOFeremin
-         _RL preminP
-         _RL preminN
-         _RL preminFe
-         _RL preminSi
-
-c for sinking matter
-         _RL psinkP
-         _RL psinkN
-         _RL psinkFe
-         _RL psinkSi
-         _RL psinkphy(npmax)
-
-#ifdef ALLOW_CARBON
-         _RL consumpDIC
-         _RL consumpDIC_PIC
-         _RL preminC
-         _RL DOCremin
-         _RL totphy_doc
-         _RL totzoo_doc
-         _RL totphy_poc
-         _RL totzoo_poc
-         _RL totphy_pic
-         _RL totzoo_pic
-         _RL psinkC
-         _RL psinkPIC
-         _RL disscPIC
-#ifdef OLD_GRAZE
-         _RL grazingC(nzmax)
+#ifdef DARWIN_ALLOW_PQUOTA
+        Qp(j) = MAX(EPS*R_PC(j), Ptr(ip+j-1))*Xi(j)
 #else
-c  variables for zooplankton grazing rates
-         _RL sumgrazzooC(nzmax)
-         _RL sumgrazlossC(nzmax)
-         _RL sumgrazlossPIC(nzmax)
+        Qp(j) = R_PC(j)
 #endif
-
-#endif
-
-c variables for conversions from phyto and zoo to DOM and POM
-         _RL totphy_dop
-         _RL totphy_pop
-         _RL totphy_don
-         _RL totphy_pon
-         _RL totphy_dofe
-         _RL totphy_pofe
-         _RL totphy_dosi
-         _RL totphy_posi
-
-         _RL totzoo_dop
-         _RL totzoo_pop
-         _RL totzoo_don
-         _RL totzoo_pon
-         _RL totzoo_dofe
-         _RL totzoo_pofe
-         _RL totzoo_posi
-
-         _RL NO2prod
-         _RL NO3prod
-  
-         _RL facpz
-
-         _RL kpar, kinh
-
-         _RL tmpr,tmpz, tmpgrow, tmp1, tmp2
-
-         integer ITEST
-
-#ifdef PART_SCAV
-        _RL scav_part
-        _RL scav_poc
-#endif
-
-
-c ANNA local variables for WAVEBANDS
-#ifdef WAVEBANDS 
-         integer i,ilam
-         integer nl
-
-c ANNA for interpolation
-         _RL cu_area
-C         _RL waves_diff
-C         _RL light_diff
-C         _RL alphaI_diff
-C         _RL squ_part
-C         _RL tri_part
-C         _RL seg_area
-
-c ANNA inportant but local variables that can be fogotten
-         _RL PARwdn(tlam)         !light at bottom of local gridcell
-         _RL attenwl(tlam)        !attenuation (m-1)
-         _RL sumaphy_nl(tlam)     !total phyto absorption at each wavelength
-#endif
-c ANNA endif
-
-c ANNA - for inhib
-         _RL Ek
-         _RL EkoverE
-
-c.................................................................
-
-#ifdef ALLOW_MUTANTS
-c -m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-
-c mutation variables [jbmodif]
-         INTEGER nsisone
-         INTEGER nsistwo  
-         INTEGER nsisthree
-         INTEGER nsisfour
-         INTEGER npro
-         INTEGER taxind         
-         _RL mutfor, mutback
-         _RL grow1
-         _RL grow2
-         _RL grow3
-         _RL grow4
-#endif
-
-         INTEGER numtax
-         _RL oneyr,threeyr
-
-#ifdef  ALLOW_MUTANTS
-c compile time options -- could maybe be moved to
-c run time and set in data.gchem???
-c QQQQQQQ
-c Initialize sister taxon mutation scheme 
-c if numtax = 1, mutation is off
-         numtax = 4
-c number of plankton types to assign for 
-c wild and mutants types
-         npro = 60
+#ifdef DARWIN_ALLOW_SIQUOTA
+        Qsi(j) = MAX(EPS*R_SiC(j), Ptr(isi+j-1))*Xi(j)
 #else
-         numtax=1
+        Qsi(j) = R_SiC(j)
 #endif
-
-         oneyr = 86400.0 _d 0*360.0 _d 0 
-         threeyr = oneyr*3. _d 0
-
-c end mutation variables [jbmodif]
-c -m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-
-
-#ifndef OLD_NSCHEME
-c [jbmodif] init new N terms
-c  if those not using NO3 has 
-c  N limit with denominator with NO3 or not: 0=NO3 in denom; 1=NO2 only
-         N2only = 1
-c ??
-         noNOdadv = 1
-c energetic disadvantage of using NO2/No3: off=0, on=1
-         NOreducost =0
-#endif
-
-#ifdef GEIDER
-         do np=1,npmax
-           pcarbon(np) = 0. _d 0
-           pcm(np)=0. _d 0
-           chl2c(np)=0. _d 0
-#ifdef DYNAMIC_CHL
-           acclim(np)=0. _d 0
-           psinkChl(np)=0. _d 0
-#endif
-         enddo
-#endif
-         
-
-c set sum totals to zero
-         totphy_pop = 0. _d 0
-         totphy_dop = 0. _d 0
-         totphy_don = 0. _d 0
-         totphy_pon = 0. _d 0
-         totphy_dofe = 0. _d 0
-         totphy_pofe = 0. _d 0
-         totphy_posi = 0. _d 0
-
-         totzoo_dop = 0. _d 0
-         totzoo_pop = 0. _d 0
-         totzoo_don = 0. _d 0
-         totzoo_pon = 0. _d 0
-         totzoo_dofe = 0. _d 0
-         totzoo_pofe = 0. _d 0
-         totzoo_posi = 0. _d 0
-
-         consumpPO4 = 0.0 _d 0
-         consumpNO3 = 0.0 _d 0
-         consumpNO2 = 0.0 _d 0
-         consumpNH4 = 0.0 _d 0
-         consumpFeT = 0.0 _d 0
-         consumpSi  = 0.0 _d 0
-
-#ifdef ALLOW_CARBON
-         totphy_doc = 0. _d 0
-         totphy_poc = 0. _d 0
-         totphy_pic = 0. _d 0
-         totzoo_doc = 0. _d 0
-         totzoo_poc = 0. _d 0
-         totzoo_pic = 0. _d 0
-         consumpDIC = 0.0 _d 0
-         consumpDIC_PIC = 0.0 _d 0
-#endif
-
-c zeros for diagnostics
-        PP=0. _d 0
-        Nfix=0. _d 0
-        denit=0. _d 0
-        Chl=0. _d 0
-
-c set up phtyoplankton array to be used for grazing and mortality
-c set up other variable used more than once to zero
-         do np = 1, npmax
-           dummy = phyto(np)-phymin
-           phytomin(np)=max(dummy,0. _d 0)
-           NH4limit(np)=0. _d 0
-           NO2limit(np)=0. _d 0
-           NO3limit(np)=0. _d 0
-#ifdef ALLOW_DIAZ
-#ifdef DAR_DIAG_NFIXP
-           NfixPlocal(np)=0. _d 0
-#endif
-#endif
-         enddo
-
-
-#ifdef ALLOW_MUTANTS
-c SWD if parent population is zero (ie. negative) treat all mutants
-c as zeros too
-       if(runtim .gt. threeyr) then
-       if(numtax .gt. 1)then
-        do np=1,npro
-          if(mod(np,numtax).eq. 1. _d 0)then
-             nsisone   = np
-             nsistwo   = np+1
-             nsisthree = np+2
-             nsisfour  = np+3
-
-             if (phyto(nsisone).le.0. _d 0) then
-                if (numtax.gt.1) phyto(nsistwo)=0. _d 0
-                if (numtax.gt.2) phyto(nsisthree)=0. _d 0
-                if (numtax.gt.3) phyto(nsisfour)=0. _d 0
-             endif
-           endif
-        enddo
-       endif
-       endif
-ccccccccccccccccccccccccccccccc
-#endif
-
-
-c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-          call DARWIN_TEMPFUNC(Tlocal,phytoTempFunction,
-     &            zooTempFunction, reminTempFunction,
-     &            mortPTempFunction, mortZTempFunction, 
-     &            mortZ2TempFunction, myThid)
-          if (debug.eq.1) print*,'phytoTempFunction',
-     &                          phytoTempFunction, Tlocal
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-c ******************** GROWTH OF PHYTO ****************************
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-#ifndef GEIDER
-c ANNA also if not wavebands
-#ifndef WAVEBANDS
-c Determine phytoplantkon light limitation: will affect growth rate
-c using Platt-like equations with inhibition
-          do np = 1, npmax
-           if (PARlocal.gt.1. _d 0) then
-             kpar=ksatPAR(np)/10. _d 0;
-             kinh=kinhib(np)/1000. _d 0;
-             ilimit(np)=(1.0 _d 0 - EXP(-PARlocal*kpar))
-     &                  *(EXP(-PARlocal*kinh)) / 
-     &       ( kpar/(kpar+kinh)*EXP(kinh/kpar*LOG(kinh/(kpar+kinh))) )
-             ilimit(np)=min(ilimit(np),1. _d 0)
-           else
-             ilimit(np)=0. _d 0
-           endif
-          enddo
-          if (debug.eq.1) print*,'ilimit',ilimit, PARlocal
-#endif
-#endif
-c ANNA endif
-
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c Determine phytoplankton nutrient limitation as mimimum of 
-c P,N,Si,Fe. However N can be utilized in several forms, so
-c also determine which is used
-          do np=1, npmax
-            limit(np) = 1.0 _d 0
-c P limitation
-            if (ksatPO4(np).gt.0. _d 0) then
-              dummy = PO4local/(PO4local+ksatPO4(np))
-              if (dummy .lt. limit(np)) limit(np) = dummy
-            endif
-c Fe limitation
-            if (ksatFeT(np).gt.0. _d 0) then
-              dummy = FeTlocal/(FeTlocal+ksatFeT(np))
-              if (dummy .lt. limit(np))limit(np) = dummy
-            endif
-c Si limiation
-            if (R_SiP(np) .ne. 0. _d 0.and.ksatSi(np).gt.0. _d 0) then
-              dummy = Silocal/(Silocal+ksatSi(np))
-              if (dummy .lt. limit(np))limit(np) = dummy
-            endif
-
-c N limitation [jbmodif]
-c nsource: genetic preference for {1:NH4&NO2 2:NH4 3:ALL Sources}
-c Nsourcelimit marker for which nsource will be consumed {1:NO3 2:NO2 3:NH4}
-c (Note: very different to way 1-D model does this)
-            if(diazotroph(np) .ne. 1.0 _d 0)then
-
-c NH4, all nsource
-               if (ksatNH4(np).gt.0. _d 0) then
-                   NH4limit(np) = NH4local/(NH4local+ksatNH4(np))
-               endif
-
-#ifdef OLD_NSCHEME
-               if (ksatNO2(np).gt.0. _d 0) then
-c NO2, if nsource is 1 or 3
-                   NO2limit(np) = NO2local/(NO2local+ksatNO2(np))*
-     &                    EXP(-sig1*NH4local)
-                   NO2limcheck = NO2local/(NO2local+ksatNO2(np))
-               endif
-c NO3, if nsource is 3
-               if (ksatNO3(np).gt.0. _d 0) then
-                   NO3limit(np) = NO3local/(NO3local+ksatNO3(np))*
-     &                    EXP(-sig2*NH4local - sig3*NO2local)
-                   NO3limcheck = NO3local/(NO3local+ksatNO3(np))
-               endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+        Qfe(j) = MAX(EPS*R_feC(j), Ptr(ife+j-1))*Xi(j)
 #else
-c [jbmodif]
-c NO2, if nsource is 1 or 3
-               if (ksatNO2(np).gt.0. _d 0 .and. nsource(np).ne.2) then
-                 if (N2only.eq.1 .and. nsource(np).eq.1) then
-c                if (nsource(np).eq.1) then
-                  NO2limit(np) = NO2local/(NO2local+ksatNO2(np))
-     &                    *EXP(-sig1*NH4local)
-                  NO2limcheck = NO2local/(NO2local+ksatNO2(np))
-                 else
-                  if (ksatNO3(np).gt.0. _d 0) then
-                   NO2limit(np)=NO2local/(NO3local+NO2local+ksatNO3(np))
-     &                    *EXP(-sig1*NH4local)
-                   NO2limcheck=NO2local/(NO3local+NO2local+ksatNO3(np))
-                  endif
-                 endif
-               endif
-c NO3, if nsource is 3
-               if (ksatNO3(np).gt.0. _d 0 .and. nsource(np).eq.3) then
-                  NO3limit(np)=NO3local/(NO3local+NO2local+ksatNO3(np))
-     &                    *EXP(-sig1*NH4local)
-                  NO3limcheck=NO3local/(NO3local+NO2local+ksatNO3(np))
-               endif
-
+        Qfe(j) = R_FeC(j)
+#endif
+      ENDDO
+#ifdef DARWIN_ALLOW_CHLQUOTA
+      DO j = 1, nPhoto
+        QChl(j) = MAX(EPS*R_ChlC(j), Ptr(ichl+j-1))*Xi(j)
+      ENDDO
 #endif
 
-               if (nsource(np).eq.2) then
-                  NO2limit(np) = 0. _d 0
-                  NO3limit(np) = 0. _d 0
-                  NO2limcheck  = 0. _d 0
-                  NO3limcheck  = 0. _d 0
-               endif
-               if (nsource(np).eq.1) then
-                 NO3limit(np) = 0. _d 0
-                 NO3limcheck  = 0. _d 0
-               endif
-               if (nsource(np).eq.3) then
-c don't do anything
-               endif
+      consumDIC  = 0.0
+      consumDIC_PIC = 0.0
+      consumNH4  = 0.0
+      consumNO2  = 0.0
+      consumNO3  = 0.0
+      consumPO4  = 0.0
+      consumSiO2 = 0.0
+      consumFeT  = 0.0
+      consumPON  = 0.0
+      consumPOP  = 0.0
+      consumPOC = 0.0
+      consumPOFe  = 0.0
+      consumPOSi  = 0.0
+      consumDON  = 0.0
+      consumDOP  = 0.0
+      consumDOC = 0.0
+      consumDOFe  = 0.0
+      consumO2 = 0.0
+      reminPON  = 0.0
+      reminPOP  = 0.0
+      reminPOC = 0.0
+      reminPOFe  = 0.0
+      reminPOSi  = 0.0
+      reminDON  = 0.0
+      reminDOP  = 0.0
+      reminDOC = 0.0
+      reminDOFe  = 0.0
+      solubilPON  = 0.0
+      solubilPOP  = 0.0
+      solubilPOC = 0.0
+      solubilPOFe  = 0.0
+      prodNO2 = 0.0
+      prodNO3 = 0.0
 
-               Ndummy = NO3limit(np)+NO2limit(np)+NH4limit(np)
-c
-c make sure no Nlim disadvantage;
-c check that limit doesn't decrease at high NH4 levels
-               check_nlim=.FALSE.
-               if (check_nlim) then
-                  Ndummy1=NO3limcheck+NO2limcheck
-                  if (Ndummy.gt.0. _d 0.and.Ndummy.lt.Ndummy1) then
-c                   print*,'QQ N limit WARNING',Ndummy, Ndummy1,
-c    &                             NO3local,NO2local,NH4local
-                    Ndiff=Ndummy1-NH4limit(np)
-                    NO2limit(np)=Ndiff * 
-     &                     NO2limit(np)/(NO2limit(np)+NO3limit(np))
-                    NO3limit(np)=Ndiff *
-     &                     NO3limit(np)/(NO2limit(np)+NO3limit(np))
-                    Ndummy = NO3limit(np)+NO2limit(np)+NH4limit(np)
-                  endif
-               endif
+      DO j = 1, nPhoto
+        chlout(j) = 0.0 _d 0
+      ENDDO
 
-               if (Ndummy.gt.1. _d 0) then
-                 NO3limit(np) = NO3limit(np)/Ndummy
-                 NO2limit(np) = NO2limit(np)/Ndummy
-                 NH4limit(np) = NH4limit(np)/Ndummy 
-               endif
-               Nlimit(np)=NO3limit(np)+NO2limit(np)+NH4limit(np)
-               if (Nlimit(np).gt.1.01 _d 0) then
-                print*,'QQ Nlimit', Nlimit(np), NO3limit(np), 
-     &                              NO2limit(np), NH4limit(np)
-               endif
-               if (Nlimit(np).le.0. _d 0) then
-c                if (np.eq.1) then
-c                 print*,'QQ Nlimit', Nlimit(np), NO3limit(np),
-c    &                              NO2limit(np), NH4limit(np)
-c                 print*,'QQ limit',limit(np), np
-c                endif
-                 Nlimit(np)=0. _d 0   !1 _d -10
-               endif
+      DO l=1,darwin_nDiag
+        diags(l) = 0.0
+      ENDDO
 
-#ifdef OLD_NSCHEME
-c lower growth for higher NO3 consumption at higher light
-               if (Nlimit(np).le.0. _d 0) then
-                 ngrow(np)=1. _d 0
-               else
-                if (parlocal.gt.ilight) then
-                  ngrow(np)=ngrowfac+(1. _d 0-ngrowfac)*
-     &                      (NH4limit(np)+NO2limit(np))/Nlimit(np)
-                else
-                  ngrow(np)=1. _d 0
-                endif
-                ngrow(np)=min(ngrow(np),1. _d 0)
-               endif
+C=======================================================================
+C==== phytoplankton ====================================================
+
+      DO j = 1, nPhoto
+       IF (isPhoto(j) .NE. 0) THEN
+C fixed carbon quota, for now 1.0 (may change later)
+C other elements: get quota from corresponding ptracer or set to fixed
+c ratio if not variable.
+
+C==== uptake and nutrient limitation ===================================
+C       for quota elements, growth is limiteed by available quota,
+C       for non-quota elements, by available nutrients in medium
+
+C       to not use PO4, ..., set ksatPO4=0 and vmaxPO4=0 (if DARWIN_ALLOW_PQUOTA)
+C       or R_PC=0 (if not)
+C       the result will be limitp = 1, uptakePO4 = 0
+
+c phosphorus
+        limitp = PO4/(PO4 + ksatPO4(j))
+#ifdef DARWIN_ALLOW_PQUOTA
+        regQ = MAX(0., MIN(1., (Qpmax(j)-Qp(j))/
+     &                         (Qpmax(j)-Qpmin(j)) ))
+        regQ = regQ**hillnumUptake
+        uptakePO4 = vmaxPO4(j) * limitp * regQ *
+     &                       uptakeTempFunc * X(j)
+c       normalized Droop limitation
+        limitp = MAX(0., MIN(1., (1.0-Qpmin(j)/Qp(j))/
+     &                            (1.0-Qpmin(j)/Qpmax(j))))
+#endif
+
+c silica
+        limitsi = SiO2/(SiO2 + ksatSiO2(j))
+#ifdef DARWIN_ALLOW_SIQUOTA
+        regQ = MAX(0., MIN(1., (Qsimax(j) - Qsi(j))/
+     &                         (Qsimax(j) - Qsimin(j)) ))
+        regQ = regQ**hillnumUptake
+        uptakeSiO2 = vmaxSiO2(j) * limitsi * regQ *
+     &                                 uptakeTempFunc * X(j)
+
+c       linear limitation
+        limitsi = MAX(0., MIN(1., (Qsi(j) - Qsimin(j))/
+     &                         (Qsimax(j) - Qsimin(j)) ))
+#endif
+
+c iron
+        limitfe = FeT/(FeT + ksatFeT(j))
+#ifdef DARWIN_ALLOW_FEQUOTA
+        regQ = MAX(0., MIN(1., (Qfemax(j)-Qfe(j))/
+     &                         (Qfemax(j)-Qfemin(j)) ))
+        regQ = regQ**hillnumUptake
+        uptakeFeT = vmaxFeT(j) * limitfe * regQ *
+     &                       uptakeTempFunc * X(j)
+
+c       normalized Droop limitation
+        limitfe = MAX(0., MIN(1., (1.0-Qfemin(j)/Qfe(j))/
+     &                            (1.0-Qfemin(j)/Qfemax(j))))
+#endif
+
+c nitrogen
+#ifdef DARWIN_ALLOW_NQUOTA
+c       have nitrogen quota
+        inhibNH4 = EXP(-amminhib(j)*NH4)
+        limitNH4 = NH4/(NH4 + ksatNH4(j))
+        limitNO2 = NO2/(NO2 + ksatNO2(j))*inhibNH4
+        limitNO3 = NO3/(NO3 + ksatNO3(j))*inhibNH4
+        regQ = MAX(0., MIN(1., (Qnmax(j)-Qn(j))/
+     &                         (Qnmax(j)-Qnmin(j)) ))
+        regQ = regQ**hillnumUptake
+        uptakeNH4 = vmaxNH4(j)*limitNH4*regQ*uptakeTempFunc*X(j)
+        uptakeNO2 = vmaxNO2(j)*limitNO2*regQ*uptakeTempFunc*X(j)
+        uptakeNO3 = vmaxNO3(j)*limitNO3*regQ*uptakeTempFunc*X(j)
+#ifdef DARWIN_ALLOW_FEQUOTA
+#ifdef DARWIN_NITRATE_FELIMIT
+        uptakeNO3 = uptakeNO3 * limitfe
+#endif
+#endif
+        uptakeN = MAX(uptakeNH4 + uptakeNO2 + uptakeNO3,
+     &                vmaxN(j)*regQ*uptakeTempFunc*X(j)*diazo(j))
+
+c       linear limitation
+        limitn = MAX(0., MIN(1., (Qn(j) - Qnmin(j))/
+     &                        (Qnmax(j) - Qnmin(j)) ))
+#else /* not DARWIN_ALLOW_NQUOTA */
+        inhibNH4 = EXP(-amminhib(j)*NH4)
+        limitNH4 = useNH4(j)*NH4/(NH4 + ksatNH4(j))
+        limitNO2 = useNO2(j)*NO2/
+     &   (NO2 + combNO(j)*(NO3 + ksatNO3(j) - ksatNO2(j)) + ksatNO2(j))*
+     &   inhibNH4
+        limitNO3 = useNO3(j)*NO3/
+     &   (combNO(j)*NO2 + NO3 + ksatNO3(j))*inhibNH4
+        limitn = limitNH4 + limitNO2 + limitNO3
+C       normalize to sum (approx) 1
+        fracNH4 = limitNH4/(limitn + EPS)
+        fracNO2 = limitNO2/(limitn + EPS)
+        fracNO3 = limitNO3/(limitn + EPS)
+C if diazo, all fracN* == 0 but want no N limitation
+        limitn = MIN(1.0, limitn + diazo(j))
+#endif /* DARWIN_ALLOW_NQUOTA */
+c        IF (limitn .GT. 0.0) THEN
+c          ngrow = ((10*4+2)/(10*4 + 2*limitNH4/limitn +
+c     &                       8*limitNO2/limitn + 10*limitNO3/limitn))
+c        ELSE
+        ngrow = 1.0
+c        ENDIF
+
+        limitnut = MIN(limitn, limitp, limitsi)
+#ifndef DARWIN_ALLOW_FEQUOTA
+        limitnut = MIN(limitnut, limitfe)
+#endif
+
+        limitpCO2 = 1.
+
+C==== growth ===========================================================
+#ifdef DARWIN_ALLOW_GEIDER
+
+        alpha_I = 0 _d 0
+        DO l = 1, nlam
+          alpha_I = alpha_I + alphachl(j,l)*PAR(l)
+        ENDDO
+C       NB: for quota, PCmax(j) = Vmax_c(j)
+        PCm = PCmax(j)*limitnut*photoTempFunc(j)*limitpCO2
+
+        IF (PCm .GT. 0.0) THEN
+          acclim = MAX(chl2cmin(j), MIN(chl2cmax(j),
+     &             chl2cmax(j)/(1+(chl2cmax(j)*alpha_I)/(2*PCm)) ))
+        ELSE
+          acclim = chl2cmin(j)
+        ENDIF
+
+#ifdef DARWIN_ALLOW_CHLQUOTA
+C       quotas are already relative to carbon
+        chl2c = QChl(j)
 #else
-c disadvantage of oxidized inorganic N
-c for now, ignore - a first attempt is included below
-              ngrow(np) = 1.0 _d 0
-
-cc lower growth for higher NO3 consumption at higher light
-c one possible way of counting cost of reducing NOX
-               if (NOreducost .eq. 1)then 
-                if (Nlimit(np).le.0. _d 0) then
-                  ngrow(np)=1. _d 0
-                else
-                 ngrow(np)= (10. _d 0*4. _d 0 +2. _d 0)   /
-     &              (10. _d 0*4. _d 0 +2. _d 0*NH4limit(np)/Nlimit(np)
-     &                           +8. _d 0*NO2limit(np)/Nlimit(np)
-     &                           +10. _d 0*NO3limit(np)/Nlimit(np))
-                 ngrow(np)=min(ngrow(np),1. _d 0)
-                endif
-               endif
-c
-c might consider other costs, too
-c             if (NOironcost .eq. 1)then 
-c
-c             endif
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+        chl2c = acclim
 #endif
 
-c Now Check Against General Nutrient Limiting Tendency
-               if (ksatNH4(np).gt.0. _d 0.or.ksatNO2(np).gt.0. _d 0
-     &              .or.ksatNO3(np).gt.0. _d 0) then
-                 if(Nlimit(np) .lt. limit(np)) limit(np) = Nlimit(np)
-               endif
-             else
-                ngrow(np)=1. _d 0
-                Nlimit(np)=1. _d 0
-                NO3limit(np)=0. _d 0
-                NO2limit(np)=0. _d 0
-                NH4limit(np)=0. _d 0
-             endif   ! diaz
-             limit(np)=min(limit(np),1. _d 0)
-           enddo    !np
-          if (debug.eq.1) print*,'nut limit',
-     &                          limit, PO4local, FeTlocal, Silocal
-          if (debug.eq.1) print*,'Nlimit',
-     &                 Nlimit
-          if (debug.eq.1) print*,'NH4limit',
-     &                  NH4limit, NH4local
-          if (debug.eq.1) print*,'NO2limit',
-     &                   NO2limit, NO2local
-          if (debug.eq.1) print*,'NO3limit',
-     &                  NO3limit, NO3local
-          if (debug.eq.1) print*,'ngrow',
-     &                  ngrow
+        alpha_I_growth = alpha_I
+C a la quota
+#ifdef DARWIN_ALLOW_FEQUOTA
+        alpha_I_growth = alpha_I_growth*limitfe
+#endif
 
+C       carbon-specific growth rate
+C       PC = PCm*(1-EXP(-alpha_I_growth*chl2c/MAX(EPS, PCm)))
+        IF (PCm .GT. 0.0 .AND. PARtot .GT. PARmin) THEN
+          PC = PCm*(1-EXP(-alpha_I_growth*chl2c/PCm))
+        ELSE
+          PC = 0.0 _d 0
+        ENDIF
 
-#ifdef GEIDER
+        IF (inhibGeider(j) .GT. 0.0) THEN
+C         "total" PAR:
+          tmp = alpha_I/alpha_mean(j)
+          Ek = PCm/(chl2c*alpha_mean(j))
+          EkoverE = Ek / tmp
+          IF (tmp .GE. Ek) THEN
+            PC = PC*EkoverE*inhibGeider(j)
+          ENDIF
+        ENDIF
 
-#ifdef WAVEBANDS
-c ANNA if wavebands then uses spectral alphachl derived from spectral alpha * I
-c so first get value for alphachl_nl * PARwlocal
-c value will depend on matchup between spectra of alphachl_nl (ie. aphy_chl) and PARwlocal
-c integrate alpha*PAR over wavebands
-          do np = 1,npmax
-           alpha_I(np) = 0 _d 0
-           do nl = 1,tlam
-            alpha_I(np) = alpha_I(np) + alphachl_nl(np,nl)*PARwlocal(nl)
-           end do
-          end do
-c Geider growth (and chl2c) now depends on this (sinlge) value of alpha_chl * I
+#else /* not DARWIN_ALLOW_GEIDER */
 
-c alpha_mean now precomputed in darwin_init_vari
+        IF (PARtot .GT. PARmin) THEN
+C         only 1 waveband without DARWIN_ALLOW_GEIDER
+          limitI = (1.0 _d 0 - EXP(-PARtot*ksatPAR(j)))*
+     &             EXP(-PARtot*kinhPAR(j)) * normI(j)
+          PC = PCmax(j)*limitnut*limitI*photoTempFunc(j)*limitpCO2
+        ELSE
+          PC = 0.0 _d 0
+        ENDIF
+        synthChl = 0.0
+
+#endif /* DARWIN_ALLOW_GEIDER */
+
+        growth = PC*ngrow*X(j)
+
+        uptakeDIC = growth
+
+C non-quota elements are taken up with fixed stoichiometry
+#ifndef DARWIN_ALLOW_NQUOTA
+        uptakeN = growth*R_NC(j)
+        uptakeNH4 = uptakeN*fracNH4
+        uptakeNO2 = uptakeN*fracNO2
+        uptakeNO3 = uptakeN*fracNO3
+#endif
+#ifndef DARWIN_ALLOW_PQUOTA
+        uptakePO4 = growth*R_PC(j)
+#endif
+#ifndef DARWIN_ALLOW_SIQUOTA
+        uptakeSiO2 = growth*R_SiC(j)
+#endif
+#ifndef DARWIN_ALLOW_FEQUOTA
+        uptakeFeT = growth*R_FeC(j)
+#endif
+
+C==== chlorophyll ======================================================
+#ifdef DARWIN_ALLOW_GEIDER
+#ifdef DARWIN_ALLOW_CHLQUOTA
+#ifdef DARWIN_ALLOW_NQUOTA
+C       Geider 1998
+        IF (PARtot .GT. PARmin) THEN
+         IF (alpha_I*chl2c .GT. 0.0 _d 0) THEN
+C          rhochl = Chl2Nmax/(alpha_I*chl2c)*ngrow ???
+          rhochl = Chl2Nmax*PC*ngrow/(alpha_I*chl2c)
+         ELSE
+          rhochl = Chl2Nmax
+         ENDIF
+         synthChl = rhochl*uptakeN
+        ELSE
+         synthChl = 0 _d 0
+        ENDIF
+CTODO: this seems wrong!  Should only happen when PARtot.GT.PARmin
+        uptakeDIC = uptakeDIC - synthcost*uptakeN
 #else
-c ANNA if not wavebands uses alphachl derived from mQyield * aphy_chl_ave
-c for use with generic geider equation need to use alpha_I (ie. alphachl*PARlocal)
-          do np = 1, npmax
-            alpha_I(np)=alphachl(np)*PARlocal
-          enddo
-c ANNA endif
-#endif
-
-          do np = 1, npmax
-           pcm(np)=pcmax(np)*limit(np)*phytoTempFunction(np)
-#ifdef DYNAMIC_CHL
-           if (phyto(np).gt. 0. _d 0) then
-             chl2c(np)=phychl(np)/(phyto(np)*R_PC(np))
-           else
-             chl2c(np)= 0. _d 0
-           endif
-#endif
-           if (pcm(np).gt.0.d0) then
-#ifndef DYNAMIC_CHL
-c assumes balanced growth, eq A14 in Geider et al 1997
-             chl2c(np)=chl2cmax(np)/
-     &            (1+(chl2cmax(np)*alpha_I(np))/
-     &               (2*pcm(np)))
-             chl2c(np)=min(chl2c(np),chl2cmax(np))
-             chl2c(np)=max(chl2c(np),chl2cmin(np))
-#endif
-             if (PARlocal.gt.1. _d -1) then
-c Eq A1 in Geider et al 1997
-               pcarbon(np)=pcm(np)*( 1 -
-     &          exp((-alpha_I(np)*chl2c(np))/(pcm(np))) )
-c for inhibition
-               if (inhibcoef_geid(np).gt.0. _d 0) then
-#ifdef WAVEBANDS 
-                 Ek = pcm(np)/(chl2c(np)*alpha_mean(np))
+#ifdef DARWIN_GEIDER_RHO_SYNTH
+        IF (alpha_I .GT. 0.0 _d 0 .AND. acclim .GT. 0.0 _d 0) THEN
+          rhochl = Chl2Cmax(j)*PC*ngrow/(alpha_I*acclim)
+        ELSE
+          rhochl = 0.0 _d 0    ! should be Chl2Cmax(j) ?????
+        ENDIF
+        synthChl = rhochl*growth +
+     &                      acclimtimescl(j)*(acclim-chl2c)*X(j)
 #else
-                 Ek = pcm(np)/(chl2c(np)*alphachl(np))
+        synthChl = acclim*growth +
+     &                      acclimtimescl(j)*(acclim-chl2c)*X(j)
 #endif
-                 EkoverE = Ek / PARlocal
-                 if (PARlocal .ge. Ek) then !photoinhibition begins
-                  pcarbon(np) = pcarbon(np)*(EkoverE*inhibcoef_geid(np))
-                 endif
-               endif
-c end inhib
-               if (pcarbon(np).lt. 0. _d 0) 
-     &                 print*,'QQ ERROR pc=',np,pcarbon(np)
-               if (pcm(np).gt.0. _d 0) then
-                 ilimit(np)=pcarbon(np)/pcm(np)
-               else
-                 ilimit(np)= 0. _d 0
-               endif
-             else
-               ilimit(np)=0. _d 0
-               pcarbon(np)=0. _d 0
-             endif
-#ifdef DYNAMIC_CHL
-c Chl:C acclimated to current conditions 
-c (eq A14 in Geider et al 1997)
-             acclim(np)=chl2cmax(np)/
-     &               (1+(chl2cmax(np)*alpha_I(np))/
-     &                  (2*pcm(np)))
-             acclim(np)=min(acclim(np),chl2cmax(np))
-c            acclim(np)=max(acclim(np),chl2cmin(np))
-#endif
-           else ! if pcm 0
-             pcm(np)=0. _d 0
-#ifdef DYNAMIC_CHL
-             acclim(np)=0. _d 0
-c            acclim(np)=max(acclim(np),chl2cmin(np))
-#else
-             chl2c(np)=chl2cmin(np)
-#endif
-             pcarbon(np)=0. _d 0
-             ilimit(np)=0. _d 0
-           endif
-#ifndef DYNAMIC_CHL
-           phychl(np)=phyto(np)*R_PC(np)*chl2c(np)
-#endif
-          enddo
-          if (debug.eq.14) print*,'ilimit',ilimit, PARlocal
-          if (debug.eq.14) print*,'chl:c',chl2c
-          if (debug.eq.14) print*,'chl',phychl
-#ifdef DYNAMIC_CHL
-          if (debug.eq.14) print*,'acclim',acclim
-#endif
-#endif /* GEIDER */
+#endif /* DARWIN_ALLOW_NQUOTA */
+#else /* DARWIN_ALLOW_CHLQUOTA */
+        chlout(j) = X(j)*Qc(j)*chl2c
+        synthChl = 0.0
+#endif /* DARWIN_ALLOW_CHLQUOTA */
+#endif /* DARWIN_ALLOW_GEIDER */
+C=======================================================================
+        consumDIC_PIC = consumDIC_PIC + uptakeDIC*R_PICPOC(j)
+        consumDIC  = consumDIC  + uptakeDIC
+        consumNH4  = consumNH4  + uptakeNH4
+        consumNO2  = consumNO2  + uptakeNO2
+        consumNO3  = consumNO3  + uptakeNO3
+        consumPO4  = consumPO4  + uptakePO4
+        consumSiO2 = consumSiO2 + uptakeSiO2
+        consumFeT  = consumFeT  + uptakeFeT
 
-#ifdef DAR_DIAG_CHL
-c diagnostic version of the above that does not feed back to growth
-          ChlGeiderlocal = 0. _d 0
-          do np = 1, npmax
-           tmppcm = mu(np)*limit(np)*phytoTempFunction(np)
-           if (tmppcm.gt.0.d0) then
-             tmpchl2c = Geider_chl2cmax(np)/
-     &         (1+(Geider_chl2cmax(np)*Geider_alphachl(np)*PARdaylocal)/
-     &            (2*tmppcm))
-             tmpchl2c = min(tmpchl2c, Geider_chl2cmax(np))
-             tmpchl2c = max(tmpchl2c, Geider_chl2cmin(np))
-           else
-             tmpchl2c = Geider_chl2cmin(np)
-           endif
-           ChlGeiderlocal = ChlGeiderlocal + phyto(np)*R_PC(np)*tmpchl2c
-          enddo
-C Chl a la Doney
-          ChlDoneylocal = 0. _d 0
-          do np = 1, npmax
-            tmpchl2c = (Doney_Bmax - (Doney_Bmax-Doney_Bmin)*
-     &                          MIN(1. _d 0,PARdaylocal/Doney_PARstar))
-     &                    *limit(np)
-            ChlDoneylocal = ChlDoneylocal +
-     &                      tmpchl2c*R_PC(np)*phyto(np)
-          enddo
-C Chl a la Cloern
-          ChlCloernlocal = 0. _d 0
-          do np = 1, npmax
-            tmpchl2c = Cloern_chl2cmin +
-     &                     Cloern_A*exp(Cloern_B*Tlocal)
-     &                             *exp(-Cloern_C*PARdaylocal)
-     &                    *limit(np)
-            ChlCloernlocal = ChlCloernlocal +
-     &                       tmpchl2c*R_PC(np)*phyto(np)
-          enddo
-#endif /* DAR_DIAG_CHL */
+        diags(iPP) = diags(iPP) + growth
+        IF (j .LE. nPPplank) THEN
+          diags(iPPplank+j-1) = diags(iPPplank+j-1) + growth
+        ENDIF
+        IF (diazo(j) .GT. 0.0 _d 0) THEN
+         diags(iNfix)=diags(iNfix)+uptakeN-uptakeNH4-uptakeNO2-uptakeNO3
+        ENDIF
 
+C=======================================================================
 
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c ******************* END GROWTH PHYTO ******************************* 
-
-
-#ifdef OLD_GRAZE
-c------------------------------------------------------------------------
-c GRAZING sum contributions of all zooplankton
-           do np=1,npmax
-              grazing_phyto(np) = 0.0 _d 0
-              do nz = 1, nzmax
-                   grazing_phyto(np) = grazing_phyto(np)
-     &               + graze(np,nz)*zooP(nz)*zooTempFunction(nz)
-              enddo
-           enddo
-           if (debug.eq.2) print*,'grazing_phyto',grazing_phyto
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-#else
-c------------------------------------------------------------------------
-c sum all palatability*phyto and find phyto specific grazing rate
-          do nz=1,nzmax
-           allphyto(nz)=0. _d 0
-           do np=1,npmax
-            allphyto(nz)=allphyto(nz)+palat(np,nz)*phyto(np)
-           enddo
-           if (allphyto(nz).le.0. _d 0) allphyto(nz)=phygrazmin
-           do np=1,npmax
-            tmpz=max(0. _d 0,(allphyto(nz)-phygrazmin) )
-            grazphy(np,nz)=grazemax(nz)*zooTempFunction(nz)*
-     &           (palat(np,nz)*phyto(np)/allphyto(nz))*
-     &           ( tmpz/
-     &             (tmpz+kgrazesat) )
-           enddo
-          enddo
-          if (debug.eq.2) print*,'allphyto',allphyto
-c         if (debug.eq.2) print*,'grazephy',grazphy
-c sum over zoo for impact on phyto
-          do np=1,npmax
-           sumgrazphy(np)=0. _d 0
-           do nz=1,nzmax
-             sumgrazphy(np)=sumgrazphy(np)+
-     &           grazphy(np,nz)*zooP(nz)
-           enddo
-          enddo
-          if (debug.eq.2) print*,'sumgrazephy',sumgrazphy
-c sum over phy for impact on zoo, and all remainder to go to POM
-          do nz=1,nzmax
-           sumgrazzoo(nz)=0. _d 0
-           sumgrazzooN(nz)=0. _d 0
-           sumgrazzooFe(nz)=0. _d 0
-           sumgrazzooSi(nz)=0. _d 0
-           sumgrazloss(nz)=0. _d 0
-           sumgrazlossN(nz)=0. _d 0
-           sumgrazlossFe(nz)=0. _d 0
-           sumgrazlossSi(nz)=0. _d 0
-#ifdef ALLOW_CARBON
-           sumgrazzooC(nz)=0. _d 0
-           sumgrazlossC(nz)=0. _d 0
-           sumgrazlossPIC(nz)=0. _d 0
+        gTr(ic+j-1)=gTr(ic+j-1)  + uptakeDIC
+#ifdef DARWIN_ALLOW_NQUOTA
+        gTr(in+j-1)=gTr(in+j-1)  + uptakeN
 #endif
-           do np=1,npmax
-              sumgrazzoo(nz)=sumgrazzoo(nz)+
-     &             asseff(np,nz)*grazphy(np,nz)*zooP(nz)
-              sumgrazloss(nz)=sumgrazloss(nz)+
-     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*zooP(nz)
-              sumgrazzooN(nz)=sumgrazzooN(nz)+
-     &             asseff(np,nz)*grazphy(np,nz)*zooP(nz)*R_NP(np)
-              sumgrazlossN(nz)=sumgrazlossN(nz)+
-     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
-     &                                      zooP(nz)*R_NP(np)
-              sumgrazzooFe(nz)=sumgrazzooFe(nz)+
-     &             asseff(np,nz)*grazphy(np,nz)*
-     &                                      zooP(nz)*R_FeP(np)
-              sumgrazlossFe(nz)=sumgrazlossFe(nz)+
-     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
-     &                                      zooP(nz)*R_FeP(np)
-              sumgrazzooSi(nz)=sumgrazzooSi(nz)+
-     &             asseff(np,nz)*grazphy(np,nz)*
-     &                                     zooP(nz)*R_SiP(np)
-              sumgrazlossSi(nz)=sumgrazlossSi(nz)+
-     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
-     &                                     zooP(nz)*R_SiP(np)
-#ifdef ALLOW_CARBON
-              sumgrazzooC(nz)=sumgrazzooC(nz)+
-     &             asseff(np,nz)*grazphy(np,nz)*zooP(nz)*R_PC(np)
-              sumgrazlossC(nz)=sumgrazlossC(nz)+
-     &             (1. _d 0-asseff(np,nz))*grazphy(np,nz)*
-     &                                      zooP(nz)*R_PC(np)
-              sumgrazlossPIC(nz)=sumgrazlossPIC(nz)+
-     &             (1. _d 0)*grazphy(np,nz)*
-     &                           zooP(nz)*R_PC(np)*R_PICPOC(np)
+#ifdef DARWIN_ALLOW_PQUOTA
+        gTr(ip+j-1)=gTr(ip+j-1)  + uptakePO4
 #endif
-           enddo
-          enddo
-          if (debug.eq.2) print*,'sumgrazzoo',sumgrazzoo
-          if (debug.eq.2) print*,'sumgrazloss',sumgrazloss
-          if (debug.eq.2) print*,'sumgrazzooN',sumgrazzooN
-          if (debug.eq.2) print*,'sumgrazlossN',sumgrazlossN
-          if (debug.eq.2) print*,'sumgrazzooFe',sumgrazzooFe
-          if (debug.eq.2) print*,'sumgrazlossFe',sumgrazlossFe
-          if (debug.eq.2) print*,'sumgrazzooSi',sumgrazzooSi
-          if (debug.eq.2) print*,'sumgrazlossSi',sumgrazlossSi
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+#ifdef DARWIN_ALLOW_SIQUOTA
+        gTr(isi+j-1)=gTr(isi+j-1) + uptakeSiO2
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+        gTr(ife+j-1)=gTr(ife+j-1) + uptakeFeT
+#endif
+#ifdef DARWIN_ALLOW_CHLQUOTA
+        gTr(iChl+j-1)=gTr(iChl+j-1) + synthChl
 #endif
 
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c accumulate particulate and dissolved detritus
-           do np=1, npmax
-               totphy_pop=totphy_pop+
-     &                ExportFracP(np)*mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-               totphy_dop=totphy_dop+
-     &                (1. _d 0-ExportFracP(np))*mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-               totphy_pon=totphy_pon+ R_NP(np)*
-     &                ExportFracP(np)*mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-               totphy_don=totphy_don+ R_NP(np)*
-     &               (1. _d 0-ExportFracP(np))*mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-               totphy_pofe=totphy_pofe+ R_FeP(np)*
-     &                ExportFracP(np)*mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-               totphy_dofe=totphy_dofe+ R_FeP(np)*
-     &               (1. _d 0-ExportFracP(np))*mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-               totphy_posi=totphy_posi+ R_SiP(np)*
-     &                mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-#ifdef ALLOW_CARBON
-               totphy_poc=totphy_poc+ R_PC(np)*
-     &                ExportFracP(np)*mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-               totphy_doc=totphy_doc+ R_PC(np)*
-     &               (1. _d 0-ExportFracP(np))*mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-               totphy_pic=totphy_pic+ R_PC(np)*R_PICPOC(np)*
-     &                mortphy(np)*
-     &                mortPTempFunction*phytomin(np)
-#endif
-            enddo 
-            if (debug.eq.3) print*,'tot_phy_pop',totphy_pop
-            if (debug.eq.3) print*,'tot_phy_dop',totphy_dop
-            if (debug.eq.3) print*,'tot_phy_pon',totphy_pon
-            if (debug.eq.3) print*,'tot_phy_don',totphy_don
-            if (debug.eq.3) print*,'tot_phy_pofe',totphy_pofe
-            if (debug.eq.3) print*,'tot_phy_dofe',totphy_dofe
-            if (debug.eq.3) print*,'tot_phy_posi',totphy_posi
-
-
-c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-
-#ifdef OLD_GRAZE
-c ****************** ZOO GRAZING RATE ****************************
-c determine zooplankton grazing rates 
-            do nz = 1, nzmax
-c grazing: sum contribution from all phytoplankton
-              grazingP(nz) = 0.0 _d 0
-              grazingN(nz) = 0.0 _d 0
-              grazingFe(nz) = 0.0 _d 0
-              grazingSi(nz) = 0.0 _d 0
-#ifdef ALLOW_CARBON
-              grazingC(nz) = 0.0 _d 0
-#endif
-              do np = 1, npmax
-               facpz = (phytomin(np)/(phytomin(np) + kgrazesat))
-     &                  *zooTempFunction(nz)
-               grazingP(nz) = grazingP(nz) + 
-     &                         graze(np,nz)*facpz
-               grazingN(nz) = grazingN(nz) + 
-     &                         graze(np,nz)*R_NP(np)*facpz
-               grazingFe(nz) = grazingFe(nz) + 
-     &                          graze(np,nz)*R_FeP(np)*facpz
-               grazingSi(nz) = grazingSi(nz) + 
-     &                          graze(np,nz)*R_SiP(np)*facpz
-#ifdef ALLOW_CARBON
-               grazingC(nz) = grazingC(nz) +
-     &                         graze(np,nz)*R_PC(np)*facpz
-#endif
-              enddo
-            enddo
-            if (debug.eq.4) print*,'grazingP', grazingP
-            if (debug.eq.4) print*,'grazingN', grazingN
-            if (debug.eq.4) print*,'grazingFe', grazingFe
-            if (debug.eq.4) print*,'grazingSi', grazingSi
-c *************  END ZOO GRAZING *********************************
-#endif
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c accumulate particulate and dissolved detritus
-            do nz=1, nzmax
-               totzoo_pop=totzoo_pop+
-     &                     ExportFracZ(nz)*( mortzoo(nz)*
-     &                     mortZTempFunction*zooP(nz)
-     &                     +  mortzoo2(nz)*
-     &                     mortZ2TempFunction*zooP(nz)**2 )
-               totzoo_dop=totzoo_dop+
-     &                    (1. _d 0-ExportFracZ(nz))*(
-     &                     mortzoo(nz)*
-     &                     mortZTempFunction*zooP(nz)+
-     &                     mortzoo2(nz)*
-     &                     mortZ2TempFunction*zooP(nz)**2 )
-               totzoo_pon=totzoo_pon+
-     &                     ExportFracZ(nz)*( mortzoo(nz)*
-     &                     mortZTempFunction*zooN(nz)
-     &                     +  mortzoo2(nz)*
-     &                     mortZ2TempFunction*zooN(nz)*zooP(nz) )
-               totzoo_don=totzoo_don+
-     &                    (1. _d 0-ExportFracZ(nz))*(
-     &                     mortzoo(nz)*
-     &                     mortZTempFunction*zooN(nz)+
-     &                     mortzoo2(nz)*
-     &                     mortZ2TempFunction*zooN(nz)*zooP(nz) )
-               totzoo_pofe=totzoo_pofe+
-     &                     ExportFracZ(nz)*( mortzoo(nz)*
-     &                     mortZTempFunction*zooFe(nz)
-     &                     +  mortzoo2(nz)*
-     &                     mortZ2TempFunction*zooFe(nz)*zooP(nz) )
-               totzoo_dofe=totzoo_dofe+
-     &                   (1. _d 0-ExportFracZ(nz))*(
-     &                    mortzoo(nz)*
-     &                    mortZTempFunction*zooFe(nz) +
-     &                    mortzoo2(nz)*
-     &                    mortZ2TempFunction*zooFe(nz)*zooP(nz) )
-               totzoo_posi=totzoo_posi+
-     &                     ( mortzoo(nz)*
-     &                       mortZTempFunction*zooSi(nz)+
-     &                       mortzoo2(nz)*
-     &                       mortZ2TempFunction*zooSi(nz)*zooP(nz) )
-#ifdef ALLOW_CARBON
-               totzoo_poc=totzoo_poc+
-     &                    ExportFracZ(nz)*( mortzoo(nz)*
-     &                         mortZTempFunction*zooClocal(nz)
-     &                      +  mortzoo2(nz)*
-     &                       mortZ2TempFunction*zooClocal(nz)*zooP(nz) )
-               totzoo_doc=totzoo_doc+
-     &           (1. _d 0-ExportFracZ(nz))*( mortzoo(nz)*
-     &                         mortZTempFunction*zooClocal(nz)
-     &                      +  mortzoo2(nz)*
-     &                       mortZ2TempFunction*zooClocal(nz)*zooP(nz) )
-#endif
-            enddo
-
-#ifndef OLD_GRAZE
-            do nz=1, nzmax
-               totzoo_pop=totzoo_pop+
-     &                    ExportFracGraz(nz)*sumgrazloss(nz)
-               totzoo_dop=totzoo_dop+
-     &                 (1. _d 0-ExportFracGraz(nz))*sumgrazloss(nz)
-               totzoo_pon=totzoo_pon+
-     &                    ExportFracGraz(nz)*sumgrazlossN(nz)
-               totzoo_don=totzoo_don+
-     &                 (1. _d 0-ExportFracGraz(nz))*sumgrazlossN(nz)
-               totzoo_pofe=totzoo_pofe+
-     &                    ExportFracGraz(nz)*sumgrazlossFe(nz)
-               totzoo_dofe=totzoo_dofe+
-     &                 (1. _d 0-ExportFracGraz(nz))*sumgrazlossFe(nz)
-               totzoo_posi=totzoo_posi+
-     &                     sumgrazlossSi(nz)
-#ifdef ALLOW_CARBON
-               totzoo_poc=totzoo_poc+
-     &                    ExportFracGraz(nz)*sumgrazlossC(nz)
-               totzoo_doc=totzoo_doc+
-     &                 (1. _d 0-ExportFracGraz(nz))*sumgrazlossC(nz)
-               totzoo_pic=totzoo_pic+
-     &                    sumgrazlossPIC(nz)
-#endif
-            enddo
-#endif
-            if (debug.eq.5) print*,'totzoo_pop',totzoo_pop
-            if (debug.eq.5) print*,'totzoo_dop',totzoo_dop
-            if (debug.eq.5) print*,'totzoo_pon',totzoo_pon
-            if (debug.eq.5) print*,'totzoo_don',totzoo_don
-            if (debug.eq.5) print*,'totzoo_pofe',totzoo_pofe
-            if (debug.eq.5) print*,'totzoo_dofe',totzoo_dofe
-            if (debug.eq.5) print*,'totzoo_posi',totzoo_posi
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-c ********************* NUTRIENT UPTAKE *******************************
-c determine nutrient uptake
-c consumption - sum of phytoplankton contributions
-            do np = 1, npmax
-c phospate uptake by each phytoplankton
-#ifndef GEIDER
-               grow(np)=ngrow(np)*mu(np)*limit(np)*ilimit(np)*
-     &                            phytoTempFunction(np)
-#endif
-#ifdef GEIDER
-               grow(np)=ngrow(np)*pcarbon(np)
-               if (debug.eq.1) print*,'grow', grow(np), pcarbon(np)
-               if (debug.eq.14) print*,'grow', grow(np), pcarbon(np)
-#ifdef DYNAMIC_CHL
-c geider 97 for dChl/dt (source part) Eq. 3
-               if (acclim(np).gt. 0. _d 0.and. 
-     &                               alpha_I(np).gt. 0. _d 0) then
-                rhochl(np)=chl2cmax(np) *
-     &                      (grow(np)/(alpha_I(np)*acclim(np)) )
-               else
-                rhochl(np)= 0. _d 0
-               endif
-               if (debug.eq.14) print*,'rhochl',rhochl(np)
-#endif
-#endif
-               PspecificPO4(np) = grow(np)*phyto(np)
-c        write(6,*)'np =',np, ' PspecificPO4 ='
-c     &              ,PspecificPO4(np)
-               consumpPO4 = consumpPO4 + PspecificPO4(np)
-               consumpFeT = consumpFeT + PspecificPO4(np)*R_FeP(np)
-               consumpSi  = consumpSi  + PspecificPO4(np)*R_SiP(np)
-cswd should have O2prod as function of np?
-c New Way of doing Nitrogen Consumption .......................
-               if(diazotroph(np) .ne. 1.0 _d 0)then
-                if (Nlimit(np).le.0. _d 0) then
-                 consumpNO3 = consumpNO3
-                 consumpNO2 = consumpNO2
-                 consumpNH4 = consumpNH4
-                else 
-                 consumpNO3 = consumpNO3 + 
-     &              NO3limit(np)/Nlimit(np)*PspecificPO4(np)*R_NP(np)
-                 consumpNO2 = consumpNO2 +
-     &              NO2limit(np)/Nlimit(np)* PspecificPO4(np)*R_NP(np)
-                 consumpNH4 = consumpNH4 + 
-     &              NH4limit(np)/Nlimit(np)*PspecificPO4(np)*R_NP(np)
-                endif
-               else
-                 consumpNO3 = consumpNO3
-                 consumpNO2 = consumpNO2
-                 consumpNH4 = consumpNH4
-                 Nfix=Nfix+PspecificPO4(np)*R_NP(np)
-#ifdef ALLOW_DIAZ
-#ifdef DAR_DIAG_NFIXP
-                 NfixPlocal(np)=PspecificPO4(np)*R_NP(np)
-#endif
-#endif
-               endif
-#ifdef ALLOW_CARBON
-               consumpDIC  = consumpDIC  + PspecificPO4(np)*R_PC(np)
-               consumpDIC_PIC = consumpDIC_PIC + 
-     &                           PspecificPO4(np)*R_PC(np)*R_PICPOC(np)
-#endif
-            enddo
-           if (debug.eq.7) print*,'local', parlocal,tlocal,po4local,
-     &                  no3local, no2local,nh4local,fetlocal,silocal
-           if (debug.eq.7) print*,'grow',grow
-           if (debug.eq.6) print*,'pspecificpo4', PspecificPO4
-           if (debug.eq.6) print*,'consumpPO4', consumpPO4
-           if (debug.eq.6) print*,'consumpFeT', consumpFeT
-           if (debug.eq.6) print*,'consumpSi ', consumpsi 
-           if (debug.eq.6) print*,'consumpNO3', consumpNO3
-           if (debug.eq.6) print*,'consumpNO2', consumpNO2
-           if (debug.eq.6) print*,'consumpNH4', consumpNH4
-c ****************** END NUTRIENT UPTAKE ****************************
-
-c sinking phytoplankton and POM
-             if(bottom .eq. 1.0 _d 0)then
-              psinkP  = (wp_sink*POPuplocal)/(dzlocal)
-              psinkN  = (wn_sink*PONuplocal)/(dzlocal)
-              psinkFe = (wfe_sink*POFeuplocal)/(dzlocal)
-              psinkSi = (wsi_sink*PSiuplocal)/(dzlocal)
-              do np=1,npmax
-               psinkPhy(np) =
-     &                     (wsink(np)*Phytoup(np))/(dzlocal)
-              enddo
-#ifdef DYNAMIC_CHL
-              do np=1,npmax
-               psinkChl(np) =
-     &                     (wsink(np)*Chlup(np))/(dzlocal)
-              enddo
-#endif
-#ifdef ALLOW_CARBON
-              psinkC  = (wc_sink*POCuplocal)/(dzlocal)
-              psinkPIC = (wpic_sink*PICuplocal)/(dzlocal)
-#endif
-            else
-              psinkP  = (wp_sink*(POPuplocal-POPlocal))/(dzlocal)
-              psinkN  = (wn_sink*(PONuplocal-PONlocal))/(dzlocal)
-              psinkFe = (wfe_sink*(POFeuplocal-POFelocal))/(dzlocal)
-              psinkSi = (wsi_sink*(PSiuplocal-PSilocal))/(dzlocal)
-              do np=1,npmax
-               psinkPhy(np) =
-     &                  (wsink(np))*(Phytoup(np)-Phyto(np))/(dzlocal)
-              enddo
-#ifdef DYNAMIC_CHL
-              do np=1,npmax
-               psinkChl(np) =
-     &                  (wsink(np))*(Chlup(np)-phychl(np))/(dzlocal)
-              enddo
-#endif
-#ifdef ALLOW_CARBON
-              psinkC  = (wc_sink*(POCuplocal-POClocal))/(dzlocal)
-              psinkPIC  = (wpic_sink*(PICuplocal-PIClocal))/(dzlocal)
-#endif
-            endif
-
-c DOM remineralization rates
-            DOPremin =  reminTempFunction * Kdop * DOPlocal
-            DONremin =  reminTempFunction * Kdon * DONlocal
-            DOFeremin =  reminTempFunction * KdoFe * DOFelocal
-
-c remineralization of sinking particulate
-            preminP  = reminTempFunction * Kpremin_P*POPlocal
-            preminN  = reminTempFunction * Kpremin_N*PONlocal
-            preminFe = reminTempFunction * Kpremin_Fe*POFelocal
-            preminSi = reminTempFunction * Kpremin_Si*PSilocal
-
-#ifdef ALLOW_CARBON
-           DOCremin =  reminTempFunction * Kdoc * DOClocal
-           preminC  = reminTempFunction * Kpremin_C*POClocal
-c dissolution
-           disscPIC = Kdissc*PIClocal
+#ifdef DARWIN_DEBUG
+        IF (iG.eq.iDEBUG.and.jG.eq.jDEBUG) THEN
+         print*,'uptake',myiter,k,j,
+     &     uptakeDIC,
+     &     uptakeNH4,
+     &     uptakeNO2,
+     &     uptakeNO3,
+     &     uptakeN,
+     &     uptakePO4,
+     &     uptakeSiO2,
+     &     uptakeFeT
+        ENDIF
 #endif
 
-c chemistry
-c NH4 -> NO2 -> NO3 by bacterial action
-            NO2prod = knita*( 1. _d 0-min(PARlocal/PAR0,1. _d 0) )
-     &                *NH4local
-            NO3prod = knitb*( 1. _d 0-min(PARlocal/PAR0,1. _d 0) )
-     &                *NO2local 
-c           NO2prod = knita*NH4local
-c           NO3prod = knitb*NO2local
-c
-#ifdef PART_SCAV
-            scav_poc=POPlocal/1.1321 _d -4
-c scav rate 
-            scav_part=scav_rat*scav_inter*(scav_poc**scav_exp)
-#endif
-c -------------------------------------------------------------------
-c calculate tendency terms (and some diagnostics)
-c ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c phytoplankton
-            do np=1,npmax
-              dphytodt(np) =   PspecificPO4(np)
-#ifdef OLD_GRAZE
-     &                        - grazing_phyto(np)*
-     &              (phytomin(np)/(phytomin(np) + kgrazesat))
-#else
-     &                        - sumgrazphy(np)
-#endif
-     &                        - mortphy(np)*
-     &                          mortPTempFunction*phytomin(np)
-     &                        + psinkphy(np)
-#ifdef GEIDER
-#ifdef DYNAMIC_CHL
-              dphychl(np) = acclim(np)*PspecificPO4(np)*R_PC(np)
-c             dphychl(np) = rhochl(np)*PspecificPO4(np)*R_PC(np) 
-     &                     + acclimtimescl *
-     &                      (acclim(np)-chl2c(np))*phyto(np)*R_PC(np)
-     &                     +(
-#ifdef OLD_GRAZE
-     &                        - grazing_phyto(np)*
-     &              (phytomin(np)/(phytomin(np) + kgrazesat))
-#else
-     &                   - sumgrazphy(np)
-#endif
-     &                   - mortphy(np)*
-     &                     mortPTempFunction*phytomin(np)) 
-     &                       *chl2c(np)*R_PC(np)
-     &                        + psinkChl(np) 
-#endif
-              Chl=Chl + phychl(np)
-#endif
-c %% diagnostics
-              PP = PP + PspecificPO4(np)
-c%%% 
-#ifdef OLD_GRAZE
-              tmpr=grazing_phyto(np)*
-     &              (phytomin(np)/(phytomin(np) + kgrazesat)) 
-     &                        + mortphy(np)*
-     &                          mortPTempFunction*phytomin(np)
-     &                        - psinkphy(np)
-#else
-              tmpr=sumgrazphy(np)
-     &                        + mortphy(np)*
-     &                          mortPTempFunction*phytomin(np)
-     &                        - psinkphy(np)
-#endif
-#ifdef DAR_DIAG_RSTAR
-#ifndef GEIDER
-              tmpgrow=ngrow(np)*mu(np)*ilimit(np)*
-     &              phytoTempFunction(np)
-#endif
-#ifdef GEIDER
-              tmpgrow=grow(np)/limit(np)
-#endif
-              tmp1=tmpgrow*phyto(np)-tmpr
-              tmp2=tmpgrow*phyto(np)*(exp(-sig1*nh4local)+NH4limit(np))
-     &                 -tmpr 
-              if (tmp1.ne.0. _d 0) then 
-                Rstarlocal(np)=ksatPO4(np)*tmpr/tmp1
-              else
-                Rstarlocal(np)=-9999. _d 0
-              endif
-              if (tmp2.ne.0. _d 0) then 
-                RNstarlocal(np)=ksatNO3(np)*
-     &                 (tmpr-tmpgrow*NH4limit(np)*phyto(np))/tmp2
-              else
-                RNstarlocal(np)=-9999. _d 0
-              endif
-#endif
-#ifdef DAR_DIAG_GROW
-c include temp, light, nutrients
-c             Growlocal(np)=grow(np)
-c include temp and light, but not nutrients
-              Growlocal(np)=ngrow(np)*mu(np)*ilimit(np)*
-     &              phytoTempFunction(np)
-c include temp, but not nutrients or light
-c             Growlocal(np)=ngrow(np)*mu(np)*
-c    &              phytoTempFunction(np)
-              Growsqlocal(np)=Growlocal(np)**2
-#endif
-            enddo
-c end np loop
-            if (debug.eq.10) print*,'dphytodt',dphytodt
-c
-#ifdef OLD_GRAZE
-c zooplankton growth by grazing
-            do nz=1,nzmax
-c zoo in P currency
-              dzooPdt(nz)  = grazingP(nz)*zooP(nz) 
-C zooplankton stoichiometry varies according to food source
-              dzooNdt(nz)  = grazingN(nz)*zooP(nz) 
-              dzooFedt(nz) = grazingFe(nz)*zooP(nz) 
-              dzooSidt(nz) = grazingSi(nz)*zooP(nz) 
-            enddo
-#else
-            do nz=1,nzmax
-c zoo in P currency
-              dzooPdt(nz)  = sumgrazzoo(nz)
-C zooplankton stoichiometry varies according to food source
-              dzooNdt(nz)  = sumgrazzooN(nz)
-              dzooFedt(nz) = sumgrazzooFe(nz)
-              dzooSidt(nz) = sumgrazzooSi(nz)
-            enddo
-#endif
-            if (debug.eq.10) print*,'dZooPdt',dZooPdt
+C      isPhoto(j)
+       ENDIF
+C     j
+      ENDDO
 
-c zooplankton mortality
-            do nz=1,nzmax
-c zoo in P currency
-              dzooPdt(nz)  = dzooPdt(nz)
-     &                           - mortzoo(nz)*
-     &                             mortZTempFunction*zooP(nz)
-     &                           - mortzoo2(nz)*
-     &                             mortZ2TempFunction*zooP(nz)**2
-c zooplankton in other currencies
-C zooplankton stoichiometry varies according to food source
-              dzooNdt(nz)  = dzooNdt(nz)
-     &                           - mortzoo(nz)*
-     &                             mortZTempFunction*zooN(nz)
-     &                           - mortzoo2(nz)*
-     &                             mortZ2TempFunction*zooN(nz)*zooP(nz)
-              dzooFedt(nz) = dzooFedt(nz)
-     &                           - mortzoo(nz)*
-     &                             mortZTempFunction*zooFe(nz)
-     &                           - mortzoo2(nz)*
-     &                             mortZ2TempFunction*zooFe(nz)*zooP(nz)
-              dzooSidt(nz) = dzooSidt(nz)
-     &                           - mortzoo(nz)*
-     &                             mortZTempFunction*zooSi(nz)
-     &                           - mortzoo2(nz)*
-     &                             mortZ2TempFunction*zooSi(nz)*zooP(nz)
-            enddo
+C=======================================================================
+C==== bacteria =========================================================
 
+      DO j = 1, nplank
+       IF (bactType(j) .NE. 0) THEN
 
-c sum contributions to inorganic nutrient tendencies
-            dPO4dt =  - consumpPO4 +  preminP  + DOPremin
-            dNH4dt =  - consumpNH4 +  preminN  + DONremin 
-     &                                   - NO2prod
-            dNO2dt =  - consumpNO2                        
-     &                                   + NO2prod - NO3prod
-            dNO3dt =  - consumpNO3             
-     &                                   + NO3prod
-c-ONLYNO3   dNO3dt =  C consumpNO3 +  preminN  + DONremin
-#ifdef ALLOW_DENIT
-            if (O2local.le.O2crit) then
-              if (NO3local.gt.1. _d -2) then
-               denit =  denit_np*(preminP  + DOPremin)
-               dNO3dt = dNO3dt -
-     &                   (104. _d 0/denit_np)*denit
-               dNH4dt = dNH4dt -  (preminN  + DONremin)
-              else
-               denit = 0. _d 0
-               dPO4dt = dPO4dt -  (preminP  + DOPremin)
-               dNH4dt = dNH4dt -  (preminN  + DONremin)
-               DOPremin = 0. _d 0
-               preminP = 0. _d 0
-               DONremin = 0. _d 0
-               preminN = 0. _d 0
-               DOFeremin = 0. _d 0
-               preminFe = 0. _d 0
-#ifdef ALLOW_CARBON
-               DOCremin = 0. _d 0
-               preminC = 0. _d 0
+        uptakeO2  = 0. _d 0
+        uptakeNO3 = 0. _d 0
+        uptakePOC = 0. _d 0
+        uptakePON = 0. _d 0
+        uptakePOP = 0. _d 0
+        uptakePOFe = 0. _d 0
+        uptakeDOC = 0. _d 0
+        uptakeDON = 0. _d 0
+        uptakeDOP = 0. _d 0
+        uptakeDOFe = 0. _d 0
+        hydrolPOC = 0. _d 0
+        hydrolPON = 0. _d 0
+        hydrolPOP = 0. _d 0
+        hydrolPOFe = 0. _d 0
+        respPOC = 0. _d 0
+        respPON = 0. _d 0
+        respPOP = 0. _d 0
+        respPOFe = 0. _d 0
+        respDOC = 0. _d 0
+        respDON = 0. _d 0
+        respDOP = 0. _d 0
+        respDOFe = 0. _d 0
+        growth = 0. _d 0
+
+        IF (isAerobic(j) .NE. 0) THEN
+          muO = yieldO2(j)*pcoefO2*O2
+        ELSEIF (isDenit(j) .NE. 0) THEN
+          muO = yieldNO3(j)*pmaxDIN*NO3/(NO3 + ksatDIN)*reminTempFunc
+        ENDIF
+
+C       POM-consuming (particle-associated)
+        IF (bactType(j) .EQ. 1) THEN
+
+          PCm = yield(j)*pmaxPON*reminTempFunc
+          muPON  = PCm*PON/(PON + ksatPON(j))
+          muPOC  = PCm*POC/(POC + ksatPOC(j))
+          muPOP  = PCm*POP/(POP + ksatPOP(j))
+          muPOFe = PCm*POFe/(POFe + ksatPOFe(j))
+          mu = MIN(muPON, muPOC, muPOP, muPOFe, muO)
+
+          growth = mu*X(j)
+
+          uptakePOC = alpha_hydrol*growth/yield(j)
+          uptakePON  = uptakePOC*R_NC(j)
+          uptakePOP  = uptakePOC*R_PC(j)
+          uptakePOFe = uptakePOC*R_FeC(j)
+C         O2/NO3 is only used for the part of POC that is metabolized:
+          uptakeO2 = isAerobic(j)*growth/yieldO2(j)
+          uptakeNO3 = isDenit(j)*growth/yieldNO3(j)
+
+C         This is the part of POM that is hydrolized into DOM:
+          hydrolPOC = (alpha_hydrol-1)*growth/yield(j)
+          hydrolPON  = hydrolPOC*R_NC(j)
+          hydrolPOP  = hydrolPOC*R_PC(j)
+          hydrolPOFe = hydrolPOC*R_FeC(j)
+
+C         These are the bacteria products for remineralization of POM:
+          respPOC = growth*(1/yield(j)-1)
+          respPON  = respPOC*R_NC(j)
+          respPOP  = respPOC*R_PC(j)
+          respPOFe = respPOC*R_FeC(j)
+
+C       DOM-consuming (free-living):
+        ELSEIF (bactType(j) .EQ. 2) THEN
+
+          PCm = yield(j)*pmaxDON*reminTempFunc
+          muDON  = PCm*DON/(DON + ksatDON(j))
+          muDOC  = PCm*DOC/(DOC + ksatDOC(j))
+          muDOP  = PCm*DOP/(DOP + ksatDOP(j))
+          muDOFe = PCm*DOFe/(DOFe + ksatDOFe(j))
+          mu = MIN(muDON, muDOC, muDOP, muDOFe, muO)
+
+          growth = mu*X(j)
+
+          uptakeDOC = growth/yield(j)
+          uptakeDON  = uptakeDOC*R_NC(j)
+          uptakeDOP  = uptakeDOC*R_PC(j)
+          uptakeDOFe = uptakeDOC*R_FeC(j)
+          uptakeO2 = isAerobic(j)*growth/yieldO2(j)
+          uptakeNO3 = isDenit(j)*growth/yieldNO3(j)
+
+C         DOC respired to DIC
+          respDOC = growth*(1/yield(j)-1)
+          respDON  = respDOC*R_NC(j)
+          respDOP  = respDOC*R_PC(j)
+          respDOFe = respDOC*R_FeC(j)
+
+        ENDIF
+
+        IF (j .LE. nPPplank) THEN
+          diags(iPPplank+j-1) = diags(iPPplank+j-1) + growth
+        ENDIF
+
+        gTr(ic+j-1)=gTr(ic+j-1) + growth
+
+C==== Cumulative consum, remin, and prod ===============================
+        consumNO3  = consumNO3  + uptakeNO3
+
+C       add B consum and accumulating remin, and prod:
+        consumO2 = consumO2 + uptakeO2
+
+        consumDOC = consumDOC + uptakeDOC
+        consumDON = consumDON + uptakeDON
+        consumDOP = consumDOP + uptakeDOP
+        consumDOFe = consumDOFe + uptakeDOFe
+
+        consumPOC = consumPOC + uptakePOC
+        consumPON = consumPON + uptakePON
+        consumPOP = consumPOP + uptakePOP
+        consumPOFe = consumPOFe + uptakePOFe
+
+        reminPOC = reminPOC + respPOC
+        reminPON = reminPON + respPON
+        reminPOP = reminPOP + respPOP
+        reminPOFe = reminPOFe + respPOFe
+
+        solubilPOC = solubilPOC + hydrolPOC
+        solubilPON = solubilPON + hydrolPON
+        solubilPOP = solubilPOP + hydrolPOP
+        solubilPOFe = solubilPOFe + hydrolPOFe
+
+        reminDOC = reminDOC + respDOC
+        reminDON = reminDON + respDON
+        reminDOP = reminDOP + respDOP
+        reminDOFe = reminDOFe + respDOFe
+
+       ENDIF
+C     j loop end
+      ENDDO
+
+C=======================================================================
+C=======================================================================
+
+      gTr(iDIC )=gTr(iDIC ) - consumDIC - consumDIC_PIC
+      gTr(iNH4 )=gTr(iNH4 ) - consumNH4
+      gTr(iNO2 )=gTr(iNO2 ) - consumNO2
+      gTr(iNO3 )=gTr(iNO3 ) - consumNO3
+      gTr(iPO4 )=gTr(iPO4 ) - consumPO4
+      gTr(iSiO2)=gTr(iSiO2) - consumSiO2
+      gTr(iFeT )=gTr(iFeT ) - consumFeT
+
+C parameterized remineralization; want to set all K except KPOSi to zero
+C if running with bacteria
+      respDOC  = reminTempFunc*KDOC *DOC
+      respDON  = reminTempFunc*KDON *DON
+      respDOP  = reminTempFunc*KDOP *DOP
+      respDOFe = reminTempFunc*KDOFe*DOFe
+      respPOC  = reminTempFunc*KPOC *POC
+      respPON  = reminTempFunc*KPON *PON
+      respPOP  = reminTempFunc*KPOP *POP
+      respPOSi = reminTempFunc*KPOSi*POSi
+      respPOFe = reminTempFunc*KPOFe*POFe
+
+      consumDOC  = consumDOC  + respDOC
+      consumDON  = consumDON  + respDON
+      consumDOP  = consumDOP  + respDOP
+      consumDOFe = consumDOFe + respDOFe
+      consumPOC  = consumPOC  + respPOC
+      consumPON  = consumPON  + respPON
+      consumPOP  = consumPOP  + respPOP
+      consumPOSi = consumPOSi + respPOSi
+      consumPOFe = consumPOFe + respPOFe
+
+      reminDOC  = reminDOC  + respDOC
+      reminDON  = reminDON  + respDON
+      reminDOP  = reminDOP  + respDOP
+      reminDOFe = reminDOFe + respDOFe
+      reminPOC  = reminPOC  + respPOC
+      reminPON  = reminPON  + respPON
+      reminPOP  = reminPOP  + respPOP
+      reminPOSi = reminPOSi + respPOSi
+      reminPOFe = reminPOFe + respPOFe
+
+#ifdef DARWIN_ALLOW_CARBON
+      consumO2  = consumO2  + respDOP*R_OP
+#ifndef DARWIN_ALLOW_CDOM
+      consumO2  = consumO2  + respPOP*R_OP
 #endif
-              endif
-            endif
 #endif
-            dFeTdt =  - consumpFeT +  preminFe + DOFeremin
-#ifdef PART_SCAV
-     &                 - scav_part*freefelocal +
-#else
-     &                 - scav*freefelocal + 
-#endif          
-     &                 alpfe*inputFelocal/dzlocal
-            dSidt  =  - consumpSi  +  preminSi
 
-c tendency of dissolved organic pool
-            dDOPdt  = totphy_dop  + totzoo_dop  - DOPremin 
-            dDONdt  = totphy_don  + totzoo_don  - DONremin 
-            dDOFedt = totphy_dofe + totzoo_dofe - DOFeremin 
-c tendency of particulate detritus pools
-            dpopdt  = totphy_pop  + totzoo_pop   - preminP + psinkP
-            dpondt  = totphy_pon  + totzoo_pon   - preminN + psinkN
-            dpofedt = totphy_pofe + totzoo_pofe  - preminFe + psinkFe
-            dpSidt  = totphy_posi + totzoo_posi  - preminSi + psinkSi
-#ifdef ALLOW_CARBON
-            dDICdt =  - consumpDIC - consumpDIC_PIC 
-     &                                         +  preminC  + DOCremin
-     &                                         + disscPIC
-            dDOCdt  = totphy_doc  + totzoo_doc  - DOCremin
-            dPOCdt  = totphy_poc  + totzoo_poc  - preminC + psinkC
-            dPICdt  = totphy_pic  + totzoo_pic  - disscPIC + psinkPIC
-            dALKdt  = - dNO3dt    - 2.d0 * (consumpDIC_PIC - disscPIC)
-c should be = O2prod - preminP - DOPremin?
-c OLD WAY
-c            dO2dt   = - R_OP*dPO4dt
+      disscPIC = Kdissc*PIC
+
+c nitrogen chemistry
+c NH4 -> NO2 -> NO3 by bacterial action, parameterized
+      prodNO2 = knita*NH4
+      prodNO3 = knitb*NO2
+      IF (PAR_oxi .NE. 0.0 _d 0) THEN
+        prodNO2 = prodNO2*MAX(0.0, 1.0 - PARtot/PAR_oxi)
+        prodNO3 = prodNO3*MAX(0.0, 1.0 - PARtot/PAR_oxi)
+      ENDIF
+
+#ifdef DARWIN_ALLOW_CDOM
+      reminPOP_CDOM = fracCDOM*reminPOP
+      reminPOC_CDOM = R_CP_CDOM*reminPOP_CDOM
+      reminPON_CDOM = R_NP_CDOM*reminPOP_CDOM
+      reminPOFe_CDOM = R_FeP_CDOM*reminPOP_CDOM
+c degradation of  CDOM - high when bleached by light
+      degrCDOM_DOP = reminTempFunc*CDOM*
+     &     (CDOMdegrd+CDOMbleach*MIN(1.0 _d 0, PARtot/PARCDOM))
+      degrCDOM_DOC  = R_CP_CDOM  * degrCDOM_DOP
+      degrCDOM_DON  = R_NP_CDOM  * degrCDOM_DOP
+      degrCDOM_DOFe = R_FeP_CDOM * degrCDOM_DOP
+#endif
+
+#ifdef DARWIN_ALLOW_DENIT
+      IF (O2 .LT. O2crit .AND. NO3 .LT. NO3crit) THEN
+        consumDOC = 0. _d 0
+        consumDOP  = 0. _d 0
+        consumDON  = 0. _d 0
+        consumDOFe = 0. _d 0
+        consumPOC = 0. _d 0
+        consumPOP  = 0. _d 0
+        consumPON  = 0. _d 0
+        consumPOFe = 0. _d 0
+        reminDOC = 0. _d 0
+        reminDOP  = 0. _d 0
+        reminDON  = 0. _d 0
+        reminDOFe = 0. _d 0
+        reminPOC = 0. _d 0
+        reminPOP  = 0. _d 0
+        reminPON  = 0. _d 0
+        reminPOFe = 0. _d 0
+#ifdef DARWIN_ALLOW_CDOM
+        reminPOC_cdom = 0. _d 0
+        reminPOP_cdom  = 0. _d 0
+        reminPON_cdom  = 0. _d 0
+        reminPOFe_cdom = 0. _d 0
+        degrCDOM_DOP = reminTempFunc*CDOM*
+     &                 CDOMbleach*MIN(1.0 _d 0, PARtot/PARCDOM)
+        degrCDOM_DON  = R_NP_CDOM  * degrCDOM_DOP
+        degrCDOM_DOFe = R_FeP_CDOM * degrCDOM_DOP
+        degrCDOM_DOC  = R_CP_CDOM  * degrCDOM_DOP
+#endif
+      ENDIF
+#endif /* DARWIN_ALLOW_DENIT */
+
+C==== apply tendencies =================================================
+
+#ifdef DARWIN_ALLOW_CARBON
 c production of O2 by photosynthesis
-             dO2dt   = R_OP*consumpPO4
+      gTr(iO2  )=gTr(iO2  ) + R_OP*consumPO4
 c loss of O2 by remineralization
-             if (O2local.gt.O2crit) then
-               dO2dt   = dO2dt - R_OP*(preminP  + DOPremin)
-             endif
-#ifdef OLD_GRAZE
-            do nz=1,nzmax
-              dzooCdt(nz)  = grazingC(nz)*zooClocal(nz)
-     &                           - mortzoo(nz)*
-     &                             mortZTempFunction*zooClocal(nz)
-     &                           - mortzoo2(nz)*
-     &                         mortZ2TempFunction*zooClocal(nz)*zooP(nz)
-            enddo
+      IF (O2 .GT. O2crit) THEN
+        gTr(iO2)=gTr(iO2) - consumO2
+      ENDIF
+
+      gTr(iALK)=gTr(iALK) - (prodNO3 - consumNO3)
+     &                    - 2.0 _d 0*(consumDIC_PIC - disscPIC)
+#endif /* DARWIN_ALLOW_CARBON */
+
+      gTr(iDIC )=gTr(iDIC ) + reminDOC + disscPIC
+      gTr(iNH4 )=gTr(iNH4 ) + reminDON - prodNO2
+      gTr(iNO2 )=gTr(iNO2 ) + prodNO2 - prodNO3
+      gTr(iNO3 )=gTr(iNO3 ) + prodNO3
+      diags(iDenitN) = 0.0
+#ifdef DARWIN_ALLOW_DENIT
+      IF (O2 .LT. O2crit) THEN
+        denitNH4 = reminDON
+        denit = denit_NP*reminDOP
+#ifndef DARWIN_ALLOW_CDOM
+        denitNH4 = denitNH4 + reminPON
+        denit = denit + denit_NP*reminPOP
+#endif
+        diags(iDenit) = denit
+        gTr(iNH4)=gTr(iNH4) - denitNH4
+        gTr(iNO3)=gTr(iNO3) - denit_NO3/denit_np*denit
+        gTr(iALK)=gTr(iALK) + denit_NO3/denit_np*denit
+        diags(iDenitN) = denitNH4 + denit_NO3/denit_np*denit
+      ENDIF
+#endif /* DARWIN_ALLOW_DENIT */
+
+      gTr(iPO4 )=gTr(iPO4 ) + reminDOP
+      gTr(iFeT )=gTr(iFeT ) + reminDOFe
+      gTr(iSiO2)=gTr(iSiO2)             + reminPOSi
+
+C     DOC is created by #4 PA-assoc solubilization and consumed by #5
+      gTr(iDOC )=gTr(iDOC ) + solubilPOC - consumDOC
+      gTr(iDON )=gTr(iDON ) + solubilPON - consumDON
+      gTr(iDOP )=gTr(iDOP ) + solubilPOP - consumDOP
+      gTr(iDOFe)=gTr(iDOFe) + solubilPOFe - consumDOFe
+
+      gTr(iPIC )=gTr(iPIC ) - disscPIC
+      gTr(iPOC )=gTr(iPOC ) - consumPOC
+      gTr(iPON )=gTr(iPON ) - consumPON
+      gTr(iPOP )=gTr(iPOP ) - consumPOP
+      gTr(iPOFe)=gTr(iPOFe) - consumPOFe
+      gTr(iPOSi)=gTr(iPOSi) - consumPOSi
+
+#ifdef DARWIN_ALLOW_CDOM
+      gTr(iDOC )=gTr(iDOC ) + reminPOC  - reminPOC_CDOM  + degrCDOM_DOC
+      gTr(iDON )=gTr(iDON ) + reminPON  - reminPON_CDOM  + degrCDOM_DON
+      gTr(iDOP )=gTr(iDOP ) + reminPOP  - reminPOP_CDOM  + degrCDOM_DOP
+      gTr(iDOFe)=gTr(iDOFe) + reminPOFe - reminPOFe_CDOM + degrCDOM_DOFe
+
+      gTr(iCDOM)=gTr(iCDOM) + reminPOP_CDOM - degrCDOM_DOP
 #else
-            do nz=1,nzmax
-              dzooCdt(nz)  = sumgrazzooc(nz)
-     &                           - mortzoo(nz)*
-     &                             mortZTempFunction*zooClocal(nz)
-     &                           - mortzoo2(nz)*
-     &                         mortZ2TempFunction*zooClocal(nz)*zooP(nz)
-            enddo
+      gTr(iDIC )=gTr(iDIC ) + reminPOC
+      gTr(iNH4 )=gTr(iNH4 ) + reminPON
+      gTr(iPO4 )=gTr(iPO4 ) + reminPOP
+      gTr(iFeT )=gTr(iFeT ) + reminPOFe
+#endif /* DARWIN_ALLOW_CDOM */
+
+      diags(iConsDIN) = consumNH4 + consumNO2 + consumNO3
+      diags(iConsPO4) = consumPO4
+      diags(iConsSi)  = consumSiO2
+      diags(iConsFe)  = consumFeT
+
+C==== grazing ==========================================================
+
+      DO j=1,nplank
+       preygraz(j)   = 0.0
+       preygrazexp(j) = 0.0
+       predgrazc(j)  = 0.0
+#ifdef DARWIN_ALLOW_NQUOTA
+       predgrazn(j)  = 0.0
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+       predgrazp(j)  = 0.0
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+       predgrazfe(j) = 0.0
+#endif
+      ENDDO
+      graz2POC  = 0.0
+      graz2PON  = 0.0
+      graz2POP  = 0.0
+      graz2POSI = 0.0
+      graz2POFE = 0.0
+      graz2OC   = 0.0
+      graz2ON   = 0.0
+      graz2OP   = 0.0
+      graz2OFE  = 0.0
+      graz2PIC  = 0.0
+
+      regQn  = 1.0
+      regQp  = 1.0
+      regQfe = 1.0
+      regQc  = 1.0
+
+C=======================================================================
+      DO jz = 1, nplank
+       IF (isPred(jz).NE.0) THEN
+
+C       regulate grazing near full quota
+        regQc = 1.0 _d 0
+#ifdef DARWIN_ALLOW_NQUOTA
+        regQn = MAX(0., MIN(1., (Qnmax(jz)-Qn(jz))/
+     &                          (Qnmax(jz)-Qnmin(jz)) ))
+        regQc = MIN(regQc, 1.0 _d 0 - regQn)
+        regQn = regQn**hillnumGraz
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+        regQp = MAX(0., MIN(1., (Qpmax(jz)-Qp(jz))/
+     &                          (Qpmax(jz)-Qpmin(jz)) ))
+        regQc = MIN(regQc, 1.0 _d 0 - regQp)
+        regQp = regQp**hillnumGraz
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+        regQfe= MAX(0., MIN(1., (Qfemax(jz)-Qfe(jz))/
+     &                          (Qfemax(jz)-Qfemin(jz)) ))
+        regQc = MIN(regQc, 1.0 _d 0 - regQfe)
+        regQfe=regQfe**hillnumGraz
+#endif
+        regQc = regQc**hillnumGraz
+
+        sumprey = 0.0
+        sumpref = 0.0
+        DO jp = 1, nplank
+        IF (palat(jp,jz).NE.0 _d 0) THEN
+         sumprey = sumprey + palat(jp,jz)*X(jp)
+#ifdef DARWIN_GRAZING_SWITCH
+         sumpref = sumpref + palat(jp,jz)*palat(jp,jz)*X(jp)*X(jp)
+#else
+         sumpref = sumpref + palat(jp,jz)*X(jp)
+#endif
+        ENDIF
+        ENDDO
+        sumprey = MAX(0.0, sumprey - phygrazmin)
+        sumpref = MAX(phygrazmin, sumpref)
+        tmp = grazemax(jz)*grazTempFunc(jz)*X(jz)*
+     &    (sumprey**hollexp/(sumprey**hollexp+kgrazesat(jz)**hollexp))*
+     &    (1.0 - EXP(-inhib_graz*sumprey))**inhib_graz_exp
+
+        predexpc  = 0.0 _d 0
+        predexpn  = 0.0 _d 0
+        predexpp  = 0.0 _d 0
+        predexpfe = 0.0 _d 0
+        DO jp = 1, nplank
+         IF (palat(jp,jz).NE.0 _d 0) THEN
+#ifdef DARWIN_GRAZING_SWITCH
+          grazphy = tmp*palat(jp,jz)*palat(jp,jz)*X(jp)*X(jp)/sumpref
+#else
+          grazphy = tmp*palat(jp,jz)*X(jp)/sumpref
 #endif
 
+          expFrac = ExportFracPreyPred(jp,jz)
+
+          preygraz(jp) = preygraz(jp) + grazphy
+          preygrazexp(jp) = preygrazexp(jp) + expFrac*grazphy
+
+          predgrazc(jz) = predgrazc(jz) + grazphy*asseff(jp,jz)*regQc
+          predexpc = predexpc + expFrac*grazphy*asseff(jp,jz)*regQc
+#ifdef DARWIN_ALLOW_NQUOTA
+          predgrazn(jz) = predgrazn(jz) + grazphy*asseff(jp,jz)*
+     &                                    regQn*Qn(jp)
+          predexpn = predexpn + expFrac*grazphy*asseff(jp,jz)*
+     &                                    regQn*Qn(jp)
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+          predgrazp(jz) = predgrazp(jz) + grazphy*asseff(jp,jz)*
+     &                                    regQp*Qp(jp)
+          predexpp = predexpp + expFrac*grazphy*asseff(jp,jz)*
+     &                                  regQp*Qp(jp)
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+          predgrazfe(jz) = predgrazfe(jz) + grazphy*asseff(jp,jz)*
+     &                                      regQfe*Qfe(jp)
+          predexpfe = predexpfe + expFrac*grazphy*asseff(jp,jz)*
+     &                                    regQfe*Qfe(jp)
+#endif
+         ENDIF
+        ENDDO
+
+C organic-matter gain will be total preygraz - predgraz
+        graz2OC   = graz2OC  - predgrazc(jz)
+        graz2POC  = graz2POC - predexpc
+
+#ifdef DARWIN_ALLOW_NQUOTA
+        graz2ON   = graz2ON  - predgrazn(jz)
+        graz2PON  = graz2PON - predexpn
+#else
+        graz2ON   = graz2ON  - predgrazc(jz)*Qn(jz)
+        graz2PON  = graz2PON - predexpc     *Qn(jz)
 #endif
 
-            if (debug.eq.10) print*,'dDOPdt', dDOPdt
-            if (debug.eq.10) print*,'dpopdt',dpopdt
-            if (debug.eq.10) print*,'dDONdt',dDONdt
-            if (debug.eq.10) print*,'dpondt',dpondt
-c
-c -------------------------------------------------------------------
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c --------------------------------------------------------------------------
-
-c -m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-
-c  Mutation - apply mutation to tendencies [jbmodif]
-
-#ifdef ALLOW_MUTANTS
-c apply to all sisters when first sister is encountered
-       if(runtim .gt. threeyr) then
-       mutfor=1 _d -8
-       mutback=1 _d -12
-       if(numtax .gt. 1)then
-        do np=1,npro
-          if(mod(np,numtax).eq. 1. _d 0)then
-             nsisone   = np
-             nsistwo   = np+1 
-             nsisthree = np+2             
-             nsisfour  = np+3 
-              
-             grow1 = PspecificPO4(nsisone)
-             grow2 = PspecificPO4(nsistwo)
-
-             if(numtax.eq.2)grow3 = 0.0 _d 0
-             if(numtax.eq.2)grow4 = 0.0 _d 0
-
-             if(numtax.eq.3)grow4 = 0.0 _d 0
-             if(numtax.ge.3)grow3 = PspecificPO4(nsisthree)
-             
-             if(numtax.eq.4)grow4 = PspecificPO4(nsisfour)
-                        
-
-
-                dphytodt(nsisone)  = dphytodt(nsisone)
-     &                - grow1 *1.4427 _d 0*mutfor
-     &                - grow1 *1.4427 _d 0*mutfor
-     &                - grow1 *1.4427 _d 0*mutfor
-     &                + grow2 *1.4427 _d 0*mutback
-     &                + grow3 *1.4427 _d 0*mutback
-     &                + grow4 *1.4427 _d 0*mutback
-
-                dphytodt(nsistwo)  = dphytodt(nsistwo)
-     &                - grow2 *1.4427 _d 0*mutback
-     &                + grow1 *1.4427 _d 0*mutfor
-
-                if(numtax .ge. 3)then
-                  dphytodt(nsisthree)  = dphytodt(nsisthree)
-     &                - grow3 *1.4427 _d 0*mutback
-     &                + grow1 *1.4427 _d 0*mutfor
-                endif
-        
-                if(numtax .eq. 4)then
-                  dphytodt(nsisfour)  = dphytodt(nsisfour)
-     &                - grow4 *1.4427 _d 0*mutback
-     &                + grow1 *1.4427 _d 0*mutfor
-c QQQQQQQQQQ FIX FOR NIT RUNS ONLY!!!
-                  if (phyto(nsisfour).eq.0. _d 0) then
-                    if (phyto(nsistwo).eq.0. _d 0) then
-                     if (dphytodt(nsistwo).gt.dphytodt(nsisfour)) then
-                         dphytodt(nsisfour)=dphytodt(nsistwo)
-                     endif
-                    endif
-                    if (phyto(nsisthree).eq.0. _d 0) then
-                     if (dphytodt(nsisthree).gt.dphytodt(nsisfour)) then
-                         dphytodt(nsisfour)=dphytodt(nsisthree)
-                     endif
-                    endif
-                  endif
-c QQQQQQQQQQQQQ
-                endif
-
-c QQQQQQQQQQQQTEST
-         if (debug.eq.11) then
-         if (PARlocal.gt.1. _d 0) then
-          if (dphytodt(nsistwo).gt.dphytodt(nsisfour).and.
-     &                             dphytodt(nsisfour).gt.0. _d 0) then
-                print*,'QQQQ nsistwo>nsisfour',nsistwo,nsisfour, 
-     &               dphytodt(nsistwo),  dphytodt(nsisfour),
-     &               phyto(nsistwo), phyto(nsisfour),  
-     &               phyto(nsisone)
-          endif
-          if (dphytodt(nsisthree).gt.dphytodt(nsisfour).and.
-     &                             dphytodt(nsisfour).gt.0. _d 0) then
-                 print*,'QQQQ nsisthree>nsisfour',nsisthree,nsisfour,
-     &                dphytodt(nsisthree), dphytodt(nsisfour),
-     &               phyto(nsisthree), phyto(nsisfour),  
-     &               phyto(nsisone)
-          endif
-          if (dphytodt(nsisfour).gt.dphytodt(nsisone).and.
-     &                            dphytodt(nsisone).gt.0. _d 0) then
-                 print*,' BIG QQQQ nsisfour>nsisone',nsisone,nsisfour,
-     &                dphytodt(nsisfour), dphytodt(nsisone),
-     &               phyto(nsisfour), phyto(nsisone)
-          endif
-         endif
-         endif
-c QQQQQQQQQTEST
-             endif
-          enddo
-        endif
-        endif 
-
-c mutation is finished
-c -m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-m-
+#ifdef DARWIN_ALLOW_PQUOTA
+        graz2OP   = graz2OP  - predgrazp(jz)
+        graz2POP  = graz2POP - predexpp
+#else
+        graz2OP   = graz2OP  - predgrazc(jz)*Qp(jz)
+        graz2POP  = graz2POP - predexpc     *Qp(jz)
 #endif
 
+#ifdef DARWIN_ALLOW_FEQUOTA
+        graz2OFe  = graz2OFe  - predgrazfe(jz)
+        graz2POFe = graz2POFe - predexpfe
+#else
+        graz2OFe  = graz2OFe  - predgrazc(jz)*Qfe(jz)
+        graz2POFe = graz2POFe - predexpc     *Qfe(jz)
+#endif
 
+       ENDIF
+C     end predator loop
+      ENDDO
 
-         RETURN
-         END
-#endif  /*DARWIN*/
-#endif  /*ALLOW_PTRACERS*/
-c ==================================================================
+      DO jp = 1, nplank
+       IF (isPrey(jp).NE.0) THEN
+          graz2OC  = graz2OC  + preygraz(jp)
+          graz2ON  = graz2ON  + preygraz(jp)*Qn (jp)
+          graz2OP  = graz2OP  + preygraz(jp)*Qp (jp)
+          graz2POSi = graz2POSi + preygraz(jp)*Qsi(jp)
+          graz2OFe = graz2OFe + preygraz(jp)*Qfe(jp)
+#ifdef DARWIN_ALLOW_CARBON
+          graz2PIC = graz2PIC + preygraz(jp)*R_PICPOC(jp)
+#endif
+
+          graz2POC  = graz2POC  + preygrazexp(jp)
+          graz2PON  = graz2PON  + preygrazexp(jp)*Qn (jp)
+          graz2POP  = graz2POP  + preygrazexp(jp)*Qp (jp)
+          graz2POFe = graz2POFe + preygrazexp(jp)*Qfe(jp)
+       ENDIF
+      ENDDO
+
+C==== tendencies =======================================================
+
+      gTr(iDOC )=gTr(iDOC ) + graz2OC  - graz2POC
+      gTr(iDON )=gTr(iDON ) + graz2ON  - graz2PON
+      gTr(iDOP )=gTr(iDOP ) + graz2OP  - graz2POP
+      gTr(iDOFe)=gTr(iDOFe) + graz2OFe - graz2POFe
+      gTr(iPOC )=gTr(iPOC ) + graz2POC
+      gTr(iPON )=gTr(iPON ) + graz2PON
+      gTr(iPOP )=gTr(iPOP ) + graz2POP
+      gTr(iPOSi)=gTr(iPOSi) + graz2POSi
+      gTr(iPOFe)=gTr(iPOFe) + graz2POFe
+#ifdef DARWIN_ALLOW_CARBON
+      gTr(iPIC )=gTr(iPIC ) + graz2PIC
+#endif
+#ifdef DARWIN_ALLOW_CDOM
+      graz2CDOM = fracCDOM*(graz2OP - graz2POP)
+      gTr(iCDOM)=gTr(iCDOM) + graz2CDOM
+      gTr(iDOC )=gTr(iDOC )             - R_CP_CDOM*graz2CDOM
+      gTr(iDON )=gTr(iDON )             - R_NP_CDOM*graz2CDOM
+      gTr(iDOP )=gTr(iDOP ) - graz2CDOM
+      gTr(iDOFe)=gTr(iDOFe)             - R_FeP_CDOM*graz2CDOM
+#endif
+
+      DO jp = 1, nplank
+      IF (isPrey(jp).NE.0) THEN
+       gTr(ic+jp-1)= gTr(ic+jp-1) - preygraz(jp)
+#ifdef DARWIN_ALLOW_NQUOTA
+       gTr(in+jp-1)=gTr(in+jp-1) - preygraz(jp)*Qn(jp)
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+       gTr(ip+jp-1)=gTr(ip+jp-1) - preygraz(jp)*Qp(jp)
+#endif
+#ifdef DARWIN_ALLOW_SIQUOTA
+       gTr(isi+jp-1)=gTr(isi+jp-1) - preygraz(jp)*Qsi(jp)
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+       gTr(ife+jp-1)=gTr(ife+jp-1) - preygraz(jp)*Qfe(jp)
+#endif
+      ENDIF
+      ENDDO
+#ifdef DARWIN_ALLOW_CHLQUOTA
+      DO jp = 1, nPhoto
+      IF (isPrey(jp).NE.0) THEN
+       gTr(iChl+jp-1)=gTr(iChl+jp-1) - preygraz(jp)*QChl(jp)
+      ENDIF
+      ENDDO
+#endif
+
+      DO jz = 1, nplank
+      IF (isPred(jz).NE.0) THEN
+       gTr(ic+jz-1)=gTr(ic+jz-1) + predgrazc(jz)
+#ifdef DARWIN_ALLOW_NQUOTA
+       gTr(in+jz-1)=gTr(in+jz-1) + predgrazn(jz)
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+       gTr(ip+jz-1)=gTr(ip+jz-1) + predgrazp(jz)
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+       gTr(ife+jz-1)=gTr(ife+jz-1) + predgrazfe(jz)
+#endif
+      ENDIF
+      ENDDO
+
+      DO jp = 1, nGRplank
+        diags(iGRplank+jp-1) = preygraz(jp)
+      ENDDO
+
+C==== mortality ========================================================
+      exude_DOC  = 0.0 _d 0
+      exude_POC  = 0.0 _d 0
+      exude_DON  = 0.0 _d 0
+      exude_PON  = 0.0 _d 0
+      exude_DOFe = 0.0 _d 0
+      exude_POFe = 0.0 _d 0
+      exude_DOP  = 0.0 _d 0
+      exude_POP  = 0.0 _d 0
+      exude_POSi = 0.0 _d 0
+      exude_PIC  = 0.0 _d 0
+      respir     = 0.0 _d 0
+
+      DO jp = 1, nplank
+        Xe = MAX(0 _d 0, X(jp) - Xmin(jp))
+        mortX = mort(jp)*Xe*MAX(mortTempFuncMin(jp), mortTempFunc)
+        mortX2= mort2(jp)*Xe*Xe*MAX(mort2TempFuncMin(jp), mort2TempFunc)
+
+        mort_c(jp) = mortX + mortX2
+
+        exude_DOC = exude_DOC + (1.-ExportFracMort(jp)) *mortX
+     &                        + (1.-ExportFracMort2(jp))*mortX2
+        exude_POC = exude_POC +     ExportFracMort(jp)  *mortX
+     &                        +     ExportFracMort2(jp) *mortX2
+
+        exude_DON = exude_DON + (1.-ExportFracMort(jp)) *mortX *Qn(jp)
+     &                        + (1.-ExportFracMort2(jp))*mortX2*Qn(jp)
+        exude_PON = exude_PON +     ExportFracMort(jp)  *mortX *Qn(jp)
+     &                        +     ExportFracMort2(jp) *mortX2*Qn(jp)
+
+        exude_DOP = exude_DOP + (1.-ExportFracMort(jp)) *mortX *Qp(jp)
+     &                        + (1.-ExportFracMort2(jp))*mortX2*Qp(jp)
+        exude_POP = exude_POP +     ExportFracMort(jp)  *mortX *Qp(jp)
+     &                        +     ExportFracMort2(jp) *mortX2*Qp(jp)
+
+        exude_DOFe= exude_DOFe+ (1.-ExportFracMort(jp)) *mortX *Qfe(jp)
+     &                        + (1.-ExportFracMort2(jp))*mortX2*Qfe(jp)
+        exude_POFe= exude_POFe+     ExportFracMort(jp)  *mortX *Qfe(jp)
+     &                        +     ExportFracMort2(jp) *mortX2*Qfe(jp)
+
+        exude_POSi = exude_POSi + mort_c(jp)*Qsi(jp)
+
+        exude_PIC = exude_PIC + mort_c(jp)*R_PICPOC(jp)
+
+        respir_c = respRate(jp)*Xe*reminTempFunc
+        respir = respir + respir_c
+
+        gTr(ic+jp-1)=gTr(ic+jp-1)  - mort_c(jp) - respir_c
+#ifdef DARWIN_ALLOW_NQUOTA
+        gTr(in+jp-1)=gTr(in+jp-1)  - mort_c(jp)*Qn(jp)
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+        gTr(ip+jp-1)=gTr(ip+jp-1)  - mort_c(jp)*Qp(jp)
+#endif
+#ifdef DARWIN_ALLOW_SIQUOTA
+        gTr(isi+jp-1)=gTr(isi+jp-1) - mort_c(jp)*Qsi(jp)
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+        gTr(ife+jp-1)=gTr(ife+jp-1) - mort_c(jp)*Qfe(jp)
+#endif
+
+#ifdef DARWIN_ALLOW_EXUDE
+        exude_DOC =
+     &  exude_DOC + (1.-ExportFracExude(jp))*kexcc(jp)*Xe
+        exude_POC =
+     &  exude_POC +     ExportFracExude(jp) *kexcc(jp)*Xe
+        exude_DON =
+     &  exude_DON + (1.-ExportFracExude(jp))*kexcn(jp)*Xe*Qn(jp)
+        exude_PON =
+     &  exude_PON +     ExportFracExude(jp) *kexcn(jp)*Xe*Qn(jp)
+        exude_DOP =
+     &  exude_DOP + (1.-ExportFracExude(jp))*kexcp(jp)*Xe*Qp(jp)
+        exude_POP =
+     &  exude_POP +     ExportFracExude(jp) *kexcp(jp)*Xe*Qp(jp)
+        exude_DOFe =
+     &  exude_DOFe + (1.-ExportFracExude(jp))*kexcfe(jp)*Xe*Qfe(jp)
+        exude_POFe =
+     &  exude_POFe +     ExportFracExude(jp) *kexcfe(jp)*Xe*Qfe(jp)
+        exude_POSi =
+     &  exude_POSi + kexcsi(jp)*Xe*Qsi(jp)
+        gTr(ic+jp-1)=gTr(ic+jp-1)   - kexcc(jp)*Xe
+#ifdef DARWIN_ALLOW_NQUOTA
+        gTr(in+jp-1)=gTr(in+jp-1)   - kexcn(jp)*Xe*Qn(jp)
+#endif
+#ifdef DARWIN_ALLOW_PQUOTA
+        gTr(ip+jp-1)=gTr(ip+jp-1)   - kexcp(jp)*Xe*Qp(jp)
+#endif
+#ifdef DARWIN_ALLOW_SIQUOTA
+        gTr(isi+jp-1)=gTr(isi+jp-1) - kexcsi(jp)*Xe*Qsi(jp)
+#endif
+#ifdef DARWIN_ALLOW_FEQUOTA
+        gTr(ife+jp-1)=gTr(ife+jp-1) - kexcfe(jp)*Xe*Qfe(jp)
+#endif
+#endif
+      ENDDO
+
+#ifdef DARWIN_ALLOW_CHLQUOTA
+      DO jp = 1, nPhoto
+        gTr(iChl+jp-1)=gTr(iChl+jp-1) - mort_c(jp)*QChl(jp)
+      ENDDO
+#endif
+
+      gTr(iDIC )=gTr(iDIC ) + respir
+
+      gTr(iDOC )=gTr(iDOC ) + exude_DOC
+      gTr(iDON )=gTr(iDON ) + exude_DON
+      gTr(iDOP )=gTr(iDOP ) + exude_DOP
+      gTr(iDOFe)=gTr(iDOFe) + exude_DOFe
+
+      gTr(iPIC )=gTr(iPIC ) + exude_PIC
+      gTr(iPOC )=gTr(iPOC ) + exude_POC
+      gTr(iPON )=gTr(iPON ) + exude_PON
+      gTr(iPOP )=gTr(iPOP ) + exude_POP
+      gTr(iPOSi)=gTr(iPOSi) + exude_POSi
+      gTr(iPOFe)=gTr(iPOFe) + exude_POFe
+#ifdef DARWIN_ALLOW_CDOM
+      exude_CDOM = fracCDOM*exude_DOP
+      gTr(iCDOM)=gTr(iCDOM) + exude_CDOM
+      gTr(iDOC )=gTr(iDOC )              - R_CP_CDOM*exude_CDOM
+      gTr(iDON )=gTr(iDON )              - R_NP_CDOM*exude_CDOM
+      gTr(iDOP )=gTr(iDOP ) - exude_CDOM
+      gTr(iDOFe)=gTr(iDOFe)              - R_FeP_CDOM*exude_CDOM
+#endif
+
+#endif /* ALLOW_DARWIN */
+
+      RETURN
+      END SUBROUTINE
+

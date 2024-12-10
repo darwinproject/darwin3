@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_read_pickup.F,v 1.2 2013/05/24 20:15:48 jahn Exp $
-C $Name:  $
-
 #include "DARWIN_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -21,7 +18,6 @@ C     !USES:
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FIELDS.h"
 
 C     !INPUT PARAMETERS:
@@ -31,8 +27,7 @@ C     myThid            :: thread number
       INTEGER myThid
 
 #ifdef ALLOW_DARWIN
-C add more ALLOWs here for other fields in pickup
-#if defined(ALLOW_PAR_DAY) || (defined(GEIDER) && !defined(DYNAMIC_CHL))
+#if defined(DARWIN_ALLOW_CARBON) || (defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA))
 
 C     !LOCAL VARIABLES:
 C     fn          :: character buffer for creating filename
@@ -126,19 +121,22 @@ C---   Old way to read pickup not supported
 C---   New way to read DARWIN pickup:
         nj = 0
 C---    read DARWIN 3-D fields for restart
-#ifdef ALLOW_PAR_DAY
-        CALL READ_MFLDS_3D_RL( 'PARday1 ', PARday(1-OLx,1-OLy,1,1,1,1),
-     &                                 nj, fp, Nr, myIter, myThid )
-        CALL READ_MFLDS_3D_RL( 'PARday2 ', PARday(1-OLx,1-OLy,1,1,1,2),
-     &                                 nj, fp, Nr, myIter, myThid )
-#endif /* ALLOW_PAR_DAY */
-#if defined(GEIDER) && !defined(DYNAMIC_CHL)
-        DO np = 1, npmax
+#ifdef DARWIN_ALLOW_CARBON
+        fldName = 'pH'
+        CALL READ_MFLDS_3D_RL( fldName, pH, nj, fp, Nr, myIter, myThid )
+#endif
+#if defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA)
+#ifdef ALLOW_RADTRANS
+        DO np = 1, nPhoto
          fldName(1:6) = 'ChlPhy'
          fldName(7:8) = PTRACERS_ioLabel(np)
-         CALL READ_MFLDS_3D_RL( fldName, Chl_phy(1-OLx,1-OLy,1,1,1,np),
-     &                                  nj, fp, Nr, myIter, myThid )
+         CALL READ_MFLDS_3D_RL( fldName, ChlPrev(1-OLx,1-OLy,1,1,1,np),
+     &                          nj, fp, Nr, myIter, myThid )
         ENDDO
+#else
+        CALL READ_MFLDS_3D_RL( 'Chl     ', ChlPrev,
+     &                         nj, fp, Nr, myIter, myThid )
+#endif
 #endif
 C--    end: new way to read pickup file
        ENDIF
@@ -166,17 +164,20 @@ C--    Check for missing fields:
        ENDIF
 
 C--    Update overlap regions:
-#ifdef ALLOW_PAR_DAY
-        CALL EXCH_3D_RL( PARday(1-OLx,1-OLy,1,1,1,1), Nr, myThid )
-        CALL EXCH_3D_RL( PARday(1-OLx,1-OLy,1,1,1,2), Nr, myThid )
-#endif /* ALLOW_PAR_DAY */
-#if defined(GEIDER) && !defined(DYNAMIC_CHL)
-        DO np = 1, npmax
-         CALL EXCH_3D_RL( Chl_phy(1-OLx,1-OLy,1,1,1,np), Nr, myThid )
+#ifdef DARWIN_ALLOW_CARBON
+        CALL EXCH_3D_RL( pH, 1, myThid )
+#endif
+#if defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA)
+#ifdef ALLOW_RADTRANS
+        DO np = 1, nPhoto
+         CALL EXCH_3D_RL( ChlPrev(1-OLx,1-OLy,1,1,1,np), Nr, myThid )
         ENDDO
+#else
+        CALL EXCH_3D_RL( ChlPrev, Nr, myThid )
+#endif
 #endif
 
-#endif /* ALLOW_PAR_DAY */
+#endif /* pickup needed */
 #endif /* ALLOW_DARWIN */
 
       RETURN

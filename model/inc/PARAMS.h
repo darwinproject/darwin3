@@ -1033,6 +1033,7 @@ C-- Logical flags for selecting packages
       LOGICAL useCTRL
       LOGICAL useSBO
       LOGICAL useFLT
+      LOGICAL useRADTRANS
       LOGICAL usePTRACERS
       LOGICAL useGCHEM
       LOGICAL useRBCS
@@ -1064,7 +1065,7 @@ C-- Logical flags for selecting packages
      &        useGMRedi, useBBL, useDOWN_SLOPE,
      &        useCAL, useEXF, useBulkForce, useEBM, useCheapAML,
      &        useGrdchk, useSMOOTH, usePROFILES, useECCO, useCTRL,
-     &        useSBO, useFLT, useAUTODIFF,
+     &        useSBO, useFLT, useAUTODIFF, useRADTRANS,
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
      &        useFRAZIL, useSEAICE, useSALT_PLUME, useShelfIce,
      &        useStreamIce, useICEFRONT, useThSIce, useLand,

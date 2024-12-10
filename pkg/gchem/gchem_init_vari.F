@@ -98,11 +98,7 @@ C--   Initialise other Geo-Chemistry pkg variables:
 
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
-         CALL DARWIN_INIT_VARI(myThid )
-#ifdef ALLOW_CARBON
-         CALL DIC_SURFFORCING_INIT(myThid)
-         CALL DIC_DIAGS_INIT(myThid)
-#endif
+         CALL DARWIN_INIT_VARIA(myThid)
       ENDIF
 #endif /* ALLOW_DARWIN */
 

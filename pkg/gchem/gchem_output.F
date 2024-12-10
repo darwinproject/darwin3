@@ -41,9 +41,6 @@ cccccccccccccccccccccc
 #ifdef ALLOW_TIMEAVE
       IF ( useDARWIN ) THEN
        CALL DARWIN_DIAGS( myTime, myIter, myThid )
-#ifdef ALLOW_CARBON
-       CALL DIC_DIAGS( myTime, myIter, myThid )
-#endif
       ENDIF
 #endif
 #endif

@@ -1,80 +1,44 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_random.F,v 1.9 2011/05/12 16:13:40 jahn Exp $
-C $Name:  $
-
-#include "CPP_OPTIONS.h"
 #include "DARWIN_OPTIONS.h"
 
-#ifdef PORT_RAND
-#ifdef OLDSEED
-      These lines are here intentionally to cause a compile-time error:
-      If you really want to use PORT_RAND with OLDSEED, comment them out.
-#endif
-#endif
-
-#ifdef ALLOW_PTRACERS
-#ifdef ALLOW_DARWIN
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: DARWIN_RANDOM_INIT
+
 C     !INTERFACE:
       SUBROUTINE DARWIN_RANDOM_INIT(seed, myThid)
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE DARWIN_RANDOM_INIT
-C     | o Initializes the random number generator.
-C     |   seed must be positive.
-C     |   NOTE: not thread-safe yet!!!
-C     *===========================================================
-C     | Algorithms:
-C     | - With PORT_RAND defined, this uses port_rand.f, which is
-C     |   Knuth's portable random number generator [see Numerical
-C     |   Recipes, Ch.7.1: ran3].
-C     |   We use the floating-point version.
-C     |   In order to obtain unique sequences of random numbers,
-C     |   the seed should be between 1 and 1618032.
-C     | - With PORT_RAND undefined, it uses the system's RAND 
-C     |   function.  See the system documentation for ranges, etc.
-C     *==========================================================*
-C     \ev
+
+C     !DESCRIPTION:
+C     Initializes the random number generator.
+C     - seed must be positive.
+C     - uses portable random number generator of Knuth [see Numerical
+C       Recipes, Ch.7.1: ran3].  We use the floating-point version.
+C       In order to obtain unique sequences of random numbers, the seed
+C       should be between 1 and 1618032.
+C     - NOTE: not thread-safe (yet)!!!
 
 C     !USES:
       IMPLICIT NONE
-
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C  myThid               :: thread number
+C     seed   :: seed for random number generator; must be positive
+C     myThid :: thread number
       INTEGER seed
       INTEGER myThid
+CEOP
+
+#ifdef ALLOW_DARWIN
 
 C     !FUNCTIONS:
-C     == Functions ==
-#ifdef PORT_RAND
       real*8 port_rand
       external port_rand
-#endif
-Coj   these are needed for the Intel compiler, define the macro IFORT
-Coj   in your optfile if you want to use it
-#ifdef IFORT
-      real*4 RAND
-      EXTERNAL RAND
-#endif
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-C     msgBuf    - Informational/error meesage buffer
+C     msgBuf :: informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL RandNo
-      INTEGER nrand
-#ifdef PORT_RAND
       REAL*8 Dseed
-#else
-      INTEGER Iseed
-#endif
-      INTEGER IRand
       CHARACTER*16 random_name
-CEOP
 
       IF (myThid .GT. 1) THEN
         CALL PRINT_ERROR('DARWIN_RANDOM_INIT: threading no supported',
@@ -87,78 +51,52 @@ CEOP
      &                  , myThid)
       END IF
 
-#ifdef PORT_RAND
       Dseed = float(seed)
       RandNo = port_rand(Dseed)
-C need to call again to get a non-zero random number
+C     need to call again to get a non-zero random number
       Dseed = -1.D0
       RandNo = port_rand(Dseed)
       random_name = 'port_rand'
-#else
-#ifdef OLDSEED
-      Iseed = seed
-      do nrand = 1,Iseed
-        Irand = 0
-        RandNo = rand(Irand)
-      end do
-      random_name = 'rand/oldseed'
-#else
-      Iseed = -seed
-      RandNo = rand(Iseed)
-      random_name = 'rand'
-#endif
-#endif
 
       WRITE(msgbuf,'(A,A,I10,X,F20.16)')
-     &   'QQ random ', random_name, seed, RandNo
+     &   'DARWIN_RANDOM_INIT: ', random_name, seed, RandNo
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
+
+#endif
 
       RETURN 
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: DARWIN_RANDOM
+
 C     !INTERFACE:
       FUNCTION DARWIN_RANDOM(myThid)
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | FUNCTION DARWIN_RANDOM
-c     | o returns a uniform random number between 0 and 1
-C     *==========================================================*
-C     \ev
+
+C     !DESCRIPTION:
+C     Returns a uniform random number between 0 and 1
 
 C     !USES:
       IMPLICIT NONE
-
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C  DARWIN_RANDOM        :: uniform random number
-C  myThid               :: thread number
+C     DARWIN_RANDOM :: uniform random number
+C     myThid     :: thread number
       _RL DARWIN_RANDOM
       INTEGER myThid
+CEOP
+
+#ifdef ALLOW_DARWIN
 
 C     !FUNCTIONS:
-C     == Functions ==
-#ifdef PORT_RAND
       real*8 port_rand
       external port_rand
-#endif
-#ifdef IFORT
-      real*4 RAND
-      EXTERNAL RAND
-#endif
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-#ifdef PORT_RAND
       real*8 Dseed
-#else
-      INTEGER Iseed
-#endif
-CEOP
 
       IF (myThid .GT. 1) THEN
         CALL PRINT_ERROR('DARWIN_RANDOM: threading no supported',
@@ -166,60 +104,43 @@ CEOP
         STOP 'ABNORMAL END: S/R DARWIN_RANDOM'
       END IF
 
-#ifdef PORT_RAND
       Dseed = -1.d0
       darwin_random = port_rand(Dseed)
-#else
-      Iseed = 0
-      darwin_random = rand(Iseed)
+
 #endif
 
       RETURN 
       END 
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: DARWIN_RANDOM_NORMAL
+
 C     !INTERFACE:
       FUNCTION DARWIN_RANDOM_NORMAL(myThid)
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | FUNCTION DARWIN_RANDOM_NORMAL
-C     | o returns a normally distributed random number with
-C     |   mean 0 and stddev 1
-C     *==========================================================*
-C     \ev
+
+C     !DESCRIPTION:
+C     Returns a normally distributed random number with mean 0
+C     and stddev 1
 
 C     !USES:
       IMPLICIT NONE
-
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C  DARWIN_RANDOM_NORMAL :: normally distributed random number
-C  myThid               :: thread number
+C     DARWIN_RANDOM_NORMAL :: normally distributed random number
+C     myThid            :: thread number
       _RL DARWIN_RANDOM_NORMAL
       INTEGER myThid
+CEOP
+
+#ifdef ALLOW_DARWIN
 
 C     !FUNCTIONS:
-C     == Functions ==
-#ifdef PORT_RAND
       real*8 port_rand_norm
       external port_rand_norm
-#endif
-#ifdef IFORT
-      real*4 RAND
-      EXTERNAL RAND
-#endif
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-#ifndef PORT_RAND
-      INTEGER Iseed
-      real*8 uniform
-      real*8 normal
-#endif
-CEOP
 
       IF (myThid .GT. 1) THEN
         CALL PRINT_ERROR('DARWIN_RANDOM: threading no supported',
@@ -227,18 +148,103 @@ CEOP
         STOP 'ABNORMAL END: S/R DARWIN_RANDOM'
       END IF
 
-#ifdef PORT_RAND
       darwin_random_normal = port_rand_norm()
-#else
-      Iseed = 0
-      uniform = rand(Iseed)
-      CALL invnormal(normal, uniform, 0.d0, 1.d0)
-      darwin_random_normal = normal
+
 #endif
 
       RETURN 
       END 
-#endif  /*DARWIN*/
-#endif  /*ALLOW_PTRACERS*/
 c ==========================================================
 
+c Inverse normal distribution 
+c returns inverse normal cumulative distribution 
+c from p:[0,1] -> y:[-inf,+inf] centered on mu with stdev of sigma
+c p is RandNo passed in, y is return variable for deviate
+c
+c  Scott Grant, Spring 2006
+
+      SUBROUTINE DARWIN_INVNORMAL(y,p,mean,sigma)
+      implicit none
+
+c local variables
+      real*8 mean
+      real*8 sigma
+      real*8 q
+      real*8 r
+      real*8 x
+      real*8 p
+      real*8 plow
+      real*8 phigh
+      real*8 y
+      real*8 a(6)
+      real*8 b(5)
+      real*8 c(6)
+      real*8 d(4)
+
+      
+c Create random variable from -inf to +inf 
+c Coefficients in rational approximations.
+      a(1) = -3.969683028665376d+01
+      a(2) =  2.209460984245205d+02
+      a(3) = -2.759285104469687d+02
+      a(4) =  1.383577518672690d+02
+      a(5) = -3.066479806614716d+01
+      a(6) =  2.506628277459239d+00
+      
+      b(1) = -5.447609879822406d+01
+      b(2) =  1.615858368580409d+02
+      b(3) = -1.556989798598866d+02
+      b(4) =  6.680131188771972d+01
+      b(5) = -1.328068155288572d+01
+
+      c(1) = -7.784894002430293d-03
+      c(2) = -3.223964580411365d-01
+      c(3) = -2.400758277161838d+00
+      c(4) = -2.549732539343734d+00
+      c(5) =  4.374664141464968d+00
+      c(6) =  2.938163982698783d+00
+
+      d(1) =  7.784695709041462d-03
+      d(2) =  3.224671290700398d-01
+      d(3) =  2.445134137142996d+00
+      d(4) =  3.754408661907416d+00
+
+c  Define break-points.
+
+      plow  = 0.02425d0
+      phigh = 1.d0 - plow
+
+c  Rational approximation for lower region.
+
+      if ((0.d0 .lt. p) .and. (p .lt. plow))then
+         q = sqrt(-2.0d0*log(p))
+         x = (((((c(1)*q+c(2))*q+c(3))*q+c(4))*q+c(5))*q+c(6)) /
+     &      ((((d(1)*q+d(2))*q+d(3))*q+d(4))*q+1.d0)
+      endif
+
+c  Rational approximation for central region.
+
+      if ((plow .le. p).and.(p .le. phigh))then
+         q = p - 0.5d0
+         r = q*q
+         x = (((((a(1)*r+a(2))*r+a(3))*r+a(4))*r+a(5))*r+a(6))*q /
+     &     (((((b(1)*r+b(2))*r+b(3))*r+b(4))*r+b(5))*r+1.d0)
+      endif
+
+c  Rational approximation for upper region.
+
+      if ((phigh .lt. p).and.(p .lt. 1.d0))then
+         q = sqrt(-2.0d0*log(1.d0-p))
+         x = -(((((c(1)*q+c(2))*q+c(3))*q+c(4))*q+c(5))*q+c(6)) /
+     &      ((((d(1)*q+d(2))*q+d(3))*q+d(4))*q+1.d0)
+      endif 
+
+c Normal Deviate about mean
+c        write(6,*)'DEVIATE',x
+      y = sigma*sqrt(2.0d0)*x + mean      
+c        write(6,*)'Normal PDF Value INSIDE:',y
+c        write(6,*)'MEAN:',mean
+c        write(6,*)'SIGMA:',sigma
+
+      RETURN
+      END

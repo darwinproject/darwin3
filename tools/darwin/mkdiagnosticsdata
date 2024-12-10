@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+''' run in run dir '''
+import sys
+import os
+import re
+import string
+
+digits = string.digits + string.lowercase + string.uppercase
+
+def iofmt(i):
+    if i < 100:
+        return '{:02d}'.format(i)
+    elif i < 620:
+        a,b = divmod(i-100, 52)
+        return '{}{}'.format(a, digits[10+b])
+    else:
+        a,b = divmod(i-620, 62)
+        return '{}{}'.format(digits[10+a], digits[b])
+
+
+try:
+    with open('data.ptracers') as f:
+        for line in f:
+            m = re.match(r'^ *ptracers_numinuse *= *([0-9]*)', line, re.I)
+            if m:
+                ntr = int(m.group(1))
+                break
+        else:
+            sys.exit('Could not find ptracers_numinuse.')
+
+    dt = None
+    with open('data') as f:
+        for line in f:
+            m = re.match(r'^ *deltat([a-z]*) *= *([0-9]*)', line, re.I)
+            if m:
+                tp = m.group(1)
+                if tp.lower() == 'clock' or dt is None:
+                    dt = int(m.group(2))
+    if dt is None:
+        sys.exit('Could not find time step.')
+except:
+    sys.exit('Could not extract parameters from namelist files.\nPlease run in input or run dir.')
+
+args = sys.argv[1:]
+with len(args) and open(args[0]) or sys.stdout as f:
+    f.write(" &diagnostics_list\n")
+    f.write(" filename(1)= 'darwin',\n")
+    f.write(" frequency(1)= {0}.,\n".format(dt))
+    for i in range(1, ntr+1):
+        f.write(" fields({i},1)= 'TRAC{io}  ',\n".format(i=i, io=iofmt(i)))
+    f.write(" &\n")
+    f.write(" &diag_statis_parms\n")
+    f.write(" &\n")

@@ -1,0 +1,216 @@
+#!/usr/bin/env python
+'''preprocessptracers [-mods <codedir>] [-d <digits>] [-u] data.ptracers.in
+
+Call this in the directory where DARWIN_OPTIONS.h, DARWIN_SIZE.h and optionally
+DARWIN_INDICES.h of current setup are located to replace ptracer names in
+a data.ptracers template with indices.  Header files will also be searched
+for in an MITgcm directory up to five levels up.
+
+Options:
+
+  -u               include "PTRACERS_units" lines
+  -mods <codedir>  look here for header files instead of current directory
+  -d <digits>      number of digits
+
+Example:
+
+  preprocessptracers -mods ../code -u data.ptracers.in > data.ptracers
+'''
+from __future__ import print_function
+import sys
+import os
+import re
+from math import log10
+from fortran import OrderedDict
+from subprocess import Popen, PIPE
+from fortran import readparameters
+
+units = {
+    'DIC':     'mmol C/m^3',
+    'NH4':     'mmol N/m^3',
+    'NO2':     'mmol N/m^3',
+    'NO3':     'mmol N/m^3',
+    'PO4':     'mmol P/m^3',
+    'SiO2':    'mmol Si/m^3',
+    'FeT':     'mmol Fe/m^3',
+    'DOC':     'mmol C/m^3',
+    'DON':     'mmol N/m^3',
+    'DOP':     'mmol P/m^3',
+    'DOFe':    'mmol Fe/m^3',
+    'POC':     'mmol C/m^3',
+    'PON':     'mmol N/m^3',
+    'POP':     'mmol P/m^3',
+    'POSi':    'mmol Si/m^3',
+    'POFe':    'mmol Fe/m^3',
+    'PIC':     'mmol C/m^3',
+    'ALK':     'mmol eq/m^3',
+    'O2':      'mmol O/m^3',
+    'CDOM':    'mmol C/m^3',
+}
+unitsre = {
+    '^c[0-9]':   'mmol C/m^3',
+    '^n[0-9]':   'mmol N/m^3',
+    '^p[0-9]':   'mmol P/m^3',
+    '^si[0-9]':  'mmol Si/m^3',
+    '^fe[0-9]':  'mmol Fe/m^3',
+    '^Chl[0-9]': 'mg Chl a/m^3',
+}
+def getunit(name):
+    try:
+        return units[name]
+    except KeyError:
+        for k,v in unitsre.items():
+            if re.match(k, name):
+                return v
+        else:
+            return None
+
+def findfile(fname):
+    origfname = fname
+    fname = os.path.join(dir, fname)
+    if os.path.exists(fname): return fname
+    fname = os.path.join('..', 'pkg', 'darwin', origfname)
+    if os.path.exists(fname): return fname
+    fname = os.path.join('..', fname)
+    if os.path.exists(fname): return fname
+    fname = os.path.join('..', fname)
+    if os.path.exists(fname): return fname
+    fname = os.path.join('..', fname)
+    if os.path.exists(fname): return fname
+    fname = os.path.join('..', fname)
+    if os.path.exists(fname): return fname
+    sys.stderr.write('Tried: ' + fname + '\n')
+    raise RuntimeError('File not found: {}\n'.format(origfname))
+
+
+args = sys.argv[1:]
+if '-h' in args or '--help' in args:
+    sys.exit(__doc__)
+printunits = '-u' in args
+if '-mods' in args:
+    i = args.index('-mods')
+    dir = args[i+1]
+    args[i:i+2] = []
+else:
+    dir = '.'
+if '-d' in args:
+    i = args.index('-d')
+    digits = int(args[i+1])
+    args[i:i+2] = []
+else:
+    digits = None
+template = None
+for arg in args:
+    if arg not in ['-u']:
+        if template is None:
+            template = arg
+        else:
+            sys.exit(__doc__)
+            
+if template is None:
+    sys.exit(__doc__)
+
+files = []
+for fname in ['DARWIN_OPTIONS.h', 'DARWIN_SIZE.h', 'DARWIN_INDICES.h']:
+    files.append(findfile(fname))
+sys.stderr.write(' '.join(['Using']+files) + '\n')
+pipe1 = Popen(['cat'] + files, stdout=PIPE, universal_newlines=True)
+pipe2 = Popen(['grep', '-v', 'PACKAGES_CONFIG'],
+              stdin=pipe1.stdout, stdout=PIPE, universal_newlines=True)
+pipe1.stdout.close()
+pipe3 = Popen(['grep', '-v', 'CPP_OPTIONS'],
+              stdin=pipe2.stdout, stdout=PIPE, universal_newlines=True)
+pipe2.stdout.close()
+pipe4 = Popen(['cpp', '-DALLOW_DARWIN', '-traditional', '-P'],
+              stdin=pipe3.stdout, stdout=PIPE, universal_newlines=True)
+pipe3.stdout.close()
+p = readparameters(pipe4.stdout)
+pipe4.stdout.close()
+pl = dict((k.lower(), v) for k, v in p.items())
+
+if digits is None:
+    digits = int(log10(int(pl['nplank']))) + 1
+    digitsChl = int(log10(int(pl['nphoto']))) + 1
+else:
+    digitsChl = digits
+
+ends = OrderedDict((k[1:], v) for k,v in p.items() if k.startswith('e'))
+starts = OrderedDict((k[1:], v) for k,v in p.items() if k.startswith('i') and k[1:4] not in ['Min', 'Max'])
+if 'CDOM' in ends and 'CDOM' not in starts or ends['CDOM'] == starts['CDOM']:
+    del ends['CDOM']
+cellnames = ends.keys()
+for k in starts:
+    if k not in ends:
+        ends[k] = starts[k]
+
+nptr = max(ends.values())
+
+digits_ptr = int(log10(nptr)) + 1
+
+names = nptr*['']
+indices = {}
+for k,s in sorted(starts.items(), key=lambda x:x[1]):
+    e = ends[k]
+    for i in range(s,e+1):
+        if k in cellnames:
+            name = '{0}{1:0{d}d}'.format(k, i-s+1, d=digitsChl if k == 'Chl' else digits)
+        else:
+            name = k
+        names[i-1] = name
+        indices[name] = '{0:{d}d}'.format(i, d=digits_ptr)
+
+if template is not None:
+    with open(template) as f:
+        for line in f:
+            if line.strip() in '&/':
+                print('#')
+                for i in range(nptr):
+                    name = names[i]
+                    idx = indices[name]
+                    print(" PTRACERS_names({0})= '{1}',".format(idx, name))
+
+                if printunits:
+                    print('#')
+                    for i in range(nptr):
+                        name = names[i]
+                        idx = indices[name]
+                        unit = getunit(name)
+                        if unit is not None:
+                            print(" PTRACERS_units({0})= '{1}'".format(idx, unit))
+
+            try:
+                lhs,rhs = line.rstrip().split('=')
+            except ValueError:
+                sys.stdout.write(line)
+                continue
+
+            name = lhs.rstrip()
+            nwslhs = len(lhs) - len(name)
+            if name[-1:] == ')':
+                name,arg = name[:-1].split('(')
+                if arg.strip() == ':' and '*' not in rhs:
+                    print(lhs + '= ' + str(nptr) + '*' + rhs.strip(' ,') + ',')
+                    continue
+
+                args = arg.split(',')
+                for iarg in range(len(args)):
+                    arg = args[iarg]
+                    if ':' in arg:
+                        i1,i2 = arg.split(':')
+                        i1 = indices.get(i1.strip(), i1)
+                        i2 = indices.get(i2.strip(), i2)
+                        arg = i1 + ':' + i2
+                    else:
+                        argname = arg.strip()
+                        pre = (len(arg) - len(argname))*' '
+                        arg = indices.get(argname, pre + argname)
+                    args[iarg] = arg
+                print(name + '(' + ','.join(args) + ')' + nwslhs*' ' + '=' + rhs)
+                continue
+
+            if name.strip().lower() == 'ptracers_numinuse':
+                print(lhs + '= ' + str(nptr) + ',')
+                continue
+
+            sys.stdout.write(line)
+

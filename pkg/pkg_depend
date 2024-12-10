@@ -41,4 +41,5 @@ ctrl		+mdsio
 ecco		+mdsio		+cal
 grdchk		+autodiff	+cost		+ctrl
 showflops	+runclock
-
+sun             +cal
+radtrans        +exf

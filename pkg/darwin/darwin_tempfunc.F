@@ -1,171 +1,159 @@
-
-#include "CPP_OPTIONS.h"
-#include "PTRACERS_OPTIONS.h"
 #include "DARWIN_OPTIONS.h"
 
-#ifdef ALLOW_PTRACERS
-#ifdef ALLOW_DARWIN
+CBOP
+C !ROUTINE: DARWIN_TEMPFUNC
 
-c ====================================================================
-c SUBROUTINE DARWIN_TEMPFUNC
-c ====================================================================
+C !INTERFACE: ==========================================================
+      SUBROUTINE DARWIN_TEMPFUNC(
+     I                  Temp,
+     O                  photoFun, grazFun, reminFun, mortFun, mort2Fun,
+     O                  uptakeFun,
+     I                  myThid)
 
-       SUBROUTINE DARWIN_TEMPFUNC(
-     I                    Tlocal,
-     O                    phytoTempFunction,
-#ifndef QUOTA
-     O                    zooTempFunction,
-#endif
-     O                    reminTempFunction,
-     O                    mortPTempFunction, 
-     O                    mortZTempFunction,
-     O                    mortZ2TempFunction,
-     I                    myThid)
+C !DESCRIPTION: ========================================================
+C     Compute temperature functions for darwin model.
+C
+C     DARWIN_TEMP_VERSION 1 used in Follows et al (2007) - without max of 1
+C     DARWIN_TEMP_VERSION 2 used in Dutkiewicz et al (2009), Hickman et al, 
+C                            Monteiro etal, Barton et al
+C     DARWIN_TEMP_RANGE gives all phyto a  specific temperature range
+C                if undefined, then full Eppley/Arrenhius curve used
 
-         implicit none
-#ifdef QUOTA
-#include "QUOTA_SIZE.h"
-#include "QUOTA.h"
-#else
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "DARWIN_SIZE.h"
-#include "DARWIN.h"
-#endif
+#include "DARWIN_INDICES.h"
 #include "DARWIN_PARAMS.h"
+#include "DARWIN_TRAITS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
-       INTEGER myThid
-       _RL phytoTempFunction(npmax)
-#ifndef QUOTA
-       _RL zooTempFunction(nzmax)
-#endif
-       _RL reminTempFunction
-       _RL mortPTempFunction
-       _RL mortZTempFunction
-       _RL mortZ2TempFunction
-       _RL Tlocal
+      INTEGER myThid
+      _RL Temp
 
-c local
-       _RL Tkel
-       _RL TempAe, Tempref, TempCoeff
-       INTEGER np, nz
+C !OUTPUT PARAMETERS: ==================================================
+C grazFun :: the prey entries are for quota-style grazing,
+C            the predator ones for monod-style grazing
+      _RL photoFun(nplank)
+      _RL grazFun(nplank)
+      _RL reminFun
+      _RL mortFun
+      _RL mort2Fun
+      _RL uptakeFun
+CEOP
 
-c TEMP_VERSION 1 used in Follows et al (2007) - without max of 1
-c TEMP_VERSION 1 used in Dutkiewicz et al (2009), Hickman et al, 
-c                        Monteiro etal, Barton et al
-c TEMP_RANGE gives all phyto a  specific temperature range
-c            if undefined, then full Eppley/Arrenhius curve used
-c
-#if TEMP_VERSION == 1
-c ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#ifdef ALLOW_DARWIN
+
+c !LOCAL VARIABLES: ====================================================
+      _RL Tkel
+      _RL TempAe, Tempref, TempCoeff
+      INTEGER j
+
+#ifdef DARWIN_NOTEMP
+
+      photoFun = 1.0 _d 0
+      grazFun  = 1.0 _d 0
+      reminFun = 1.0 _d 0
+      mortFun  = 1.0 _d 0
+      mort2Fun = 1.0 _d 0
+      uptakeFun = 1.0 _d 0
+
+#elif DARWIN_TEMP_VERSION == 1
+
 c +++++++++++++++++++ VERSION 1 +++++++++++++++++++++++++++++++++++++++
 c steph's version 1 (pseudo-Eppley)
 c plankton growth function (unitless)
-          do np=1, npmax
+      DO j = 1, nPhoto
 cswd -- this gives Eppley curve only
-             phytoTempFunction(np) = 
-     &                      (phytoTempExp1(np)**Tlocal)
-#ifdef TEMP_RANGE
+        photoFun(j) = phytoTempExp1(j)**Temp
+# ifdef DARWIN_TEMP_RANGE
 cswd -- temperature range
-             phytoTempFunction(np) = phytoTempFunction(np) *
-     &                      (exp(- phytoTempExp2(np)*
-     &                      (abs(Tlocal - phytoTempOptimum(np)))**
-     &                                         phytoDecayPower(np))) 
-#endif
-             phytoTempFunction(np) = phytoTempFunction(np) - tempnorm
-             phytoTempFunction(np) = phytoTempCoeff(np)*
-     &                  max(phytoTempFunction(np), 1. _d -10)
-             phytoTempFunction(np) = min(phytoTempFunction(np),1. _d 0)
-          enddo
-#ifndef QUOTA
-          do nz = 1,nzmax
-c              zooTempFunction(nz) = zooTempCoeff(nz)*EXP(
-c    &             zooTempExp(nz)*(Tlocal - zooTempOptimum(nz)))
-            zooTempFunction(nz) = 1.0 _d 0
-          end do
-#endif
-          reminTempFunction = 1.0 _d 0
-          mortPTempFunction = 1.0 _d 0
-          mortZTempFunction = 1.0 _d 0
-          mortZ2TempFunction = 1.0 _d 0
+        photoFun(j) = photoFun(j) *
+     &      exp(-phytoTempExp2(j)*
+     &           abs(Temp - phytoTempOptimum(j))**phytoDecayPower(j))
+# endif
+        photoFun(j) = photoFun(j) - tempnorm
+        photoFun(j) = phytoTempCoeff(j)*
+     &                  max(photoFun(j), 1. _d -10)
+        photoFun(j) = min(photoFun(j),1. _d 0)
+      ENDDO
+      DO j = 1,nplank
+c       grazFun(j) = zooTempCoeff(j)*EXP(
+c    &             zooTempExp(j)*(Temp - zooTempOptimum(j)))
+        grazFun(j) = 1.0 _d 0
+      ENDDO
+      reminFun = 1.0 _d 0
+      mortFun  = 1.0 _d 0
+      mort2Fun = 1.0 _d 0
+      uptakeFun = 1.0 _d 0
 c ++++++++++++++ END VERSION 1 +++++++++++++++++++++++++++++++++++++++
-c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#elif TEMP_VERSION == 2
-c ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#elif DARWIN_TEMP_VERSION == 2
+
 c +++++++++++++++++++ VERSION 2 +++++++++++++++++++++++++++++++++++++++
 c steph's version 2 (pseudo-Arrenhius)
-          Tkel=273.15 _d 0
-          TempAe=-4000. _d 0
-          Tempref=293.15 _d 0
-          tempnorm= 0. _d 0
-          TempCoeff=0.5882 _d 0
-          do np=1, npmax
-             phytoTempCoeff(np) = TempCoeff
+      Tkel      =   273.15 _d 0
+!      TempAe    = -4000.0 _d 0
+!      Tempref   =   293.15 _d 0
+!      TempCoeff =     0.5882 _d 0
+      DO j = 1, nPhoto
 cswd -- this gives Arrenhius curve only
-             phytoTempFunction(np) =
-     &                  exp(TempAe*(1. _d 0/(Tlocal+Tkel) -
-     &                                   1. _d 0/(Tempref) ) )  
-#ifdef TEMP_RANGE
+        photoFun(j) = exp(TempAeArr*(1. _d 0/(Temp+Tkel) -
+     &                                  1. _d 0/(TemprefArr) ) )
+# ifdef DARWIN_TEMP_RANGE
 cswd -- temperature range
-             phytoTempFunction(np) = phytoTempFunction(np) *
-     &                      (exp(- phytoTempExp2(np)*
-     &                      (abs(Tlocal - phytoTempOptimum(np)))**
-     &                                         phytoDecayPower(np)))
-#endif
-             phytoTempFunction(np) = phytoTempFunction(np) - tempnorm
-             phytoTempFunction(np) = phytoTempCoeff(np)*
-     &                  max(phytoTempFunction(np), 1. _d -10)
-         enddo
-#ifndef QUOTA
-         do nz = 1,nzmax
-c              zooTempFunction(nz) = 
-c     &                  exp(TempAe*(1/(Tlocal+Tkel) -
-c     &                                   1/(Tempref) ) )
-c              zooTempFunction(nz) = zooTempFunction(nz) - tempnorm
-c              zooTempFunction(nz) = TempCoeff*
-c     &                  max(zooTempFunction(nz), 1. _d -10)
-              zooTempFunction(nz) = 1. _d 0
-         end do
-#endif
-         reminTempFunction = exp(TempAe*(1/(Tlocal+Tkel) -
-     &                                   1/(Tempref) ) )
-         reminTempFunction = reminTempFunction  - tempnorm
-         reminTempFunction = TempCoeff*
-     &                  max(reminTempFunction, 1. _d -10)
-c        reminTempFunction = 1. _d 0
-c        mortPTempFunction = reminTempFunction
-c        mortZTempFunction = reminTempFunction
-c        mortZ2TempFunction = reminTempFunction
-         mortPTempFunction = 1.0 _d 0
-         mortZTempFunction = 1.0 _d 0
-         mortZ2TempFunction = 1.0 _d 0
+        photoFun(j) = photoFun(j) *
+     &      exp(-phytoTempExp2(j)*
+     &           abs(Temp - phytoTempOptimum(j))**phytoDecayPower(j))
+# endif
+        photoFun(j) = photoFun(j)
+        photoFun(j) = TempCoeffArr*
+     &               max(photoFun(j), 1. _d -10)
+C
+      ENDDO
+      reminFun = exp(TempAeArr*(1.0 _d 0/(Temp+Tkel) -
+     &                       1.0 _d 0/(TemprefArr) ) )
+      reminFun = TempCoeffArr*
+     &               max(reminFun, 1. _d -10)
+      DO j = 1, nplank
+        grazFun(j) = reminFun
+c       grazFun(j) = 1. _d 0
+      ENDDO
+c     reminFun = 1. _d 0
+      mortFun = reminFun
+      mort2Fun = reminFun
+c      mortFun = 1.0 _d 0
+c      mort2Fun = 1.0 _d 0
+      uptakeFun = 1.0 _d 0
 c ++++++++++++++ END VERSION 2 +++++++++++++++++++++++++++++++++++++++
-c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#else
-#error "TEMP_VERSION must be 1 or 2.  Define in DARWIN_OPTIONS.h"
-#endif
-c
-c ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-c +++++++++++++++++++  NO TEMP LIMITATION +++++++++++++++++++++++++++++
-#ifdef NOTEMP
-         do np=1, npmax
-              phytoTempFunction(np) = 1.0 _d 0
-         enddo
-#ifndef QUOTA
-         do nz = 1,nzmax
-              zooTempFunction(nz) = 1.0 _d 0
-         end do
-#endif
-         reminTempFunction = 1.0 _d 0
-         mortTempFunction = 1.0 _d 0
-         mort2TempFunction = 1.0 _d 0
-#endif
-c +++++++++++++  END NO TEMP LIMITATION +++++++++++++++++++++++++++++
-c ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-c 
 
-         RETURN
-         END
-#endif  /*DARWIN*/
-#endif  /*ALLOW_PTRACERS*/
-c ==================================================================
+#elif DARWIN_TEMP_VERSION == 3
+
+c +++++++++++++++++++ VERSION 3 +++++++++++++++++++++++++++++++++++++++
+c ben's version 3 from quota model
+      TempAe    =   0.05 _d 0
+      Tempref   =  20.0 _d 0
+      reminFun = MAX(1 _d -10, EXP(TempAe*(Temp-Tempref)))
+      DO j = 1, nplank
+        photoFun(j) = MAX(1 _d -10, EXP(TempAe*(Temp-Tempref)))
+        grazFun(j) = reminFun
+      ENDDO
+      mortFun = reminFun
+      mort2Fun = reminFun
+      uptakeFun = reminFun
+c ++++++++++++++ END VERSION 3 +++++++++++++++++++++++++++++++++++++++
+
+#else
+#error "DARWIN_TEMP_VERSION must be 1, 2 or 3.  Define in DARWIN_OPTIONS.h"
+#endif
+
+#ifdef DARWIN_NOZOOTEMP
+      DO j = 1, nplank
+       grazFun(j) = 1.0 _d 0
+      ENDDO
+#endif
+
+#endif  /* ALLOW_DARWIN */
+
+      RETURN
+      END SUBROUTINE

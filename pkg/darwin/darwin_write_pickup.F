@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/darwin/pkg/darwin/darwin_write_pickup.F,v 1.4 2013/05/24 20:15:48 jahn Exp $
-C $Name:  $
-
 #include "DARWIN_OPTIONS.h"
 
 CBOP
@@ -8,7 +5,7 @@ C !ROUTINE: DARWIN_WRITE_PICKUP
 
 C !INTERFACE: ==========================================================
       SUBROUTINE DARWIN_WRITE_PICKUP( permPickup,
-     I                                suff, myTime, myIter, myThid )
+     I                             suff, myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C     Writes PAR_day array (needed for a restart) to a pickup file
@@ -22,7 +19,6 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "DARWIN_SIZE.h"
-#include "DARWIN_IO.h"
 #include "DARWIN_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -40,7 +36,7 @@ CEOP
 
 #ifdef ALLOW_DARWIN
 C add more ALLOWs here for other fields in pickup
-#if defined(ALLOW_PAR_DAY) || (defined(GEIDER) && !defined(DYNAMIC_CHL))
+#if defined(DARWIN_ALLOW_CARBON) || (defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA))
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -49,7 +45,7 @@ C     == Local variables ==
       _RL     timList(1)
       INTEGER prec, irec, ifld, np
       INTEGER listDim, nWrFlds
-      PARAMETER( listDim = 2+npmax )
+      PARAMETER( listDim = 1+nPhoto )
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -60,35 +56,35 @@ c     IF ( DARWIN_pickup_write_mdsio ) THEN
         ifld = 0
         irec = 0
 
-#ifdef ALLOW_PAR_DAY
-C     record number < 0 : a hack not to write meta files now:
+#ifdef DARWIN_ALLOW_CARBON
         ifld = ifld + 1
         irec = irec - 1
-        CALL WRITE_REC_3D_RL( fn, prec, nR,
-     &                        PARday(1-OLx,1-OLy,1,1,1,1),
-     &                        irec, myIter, myThid )
-        IF (ifld.LE.listDim) wrFldList(ifld) = 'PARday1 '
-        ifld = ifld + 1
-        irec = irec - 1
-        CALL WRITE_REC_3D_RL( fn, prec, nR,
-     &                        PARday(1-OLx,1-OLy,1,1,1,2),
-     &                        irec, myIter, myThid )
-        IF (ifld.LE.listDim) wrFldList(ifld) = 'PARday2 '
+        CALL WRITE_REC_3D_RL( fn, prec, nR, pH, irec, myIter, myThid )
+        IF (ifld.LE.listDim) wrFldList(ifld) = 'pH'
 #endif
 
-#if defined(GEIDER) && !defined(DYNAMIC_CHL)
-        DO np = 1, npmax
+#if defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA)
+#ifdef ALLOW_RADTRANS
+        DO np = 1, nPhoto
         ifld = ifld + 1
         irec = irec - 1
-        print*,'prec',np,prec
         CALL WRITE_REC_3D_RL( fn, prec, nR,
-     &                        Chl_phy(1-OLx,1-OLy,1,1,1,np),
+     &                        ChlPrev(1-OLx,1-OLy,1,1,1,np),
      &                        irec, myIter, myThid )
         IF (ifld.LE.listDim) THEN
          wrFldList(ifld)(1:6) = 'ChlPhy'
          wrFldList(ifld)(7:8) = PTRACERS_ioLabel(np)
         ENDIF
         ENDDO
+#else
+        ifld = ifld + 1
+        irec = irec - 1
+        CALL WRITE_REC_3D_RL( fn, prec, nR, ChlPrev,
+     &                        irec, myIter, myThid )
+        IF (ifld.LE.listDim) THEN
+         wrFldList(ifld) = 'Chl'
+        ENDIF
+#endif
 #endif
 
 C--------------------------
@@ -109,7 +105,6 @@ C     files
         glf  = globalFiles
         timList(1) = myTime
         irec = ABS(irec)
-        print*,'prec',irec,prec
         CALL MDS_WR_METAFILES( fn, prec, glf, .FALSE.,
      &                         0, 0, nR, ' ',
      &                         nWrFlds, wrFldList,
@@ -120,7 +115,7 @@ C--------------------------
 
 c     ENDIF /* DARWIN_pickup_write_mdsio */
 
-#endif /*  ALLOW_PAR_DAY  */
+#endif /*  need pickup  */
 #endif /*  ALLOW_DARWIN  */
 
       RETURN
