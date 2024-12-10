@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+#  Notes:
+#    This optfile was created by Nicolas Wienders and Ed Hill and
+#    is known to work (complete with netCDF) on at least one Mac system.
+
+CPP='/usr/bin/cpp -traditional -P -xassembler-with-cpp'
+FC=/opt/ibmcmp/xlf/8.1/bin/f77
+LINK=/opt/ibmcmp/xlf/8.1/bin/f77
+FFLAGS='-qfixed=132 -qsuffix=f=for'
+FOPTIM='-O3'
+NOOPTFLAGS='-O0'
+LIBS='-L/usr/local/netcdf/lib -lnetcdf'
+INCLUDES='-I/usr/local/netcdf/include'
+SKIP_NETCDF_CHECK=t
+HAVE_NETCDF=t
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'

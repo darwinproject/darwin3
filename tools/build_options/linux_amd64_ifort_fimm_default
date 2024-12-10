@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# fimm.bccs.uib.no
+# http://www.parallab.uib.no/resources/cluster/nodemem
+
+FC=ifort
+
+DEFINES='-DWORDLENGTH=4'
+CPP='/lib/cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+
+INCLUDEDIRS='/opt/mpich/intel/include'
+INCLUDES='-I/opt/mpich/intel/include -I/local/netcdf-3.6.0-p1/include'
+LIBS='-L/opt/mpich/intel/lib -L/local/netcdf-3.6.0-p1/lib -lnetcdf'
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+FFLAGS="$FFLAGS -mp -w95 -W0 -WB -convert big_endian -assume byterecl"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+FOPTIM='-O3 -align'
+

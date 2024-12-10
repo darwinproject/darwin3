@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+if test "x$MPI" = xtrue ; then
+  CC='mpcc_r -q64'
+  FC='mpxlf_r -q64'
+  LINK='mpxlf_r -q64'
+else
+  CC='xlc_r -q64'
+  FC='xlf_r -q64'
+  LINK='xlf_r -q64'
+fi
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DTARGET_AIX -DWORDLENGTH=4 -DNML_TERMINATOR'
+CPP='/lib/cpp -P'
+
+#FFLAGS="$FFLAGS -qfixed=72"
+FFLAGS="$FFLAGS -qfixed=132"
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O3 -Q -qarch=pwr6 -qtune=pwr6 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
+else
+    FOPTIM='-O3 -qstrict -Q -qarch=pwr6 -qtune=pwr6 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
+fi
+
+HPMTINC=''
+HPMTLIB='-lhpm_r -lpmapi'
+GSLINC='-I/contrib/gsl-1.12/include'
+GSLLIB='-L/contrib/gsl-1.12/gsl-1.5/lib64 -lgsl -lgslcblas'
+PAPIINC='-I/contrib/papi-3.6.2/include'
+PAPILIB='-L/contrib/papi-3.6.2/lib -lpapi -lpmapi'
+
+INCLUDES='-I/contrib/netcdf-3.6.2/include'
+LIBS='-lmass -L/contrib/netcdf-3.6.2/lib'
+
+if test "x$MPI" = xtrue ; then
+    INCLUDES="-I/usr/lpp/ppe.poe/include/thread64 $INCLUDES"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread64'
+   #MPI_HEADER_FILES='mpif.h'
+fi

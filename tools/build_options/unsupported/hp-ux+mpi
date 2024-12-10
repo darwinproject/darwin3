@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+FC='mpif77'
+LINK='mpif77'
+INCLUDES='-I/opt/mpi/include'

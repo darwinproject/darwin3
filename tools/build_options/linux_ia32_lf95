@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR'
+CPP='/lib/cpp -traditional -P'
+FC='lf95'
+# FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+# FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
+

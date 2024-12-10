@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+
+#  Figure out which veg file we need (how many tiles)
+#- do a symbolic link in the current directory 
+#   (if the file does not already exist)
+  if test ! -r veg19232.data ; then 
+   sNx=`cat ../code/SIZE.h | grep 'sNx =' | cut -d= -f2 | cut -d, -f1`
+   if test $sNx = '32' ; then 
+    vegfile=../input/veg19232.6tile.data
+    ln -sf $vegfile veg19232.data
+    echo ' using' $vegfile
+   elif test $sNx = '16' ; then
+    vegfile=../input/veg19232.24tile.data
+    ln -sf $vegfile veg19232.data
+    echo ' using' $vegfile
+   else
+    echo 'Error: No veg tile dataset!'
+   fi
+  fi

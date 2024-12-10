@@ -1,0 +1,37 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+#- seaice dynamics params:
+  SEAICE_deltaTdyn   = 3600.,
+  SEAICE_deltaTevp   = 30.,
+  useHB87stressCoupling = .TRUE.,
+  SEAICE_no_slip     = .TRUE.,
+# Depending on vertical resolution this angle should have a value > 0
+#  (e.g., 25deg for drF(1)=10m)
+# SEAICE_waterTurnAngle = 0.0,
+#- seaice state & transport params:
+  SEAICE_salt0       = 4.0,
+#- old DIFF1 default:
+  DIFF1 = 4.E-3,
+#- requires old default advection scheme
+  SEAICEadvScheme    = 2,
+#- seaice thermodyn params:
+  SEAICE_deltaTtherm = 3600.,
+  SEAICE_multDim     = 1,
+# strong ice-ocean turb-flux coeff:
+  SEAICE_mcPheePiston= 0.001,
+  SEAICE_frazilFrac  = 0.5,
+#- seaice I/O params:
+  AreaFile           = 'AREA.0000008760',
+  HsnowFile          = 'HSNOW.0000008760',
+  HsaltFile          = 'HSALT.0000008760',
+  HeffFile           = 'HEFF.0000008760',
+  SEAICEwriteState   = .TRUE.,
+# old defaults
+ SEAICEscaleSurfStress = .FALSE.,
+ SEAICEaddSnowMass     = .FALSE.,
+ SEAICE_waterDrag  = 0.005355404089581304,
+ &
+
+ &SEAICE_PARM03
+  SItrNumInUse      = 0,
+ &

@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+#
+# Build options for g77 compiler (compat-gcc-34-g77) on Linux AMD64 platform
+#  Tested on Linux 2.4.21-102-smp (x86_64),
+#         on Fedora Core  8, 10 (e.g.: dickens), 13 (e.g.: baudelaire),
+#                        14, 15 (e.g.: acesgrid), 17, 19
+
+CC=gcc34
+FC=g77
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
+
+NOOPTFLAGS='-O0'
+CFLAGS='-O0'
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    FOPTIM='-O3 -funroll-loops'
+else
+    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+#   FFLAGS="$FFLAGS -g -mfpmath=sse -msse -msse2 -fbounds-check"
+    FOPTIM='-O0'
+fi
+
+#- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
+#CFLAGS="$CFLAGS -fPIC"
+#FFLAGS="$FFLAGS -fPIC"
+#-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
+ CFLAGS="$CFLAGS -mcmodel=medium"
+ FFLAGS="$FFLAGS -mcmodel=medium"
+
+if test -d /usr/include/netcdf-3 ; then
+#-- some FedoraCore standard location used to be "netcdf-3"
+    INCLUDES='-I/usr/include/netcdf-3'
+    if test -d /usr/lib64/netcdf-3 ; then
+        if test -f /usr/lib64/netcdf-3/libnetcdf_g77.a ; then
+            LIBS='-L/usr/lib64/netcdf-3 -lnetcdf_g77'
+        else
+            LIBS='-L/usr/lib64/netcdf-3'
+        fi
+    elif test -d /usr/lib/netcdf-3 ; then
+        if test -f /usr/lib/netcdf-3/libnetcdf_g77.a ; then
+            LIBS='-L/usr/lib/netcdf-3 -lnetcdf_g77'
+        else
+            LIBS='-L/usr/lib/netcdf-3'
+        fi
+    fi
+elif test -d /usr/include/netcdf -o -f /usr/include/netcdf.h ; then
+#-- allows a "compat"(gcc 3.4) 2nd version of libs for g77 , next to the
+#   standard one (for gfortran, gcc 4.x). But uses same include files.
+    if test -d /usr/include/netcdf ; then
+       INCLUDES='-I/usr/include/netcdf'
+    fi
+    if test -d /usr/lib64/netcdf34 ; then
+        if test -f /usr/lib64/netcdf34/libnetcdf_g77.a ; then
+            LIBS='-L/usr/lib64/netcdf34 -lnetcdf_g77'
+        else
+            LIBS='-L/usr/lib64/netcdf34'
+        fi
+    elif test -d /usr/lib/netcdf34 ; then
+        if test -f /usr/lib/netcdf34/libnetcdf_g77.a ; then
+            LIBS='-L/usr/lib/netcdf34 -lnetcdf_g77'
+        else
+            LIBS='-L/usr/lib/netcdf34'
+        fi
+    fi
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+fi

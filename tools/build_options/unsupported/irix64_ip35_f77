@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+#  modified for MPI & NetCDF by Baylor and Ed @ GFDL on 2004-11-02
+
+FC='f77'
+
+FC_NAMEMANGLE='#define FC_NAMEMANGLE(X) X ## _'
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DTARGET_SGI -DWORDLENGTH=4'
+CPP='/lib/cpp -P'
+#CPP='/lib/cpp -P -traditional'
+EXTENDED_SRC_FLAG='-extend_source'
+
+FFLAGS="$FFLAGS -mp -mpio -bytereclen -mips4 -static"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+FOPTIM='-O3'
+
+INCLUDEDIRS='/opt/mpt/1510/usr/include'
+INCLUDES='-I/usr/local/include'
+LIBS='-L/opt/mpt/1510/usr/lib64 -lmpi -L/usr/local/lib'
+

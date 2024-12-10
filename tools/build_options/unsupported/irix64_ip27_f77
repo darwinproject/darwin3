@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+FC='f77'
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DTARGET_SGI -DWORDLENGTH=4'
+CPP='/lib/cpp -P -traditional'
+EXTENDED_SRC_FLAG='-extend_source'
+
+FFLAGS="$FFLAGS -n32 -bytereclen"
+FOPTIM='-O3 -OPT:Olimit=0:roundoff=3:div_split=ON:alias=typed'
+
+INCLUDEDIRS='/usr/include'
+LIBS='-lmpi -lscs'

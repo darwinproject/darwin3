@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+# tested on ocl00.awi-bremerhaven.de
+# Linux ocl00 2.4.21-261-smp #1 SMP Wed Nov 17 22:05:59 UTC 2004 x86_64 unknown
+# pgf77 5.2-4
+# Copyright 1989-2000, The Portland Group, Inc.  All Rights Reserved.
+# Copyright 2000-2004, STMicroelectronics, Inc.  All Rights Reserved.
+
+FC='pgf77'
+CC='pgcc'
+LINK='pgf77'
+
+MPI='true'
+
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
+CPP='/usr/bin/cpp -P -traditional'
+EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
+
+INCLUDES='-I/opt/scali/include -I/var/tmp.shared/netcdf-64/include'
+LIBS='-L/opt/scali/lib64 -L/var/tmp.shared/netcdf-64/lib  -lfmpi -lmpi -lnetcdf'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk"
+    FOPTIM='-tp amd64 -O2 -Munroll'
+else
+    #  Try to follow IEEE-754
+    FFLAGS="$FFLAGS -byteswapio"
+    FOPTIM='-tp amd64 -O0 -Munroll -Kieee'
+fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"

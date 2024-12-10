@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -x
+scp ./devel_HOWTO.ps mitgcm.org:/u/httpd/html/public/devel_HOWTO
+scp ./devel_HOWTO.pdf mitgcm.org:/u/httpd/html/public/devel_HOWTO
+scp ./devel_HOWTO_onepage/index.html mitgcm.org:/u/httpd/html/public/devel_HOWTO/devel_HOWTO_onepage
+scp ./devel_HOWTO_multipage/*.htm* mitgcm.org:/u/httpd/html/public/devel_HOWTO/devel_HOWTO_multipage
+#ssh mitgcm.org 'chgrp -R gcmpack /u/httpd/html/public/devel_HOWTO/devel_HOWTO.p*'
+#ssh mitgcm.org 'chgrp -R gcmpack /u/httpd/html/public/devel_HOWTO/devel_HOWTO_*/*.htm*'
+

@@ -1,0 +1,22 @@
+C----------------------------------------
+C subroutine  read_pickup
+C----------------------------------------
+cphCADJ SUBROUTINE read_pickup  INPUT  = 1,2
+cphCADJ SUBROUTINE read_pickup  OUTPUT =
+cphCADJ SUBROUTINE read_pickup  DEPEND = 1,2
+cphCADJ SUBROUTINE read_pickup  REQUIRED
+
+C----------------------------------------
+C subroutine  do_write_pickup
+C----------------------------------------
+CADJ SUBROUTINE do_write_pickup  INPUT  = 1,2,3,4
+CADJ SUBROUTINE do_write_pickup  OUTPUT =
+CADJ SUBROUTINE do_write_pickup  DEPEND = 1,2,3,4
+CADJ SUBROUTINE do_write_pickup  REQUIRED
+
+C----------------------------------------
+C subroutine  check_pickup
+C----------------------------------------
+CADJ SUBROUTINE check_pickup  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE check_pickup  OUTPUT =
+

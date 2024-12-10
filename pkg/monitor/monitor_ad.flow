@@ -1,0 +1,35 @@
+C----------------------------------------
+C subroutine  MONITOR
+C----------------------------------------
+CADJ SUBROUTINE MONITOR INPUT  = 1,2,3
+CADJ SUBROUTINE MONITOR OUTPUT =
+CADJ SUBROUTINE MONITOR DEPEND = 1,2,3
+CADJ SUBROUTINE MONITOR REQUIRED
+CADJ SUBROUTINE MONITOR ACTIVE  =
+CADJ SUBROUTINE MONITOR INFLUENCED
+CADJ SUBROUTINE MONITOR ADNAME  = admonitor
+CADJ SUBROUTINE MONITOR FTLNAME = g_monitor
+
+C----------------------------------------
+C subroutine  MON_SET_PREF
+C----------------------------------------
+CADJ SUBROUTINE MON_SET_PREF INPUT  = 1,2
+CADJ SUBROUTINE MON_SET_PREF OUTPUT =
+
+C----------------------------------------
+C subroutine  MON_PRINTSTATS_RS
+C----------------------------------------
+CADJ SUBROUTINE MON_PRINTSTATS_RS INPUT  = 1,2,3,4
+CADJ SUBROUTINE MON_PRINTSTATS_RS OUTPUT =
+
+C----------------------------------------
+C subroutine  MON_CALC_ADVCFL_TILE
+C----------------------------------------
+CADJ SUBROUTINE MON_CALC_ADVCFL_TILE INPUT  = 1,2,3,4,6,7,  9,10
+CADJ SUBROUTINE MON_CALC_ADVCFL_TILE OUTPUT = 8
+
+C----------------------------------------
+C subroutine  MON_CALC_ADVCFL_GLOB
+C----------------------------------------
+CADJ SUBROUTINE MON_CALC_ADVCFL_GLOB INPUT  = 1,2,3
+CADJ SUBROUTINE MON_CALC_ADVCFL_GLOB OUTPUT =

@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# To use our namelists please do a
+# setenv ABSOFT_RT_FLAGS -f90nlexts
+FC=af77
+F90C=af90
+CC=gcc
+DEFINES='-DWORDLENGTH=4 -D_BYTESWAPIO -DHAVE_ETIME -DHAVE_SYSTEM -DHAVE_FDATE'
+CPP='cpp  -traditional -P'
+NOOPTFLAGS='-B108 -YCFRL=1 -YEXT_NAMES=LCS -YVAR_NAMES=LCS -g -m32'
+NOOPTFILES='ini_parms.F'
+EXTENDED_SRC_FLAG='-W132'
+
+if test "x$DEVEL" != x ; then
+    FFLAGS='-B108 -YCFRL=1 -YEXT_NAMES=LCS -YVAR_NAMES=LCS -g -trap=INVALID,DIVBYZERO,OVERFLOW -Rb -Rs -Rc'
+else
+    FFLAGS='-B108 -YCFRL=1 -YEXT_NAMES=LCS -YVAR_NAMES=LCS'
+fi
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-Ofast -m32 -fPIC -speed_math=9 -WOPT:if_conv=off -LNO:fu=9:full_unroll_size=7000 -cpu:host -TARG:sse2=on -TENV:simd_imask,simd_dmask,simd_zmask,simd_omask'
+#    FOPTIM='-O3 -m32 -U -cpu:host'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-O0 -m32'
+fi
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O3 -m32'
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64'
+fi
+
+LIBS="$LIBS -lU77"

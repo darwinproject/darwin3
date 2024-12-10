@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+#  Created by Baylor and Ed @ GFDL on 2004-11-02
+
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+CPP='/lib/cpp -P'
+DEFINES='-DTARGET_SGI -DWORDLENGTH=4 -DALLOW_USE_MPI -DALWAYS_USE_MPI'
+FC='f77'
+FC_NAMEMANGLE='#define FC_NAMEMANGLE(X) X ## _'
+FFLAGS='-extend_source -mp -mpio -bytereclen -mips4 -r8 -static'
+FOPTIM='-O3'
+INCLUDES='-I/usr/local/include'
+LIBS='-L/opt/mpt/1510/usr/lib64 -lmpi -L/usr/local/lib'
+INCLUDEDIRS='/opt/mpt/1510/usr/include'
+

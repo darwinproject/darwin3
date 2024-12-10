@@ -1,0 +1,41 @@
+#! /usr/bin/env bash
+#
+# This is a shell script to separate an MITgcm mnc output file into
+# one file per multi-dimensional variable. 
+# The file should be in one directory, where this script is run.
+# The resulting files will be in the same directory.
+
+DEBUG="--dbg_lvl=0"
+
+inone=$1
+inone=${1:?"You must input an mnc filename to be xploded"}
+
+for somefile in $@
+do
+  echo Extracting from file $somefile...
+  if [ ! -s $somefile ]; then
+    echo "Error: $somefile is missing or empty"
+    exit 1
+  fi
+
+# Finding all the multidimensional variables
+  varls=$(ncdump -h $somefile | egrep "double|float" | egrep , )
+  IFS=';'
+  vars=
+  for somevar in ${varls}
+  do
+   somevar1=${somevar%(*}
+   somevar1=${somevar1#*double }
+   somevar1=${somevar1#*float }
+#   echo $somevar1
+   vars=${vars}$somevar1' '
+  done
+  IFS=' '
+  withIter=$(ncdump -h $somefile | grep -c 'int iter(' )
+  if [ $withIter -gt 0 ]; then vars=${vars}iter ; fi
+  echo Variables to extract: $vars
+  for somevar in $vars
+  do
+    ncks $DEBUG -v $somevar $somefile $somevar.$somefile
+  done
+done

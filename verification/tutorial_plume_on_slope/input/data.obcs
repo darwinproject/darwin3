@@ -1,0 +1,13 @@
+# Open-boundaries
+ &OBCS_PARM01
+ OB_Ieast=1*-1,
+ useOrlanskiEast=.TRUE.,
+ useOBCSbalance=.TRUE.,
+ OBCS_monitorFreq=400.,
+ &
+
+# Orlanski parameters
+ &OBCS_PARM02
+ Cmax=0.45,
+ cVelTimeScale=1000.,
+ &

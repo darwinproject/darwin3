@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+#  tested on frost, ce107 Aug 4 2005
+#  using the following invocation:
+#  ../../../tools/genmake2 -of=../../../tools/build_options/linux_ppc_xlf
+#  or with OpenMP:
+#  ../../../tools/genmake2 -of=../../../tools/build_options/linux_ppc_xlf -omp
+
+#  Tested on Big Red, ce107 Aug 30 2007, need to set NETCDF_ROOT to:
+#     > export NETCDF_ROOT='/N/soft/linux-sles9-ppc64/netcdf-3.6.1-ibm-32'
+
+if test "x$OMP" = xtrue ; then
+  CC='xlc_r -q32 -qsmp=omp'
+  FC='xlf_r -q32'
+  LINK='xlf_r -q32'
+else
+  CC='xlc -q32'
+  FC='xlf -q32'
+  LINK='xlf -q32'
+fi
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+CPP='/lib/cpp -traditional -P'
+OMPFLAG='-qsmp=omp'
+
+#FFLAGS="$FFLAGS -qfixed=72"
+FFLAGS="$FFLAGS -qfixed=132"
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O5 -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+    FOPTIM="$FOPTIM -qipa=noobject:partition=large:threads"
+    CFLAGS="-qinlglue $FOPTIM"
+else
+    FOPTIM='-O3 -qstrict -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
+fi
+
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+fi

@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# adapted to nec.caspur.it
+
+DEFINES='-DWORDLENGTH=1'
+FC='f90'
+CC='c++'
+LINK='f90'
+#FFLAGS='-Wf "-pvctl noassume loopcnt=5000000" -Pstack'
+FFLAGS= '-ew'
+FOPTIM='-Chopt'
+NOOPTFLAGS='-Cssafe'
+NOOPTFILES='barrier.F different_multiple.F external_fields_load.F'

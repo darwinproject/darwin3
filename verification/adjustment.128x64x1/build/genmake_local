@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#  This is the local options file for the "new" version of genmake
+
+if test "x$MAKEDEPEND" = x ; then MAKEDEPEND=cyrus-makedepend ; fi
+

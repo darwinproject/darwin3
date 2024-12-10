@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# Build options for Harvard cluster "swell"
+
+FC=mpif90
+F90C=mpif90
+CC=mpicc
+LINK='mpif90'
+
+DEFINES='-DWORDLENGTH=4 -DALLOW_USE_MPI'
+CPP='cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+
+#INCLUDES='-I/usr/include/netcdf'
+INCLUDES='-I/opt/netcdf-3.6.0-p1/include -I/usr/local/topspin/mpi/mpich/include'
+LIBS='-L/opt/netcdf-3.6.0-p1/lib -L/usr/local/topspin/mpi/mpich/lib64 -lmpich_i -lpthread'
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+if test "x$IEEE" = x ; then
+    FFLAGS="$FFLAGS -w95 -g -convert big_endian -assume byterecl"
+    FOPTIM='-O3 -align'
+#P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
+#P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
+else
+    FOPTIM='-O0 -noalign'
+    FFLAGS="$FFLAGS -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl"
+   #FFLAGS="$FFLAGS -mp -w95 -W0 -WB"
+fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+

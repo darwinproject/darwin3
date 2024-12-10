@@ -1,0 +1,97 @@
+#!/bin/bash
+#
+# Tested on MacBook Pro with Snow Leopard
+#- on 20-Nov-2009, without MPI:
+#    gcc and gfortran obtained from
+# http://hpc.sourceforge.net/
+# http://prdownloads.sourceforge.net/hpc/gcc-snwleo-intel-bin.tar.gz?download
+# http://prdownloads.sourceforge.net/hpc/gfortran-snwleo-intel-bin.tar.gz?download
+#
+#    gfortran (version 4.6.0)
+#    OpenMPI (version 1.4.3)
+
+#-- Note: default location of NetCDF & MPI setting provided in this optfile
+#         are not standard. For this reason, you might need:
+#    1) to set NETCDF_ROOT to where the NetCDF is installed, e.g.:
+#       export NETCDF_ROOT='/usr/NetCDF'
+#    2) for MPI, to set environment variable MPI_INC_DIR to the include
+#       directory of your MPI implementation
+
+if test "x$MPI" = xtrue ; then
+# CC=mpicc
+  FC=mpif90
+  LINK=$FC
+else
+# CC=gcc
+  FC=gfortran
+  LINK=$FC
+fi
+
+#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) _ ## X ## _"
+#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+# for adjoint runs we might need this
+#MAKEDEPEND=tools_xmakedepend
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+CPP='/usr/bin/cpp -traditional -P'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+
+#Following flag is needed when using 32-bit gfortran with 64-bit gcc,
+#as can be the case right after switching to Snow Leopard.
+#CFLAGS='-arch i386'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+FFLAGS="$FFLAGS -fsecond-underscore -fconvert=big-endian"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FFLAGS="$FFLAGS -Wunused -Wuninitialized"
+    FOPTIM='-O3 -funroll-loops'
+    NOOPTFLAGS='-O2 -funroll-loops'
+# do we still need these?
+#    NOOPTFILES="$NOOPTFILES gad_c4_adv_x.F gad_u3_adv_x.F"
+# add more optimization if you are bold enough
+#    FOPTIM="$FOPTIM -ftree-vectorize"
+# with gcc version 4.6.0 20101106 (experimental) (GCC) I needed this
+# for better optimization (with bugs), more recent versions of gfortran
+# might not need this any longer
+#    FOPTIM='-O3 -funroll-loops -ftree-vectorize'
+#    NOOPTFLAGS='-O1 -funroll-loops -ftree-vectorize'
+#    NOOPTFILES='exch2_uv_agrid_3d_r4.F exch2_uv_agrid_3d_r8.F exch2_uv_agrid_3d_rl.F exch2_uv_agrid_3d_rs.F exch2_uv_bgrid_3d_r4.F exch2_uv_cgrid_3d_r4.F exch2_uv_cgrid_3d_r8.F exch2_uv_cgrid_3d_rl.F exch2_uv_cgrid_3d_rs.F exch_uv_agrid_3d_r8.F exch_uv_agrid_3d_rl.F exch_uv_agrid_3d_rs.F'
+else                            #- no optimisation + IEEE :
+    FFLAGS="$FFLAGS -Wunused -ffloat-store"
+    FOPTIM='-O0'
+fi
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+NETCDF_ROOT=/usr/local
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBS="-L${NETCDF_ROOT}/lib"
+else
+    #-- default NetCDF location: from former darwin_ia32_gfortran optfile:
+    #   If you optain netcdf libraries from fink, this is where they will
+    #   be. I found that it is easier to get everything from
+    #   sourceforge.net, then the libraries will be in /usr/local
+    INCLUDES='-I/sw/include'
+    LIBS='-L/sw/lib'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
+elif [ "x$MPI" = xtrue ] ; then
+    #-- default MPI header location: from former darwin_ia32_gfortran+mpi optfile:
+    INCLUDES="$INCLUDES -I/usr/local/include -I/opt/openmpi/include"
+    LIBS="$LIBS -L/usr/local/lib"
+fi

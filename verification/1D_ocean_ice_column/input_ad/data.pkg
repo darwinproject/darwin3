@@ -1,0 +1,11 @@
+# Packages
+ &PACKAGES
+  useKPP    = .TRUE.,
+  useEXF    = .TRUE.,
+  useSEAICE = .TRUE.,
+  useECCO   = .TRUE.,
+  useGrdchk = .TRUE.,
+
+#  useMNC    = .TRUE,
+#  useDiagnostics = .TRUE.,
+ &

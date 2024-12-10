@@ -1,0 +1,12 @@
+C----------------------------------------
+C FUNCTION  SEAICE_DIAG_SUFX
+C----------------------------------------
+CADJ FUNCTION SEAICE_DIAG_SUFX INPUT  = 1,2
+CADJ FUNCTION SEAICE_DIAG_SUFX OUTPUT =
+
+C----------------------------------------
+C SUBROUTINE  SEAICE_CHECK_PICKUP
+C----------------------------------------
+CADJ SUBROUTINE SEAICE_CHECK_PICKUP INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE SEAICE_CHECK_PICKUP OUTPUT =
+

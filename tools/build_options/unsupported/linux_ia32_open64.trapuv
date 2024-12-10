@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+#
+# Build options for Fedore Core 4 i686 Pentium4
+# tested on ACES, (Linux a54-1727-072 2.6.11.7smp-perfctr-tty #5 SMP Fri Apr 22 15:07:50 EDT 2005 i686 i686 i386 GNU/Linux) system 20071213
+#
+#  Please note the appropriate module command:
+#    module add open64
+#
+#  Set environment variable 'GSL_IEEE_MODE' if using "-gsl" option:
+#   sh,bash:
+#    export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
+#  csh/tcsh:
+#    setenv GSL_IEEE_MODE double-precision,mask-underflow,mask-denormalized
+
+CC=opencc
+FC=openf90
+LD=openf90
+# due to Pb in version 4.0 of the compiler with option "-byteswapio" (or "-convert big_endian")
+# use the MITgcm local version of bytes swapping:
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+#DEFINES='-DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+MAKEDEPEND=/usr/X11R6/bin/makedepend
+GET_FC_VERSION="--version"
+
+NOOPTFLAGS='-O0 -g'
+NOOPTFILES='ini_vertical_grid.F'
+
+if test "x$DEVEL" != x ; then
+    FFLAGS='-m32 -fPIC -ffortran-bounds-check -trapuv -g'
+#   FFLAGS='-m32 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
+else
+    FFLAGS='-m32 -fPIC'
+#   FFLAGS='-m32 -convert big_endian -fPIC'
+fi
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O2 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3' # -funsafe-math-optimizations'
+else
+    # full checking options:
+    NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
+    FFLAGS='-m32 -fPIC -ffortran-bounds-check -trapuv -g'
+    #  Try to follow IEEE-754
+    FOPTIM='-O0 -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O2 -m32 -fPIC'
+GSLLIB='-lgsl -lgslcblas'
+
+LIBS='-L/usr/local/pkg/netcdf/netcdf-3.5.1/g77/lib '
+INCLUDES='-I/usr/local/pkg/netcdf/netcdf-3.5.1/g77/include '

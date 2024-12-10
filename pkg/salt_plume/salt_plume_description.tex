@@ -1,0 +1,14 @@
+%%
+%%
+
+C--   SALT_PLUME parameters
+C     Find surface where the potential density (ref.lev=surface) is
+C     larger than surface density plus SaltPlumeCriterion.  Initially
+C     use the default value 0.4 kg/m^3 of Duffy et al, 1999.
+
+C o Include/exclude Duffy et al. (GRL 1999) salt plume scheme
+#define ALLOW_SALT_PLUME
+
+set ``useSALT_PLUME=.TRUE.,'' in data.pkg
+
+requires data.salt_plume

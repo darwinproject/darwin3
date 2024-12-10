@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+# tested on columbia using:
+# module purge
+# module load modules scsl.1.6.1.0 intel-comp.10.1.013 mpt.1.16.0.0 pd-netcdf.3.6.0-p1
+
+FC=ifort
+
+DEFINES='-DALLOW_USE_MPI -DWORDLENGTH=4'
+CPP='/lib/cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+
+LIBS='-L/opt/sgi/mpt/1.16.0.0/lib -lmpi -L/opt/pd/netcdf/3.6.0-p1/lib -lnetcdf'
+INCLUDES='-I/opt/sgi/mpt/1.16.0.0/include -I/opt/pd/netcdf/3.6.0-p1/include'
+INCLUDEDIRS='/opt/sgi/mpt/1.16.0.0/include'
+
+#- used for parallel (MPI) DIVA
+MPIINCLUDEDIR='/opt/sgi/mpt/1.16.0.0/include'
+#MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
+
+#PAPIINC='-I/usr/local/include'
+#PAPILIB='-L/usr/local/lib -lpapi'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+#    FFLAGS="$FFLAGS -fp-model precise -ftz -w95 -W0 -WB -convert big_endian -assume byterecl"
+    FFLAGS="$FFLAGS -mp -w95 -W0 -WB -convert big_endian -assume byterecl"
+    FOPTIM='-O3 -align'
+    NOOPTFLAGS='-O1'
+    NOOPTFILES='calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
+else
+    #  Try to follow IEEE-754
+    FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
+    FOPTIM='-O0 -noalign'
+fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+

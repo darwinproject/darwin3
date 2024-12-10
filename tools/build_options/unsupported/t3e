@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+FC='f90'
+LINK='f90'
+FFLAGS='-O 2,fusion'

@@ -1,0 +1,18 @@
+# Example "eedata" file
+# Lines beginning "#" are comments
+#  nTx      :: No. threads per process in X
+#  nTy      :: No. threads per process in Y
+# debugMode :: print debug msg (sequence of S/R calls)
+# useCubedSphereExchange :: use Cubed-Sphere type topology for EXCH
+ &EEPARMS
+ useCoupler=.TRUE.,
+ useCubedSphereExchange=.TRUE.,
+#debugMode=.TRUE.,
+# Activate one line below to support 2, 3 or 6 way multi-threading
+ nTx=1,
+#nTx=2,
+#nTx=3,
+#nTx=6,
+ &
+# Note: Some systems use & as the namelist terminator (as shown here).
+#       Other systems use a / character.

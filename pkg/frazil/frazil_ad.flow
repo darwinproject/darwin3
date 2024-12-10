@@ -1,0 +1,5 @@
+C----------------------------------------
+C subroutine  frazil_diagnostics_state
+C----------------------------------------
+CADJ SUBROUTINE frazil_diagnostics_state INPUT  = 1,2,3
+CADJ SUBROUTINE frazil_diagnostics_state OUTPUT =

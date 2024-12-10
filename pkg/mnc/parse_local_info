@@ -1,0 +1,12 @@
+#! /usr/bin/env sh
+#
+#
+
+tag="../../doc/tag-index"
+if test -r $tag ; then
+    a=`cat $tag | grep '^.Header:' | awk '{print $3 " " $4}'`
+else
+    a="unknown"
+fi
+echo "#define MNC_TAG_ID '$a'"
+

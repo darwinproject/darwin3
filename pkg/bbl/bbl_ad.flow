@@ -1,0 +1,11 @@
+C----------------------------------------
+C subroutine  bbl_diagnostics_state
+C----------------------------------------
+CADJ SUBROUTINE bbl_diagnostics_state INPUT  = 1,2,3
+CADJ SUBROUTINE bbl_diagnostics_state OUTPUT =
+
+C----------------------------------------
+C subroutine  bbl_read_pickup
+C----------------------------------------
+CADJ SUBROUTINE bbl_read_pickup  INPUT  = 1,2
+CADJ SUBROUTINE bbl_read_pickup  OUTPUT =

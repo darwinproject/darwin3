@@ -1,0 +1,34 @@
+%%
+%%
+
+Package ``FRAZIL'' is a repackaging and a replacement for subroutine
+freeze_interior.F and for run-time option allowInteriorFreezing, which has
+been retired.  It is meant to represent the formation of frazil at depth due
+to pressure and freshening-related supercooling.
+
+The initial functionality of pkg/frazil is similar to that previously provided
+by freeze_interior.F, that is, it checks for water below the freezing point at
+depth and brings the negative heat anomaly to the surface level in one time
+step.  Specifically, pkg/frazil currently assumes that: (i) supercooling at
+depth creates frazil, which rises to the model's surface level in one model
+time step, (ii) the frazil column operates at sub-grid scale and rises to the
+surface through levels warmer than freezing point without melting, and (iii)
+the frazil is porous to salinity as it rises through the water column, that
+is, frazil does not generate or transport salt anomalies.  All these
+assumptions can be relaxed at a later time as the package matures.
+
+The difference with freeze_interior.F is that rather than directly change
+potential temperature THETA, pkg/frazil instead stores the required
+adjustments in a frazil temperature forcing matrix:
+FrazilForcingT (> 0 increases theta [W/m^2]).
+
+The frazil forcing terms are computed prior to any of the ``ice'' packages and
+routines (that is, seaice, thsice, shelfice, icefront, and freeze_surface).
+This allows the ice packages to operate on FrazilForcingT directly (rather
+than react to SST below the freezing point), if they need to do so, that is
+they can operate on FrazilForcingT and decrease (or increase) it prior to
+applying this FrazilForcingT to THETA in external_forcing.F
+
+Package frazil is enabled with CPP option ALLOW_FRAZIL and runtime parameter
+useFRAZIL, in the usual MITgcm ways.  There are currently no pkg/frazil
+runtime options, so there is no need for data.frazil runtime option file.

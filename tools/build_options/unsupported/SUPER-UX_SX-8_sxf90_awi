@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# for cross compiling on sx8.awi.de
+# uname -a:
+# Linux sx8 2.6.5-7.282-default #1 SMP Tue Aug 29 10:40:40 UTC 2006 ia64 ia64 ia64 GNU/Linux#
+
+CC='sxcc -sx8r'
+if test "x$MPI" = xtrue ; then
+  FC='sxmpif90'
+  LINK='sxmpif90'
+ #LINK='sxmpif90 -p' # with profiler
+else
+  FC='sxf90'
+  LINK='sxf90'
+fi
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
+# nec use
+DEFINES='-DTARGET_NEC_SX -DWORDLENGTH=1 -DHAVE_CLOC -UHAVE_SIGREG -DSEAICE_VECTORIZE_LSR -DSEAICE_VECTORIZE_LSR_ZEBRA -DCG2D_OUTERLOOPITERS=10 -DCG3D_OUTERLOOPITERS=10'
+CPP='/lib/cpp -traditional -P'
+RMFILES='*.L'
+
+FFLAGS='-Pstack -sx8r'
+# automatic inlining for routines < 50 lines (default) and in the same file
+# where they are to be inlined (we do not have too many of those)
+FFLAGS=$FFLAGS' -pi'
+
+# This is how you inline external routines if they are longer than 50 lines
+# and live in a separate file (the actual routines depend on the packages
+# used, therefore there are only a few examples here); unfortunately, these
+# flags break the genmake2 tests, so they get an extra flag variable that
+# is not tested in genmake2
+FEXTRAFLAGS='-pi auto fullmsg exp=barrier,ucase,timestep_tracer,ilnblnk,ifnblnk,cycle_tracer,pressure_for_eos,sw_temp,sw_ptmp,gsw_pt_from_ct rexp=fool_the_compiler,fool_the_compiler_r8,bar2,sw_adtg,gsw_ct_from_pt,gsw_gibbs_pt0_pt0 expin=barrier.f,timestep_tracer.f,fool_the_compiler.f,bar2.f,utils.f,cycle_tracer.f,pressure_for_eos.f,seawater.f,gsw_teos10.f'
+# additional candidates for inlining are parts of packages that are not
+# always used, therefore use this at your own risk:
+#FEXTRAFLAGS=${FEXTRAFLAGS}' -pi fullmsg exp= expin='
+
+#-- additional options:
+# include a formated code listing and a listing of compiler transformations
+# in *.L files
+#FFLAGS=$FFLAGS' -R2'
+# assume a loop count of 5,000,000 instead of estimating it from field
+# declarations and include details messages about vectorization (if -R2
+# specified)
+#FFLAGS=$FFLAGS' -Wf "-pvctl noassume loopcnt=5000000 fullmsg"'
+# trace output for performance analysis
+#FFLAGS=$FFLAGS' -ftrace'
+# default automatic optimization level
+#FOPTIM='-C vopt'
+
+if test "x$IEEE" = x ; then
+ # highest automatic optimization level, handle with care
+ FOPTIM='-C hopt'
+ # these files require lower optimization
+ NOOPTFILES='ini_forcing.F mom_calc_visc.F'
+ NOOPTFLAGS='-C vopt'
+else
+ FOPTIM='-C vsafe'
+fi
+
+# awi specific paths and stuff
+INCLUDES='-I/SX/usr/include -I/sx8/user2/awisoft/sx8/netcdf-4.0/dw/include'
+LIBS='-L/sx8/user2/awisoft/sx8/netcdf-4.0/dw/lib -lnetcdf'
+
+if test "x$MPI" = xtrue ; then
+    # this is needed for compiling on the compute nodes
+    INCLUDES=$INCLUDES' -I/SX/opt/mpisx/inst/usr/include'
+fi
+

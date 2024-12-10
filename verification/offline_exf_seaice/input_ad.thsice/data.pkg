@@ -1,0 +1,9 @@
+# Packages
+ &PACKAGES
+  useEXF    = .TRUE.,
+  useCAL    = .TRUE.,
+  useSEAICE = .FALSE.,
+  useThSIce = .TRUE.,
+# useDiagnostics=.TRUE.,
+  useGrdchk = .TRUE.,
+ &

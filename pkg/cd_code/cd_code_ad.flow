@@ -1,0 +1,15 @@
+ccC----------------------------------------
+ccC subroutine  cd_code_read_pickup
+ccC----------------------------------------
+ccCADJ SUBROUTINE cd_code_read_pickup  INPUT  = 1,2
+ccCADJ SUBROUTINE cd_code_read_pickup  OUTPUT =
+ccCADJ SUBROUTINE cd_code_read_pickup  DEPEND = 1,2
+ccCADJ SUBROUTINE cd_code_read_pickup  REQUIRED
+
+C----------------------------------------
+C subroutine  cd_code_write_pickup
+C----------------------------------------
+CADJ SUBROUTINE cd_code_write_pickup  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE cd_code_write_pickup  OUTPUT =
+CADJ SUBROUTINE cd_code_write_pickup  DEPEND = 1,2,3,4,5
+CADJ SUBROUTINE cd_code_write_pickup  REQUIRED

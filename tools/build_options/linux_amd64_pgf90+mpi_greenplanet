@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+#
+# tested on greenplanet.ps.uci.edu
+# Linux greenplanet.ps.uci.edu 2.6.18-128.el5 #1 SMP Wed Jan 21 10:41:14 EST 2009 x86_64 x86_64 x86_64 GNU/Linux
+# pgf90 8.0-4 64-bit target on x86-64 Linux -tp penryn-64 
+# Copyright 1989-2000, The Portland Group, Inc.  All Rights Reserved.
+# Copyright 2000-2009, STMicroelectronics, Inc.  All Rights Reserved.
+
+FC='mpif90'
+CC='mpicc'
+LINK='mpif90'
+
+MPI='true'
+
+DEFINES='-DWORDLENGTH=4'
+CPP='/usr/bin/cpp -P -traditional'
+EXTENDED_SRC_FLAG='-Mextend'
+
+INCLUDES='-I/sopt/mpi/mpich/pgi/include -I/sopt/netcdf/netcdf3-gcc-serial/include'
+LIBS='-L/sopt/mpi/mpich/pgi/lib -L/sopt/netcdf/netcdf3-gcc-serial/lib'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk"
+    FOPTIM='-O2 -Munroll'
+else
+    #  Try to follow IEEE-754
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk"
+    FOPTIM='-tp amd64 -O0 -Munroll -Kieee'
+fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"

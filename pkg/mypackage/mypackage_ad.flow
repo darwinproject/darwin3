@@ -1,0 +1,12 @@
+C----------------------------------------
+C subroutine  mypackage_diagnostics_state
+C----------------------------------------
+CADJ SUBROUTINE mypackage_diagnostics_state INPUT  = 1,2,3
+CADJ SUBROUTINE mypackage_diagnostics_state OUTPUT =
+
+C----------------------------------------
+C subroutine  mypackage_read_pickup
+C----------------------------------------
+CADJ SUBROUTINE mypackage_read_pickup  INPUT  = 1,2
+CADJ SUBROUTINE mypackage_read_pickup  OUTPUT =
+

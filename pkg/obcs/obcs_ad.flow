@@ -1,0 +1,12 @@
+C----------------------------------------
+C subroutine  OBCS_CHECK_DEPTHS
+C----------------------------------------
+CADJ SUBROUTINE OBCS_CHECK_DEPTHS INPUT  = 1
+CADJ SUBROUTINE OBCS_CHECK_DEPTHS OUTPUT =
+
+C----------------------------------------
+C subroutine  OBCS_OUTPUT
+C----------------------------------------
+CADJ SUBROUTINE OBCS_OUTPUT INPUT  = 1,2,3
+CADJ SUBROUTINE OBCS_OUTPUT OUTPUT =
+ 

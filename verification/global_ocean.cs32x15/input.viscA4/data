@@ -1,0 +1,98 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=15*20.,
+ sRef=15*35.,
+ viscAh =1.E5,
+#- biharmonic Viscosity: 3.e15 is close to the stability limit with deltaTMom=20mn
+ viscA4 =3.E14,
+ viscAr =1.E-3,
+ diffKhT=0.,
+ diffK4T=0.,
+ diffKrT=3.E-5,
+ diffKhS=0.,
+ diffK4S=0.,
+ diffKrS=3.E-5,
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ gravity=9.81,
+ rhoConst=1035.,
+ rhoConstFresh=1000.,
+ eosType='JMD95Z',
+ staggerTimeStep=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ selectP_inEOS_Zc=3,
+ nonHydrostatic=.TRUE.,
+ selectNHfreeSurf=1,
+ useNHMTerms=.TRUE.,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ useRealFreshWaterFlux=.TRUE.,
+ allowFreezing=.TRUE.,
+ hFacMin=.1,
+ hFacMinDr=20.,
+ readBinaryPrec=64,
+#writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
+ plotLevel=0,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+#cg2dTargetResidual=1.E-9,
+ cg2dTargetResWunit=1.E-14,
+ cg3dMaxIters=60,
+ cg3dTargetResidual=1.E-9,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=86400,
+ nTimeSteps=10,
+ deltaTClock =3600.,
+ abEps = 0.12,
+ forcing_In_AB=.FALSE.,
+ pickupStrictlyMatch=.FALSE.,
+ pChkptFreq  =31104000.,
+ taveFreq    =31104000.,
+ dumpFreq    =31104000.,
+ monitorFreq =86400.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+# 2 months restoring timescale for temperature
+ tauThetaClimRelax = 5184000.,
+# 2yrs restoring timescale for salinity
+ tauSaltClimRelax = 62208000.,
+ monitorFreq =1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='grid_cs32',
+ radius_fromHorizGrid=6370.E3,
+ delR= 50., 70., 100., 140., 190.,
+       240., 290., 340., 390., 440.,
+       490., 540., 590., 640., 690.,
+ rSphere=6370.E3,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile      ='bathy_Hmin50.bin',
+ hydrogThetaFile='lev_T_cs_15k.bin',
+ hydrogSaltFile ='lev_S_cs_15k.bin',
+ zonalWindFile  ='trenberth_taux.bin',
+ meridWindFile  ='trenberth_tauy.bin',
+ thetaClimFile  ='lev_surfT_cs_12m.bin',
+ saltClimFile   ='lev_surfS_cs_12m.bin',
+ surfQnetFile   ='shiQnet_cs32.bin',
+ EmPmRFile      ='shiEmPR_cs32.bin',
+ &

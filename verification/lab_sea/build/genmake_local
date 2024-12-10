@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#-- This is the local options file for the "new" version of genmake
+
+AD_OPTFILE='../../../tools/adjoint_options/adjoint_diva'
+#TAF_EXTRA='-version 2.9.3'

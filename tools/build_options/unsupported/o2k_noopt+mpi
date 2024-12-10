@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+INCLUDES='-I/usr/include'
+FFLAGS='-n32 -extend_source -bytereclen'
+FOPTIM='-O0'
+LIBS='-lmpi'

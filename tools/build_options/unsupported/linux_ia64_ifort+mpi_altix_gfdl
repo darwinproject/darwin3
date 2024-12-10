@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+#  Ed Hill
+#  tested on orion.jpl.nasa.gov (Linux orion 2.4.21-sgi230r7 #1 SMP Tue Oct 7 22:38:53 PDT 2003 ia64 unknown), 20031029
+#
+# adapted to GFDL's Itanium cluster
+#  heimbach@mit.edu and baylor@mit.edu
+#
+#  Will need to do module_load ifort.9.1.039 mpt-1.14 first
+
+FC=ifort
+# Using gcc instead of icc since this is how netcdf was compiled
+#CC=icc
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+CPP='/lib/cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+
+NOOPTFILES='ini_curvilinear_grid.F'
+NOOPTFLAGS='-O3'
+
+# the '-convert big_endian' is crucial on this platform
+# -D_BYTESWAPIO doesn't work
+FFLAGS="$FFLAGS -mp -w95 -W0 -WB -convert big_endian"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+FOPTIM='-O3 -align -ip'
+
+#P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' )
+#P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' )
+LIBS='-lmpi -lnetcdf'
+
+#SKIP_NETCDF_CHECK=t
+#HAVE_NETCDF=t
+
+# These paths will likely change to newer versions of ifort
+cpath=`echo $CPATH | sed 's/:/ -I/g'`
+INCLUDES="-I/usr/local/include -I$cpath"
+cpath=`echo $CPATH | sed 's/:/ /g'`
+INCLUDEDIRS="/usr/local/include $cpath"
+#LIBDIRS='/usr/local/lib'
+
+#- used for parallel (MPI) DIVA
+# MPIINCLUDEDIR='/opt/mpt/1.14/include'
+##MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'

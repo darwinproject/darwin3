@@ -1,0 +1,118 @@
+#!/bin/bash
+#
+#
+# Build options for Open64 compiler on Linux IA32 platform
+# tested on lagoon (FC 4),
+#
+# and on aces cluster (FC 2), version 4.2.1, using:
+#       module add open64
+#       export NETCDF_ROOT='/usr/local/pkg/netcdf/netcdf-3.5.1/g77'
+#     and set environment variable 'GSL_IEEE_MODE' if using "-gsl" option:
+#       -  sh,bash:
+#       export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
+#       - csh,tcsh:
+#       setenv GSL_IEEE_MODE double-precision,mask-underflow,mask-denormalized
+
+# Multithreaded tests require
+#       export OMP_SLAVE_STACK_SIZE=400m
+#       export OMP_NUM_THREADS=2
+
+# MPI : not yet tested
+
+if test "x$MPI" = xtrue ; then
+  CC=mpicc
+  FC=mpif90
+  F90C=mpif90
+  LINK=$FC
+else
+  CC=opencc
+  FC=openf90
+  F90C=openf90
+  LINK=$FC
+fi
+
+# Pb with "-byteswapio"/"-convert big_endian" option in version 4.0 => use -D_BYTESWAPIO
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-extend-source'
+F90FIXEDFORMAT='-fixedform -x f95'
+GET_FC_VERSION="--version"
+OMPFLAG='-openmp'
+#OMPFLAG="$OMPFLAG -OPT:early_mp=ON"
+
+NOOPTFLAGS='-O0 -g'
+NOOPTFILES='ini_vertical_grid.F'
+
+FFLAGS="$FFLAGS -m32 -fPIC"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    # Note: use just -O2 optimisation to avoid some wierd problems with -O3
+    #       on aces (open64/4.1 & 4.2) (ideal_2D_ocean)
+    FOPTIM='-O2 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3' # -funsafe-math-optimizations'
+    NOOPTFILES="$NOOPTFILES mon_set_iounit.F mon_init.F"
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+  else                          #- development/check options:
+    FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+    # full checking options:
+    FOPTIM="$FOPTIM -g -ffortran-bounds-check -trapuv"
+    NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O0 -m32 -fPIC'
+GSLLIB='-lgsl -lgslcblas'
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -lnetcdf_g77'
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib'
+fi
+
+#if [ "x$LIBS" != x ] ; then
+#    LIBS="$LIBS -lstdc++"
+#else
+#    LIBS="-lstdc++"
+#fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
+fi

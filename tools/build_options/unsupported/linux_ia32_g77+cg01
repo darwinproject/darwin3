@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+#
+# tested on cg01 and confirmed to work, eh3 2003-09-08
+
+FC=g77
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+CPP='/lib/cpp  -traditional -P'
+NOOPTFLAGS='-O0'
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    FOPTIM='-O3 -malign-double -funroll-loops'
+else
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized -ffloat-store'
+    FOPTIM='-O0 -malign-double'
+fi
+
+
+
+

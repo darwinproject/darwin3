@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+# developed and tested on
+# SunOS model 5.9 Generic_112233-11 sun4u sparc SUNW,Sun-Fire-15000
+# (hostname: model.awi-bremerhaven.de)
+#
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DWORDLENGTH=4'
+
+MPI='true'
+AWK='gawk'
+# if regular make does not work try gmake
+#MAKE='gmake'
+MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
+#MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
+# compiler
+FC='mpf77'
+LINK='mpf77'
+CPP='/usr/ccs/lib/cpp -P'
+# paths
+INCLUDES='-I/opt/SUNWhpc/include -I/usr/local/include'
+LIBS='-L/opt/SUNWhpc/lib -lmpi -lthread -lsocket -lnsl -L/usr/local/lib'
+# optimization
+NOOPTFLAGS='-dalign -O2 -xarch=native'
+NOOPTFILES='solve_for_pressure.F'
+#NOOPTFILES='solve_for_pressure.F barrier.F different_multiple.F external_fields_load.F ini_vertic
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-stackvar -e -u -xtypemap=real:64,double:64,integer:32'
+    FOPTIM='-dalign -O4 -xarch=native -fsimple=2'
+    CFLAGS='-dalign -xO4 -xarch=native'
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-e -u -xtypemap=real:64,double:64,integer:32 -fsimple=0'
+    FOPTIM='-O0'
+    CFLAGS='-xO0'
+fi

@@ -1,0 +1,37 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+#- seaice dynamics params:
+# LSR_ERROR          = 1.E-12,
+  SEAICE_no_slip     = .TRUE.,
+# Depending on vertical resolution this angle should have a value > 0
+#  (e.g., 25deg for drF(1)=10m)
+# SEAICE_waterTurnAngle = 0.0,
+#- seaice state & transport params:
+  SEAICE_salt0       = 4.0,
+  SEAICEadvScheme    = 7,
+# for adjoint simulations you will need
+# SEAICEadvScheme    = 30,
+#- seaice thermodyn params:
+  SEAICE_multDim     = 7,
+  SEAICE_wetAlbTemp  = 0.0,
+# this value should be default for the McPhee parameterization
+  SEAICE_mcPheeTaper = 0.92,
+#- seaice I/O params:
+  SEAICEwriteState   = .TRUE.,
+# old defaults
+ SEAICEscaleSurfStress = .FALSE.,
+ SEAICEaddSnowMass     = .FALSE.,
+ SEAICE_useMultDimSnow = .FALSE.,
+ SEAICE_Olx = 0,
+ SEAICE_Oly = 0,
+ SEAICEetaZmethod = 0,
+ SEAICE_waterDrag  = 0.005355404089581304,
+ &
+
+ &SEAICE_PARM03
+  SItrNumInUse       = 2,
+  SItrName(1)        = 'age',
+  SItrMate(1)        = 'AREA',
+  SItrUnit(1)        = 's',
+  SItrName(2)        = 'one',
+ &

@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+#
+#  tested on  faulks with gcc-g77 v3.4.6 (with FC 6)
+#  tested with MPI on (old) aces cluster (gcc-g77 3.3.3, FC 2), using:
+#       module add mpich/gnu
+#       export MPI_INC_DIR=/usr/local/pkg/mpich/mpich-gcc/include
+
+if test "x$MPI" = xtrue ; then
+  CC='mpicc'
+  FC='mpif77'
+  LINK=$FC
+else
+  CC='gcc'
+  FC='g77'
+  LINK=$FC
+fi
+
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
+CPP='cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+has_sse2=f
+grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
+
+FFLAGS="$FFLAGS -Wimplicit -Wunused"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+   #- note(jmc): on aces, sse & sse2 are faster; -O3 is not always faster than -O2
+    if test "x$has_sse2" = xt ; then
+        FFLAGS="$FFLAGS -mfpmath=sse -msse -msse2"
+    fi
+   #FOPTIM='-O3 -malign-double -funroll-loops'
+   # Problems with "-funroll-loops" for some set-up, e.g. tutorial_held_suarez_cs
+    FOPTIM='-O3 -malign-double'
+else                            #- no optimisation + IEEE :
+    if test "x$has_sse2" = xt ; then
+        FFLAGS="$FFLAGS -mfpmath=sse -msse -msse2"
+    else
+        FFLAGS="$FFLAGS -ffloat-store"
+    fi
+    FOPTIM='-O0 -malign-double'
+fi
+
+CFLAGS="-O0"
+GSLINC=''
+GSLLIB='-lgsl -lgslcblas'
+PAPIINC='-I/usr/local/pkg/papi/papi-3.0.8.1/p4/include'
+PAPILIB='-L/usr/local/pkg/papi/papi-3.0.8.1/p4/lib -lpapi'
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    if test -d /usr/lib/netcdf-3 ; then
+        if test -f /usr/lib/netcdf-3/libnetcdf_g77.a ; then
+            LIBS='-L/usr/lib/netcdf-3 -lnetcdf_g77'
+        else
+            LIBS='-L/usr/lib/netcdf-3'
+        fi
+    fi
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
+fi

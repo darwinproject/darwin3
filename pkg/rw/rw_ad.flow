@@ -1,0 +1,191 @@
+C----------------------------------------
+C subroutine  set_write_global_fld
+C----------------------------------------
+CADJ SUBROUTINE set_write_global_fld    INPUT  = 1
+CADJ SUBROUTINE set_write_global_fld    OUTPUT =
+
+C----------------------------------------
+C subroutine  write_fld_xy_rs
+C----------------------------------------
+CADJ SUBROUTINE write_fld_xy_rs   INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_fld_xy_rs   OUTPUT =
+
+C----------------------------------------
+C subroutine  write_fld_xy_rl
+C----------------------------------------
+CADJ SUBROUTINE write_fld_xy_rl   INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_fld_xy_rl   OUTPUT =
+
+C----------------------------------------
+C subroutine  write_fld_xyz_rs
+C----------------------------------------
+CADJ SUBROUTINE write_fld_xyz_rs  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_fld_xyz_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_fld_xyz_rl
+C----------------------------------------
+CADJ SUBROUTINE write_fld_xyz_rl  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_fld_xyz_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_local_rl
+C----------------------------------------
+CADJ SUBROUTINE write_local_rl  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE write_local_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_local_rs
+C----------------------------------------
+CADJ SUBROUTINE write_local_rs  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE write_local_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  set_write_global_rec
+C----------------------------------------
+CADJ SUBROUTINE set_write_global_rec  INPUT  = 1
+CADJ SUBROUTINE set_write_global_rec  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_xy_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_xy_rl   INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_rec_xy_rl   OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_xyz_rs
+C----------------------------------------
+CADJ SUBROUTINE write_rec_xyz_rs  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_rec_xyz_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_xyz_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_xyz_rl  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_rec_xyz_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_3d_rs
+C----------------------------------------
+CADJ SUBROUTINE write_rec_3d_rs  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_3d_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_3d_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_3d_rl  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_3d_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_lev_rs
+C----------------------------------------
+CADJ SUBROUTINE write_rec_lev_rs  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE write_rec_lev_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_lev_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_lev_rl  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE write_rec_lev_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  set_write_global_sec
+C----------------------------------------
+CADJ SUBROUTINE set_write_global_sec  INPUT  = 1
+CADJ SUBROUTINE set_write_global_sec  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_xz_rs
+C----------------------------------------
+CADJ SUBROUTINE write_rec_xz_rs  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_xz_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_xz_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_xz_rl  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_xz_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_yz_rs
+C----------------------------------------
+CADJ SUBROUTINE write_rec_yz_rs  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_yz_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_yz_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_yz_rl  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_yz_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine WRITE_GLVEC_RS
+C----------------------------------------
+CADJ SUBROUTINE WRITE_GLVEC_RS  INPUT  = 1,2,3,4,5,6
+CADJ SUBROUTINE WRITE_GLVEC_RS  OUTPUT =
+
+C----------------------------------------
+C subroutine WRITE_GLVEC_RL
+C----------------------------------------
+CADJ SUBROUTINE WRITE_GLVEC_RL  INPUT  = 1,2,3,4,5,6
+CADJ SUBROUTINE WRITE_GLVEC_RL  OUTPUT =
+
+C----------------------------------------
+C subroutine READ_GLVEC_RS
+C----------------------------------------
+CADJ SUBROUTINE READ_GLVEC_RS  INPUT  = 1,2,  4,5,6
+CADJ SUBROUTINE READ_GLVEC_RS  OUTPUT =     3 
+
+C----------------------------------------
+C subroutine READ_GLVEC_RL
+C----------------------------------------
+CADJ SUBROUTINE READ_GLVEC_RL  INPUT  = 1,2,  4,5,6
+CADJ SUBROUTINE READ_GLVEC_RL  OUTPUT =     3 
+
+C----------------------------------------
+C subroutine  READ_MFLDS_INIT
+C----------------------------------------
+CADJ SUBROUTINE READ_MFLDS_INIT  INPUT  = 1
+CADJ SUBROUTINE READ_MFLDS_INIT  OUTPUT =
+
+C----------------------------------------
+C subroutine  READ_MFLDS_SET
+C----------------------------------------
+CADJ SUBROUTINE READ_MFLDS_SET  INPUT  = 1,   4,5,6
+CADJ SUBROUTINE READ_MFLDS_SET  OUTPUT =   2,3
+
+C----------------------------------------
+C subroutine  READ_MFLDS_3D_RL
+C----------------------------------------
+CADJ SUBROUTINE READ_MFLDS_3D_RL  INPUT  = 1,  3,4,5,6,7
+CADJ SUBROUTINE READ_MFLDS_3D_RL  OUTPUT =   2,3
+
+C----------------------------------------
+C subroutine  READ_MFLDS_LEV_RL
+C----------------------------------------
+CADJ SUBROUTINE READ_MFLDS_LEV_RL  INPUT  = 1,  3,4,5,6,7,8,9
+CADJ SUBROUTINE READ_MFLDS_LEV_RL  OUTPUT =   2,3
+
+C----------------------------------------
+C subroutine  READ_MFLDS_LEV_RS
+C----------------------------------------
+CADJ SUBROUTINE READ_MFLDS_LEV_RS  INPUT  = 1,  3,4,5,6,7,8,9
+CADJ SUBROUTINE READ_MFLDS_LEV_RS  OUTPUT =   2,3
+
+C----------------------------------------
+C subroutine  READ_MFLDS_CHECK
+C----------------------------------------
+CADJ SUBROUTINE READ_MFLDS_CHECK  INPUT  =   2,3,4
+CADJ SUBROUTINE READ_MFLDS_CHECK  OUTPUT = 1,2
+
+C----------------------------------------
+C subroutine  READ_MFLDS_RENAME
+C----------------------------------------
+CADJ SUBROUTINE READ_MFLDS_RENAME  INPUT  = 1,2,  4
+CADJ SUBROUTINE READ_MFLDS_RENAME  OUTPUT =     3
+
+C----------------------------------------
+C subroutine  RW_GET_SUFFIX
+C----------------------------------------
+CADJ SUBROUTINE RW_GET_SUFFIX  INPUT  =   2,3,4
+CADJ SUBROUTINE RW_GET_SUFFIX  OUTPUT = 1

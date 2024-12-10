@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# heimbach@mit.edu, ce107@mit.edu
+# tested on jaguarcnl.ccs.ornl.gov CRAY XT3
+
+FC='ftn'
+CC='cc'
+
+DEFINES='-DWORDLENGTH=4 -DTARGET_CRAYXT -DNML_EXTENDED_F77'
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
+
+###INCLUDES='-I/usr/local/mpich-1.2.1/pgi_fortran_binding/include'
+INCLUDES="-I${MPICH_DIR_FTN_DEFAULT64}/include"
+LIBS='-lfmpich -lmpich'
+
+FFLAGS="$FFLAGS -byteswapio -Mnodclchk"
+FOPTIM='-tp k8-64 -pc=64 -fastsse -O3 -Msmart'
+# -Mvect=cachesize:512000,transform
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+

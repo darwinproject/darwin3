@@ -1,0 +1,52 @@
+#!/bin/bash
+#
+#  tested on bluesky, ce107 Oct 2005
+#  using the following invocation:
+#  ../../../tools/genmake2 -of=../../../tools/build_options/sp4 -mpi -make=gmake
+
+if test "x$MPI" = xtrue ; then
+  CC='mpcc_r'
+  FC='mpxlf95_r'
+  LINK='mpxlf95_r'
+else
+  CC='cc_r'
+  FC='xlf95_r'
+  LINK='xlf95_r'
+fi
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DTARGET_AIX -DWORDLENGTH=4'
+CPP='/lib/cpp -P'
+
+#FFLAGS="$FFLAGS -qfixed=72"
+FFLAGS="$FFLAGS -qfixed=132 -bmaxdata:0x80000000"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM='-O3 -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
+else                            #- no optimisation + IEEE :
+    FOPTIM='-O3 -qstrict -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
+fi
+
+HPMTINC='-I/usr/local/hpmtoolkit/include'
+HPMTLIB='-L/usr/local/hpmtoolkit/lib -lhpm_r -lpmapi'
+GSLINC='-I/home/bluesky/evangeli/gsl-1.5/include'
+GSLLIB='-L/home/bluesky/evangeli/gsl-1.5/lib -lgsl -lgslcblas'
+PAPIINC='-I/usr/local/include'
+PAPILIB='-L/usr/local/lib -lpapi'
+
+#ph: e.g. bluesky.ucar.edu, marcellus.navo.hpc.mil
+INCLUDES='-I/usr/local/include'
+LIBS='-L/usr/local/apps/mass -lmass -L/usr/local/lib/r4i4'
+
+if test "x$MPI" = xtrue ; then
+    INCLUDES="-I/usr/lpp/ppe.poe/include/thread $INCLUDES"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread'
+   #MPI_HEADER_FILES='mpif.h'
+else
+    # the original "sp4-32bit" as "/usr/local/lib32" instead of "/usr/local/lib"
+    LIBS='-L/usr/local/apps/mass -lmass -L/usr/local/lib32/r4i4'
+fi

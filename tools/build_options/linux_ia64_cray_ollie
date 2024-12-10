@@ -1,0 +1,114 @@
+#!/bin/bash
+#
+# Tested on cray CS400 ollie.awi.de 
+# <https://swrepo1.awi.de/plugins/mediawiki/wiki/hpc/index.php/Main_Page>
+# module load craype-broadwell
+# module load PrgEnv-cray
+
+FC='ftn'
+CC='cc'
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
+DEFINES='-DWORDLENGTH=4 '
+# in some cases
+DEFINES="$DEFINES -DTARGET_CRAYXT"
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-Mextend'
+OMPFLAG='-homp'
+GET_FC_VERSION="-V"
+RMFILES='*.lst'
+
+NOOPTFLAGS="-O1"
+# under some circumstances, the high optimization of floating point operations
+# with -fhp3 lead to wrong results of MOD(a,b) in the following function, so
+# we need to use a lower (default) value of -hfp2 implicit in the NOOPTFLAGS
+NOOPTFILES="exf_getffieldrec.F"
+# since the cray compiler update of April 2018, these routines break with -O3
+# for tutorial_barotropic_gyre; they work with -O2 and lower, so we include
+# them here to be compiled with NOOPTFLAGS.
+NOOPTFILES="${NOOPTFILES} exch_r4_send_put_y.F exch_r8_send_put_y.F"
+NOOPTFILES="${NOOPTFILES} exch_rl_send_put_y.F exch_rs_send_put_y.F"
+ 
+FFLAGS="$FFLAGS -h byteswapio" 
+if test "x$OMP" = xtrue ; then 
+  # alternative if-statement: if test ! "x$OMP" = x ; then
+  # for some reason this solves a problem with an unexpected 
+  # "expectStatus=20" when using OpenMP with hyperthreads
+  NOOPTFILES="${NOOPTFILES} diagnostics_switch_onoff.F mon_init.F mon_set_iounit.F"
+else
+  # be default the cray compiler uses omp, turn it off here
+  FFLAGS="$FFLAGS -hnoomp"
+fi
+# source file listing with compiler messages:
+#FFLAGS="$FFLAGS -rm"
+#FFLAGS="$FFLAGS -Wl,--whole-archive,-lhugetlbfs,--no-whole-archive -Wl,-Ttext-segment=0x20000000,-zmax-page-size=0x20000000 "
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+# this is the default
+#   FOPTIM='-O2'
+# more aggressive
+  FOPTIM="-O ipa3 -hfp3 -O3 "
+else
+  NOOPTFLAGS="-O0"
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM="-O0 -hfp0"
+   # -fltconsistency
+  else                          #- development/check options:
+    FOPTIM="-O0 -hfp0"
+    FOPTIM="$FOPTIM -g -hfp0 -Rbc"
+    # -r[list_ opt] produces a source listing file *.lst, -rm produces a 
+    # listing with loopmark information and much more, not needed
+    # for simple tests
+    # -hmsgs -hnegmsgs writes a lot of optimisation messages to stderr
+    #FOPTIM="$FOPTIM -rm -hmsgs -hnegmsgs"
+  fi
+fi
+
+if test "x$OMP" = xtrue ; then 
+# this is a necessary hack to have -homp after the optimization flags,
+# because -O0 overrides the default to have -homp
+  FOPTIM="$FOPTIM $OMPFLAG"
+  OMPFLAG=" "
+fi
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS="-O0 $MCMODEL"
+
+
+# the extra -Wl,-rpath,${NETCDF_LIB} makes sure that the path to the
+# dynamics libraries is hardwired in the executable and does not depend
+# on which module you have loaded
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIRS="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBS="-L${NETCDF_ROOT}/lib -Wl,-rpath,${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIRS="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBS="-L${NETCDF_HOME}/lib -Wl,-rpath,${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIRS="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBS="-L${NETCDF_LIB} -Wl,-rpath,${NETCDF_LIB}"
+fi
+
+if [ -n "$MPI_ROOT" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR=${MPI_ROOT}/include
+fi
+if [ -n "$MPI_HOME" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$MPI_HOME/include"
+fi
+# MPI_INC_DIR needs to be set properly
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    # MPIINCLUDEDIR="$MPI_INC_DIR"
+    # MPI_HEADER_FILES='mpif.h mpiof.h'
+else
+   echo "MPI_INC_DIR needs to point to the correct directory, so that"
+   echo "\$MPI_INC_DIR/mpif.h is available"
+fi
+

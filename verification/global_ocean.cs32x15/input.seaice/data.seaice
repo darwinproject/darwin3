@@ -1,0 +1,20 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+ LSR_ERROR             = 1.E-12,
+# test strong implicit coupling method for LSR
+ SEAICEuseStrImpCpl    = .TRUE.,
+#SEAICE_deltaTevp = 60.,
+ SEAICE_clipVelocities = .TRUE.,
+#
+ SEAICE_salt0          = 4.,
+ SEAICE_multDim        = 7,
+ SEAICE_wetAlbTemp     = 0.,
+ SEAICE_mcPheePiston   = 0.00057,
+ SEAICE_areaLossFormula= 2,
+ SEAICEheatConsFix     = .TRUE.,
+#SEAICE_monFreq        = 2592000.,
+#SEAICEwriteState      = .TRUE.,
+ &
+
+ &SEAICE_PARM03
+ &

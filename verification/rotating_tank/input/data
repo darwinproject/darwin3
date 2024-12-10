@@ -1,0 +1,67 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=29*20.0,
+ sRef=29*35.0,
+ viscAh=5.0E-6,
+ viscAz=5.0E-6,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=2.5E-6,
+ diffKzT=2.5E-6,
+ diffKhS=1.0E-6,
+ diffKzS=1.0E-6,
+ f0=0.5,
+ eosType='LINEAR',
+ sBeta =0.,
+ gravity=9.81,
+ rhoConst=1000.0,
+ rhoNil=1000.0,
+#heatCapacity_Cp=3900.0,
+ rigidLid=.TRUE.,
+ implicitFreeSurface=.FALSE.,
+ nonHydrostatic=.TRUE.,
+ readBinaryPrec=32,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-7,
+ cg3dMaxIters=10,
+ cg3dTargetResidual=1.E-9,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+ nTimeSteps=20,
+#nTimeSteps=36000000,
+ deltaT=0.1,
+ abEps=0.1,
+ pChkptFreq=2.0,
+#chkptFreq=2.0,
+ dumpFreq=2.0,
+ monitorSelect=2,
+ monitorFreq=0.1,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCylindricalGrid=.TRUE.,
+ dXspacing=3.,
+ dYspacing=0.01,
+ delZ=29*0.005,
+ ygOrigin=0.07,
+ &
+
+# Input datasets
+ &PARM05
+ hydrogThetaFile='thetaPolR.bin',
+ bathyFile='bathyPolR.bin',
+ tCylIn  = 0.,
+ tCylOut = 20.,
+ &

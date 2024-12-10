@@ -1,0 +1,27 @@
+C     *==========================================================*
+C     | SUBROUTINE GLOBAL_SUM_R* is linear                       |
+C     | only the array argument is active                        |
+C     | only myThid is required                                  |
+C     | SUBROUTINE GLOBAL_ADSUM_R* is linear                     |
+C     *==========================================================*
+cadj SUBROUTINE global_sum_r4 INPUT   = 1, 2
+cadj SUBROUTINE global_sum_r4 OUTPUT  = 1
+cadj SUBROUTINE global_sum_r4 ACTIVE  = 1
+cadj SUBROUTINE global_sum_r4 DEPEND  = 2
+cadj SUBROUTINE global_sum_r4 ADNAME  = global_adsum_r4
+cadj SUBROUTINE global_sum_r4 FTLNAME = global_sum_r4
+
+cadj SUBROUTINE global_sum_r8 INPUT   = 1, 2
+cadj SUBROUTINE global_sum_r8 OUTPUT  = 1
+cadj SUBROUTINE global_sum_r8 ACTIVE  = 1
+cadj SUBROUTINE global_sum_r8 DEPEND  = 2
+cadj SUBROUTINE global_sum_r8 ADNAME  = global_adsum_r8
+cadj SUBROUTINE global_sum_r8 FTLNAME = global_sum_r8
+
+cadj SUBROUTINE global_sum_tile_rl INPUT   = 1,    3
+cadj SUBROUTINE global_sum_tile_rl OUTPUT  =    2
+cadj SUBROUTINE global_sum_tile_rl ACTIVE  = 1, 2
+cadj SUBROUTINE global_sum_tile_rl DEPEND  =       3
+cadj SUBROUTINE global_sum_tile_rl ADNAME  = global_adsum_tile_rl
+cadj SUBROUTINE global_sum_tile_rl FTLNAME = global_sum_tile_rl
+

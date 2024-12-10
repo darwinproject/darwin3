@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+# confirmed on Halem by eh3, 2003-09-03
+# netcdf: Tested and works:  Wed Jul 21 11:55:34 EDT 2004
+
+FC='f77'
+LINK='f77'
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+DEFINES='-DTARGET_DEC -DWORDLENGTH=1'
+CPP='/usr/local/bin/cpp  -traditional -P'
+S64='$(TOOLSDIR)/set64bitConst.sh'
+RMFILES='*.p.out'
+EXTENDED_SRC_FLAG='-extend_source'
+
+#ph: makedepend not available on some/many DEC Alpha's; use mkdep instead
+#EH3  Remove the buggy mkdep since the newly included cyrus version
+#EH3  works much better on machines such as "halem"
+#EH3  MAKEDEPEND='mkdep -f depend.out'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES='barrier.F different_multiple.F external_fields_load.F'
+
+FFLAGS="$FFLAGS -convert big_endian"
+#FFLAGS="$FFLAGS -r8"
+
+FFLAGS="$FFLAGS -fpe2 -automatic -call_shared -notransform_loops -align dcommons"
+FOPTIM='-O5 -fast -tune host -inline all'
+#ph: -O5 probably too aggressive in conjunction with adjoint code
+
+if test "x$MPI" = xtrue ; then
+  INCLUDES="$INCLUDES -I/usr/ulocal/stow/netcdf-3.5.1/include"
+  LIBS="-L/usr/ulocal/stow/netcdf-3.5.1/lib -lnetcdf -lfmpi -lmpi -lkmp_osfp10 -pthread"
+else
+  INCLUDES="$INCLUDES -I/usr/ulocal/stow/netcdf-3.5.1/include"
+  LIBS="-L/usr/ulocal/stow/netcdf-3.5.1/lib"
+fi
+

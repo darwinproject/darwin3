@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+#
+#  These are the build options used with the PGI compiler for the
+#  daily testing on ACES (which are initiated by cron jobs on the "ao"
+#  head node).
+#
+#  Please note the appropriate module command:
+#
+#    module add mpich/pgi
+#
+
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+
+FC='mpif77'
+CC='mpicc'
+if test "x$ALWAYS_USE_F90" = x1 ; then
+    FC='mpif90'
+else
+    DEFINES="$DEFINES -DNML_EXTENDED_F77"
+fi
+LINK=$FC
+
+EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
+
+INCLUDES='-I/usr/local/pkg/mpich/mpich-pgi/include -I/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/include'
+LIBS='-L/usr/local/pkg/mpich/mpich-pgi/lib -L/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/lib'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk -Mextend"
+    # FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform'
+    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
+else
+    #  Try to follow IEEE-754
+    FFLAGS="$FFLAGS -byteswapio"
+    FOPTIM='-O0 -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
+fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+

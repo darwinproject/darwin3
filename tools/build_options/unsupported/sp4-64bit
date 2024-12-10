@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+#  tested on bluesky, ce107 Dec 2005
+#  using the following invocation:
+#  ../../../tools/genmake2 -of=../../../tools/build_options/sp4-64bit -mpi -make=gmake
+
+if test "x$MPI" = xtrue ; then
+  CC='mpcc_r -q64'
+  FC='mpxlf95_r -q64'
+  LINK='mpxlf95_r -q64'
+else
+  CC='cc_r -q64'
+  FC='xlf95_r -q64'
+  LINK='mpxlf95_r -q64'
+fi
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DTARGET_AIX -DWORDLENGTH=4'
+CPP='/lib/cpp -P'
+
+#FFLAGS="$FFLAGS -qfixed=72"
+FFLAGS="$FFLAGS -qfixed=132"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM='-O3 -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
+else                            #- no optimisation + IEEE :
+    FOPTIM='-O3 -qstrict -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+    CFLAGS=$FOPTIM
+fi
+
+#INCLUDES='-I/usr/local/include'
+LIBS='-L/usr/local/apps/mass -lmass -L/usr/local/lib64/r4i4'
+
+if test "x$MPI" = xtrue ; then
+    INCLUDES='-I/usr/local/include'
+    INCLUDES="-I/usr/lpp/ppe.poe/include/thread64 $INCLUDES"
+    #- used for parallel (MPI) DIVA
+#   MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread64'
+#  #MPI_HEADER_FILES='mpif.h'
+fi

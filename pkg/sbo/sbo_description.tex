@@ -1,0 +1,15 @@
+%%
+%%
+
+Pacakge sbo implements diagnostic code to compute IERS Special
+Bureau for the Oceans (SBO) core products, including oceanic mass,
+center-of-mass, and angular momentum.
+Adapted from equations in
+ftp://euler.jpl.nasa.gov/sbo/publications/sbo_technical_note.pdf
+See also: http://euler.jpl.nasa.gov/sbo/
+
+Includes time variable mass from freshwater flux, which affects OAMP
+and COM.  To remove freshwater flux impacts from OAMP, simply remove
+the provided freshwater component: OAMP_nofw = OAMP - OAMP_fw.  To
+remove freshwater flux impacts from COM, you need to scale by mass:
+COM_nofw = (COM*mass - COM_fw*mass_fw)/(mass - mass_fw).

@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# tested on G4-PowerBook, 1GHz
+# cc-compiler is available only with the Apple Developer Tools,
+# so make sure that those are installed
+# g77 can be optained from FINK: http://fink.sourceforge.net
+#
+
+FC=g77
+LINK=g77
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+#EH3 MAKEDEPEND='${TOOLSDIR}/xmakedepend'
+#EH3 MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
+CPP='/usr/bin/cpp -traditional -P'
+
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
+
+INCLUDES='-I/sw/include'
+LIBS='-L/sw/lib'
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    FOPTIM='-O3 -funroll-loops'
+else
+    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    FOPTIM='-O0'
+fi
+#ifndef REAL4_IS_SLOW
+# _RS expands into real*4 and statements such as
+# MAX(ABS(aV3d),myNorm) in ini_cg3d.F do not work with 'g77 -O3',
+# so we have to lower the optimization level here to -O1;
+# not clear why this is so, similar statements do work in ini_cg2d.F
+#NOOPTFILES='ini_cg3d.F'
+#NOOPTFLAGS='-O1 -funroll-loops'
+#else
+NOOPTFLAGS=-O0
+#endif /* REAL4_IS_SLOW */

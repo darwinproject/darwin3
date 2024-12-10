@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+FC='f90'
+LINK='f90'
+CPP='/opt/ctl/bin/cpp -N -P'
+FOPTIM='-O0'
+NOOPTFLAGS='-O0'

@@ -1,0 +1,97 @@
+C----------------------------------------
+C subroutine  the_main_loop
+C----------------------------------------
+CADJ SUBROUTINE the_main_loop  ADNAME = adthe_main_loop
+CADJ SUBROUTINE the_main_loop FTLNAME = g_the_main_loop
+CADJ SUBROUTINE the_main_loop MODNAME = mdthe_main_loop
+
+C----------------------------------------
+C subroutine  calc_oce_mxlayer
+C----------------------------------------
+CADJ SUBROUTINE calc_oce_mxlayer  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE calc_oce_mxlayer  OUTPUT =
+
+C----------------------------------------
+C subroutine  do_the_model_io
+C----------------------------------------
+CADJ SUBROUTINE do_the_model_io  INPUT  = 1,2,3,4
+CADJ SUBROUTINE do_the_model_io  OUTPUT =
+CADJ SUBROUTINE do_the_model_io  DEPEND = 1,2,3,4
+CADJ SUBROUTINE do_the_model_io  REQUIRED
+
+C----------------------------------------
+C subroutine  turnoff_model_io
+C----------------------------------------
+CADJ SUBROUTINE TURNOFF_MODEL_IO INPUT  = 1,2
+CADJ SUBROUTINE TURNOFF_MODEL_IO OUTPUT =
+
+C----------------------------------------
+C subroutine  DO_STATEVARS_DIAGS
+C----------------------------------------
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  INPUT  = 1,2,3,4
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  OUTPUT =
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  DEPEND = 1,2,3,4
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  REQUIRED
+
+C----------------------------------------
+C subroutine  DO_STATEVARS_TAVE
+C----------------------------------------
+CADJ SUBROUTINE DO_STATEVARS_TAVE  INPUT  = 1,2,3
+CADJ SUBROUTINE DO_STATEVARS_TAVE  OUTPUT =
+CADJ SUBROUTINE DO_STATEVARS_TAVE  DEPEND = 1,2,3
+CADJ SUBROUTINE DO_STATEVARS_TAVE  REQUIRED
+
+C----------------------------------------
+C subroutine  plot_field_xyrs
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xyrs INPUT  = 1,2,3,4
+CADJ SUBROUTINE plot_field_xyrs OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xyrl
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xyrl INPUT  = 1,2,3,4
+CADJ SUBROUTINE plot_field_xyrl OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xyzrs
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xyzrs INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_xyzrs OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xyzrl
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xyzrl INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_xyzrl OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xzrs
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xzrs INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_xzrs OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xzrl
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xzrl INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_xzrl OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_yzrs
+C----------------------------------------
+CADJ SUBROUTINE plot_field_yzrs INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_yzrs OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_yzrl
+C----------------------------------------
+CADJ SUBROUTINE plot_field_yzrl INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_yzrl OUTPUT =
+
+C----------------------------------------
+C subroutine  write_state
+C----------------------------------------
+CADJ SUBROUTINE write_state  INPUT  = 1,2,3
+CADJ SUBROUTINE write_state  OUTPUT =
+

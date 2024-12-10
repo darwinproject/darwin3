@@ -1,0 +1,116 @@
+#!/bin/bash
+#
+#
+
+#  Tested with gcc-gfortran v4.1.1 on FC5, FC6, FC8, using flags
+#              formally for gcc-gfortran 4.3*
+#       + with gcc-gfortran v4.3.0 on FC9
+
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export GOMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv GOMP_STACKSIZE 400m
+#-------
+
+if test "x$MPI" = xtrue ; then
+  CC=${CC:=mpicc -m32}
+  FC=${FC:=mpif77 -m32}
+  F90C=${F90C:=mpif90 -m32}
+else
+  CC=gcc
+  FC=gfortran
+  F90C=gfortran
+fi
+
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
+OMPFLAG='-fopenmp'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+has_sse2=f
+grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
+
+# Requires gfortran from 2006 onwards for -fconvert=big-endian
+FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
+#- otherwise, switch to the home-made byte-swap:
+#DEFINES="-D_BYTESWAPIO $DEFINES"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM='-O3 -funroll-loops'
+   #if test "x$has_sse2" = xt ; then
+   #    FOPTIM="$FOPTIM -ftree-vectorize -msse -msse2"  # <-- from optfile gfortran4.4
+   #fi
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    if test "x$has_sse2" = xt ; then
+        FOPTIM='-O0 -mfpmath=sse -msse -msse2'
+    else
+        FOPTIM='-O0 -ffloat-store'
+    fi
+  else                          #- development/check options:
+    FOPTIM='-O0 -ffloat-store'
+    FOPTIM="$FOPTIM -g -ffpe-trap=invalid,zero,overflow -fbounds-check"
+  fi
+fi
+#  version 4.3.0 has problems with option "-malign-double" ;
+#  may want to put it back with older/newer version (when it works)
+#FOPTIM="$FOPTIM -malign-double"
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O0'
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3'
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
+fi

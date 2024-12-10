@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# adapted for compilation on turing.nas.nasa.gov
+# and execute on turing, lomax, chapman
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+CPP='/lib/cpp -P'
+DEFINES='-DTARGET_SGI -DWORDLENGTH=4'
+FC='f77'
+FFLAGS='-extend_source -mp -mpio -bytereclen -mips4 -r8 -static'
+FOPTIM='-O3'
+LIBS='-lmpi'
+INCLUDEDIRS='/opt/mpt/mpt/usr/include/'

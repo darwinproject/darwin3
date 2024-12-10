@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
+FFLAGS='-extend_source -bytereclen -r10000 -mips4'
+FOPTIM='-O2'
+NOOPTFLAGS='-O0'

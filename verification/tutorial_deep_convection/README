@@ -1,0 +1,26 @@
+Tutorial Example: "Surface Driven (Deep) Convection"
+====================================================
+(formerly "exp5" ;
+ also "nonhydrostatic_deep_convection" in release.1 branch)
+
+Configure and compile the code:
+  cd build
+  ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
+  make depend
+  make
+  cd ..
+
+To run:
+  cd run
+  ln -s ../input/* .
+  ln -s ../build/mitgcmuv .
+  ./mitgcmuv > output.txt
+  cd ..
+
+There is comparison output in the directory:
+  results/output.txt
+
+Comments:
+  The input data is real*8 and generated using the MATLAB script
+  input/gendata.m
+

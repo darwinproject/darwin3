@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+#
+#  These are the build options used with the GNU compiler for the
+#  daily testing on ACES (which are initiated by cron jobs on the "ao"
+#  head node).
+#
+#  Please note the appropriate module command:
+#
+#    module add mpich/gnu
+#
+
+FC='mpif77'
+CC='mpicc'
+LINK='mpif77'
+
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
+CPP='cpp  -traditional -P'
+
+NOOPTFLAGS='-O0'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
+
+INCLUDES='-I/usr/local/pkg/mpich/mpich-gcc/include '
+LIBS='-L/usr/local/pkg/mpich/mpich-gcc/lib '
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    # FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    # FOPTIM='-O3 -malign-double -funroll-loops'
+#- note(jmc):
+# -O3 is not always faster than -O2 ; sse & sse2 are faster ;
+# Problems with "-funroll-loops" for some set-up, e.g. tutorial_helt_suarez_cs
+    FFLAGS='-Wimplicit -Wunused -mfpmath=sse -msse -msse2'
+    FOPTIM='-O3 -malign-double'
+else
+    #  Try to follow IEEE-754
+    # FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    FFLAGS='-Wimplicit -Wunused -mfpmath=sse -msse -msse2'
+    FOPTIM='-O0 -malign-double'
+fi
+

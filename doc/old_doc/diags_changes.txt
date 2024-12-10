@@ -1,0 +1,174 @@
+================================================================
+Apr 03, 2010
+1) add diagnostics for KPP non-local flux of Temp, Salt and pTracers
+ (respectively: KPPg_TH, KPPg_SLT and KPPgTrXX for tracer number XX)
+This allows to close the tracer budget when using KPP.
+
+2) Change the diagnostic for KPP non-local term:
+ name:		description:
+KPPghat		Nonlocal transport coefficient (s/m^2)
+		(correspond to KPP ghat field, from which the non-local
+		flux of tracer (T,S,pTr) is computed, as the product of
+                ghat , KPPdiffKz and surface flux.)
+replaced by:
+KPPghatK	ratio of KPP non-local (salt) flux relative to surface-flux
+		(correspond to the product: KPP_ghat * KPPdiffKzS
+		 which gives the fraction of the the surface flux of Salt
+		 that KPP return as non local flux; also valid for any passive
+		 tracer, but could be different for Temp., see comment below)
+
+comments (from mitgcm-devel list):
+ I was also tempted to replace the KPPghat diagnostics
+ with something more useful which incorporates the KPPdiffKz:
+ Since it is the product KPPghat*KPPdiffKz which matters,
+ and given that short time variations of both (which have no
+ reason not to be correlated) can be significant,
+ the product of the 2 time-ave is very likely to be quiet
+ far from the time-ave of the product.
+ It has also the advantage of a simpler interpretation:
+ the product is just the fraction of the surface flux which is
+ treated as non local (no unit, instead of this funny s/m^2
+ for KPPghat).
+
+ Then I would propose to just pick one KPPdiffKz (for instance,
+ KPPdiffKzS for salinity, since it's also used for Ptracers),
+ and have only 1 diag: "KPPghatK" for KPPghat*KPPdiffKzS (no unit).
+
+ For temperature (KPPghat*KPPdiffKzT), it's probably not too different
+ from the one computed for salinity (might be in fact a better
+ time-ave value that what we have now, for the reason above).
+ And to get a precise diagnostic of KPP-non-local effect
+ on temperature, there would be this new diagnostic directly from
+ kpp_transport_t.F (which can be used to close a Temp. budget).
+
+================================================================
+Jun 21, 2009
+Some redundancies and relations for model diagnostics:
+
+1) Qnet = QNETtave = - oceQnet = SIqnet
+
+2) For open-ocean, i.e., when there is no sea ice:
+   Qnet = QNETtave = - oceQnet = SIqnet = EXFqnet = SIqneto = SIatmQnt
+
+3) EXFqnet = EXFlwnet + EXFswnet - EXFhl - EXFhs
+
+4) Qsw = QSWtave = - oceQsw = SIqsw
+
+5) For open-ocean, i.e., when there is no sea ice:
+   Qsw = QSWtave = - oceQsw = SIqsw = EXFswnet
+
+6) EmPmR = EmPmRtave = -oceFWflx = SIempmr
+
+================================================================
+
+Nov 19, 2006 (after tag checkpoint58r_post)
+
+I) Some diagnostics have been renamed (essentially, to better
+match the content):
+
+1) name:	description (oceanic set-up):
+PRESSURE	Cell-Center Height
+replaced by:
+RCENTER		Cell-Center Height
+
+2) name:	description (oceanic set-up):
+TICE		heat from melt/freeze of sea-ice, >0 increases theta
+replaced by:
+oceFreez	heating from freezing of sea-water (allowFreezing=T)
+
+3) name:	description (oceanic set-up):
+TAUX		zonal surface wind stress, >0 increases uVel
+TAUY		meridional surf. wind stress, >0 increases vVel
+replaced by:
+oceTAUX		zonal surface wind stress, >0 increases uVel
+oceTAUY		meridional surf. wind stress, >0 increases vVel
+
+4) name:	description (oceanic set-up):
+SWFLUX		net upward SW radiation, >0 increases theta
+replaced by:
+oceQsw		net Short-Wave radiation (+=down), >0 increases theta
+
+5) name:	description (oceanic set-up):
+DIFx_TH		Zonal      Diffusive Flux of Pot.Temperature
+DIFy_TH		Meridional Diffusive Flux of Pot.Temperature
+replaced by:
+DFxE_TH		Zonal      Diffusive Flux of Pot.Temperature
+DFyE_TH		Meridional Diffusive Flux of Pot.Temperature
+
+6) name:	description (oceanic set-up):
+DIFx_SLT	Zonal      Diffusive Flux of Salinity
+DIFy_SLT	Meridional Diffusive Flux of Salinity
+replaced by:
+DFxE_SLT	Zonal      Diffusive Flux of Salinity
+DFyE_SLT	Meridional Diffusive Flux of Salinity
+
+-----------------------------------------------
+II) Change description of existing diagnostics:
+
+name:		old description (oceanic set-up):
+TFLUX   	net surface heat flux, >0 increases theta
+SFLUX   	net surface salt flux, >0 increases salt
+name:		new description (oceanic set-up):
+TFLUX   	total heat flux (match heat-content variations), >0 increases theta
+SFLUX   	total salt flux (match salt-content variations), >0 increases salt
+
+-----------------------------------------------
+III) New diagnostics have been added:
+
+name:		description (oceanic set-up):
+atmPload	Atmospheric pressure loading
+sIceLoad 	sea-ice loading (in Mass of ice+snow / area unit)
+oceQnet		net surface heat flux into the ocean (+=down), >0 increases theta
+oceFWflx	net surface Fresh-Water flux into the ocean (+=down), >0 decreases salinity
+oceSflux 	net surface Salt flux into the ocean (+=down), >0 increases salinity
+surForcT	model surface forcing for Temperature, >0 increases theta
+surForcS	model surface forcing for Salinity, >0 increases salinity
+
+--------------------------------------------------------------------------
+Relation between surForcT,surForcS and others surface forcing diagnostics:
+ [x] = average of model variable "x" over the diagnostic time interval
+
+a) if useRealFreshWaterFlux=F or (nonlinFreeSurf=0 & usingZCoords=T)
+ surForcT = oceQnet  + TRELAX - oceQsw
+ surForcS = oceSflux + SRELAX - [PmEpR*So]
+  (with So = local Sea-Surface Salinity (SSS) if convertFW2Salt=-1
+    and So = convertFW2Salt otherwise)
+ oceFWflx = [PmEpR]
+ TFLUX = surForcT + oceQsw + oceFreez
+ SFLUX = surForcS
+
+b) if useRealFreshWaterFlux=T & (nonlinFreeSurf>0 or usingPCoords=T),
+In general:
+ surForcT = oceQnet  + TRELAX - oceQsw + [T_dilution_effect]*Cp
+ surForcS = oceSflux + SRELAX          + [S_dilution_effect]
+    where T_dilution_effect = PmEpR*( temp_EvPrRn - SST )
+      and S_dilution_effect = PmEpR*( salt_EvPrRn - SSS )
+ oceFWflx = [PmEpR]
+ TFLUX = surForcT + oceQsw + oceFreez + [PmEpR*SST]*Cp
+ SFLUX = surForcS + [PmEpR*SSS]
+
+And with the default value: salt_EvPrRn=0. & temp_EvPrRn=UNSET_RL
+ (=> no dilution effect on Temp.):
+ surForcT = oceQnet  + TRELAX - oceQsw
+ surForcS = oceSflux + SRELAX - [PmEpR*SSS]
+
+Notes:
+1) Here PmEpR is assumed to be the fresh-water mass flux
+   per surface area [units: kg/m^2/s] whereas the model variable
+   EmPmR is still a volume flux per surface area [units: m/s].
+2) With Linear FreeSurf, there is a small loss of heat/salt/tracer at the
+   surface (d/dt(Eta) inconsistent with fixed surf grid cell thickness:
+   a) if linFSConserveTr is set to true (file "data"), then the model 
+      corrects for this (see S/R calc_wsurf_tr.F).
+   b) if linFSConserveTr=False (=the default), the term corresponding
+      to w_surface*SST,SSS is missing in TFLUX,SFLUX to match exactly the
+      Heat and Salt budget evolution so need to account for this term in
+      the budget, which can be obtained from the 1rst level
+      of WTHMASS / WSLTMASS diagnostics (diagnostics ADVr_TH / ADVr_SLT
+      is not the right one for this purpose, it's just zero at k=1).
+3) There is just one more undocumented/hidden case
+   (nonlinFreeSurf=0 & select_rStar=-1) which is not covered.
+4) For extended diagnostics in the presence of sea-ice and using
+   pkg/seaice/ (in particular atmosphere-ice and ice-ocean fluxes)
+   see online documentation, section 6.6.2.6 "SEAICE diagnostics"
+

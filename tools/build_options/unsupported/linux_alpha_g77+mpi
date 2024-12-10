@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+FC='g77'
+
+DEFINES='-DWORDLENGTH=4 -DNML_EXTENDED_F77'
+CPP='cpp  -traditional -P'
+
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+GET_FC_VERSION="--version"
+
+LIBS='-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich'
+INCLUDES='-I/usr/local/include'
+
+#FOPTIM='-ffast-math -fexpensive-optimizations -fomit-frame-pointer -O3'
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    FOPTIM='-O3 -funroll-loops'
+else
+    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    FOPTIM='-O0'
+fi
+

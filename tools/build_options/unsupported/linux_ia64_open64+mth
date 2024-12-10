@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+#
+# Multithreaded tests require
+# export OMP_SLAVE_STACK_SIZE=400m
+# export OMP_NUM_THREADS=2
+#
+
+CC=opencc
+FC=openf90
+F90C=openf90
+F90FIXEDFORMAT='-fixedform -x f95'
+LD=openf90
+DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
+CPP='cpp -traditional -P'
+MAKEDEPEND=/usr/X11R6/bin/makedepend
+NOOPTFLAGS='-O0 -g -openmp'
+NOOPTFILES=''
+
+if test "x$DEVEL" != x ; then
+    FFLAGS='-convert big_endian -openmp -ffortran-bounds-check -trapuv -g'
+else
+    FFLAGS='-convert big_endian -openmp'
+fi
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3 -OPT:early_mp=ON' # -funsafe-math-optimizations'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math -OPT:early_mp=ON'
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O3 -openmp'
+GSLLIB='-lgsl -lgslcblas'
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -lnetcdf_g77'
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib'
+fi
+

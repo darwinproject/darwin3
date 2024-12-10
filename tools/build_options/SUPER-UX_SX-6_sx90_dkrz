@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+# for use on hurrikan.dkrz.de
+# compile on cross.dkrz.de using cross compiler
+# module load cross-compiler
+# heimbach@mit.edu, edhill@mit.edu
+#ph: on cross.dkrz.de set environment var.
+#ph: setenv F_UFMTENDIAN big
+
+if test "x$MPI" = xtrue ; then
+  CC='sxcc'
+  FC='sxmpif90 -c'
+  LINK='sxmpif90'
+else
+  CC='sxc++'
+  FC='sxf90'
+  LINK='sxf90'
+fi
+
+MAKE='sxgmake'
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
+DEFINES='-DTARGET_NEC_SX -DWORDLENGTH=1'
+CPP='/lib/cpp -traditional -P'
+
+NOOPTFLAGS='-Cssafe'
+NOOPTFILES='barrier.F different_multiple.F external_fields_load.F'
+
+FFLAGS='-Wf "-pvctl noassume loopcnt=5000000" -Pstack'
+#FFLAGS= '-ew'
+#FOPTIM='-Cvopt'
+
+if test "x$MPI" = xtrue ; then
+  FFLAGS="$FFLAGS -sx6"
+  INCLUDES='-I/SX/usr/include'
+fi

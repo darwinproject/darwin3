@@ -1,0 +1,150 @@
+================
+===  WARNING ===
+================
+
+
+For MITgcm Users :
+
+This directory (MITgcm/doc) does *NOT* contain the primary user
+documentation for the MITgcm code.  We strongly suggest that you forgo
+the effort of downloading and "building" the documentation in the
+different formats (pdf, html, etc.) and instead read and/or download
+the documentation which is conveniently referenced from the main web
+site at:
+
+  http://mitgcm.org
+
+
+
+For MITgcm Developers:
+
+If you wish to customize or extend the MITgcm code, this directory
+contains a "HOWTO" document that tries to explain:
+
+  + where the code, documentation, and test/verification
+    data sets are arranged within the CVS repository;
+
+  + how to run the verification tests;
+
+  + how to get help from the core developers; and
+
+  + how to best integrate your work with the overall project.
+
+
+The document is available in SGML source within this directory:
+
+  devel_HOWTO.sgml
+
+and in various formats on our web site:
+
+  http://mitgcm.org/dev_docs/devel_HOWTO/
+
+
+
+======================================================================
+===  WARNING :  The following has been superseeded by the on-line  ===
+===             documentation at:  http://mitgcm.org               ===
+======================================================================
+
+
+MITgcmUV Getting Started
+========================
+
+o Introduction
+
+  This note is a guide to using the MIT General Circulation Model Ultra Verstaile
+  implementation, MITgmcUV. MITgcmUV is a Fortran code that implements the 
+  algorithm described in Marshall et. al. 1997, Hill, Adcroft, ...
+   The MITgcmUV implementation is designed to work efficiently on all classes
+  of computer platforms. It can be used in both a single processor mode
+  and a parallel processor mode. Parallel processing can be either multi-threaded
+  shared memory such as that found on CRAY T90 machines or it can be multi-process
+  distributed memory. A set of "execution enviroment" support routines are 
+  used to allow the same numerical code to run on top of a single-process, multi-threaded
+  or distributed multi-process configuration.
+
+o Installing
+  To setup the model on a particular computer the code tree must be created
+  and appropriate compile and run scripts set up. For some platforms
+  the necessary scripts are included in the release - in this case follow
+  the steps below:
+
+  1. Extract MITgcmUV from the downloadable archive
+     tar -xvf cNN.tar 
+
+  2. Create platform specific make file
+     For example on a Digital UNIX machine the script "genmake" can
+     be used as shown below
+
+     cd bin
+     ../tools/genmake 
+     cp Makefile.alpha Makefile                  ( On Alpha machine)
+
+  3. Now create header file dependency entries
+     make depend
+
+  4. Compile code
+     make
+
+  5. To run the model with example data see the "README" in each of
+     the example experiments in ../verification/exp*/
+     e.g.  ../verification/exp2/README
+  
+
+o Running
+
+  - Input and output files
+
+    Required files
+    ==============
+    The model is configured to look for two files with fixed names.
+    These files are called
+     "eedata" and "data".
+    The file eedata contains "execution environment" data. At present
+    this consists of a specification of the number of threads to
+    use in X and Y under multithreaded execution.
+
+  - Serial execution
+
+  - Parallel execution. MPI
+    mPx, nPy
+    dmpirun
+
+  - Parallel execution. Threads
+    nSx, nSy
+    setenv PARALLEL n
+    nTx=2, nTy=2
+
+  - Parallel execution. Hybrid
+
+o Cutomising the code
+
+  Model structure
+  ===============
+  The "numerical" model is contained within a execution 
+  environment support wrapper. This wrapper is designed 
+  to provide a general framework for grid-point models.
+  MITgcmUV is a specific numerical model that uses the
+  framework.
+   Under this structure the model is split into 
+  execution environment support code and conventional
+  numerical model code. The execution environment
+  support code is held under the "eesupp" directory.
+  The grid point model code is held under the 
+  "model" directory. 
+   Code execution actually starts in the eesupp 
+  routines and not in the model routines. For this
+  reason the top level main.F is in the eesupp/src
+  directory. End-users should not need to worry about
+  this level. The top-level routine for the numerical
+  part of the code is in model/src/the_model_main.F.
+
+
+o References
+  Web sites - HP
+  for doc     Digital
+              SGI
+              Sun
+              Linux threads
+              CRAY multitasking
+              PPT notes
