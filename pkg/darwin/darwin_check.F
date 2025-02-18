@@ -327,6 +327,25 @@ C check exf is compiled and used
       STOP 'ABNORMAL END: DARWIN_CHECK: DENIT without CARBON'
 #endif
 
+#ifdef DARWIN_ALLOW_RADI
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'DARWIN_ALLOW_RADI has been retired.  Define either ',
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'DARWIN_ALLOW_RADIv1 or DARWIN_ALLOW_RADIv2.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: DARWIN_CHECK: DARWIN_ALLOW_RADI'
+#endif
+#if defined(DARWIN_ALLOW_RADIv1) && defined(DARWIN_ALLOW_RADIv2)
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'Only one of DARWIN_ALLOW_RADIv1 and DARWIN_ALOW_RADIv2 '
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'can be defined at a time.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+#endif
+
 C check we are not using hollexp and also inhib_graz or DARWIN_GRAZING_SWITCH
       IF (hollexp .NE. 1.0 _d 0) THEN
         IF (inhib_graz_exp .NE. 0) THEN
