@@ -96,6 +96,8 @@ C !LOCAL VARIABLES: ====================================================
       _RL tilesedflxC(nSx,nSy)
       _RL tilesedflxA(nSx,nSy)
       _RL tilesedflxO(nSx,nSy)
+      _RL tilesedflxP(nSx,nSy)
+      _RL tilesedflxN(nSx,nSy)
       _RL tileFSA(nSx,nSy)
       _RL tileFSO(nSx,nSy)
       _RL tileEPRA(nSx,nSy)
@@ -448,15 +450,22 @@ C 2-d conservation corrections
 #ifdef DARWIN_ALLOW_CARBON
         tilesfcflxC(bi,bj)=tilesfcflxC(bi,bj)+carbSfcFlx(i,j,bi,bj)*area
         tilesfcflxO(bi,bj)=tilesfcflxO(bi,bj)+oxySfcFlx(i,j,bi,bj)*area
-#ifdef ALLOW_OLD_VIRTUALFLUX
+# ifdef ALLOW_OLD_VIRTUALFLUX
         tilevirflxC(bi,bj)=tilevirflxC(bi,bj)+carbVirFlx(i,j,bi,bj)*area
         tilevirflxA(bi,bj)=tilevirflxA(bi,bj)+alkVirFlx(i,j,bi,bj)*area
-#endif
-#ifdef DARWIN_ALLOW_RADI
+# endif
+# ifdef DARWIN_ALLOW_RADIv1
         tilesedflxC(bi,bj)=tilesedflxC(bi,bj)+radiFluxC(i,j,bi,bj)*area
         tilesedflxA(bi,bj)=tilesedflxA(bi,bj)+radiFluxA(i,j,bi,bj)*area
         tilesedflxO(bi,bj)=tilesedflxO(bi,bj)+radiFLuxO(i,j,bi,bj)*area
-#endif
+# endif
+# ifdef DARWIN_ALLOW_RADIv2
+        tilesedflxC(bi,bj)=tilesedflxC(bi,bj)+radiFluxC(i,j,bi,bj)*area
+        tilesedflxA(bi,bj)=tilesedflxA(bi,bj)+radiFluxA(i,j,bi,bj)*area
+        tilesedflxO(bi,bj)=tilesedflxO(bi,bj)+radiFLuxO(i,j,bi,bj)*area
+        tilesedflxP(bi,bj)=tilesedflxP(bi,bj)+radiFLuxP(i,j,bi,bj)*area
+        tilesedflxN(bi,bj)=tilesedflxN(bi,bj)+radiFLuxN(i,j,bi,bj)*area
+# endif
 #endif
 #ifdef DARWIN_BOTTOM_SINK
         tileBotSnkC(bi,bj)=tilebotsnkC(bi,bj)+botSnkC(i,j,bi,bj)*area
@@ -1025,6 +1034,9 @@ C Combine per-tile sums
        CALL GLOBAL_SUM_TILE_RL(tilesedflxC,tmpsedflxC,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilesedflxA,tmpsedflxA,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilesedflxO,tmpsedflxO,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilesedflxC,tmpsedflxC,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilesedflxA,tmpsedflxA,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilesedflxO,tmpsedflxO,myThid)
 #endif
 #ifdef DARWIN_BOTTOM_SINK
        CALL GLOBAL_SUM_TILE_RL(tileBotSnkC,tmpBotSnkC,myThid)
@@ -1399,8 +1411,7 @@ C do not write ecosystem non-conservation terms before they are applied
 #ifdef DARWIN_ALLOW_CARBON
          WRITE(DAR_cons_A_unit,'(A1,A11,A6,A20,7A24)')'#','iter',
      &      'stage','tot','mean','sfcflx','AlkSrc','impFS','EPR',
-     &      'runoff'
-     &     ,'sed'
+     &      'runoff','sed'
          WRITE(DAR_cons_O_unit,'(A1,A11,A6,A20,7A24)')'#','iter',
      &     'stage','tot','mean','sfcflx','O2prod','O2cons','impFS','EPR'
      &     ,'sed'
