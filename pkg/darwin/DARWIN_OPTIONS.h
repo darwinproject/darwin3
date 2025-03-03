@@ -51,8 +51,11 @@ C  but will use solvesaphe dissociation coefficient options.
 C this needs to be defined for coupling to atmospheric model:
 #undef  DARWIN_USE_PLOAD
 
-C enable RADI sediment model
-#undef  DARWIN_ALLOW_RADI
+C enable RADI sediment metamodel v1
+#undef DARWIN_ALLOW_RADIv1
+
+C enable RADI sediment metamodel v2
+#undef DARWIN_ALLOW_RADIv2
 
 
 C optional bits
