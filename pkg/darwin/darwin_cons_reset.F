@@ -59,10 +59,17 @@ C     !LOCAL VARIABLES:
           botSnkFe(i,j,bi,bj) = 0 _d 0
           botSnkSi(i,j,bi,bj) = 0 _d 0
 #endif
-#ifdef DARWIN_ALLOW_RADI
+#ifdef DARWIN_ALLOW_RADIv1
           radiFluxC(i,j,bi,bj) = 0 _d 0
           radiFluxA(i,j,bi,bj) = 0 _d 0
           radiFluxO(i,j,bi,bj) = 0 _d 0
+#endif
+#ifdef DARWIN_ALLOW_RADIv2
+          radiFluxC(i,j,bi,bj) = 0 _d 0
+          radiFluxA(i,j,bi,bj) = 0 _d 0
+          radiFluxO(i,j,bi,bj) = 0 _d 0
+          radiFluxP(i,j,bi,bj) = 0 _d 0
+          radiFluxN(i,j,bi,bj) = 0 _d 0
 #endif
          ENDDO
         ENDDO
