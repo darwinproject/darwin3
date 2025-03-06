@@ -203,6 +203,8 @@ C----
      &    sed_globalc4,
      &    sed_globald4,
      &    sed_globale4,
+     &    sed_globalf4,
+     &    sed_globalg4,
      &    sed_globala5,
      &    sed_globalb5,
      &    sed_globalc5,
@@ -406,11 +408,13 @@ C for sediment model
       sed_globalc3 = 1.79 _d -6
       sed_globald3 = -1.07 _d 0
       sed_globale3 = -4.47 _d -1
-      sed_globala4 = -4.87 _d -6
-      sed_globalb4 = 3.75 _d -7
-      sed_globalc4 = 9.40 _d -8
-      sed_globald4 = -1.49 _d -1
-      sed_globale4 = 1.08 _d -1
+      sed_globala4 = 3.0 _d -6
+      sed_globalb4 = -7.14 _d -1
+      sed_globalc4 = 1.94 _d -1
+      sed_globald4 = 2.81 _d -1
+      sed_globale4 = -2.21 _d -2
+      sed_globalf4 = -2.97 _d -2
+      sed_globalg4 = -3.20 _d 2
       sed_globala5 = -2.42 _d -7
       sed_globalb5 = 1.54 _d -8
       sed_globalc5 = -4.77 _d -8
