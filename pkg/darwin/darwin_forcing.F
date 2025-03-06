@@ -833,18 +833,22 @@ C      grid cell just above sea floor
        IF (k .GT. 0) THEN
 
 C       Dependent variables
-        fluxPIC(i,j) = wPIC_sink*MAX(0.0,Ptracer(i,j,k,bi,bj,iPIC))
-        fluxPOC(i,j) = wC_sink*MAX(0.0,Ptracer(i,j,k,bi,bj,iPOC))
-        fluxPOP(i,j) = wP_sink*MAX(0.0,Ptracer(i,j,k,bi,bj,iPOP))
-        fluxPON(i,j) = wN_sink*MAX(0.0,Ptracer(i,j,k,bi,bj,iPON))
+        fluxPIC(i,j) = wPIC_sink*MAX(0 _d 0,Ptracer(i,j,k,bi,bj,iPIC))
+        fluxPOC(i,j) = wC_sink*MAX(0 _d 0,Ptracer(i,j,k,bi,bj,iPOC))
+        fluxPOP(i,j) = wP_sink*MAX(0 _d 0,Ptracer(i,j,k,bi,bj,iPOP))
+        fluxPON(i,j) = wN_sink*MAX(0 _d 0,Ptracer(i,j,k,bi,bj,iPON))
         absT = ABS(Theta(i,j,k,bi,bj))
 
+C       Reset flux to zero before accumulation
+        flxplnkC(i,j) = 0 _d 0
+        flxplnkP(i,j) = 0 _d 0
+        flxplnkN(i,j) = 0 _d 0
         DO l = 1, nplank
-           flxplnkC(i,j) = biosink(l)*MAX(0.0,
-     &                     Ptracer(i,j,k,bi,bj,ic+l-1))
-           flxplnkP(i,j) = flxplnkC(i,j) * R_PC(l)
-           flxplnkN(i,j) = flxplnkC(i,j) * R_NC(l)
-         ENDDO
+         flx = biosink(l)*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,ic+l-1))
+         flxplnkC(i,j) = flxplnkC(i,j) + flx
+         flxplnkP(i,j) = flxplnkP(i,j) + flx*R_PC(l)
+         flxplnkN(i,j) = flxplnkN(i,j) + flx*R_NC(l)
+        ENDDO
 
         sed_a1 = sed_globala1
         sed_b1 = sed_globalb1
