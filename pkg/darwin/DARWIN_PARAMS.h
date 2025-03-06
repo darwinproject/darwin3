@@ -187,36 +187,38 @@ C     sed_c :: coefficient for sediment model
 # ifdef DARWIN_ALLOW_RADIv2
 C--   COMMON /DARWIN_SED_CONSTANTS_r/ Coefficients for sediment model
 C     sed_depth_threshold :: depth threshold for deep/coast equations
-C     sed_a1              :: coefficient for sediment model
-C     sed_b1              :: coefficient for sediment model
-C     sed_c1              :: coefficient for sediment model
-C     sed_d1              :: coefficient for sediment model
-C     sed_e1              :: coefficient for sediment model
-C     sed_a2              :: coefficient for sediment model
-C     sed_b2              :: coefficient for sediment model
-C     sed_c2              :: coefficient for sediment model
-C     sed_d2              :: coefficient for sediment model
-C     sed_e2              :: coefficient for sediment model
-C     sed_a3              :: coefficient for sediment model
-C     sed_b3              :: coefficient for sediment model
-C     sed_c3              :: coefficient for sediment model
-C     sed_d3              :: coefficient for sediment model
-C     sed_e3              :: coefficient for sediment model
-C     sed_a4              :: coefficient for sediment model
-C     sed_b4              :: coefficient for sediment model
-C     sed_c4              :: coefficient for sediment model
-C     sed_d4              :: coefficient for sediment model
-C     sed_e4              :: coefficient for sediment model
-C     sed_a5              :: coefficient for sediment model
-C     sed_b5              :: coefficient for sediment model
-C     sed_c5              :: coefficient for sediment model
-C     sed_d5              :: coefficient for sediment model
-C     sed_e5              :: coefficient for sediment model
-C     sed_a6              :: coefficient for sediment model
-C     sed_b6              :: coefficient for sediment model
-C     sed_c6              :: coefficient for sediment model
-C     sed_d6              :: coefficient for sediment model
-C     sed_e6              :: coefficient for sediment model
+C     sed_globala1        :: coefficient for sediment model
+C     sed_globalb1        :: coefficient for sediment model
+C     sed_globalc1        :: coefficient for sediment model
+C     sed_globald1        :: coefficient for sediment model
+C     sed_globale1        :: coefficient for sediment model
+C     sed_globala2        :: coefficient for sediment model
+C     sed_globalb2        :: coefficient for sediment model
+C     sed_globalc2        :: coefficient for sediment model
+C     sed_globald2        :: coefficient for sediment model
+C     sed_globale2        :: coefficient for sediment model
+C     sed_globala3        :: coefficient for sediment model
+C     sed_globalb3        :: coefficient for sediment model
+C     sed_globalc3        :: coefficient for sediment model
+C     sed_globald3        :: coefficient for sediment model
+C     sed_globale3        :: coefficient for sediment model
+C     sed_globala4        :: coefficient for sediment model
+C     sed_globalb4        :: coefficient for sediment model
+C     sed_globalc4        :: coefficient for sediment model
+C     sed_globald4        :: coefficient for sediment model
+C     sed_globale4        :: coefficient for sediment model
+C     sed_globalf4        :: coefficient for sediment model
+C     sed_globalg4        :: coefficient for sediment model
+C     sed_globala5        :: coefficient for sediment model
+C     sed_globalb5        :: coefficient for sediment model
+C     sed_globalc5        :: coefficient for sediment model
+C     sed_globald5        :: coefficient for sediment model
+C     sed_globale5        :: coefficient for sediment model
+C     sed_globala6        :: coefficient for sediment model
+C     sed_globalb6        :: coefficient for sediment model
+C     sed_globalc6        :: coefficient for sediment model
+C     sed_globald6        :: coefficient for sediment model
+C     sed_globale6        :: coefficient for sediment model
 
       COMMON /DARWIN_SED_CONSTANTS_r/
      &    sed_globala1,
@@ -239,6 +241,8 @@ C     sed_e6              :: coefficient for sediment model
      &    sed_globalc4,
      &    sed_globald4,
      &    sed_globale4,
+     &    sed_globalf4,
+     &    sed_globalg4,
      &    sed_globala5,
      &    sed_globalb5,
      &    sed_globalc5,
@@ -269,6 +273,8 @@ C     sed_e6              :: coefficient for sediment model
       _RL sed_globalc4
       _RL sed_globald4
       _RL sed_globale4
+      _RL sed_globalf4
+      _RL sed_globalg4
       _RL sed_globala5
       _RL sed_globalb5
       _RL sed_globalc5
