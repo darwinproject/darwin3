@@ -162,7 +162,8 @@ To use spectral light, compile the radtrans package, see
    :varlink:`DARWIN_SOLVESAPHE`                 & compile Munhoven "Solvesaphe" pH/pOC2 solver package
    :varlink:`DARWIN_TOTALPHSCALE`               & consistently use the total pH scale for carbon chemistry coefficients
    :varlink:`DARWIN_USE_PLOAD`                  & take atmospheric pressure from coupled atmospheric model
-   :varlink:`DARWIN_ALLOW_RADI`                 & enable RADI sediment model
+   :varlink:`DARWIN_ALLOW_RADIv1`               & enable RADI sediment metamodel version 1
+   :varlink:`DARWIN_ALLOW_RADIv2`               & enable RADI sediment metamodel version 2
    :varlink:`DARWIN_ALLOW_DENIT`                & enable denitrification code
    :varlink:`DARWIN_ALLOW_EXUDE`                & enable exudation of individual quotas
    :varlink:`ALLOW_OLD_VIRTUALFLUX`             & enable old virtualflux code for DIC and ALK
