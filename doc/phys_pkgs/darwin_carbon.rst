@@ -22,7 +22,8 @@ The following preprocessor options affect the computation of pH,
    :varlink:`DARWIN_ALLOW_CARBON` & enable air-sea carbon exchange and ALK and O\ :sub:`2` tracers
    :varlink:`DARWIN_SOLVESAPHE`   & compile Munhoven "Solvesaphe" pH/pCO\ :sub:`2` solver package
    :varlink:`DARWIN_TOTALPHSCALE` & consistently use the total pH scale for carbon chemistry coefficients
-   :varlink:`DARWIN_ALLOW_RADI`   & enable RADI sediment model
+   :varlink:`DARWIN_ALLOW_RADIv1` & enable RADI sediment metamodel version 1
+   :varlink:`DARWIN_ALLOW_RADIv2` & enable RADI sediment metamodel version 2
 
 :varlink:`DARWIN_ALLOW_CARBON` is required to enable the computation
 of pH, :math:`[\mathrm{CO}_2^*]` and :math:`[\mathrm{CO}_3^{2-}]` values.  If
@@ -30,8 +31,9 @@ of pH, :math:`[\mathrm{CO}_2^*]` and :math:`[\mathrm{CO}_3^{2-}]` values.  If
 are computed following to Munhoven (2013) :cite:`munhoven:13`, otherwise
 according to Follows et al. (2006) :cite:`follows:06`.  In this case,
 :varlink:`DARWIN_TOTALPHSCALE` can be defined to ensure all computations
-consistently use the total pH scale.  :varlink:`DARWIN_ALLOW_RADI` activates
-the RADI sediment model following :cite:`sulpis:22`.
+consistently use the total pH scale.  :varlink:`DARWIN_ALLOW_RADIv1` activates
+version 1 of the RADI sediment model following :cite:`sulpis:22`.  Version 2
+is activated by :varlink:`DARWIN_ALLOW_RADIv2`.
 
 The run-time parameter :varlink:`selectPHsolver` decides which pH solver to use:
 
@@ -245,11 +247,11 @@ that the units vary: gDICsurf, gALKsurf and gO2surf are tracer tendencies,
 i.e., change rates of concentration, while fluxCO2 is a flux per area of
 sea surface.
 
-Diagnostics available with :varlink:`DARWIN_ALLOW_RADI`:
+Diagnostics available with :varlink:`DARWIN_ALLOW_RADIv1`:
 
 .. tabularcolumns:: |\Y{.16}|\Y{.16}|\Y{.18}|\Y{.5}|
 
-.. csv-table:: RADI sediment model diagnostic fields
+.. csv-table:: RADI sediment model version 1 diagnostic fields
    :delim: &
    :widths: auto
    :class: longtable
@@ -265,5 +267,30 @@ Diagnostics available with :varlink:`DARWIN_ALLOW_RADI`:
    TcorrO2    & ``SM_P____M1`` & 1                               & Temperature correction factor for diffusive O\ :sub:`2` flux
    TcorrALK   & ``SM_P____M1`` & 1                               & Temperature correction factor for diffusive ALK flux
    TcorrDIC   & ``SM_P____M1`` & 1                               & Temperature correction factor for diffusive DIC flux
+   OmegCbot   & ``SM_P____M1`` & 1                               & Calcite saturation ratio above the seabed
+
+Diagnostics available with :varlink:`DARWIN_ALLOW_RADIv2`:
+
+.. tabularcolumns:: |\Y{.16}|\Y{.16}|\Y{.18}|\Y{.5}|
+
+.. csv-table:: RADI sediment model version 2 diagnostic fields
+   :delim: &
+   :widths: auto
+   :class: longtable
+   :header: Name, Code, Units, Description
+
+   DICFsed    & ``SM______U1`` & mmol C/m\ :sup:`2`/s            & DIC sediment flux
+   ALKFsed    & ``SM______U1`` & meq/m\ :sup:`2`/s               & ALK sediment flux
+   O2Fsed     & ``SM______U1`` & mmol O\ :sub:`2` /m\ :sup:`2`/s & O\ :sub:`2` sediment flux
+   NO3Fsed    & ``SM______U1`` & mmol N/m\ :sup:`2`/s            & NO3 sediment flux
+   PO4Fsed    & ``SM______U1`` & mmol P/m\ :sup:`2`/s            & PO4 sediment flux
+   NH4Fsed    & ``SM______U1`` & mmol N/m\ :sup:`2`/s            & NH4 sediment flux
+   sedFlPOC   & ``SM_P____U1`` & mmol C/m\ :sup:`2`/s            & POC flux from water column to sediment
+   sedFlPIC   & ``SM_P____U1`` & mmol C/m\ :sup:`2`/s            & PIC flux from water column to sediment
+   sedFlPOP   & ``SM_P____U1`` & mmol P/m\ :sup:`2`/s            & POP flux from water column to sediment
+   sedFlPON   & ``SM_P____U1`` & mmol N/m\ :sup:`2`/s            & PON flux from water column to sediment
+   sedFplkC   & ``SM_P____U1`` & mmol C/m\ :sup:`2`/s            & C flux from bottom sink plankton to sed
+   sedFplkN   & ``SM_P____U1`` & mmol N/m\ :sup:`2`/s            & N flux from bottom sink plankton to sed
+   sedFplkP   & ``SM_P____U1`` & mmol P/m\ :sup:`2`/s            & P flux from bottom sink plankton to sed
    OmegCbot   & ``SM_P____M1`` & 1                               & Calcite saturation ratio above the seabed
 
