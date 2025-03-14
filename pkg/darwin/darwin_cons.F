@@ -120,6 +120,8 @@ C !LOCAL VARIABLES: ====================================================
       _RL tmpsedflxC
       _RL tmpsedflxA
       _RL tmpsedflxO
+      _RL tmpsedflxN
+      _RL tmpsedflxP
       _RL tmpBotSnkC
       _RL tmpBotSnkN
       _RL tmpBotSnkP
@@ -179,6 +181,8 @@ C !LOCAL VARIABLES: ====================================================
       tmpsedflxC = 0 _d 0
       tmpsedflxA = 0 _d 0
       tmpsedflxO = 0 _d 0
+      tmpsedflxN = 0 _d 0
+      tmpsedflxP = 0 _d 0
       tmpBotSnkC = 0 _d 0
       tmpBotSnkN = 0 _d 0
       tmpBotSnkP = 0 _d 0
@@ -271,6 +275,8 @@ C !LOCAL VARIABLES: ====================================================
        tilesedflxC(bi,bj) = 0. _d 0
        tilesedflxA(bi,bj) = 0. _d 0
        tilesedflxO(bi,bj) = 0. _d 0
+       tilesedflxN(bi,bj) = 0. _d 0
+       tilesedflxP(bi,bj) = 0. _d 0
        tileFSA(bi,bj) = 0. _d 0
        tileFSO(bi,bj) = 0. _d 0
        tileEPRA(bi,bj) = 0. _d 0
@@ -1034,9 +1040,8 @@ C Combine per-tile sums
        CALL GLOBAL_SUM_TILE_RL(tilesedflxC,tmpsedflxC,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilesedflxA,tmpsedflxA,myThid)
        CALL GLOBAL_SUM_TILE_RL(tilesedflxO,tmpsedflxO,myThid)
-       CALL GLOBAL_SUM_TILE_RL(tilesedflxC,tmpsedflxC,myThid)
-       CALL GLOBAL_SUM_TILE_RL(tilesedflxA,tmpsedflxA,myThid)
-       CALL GLOBAL_SUM_TILE_RL(tilesedflxO,tmpsedflxO,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilesedflxP,tmpsedflxP,myThid)
+       CALL GLOBAL_SUM_TILE_RL(tilesedflxN,tmpsedflxN,myThid)
 #endif
 #ifdef DARWIN_BOTTOM_SINK
        CALL GLOBAL_SUM_TILE_RL(tileBotSnkC,tmpBotSnkC,myThid)
@@ -1397,11 +1402,11 @@ C do not write ecosystem non-conservation terms before they are applied
          WRITE(DAR_cons_C_unit,'(A1,A11,A6,A20,8A24)')'#','iter',
      &      'stage','tot','mean','sfcflx','virtflx','botsnk','impFS',
      &      'EPR','runoff','sed'
-         WRITE(DAR_cons_N_unit,'(A1,A11,A6,A20,7A24)')'#','iter',
+         WRITE(DAR_cons_N_unit,'(A1,A11,A6,A20,8A24)')'#','iter',
      &      'stage','tot','mean','Nfix','Ndenit','botsnk','impFS','EPR',
-     &      'runoff'
-         WRITE(DAR_cons_P_unit,'(A1,A11,A6,A20,5A24)')'#','iter',
-     &      'stage','tot','mean','botsnk','impFS','EPR','runoff'
+     &      'runoff','sed'
+         WRITE(DAR_cons_P_unit,'(A1,A11,A6,A20,6A24)')'#','iter',
+     &      'stage','tot','mean','botsnk','impFS','EPR','runoff','sed'
          WRITE(DAR_cons_Fe_unit,'(A1,A11,A6,A20,10A24)')'#','iter',
      &      'stage','tot','mean','minFeLoss','scav','sfcflx','sedflx',
      &      'ventflx','botsnk','impFS','EPR','runoff'
@@ -1421,12 +1426,12 @@ C do not write ecosystem non-conservation terms before they are applied
         WRITE(DAR_cons_C_unit,'(I12,I2,9E24.16)') myIter, stage,
      &     tmptotC, tmptotC/voltot, tmpsfcflxC, tmpvirflxC, -tmpBotSnkC,
      &     tmpFSC, tmpEPRC, tmprunoffC, tmpsedflxC
-        WRITE(DAR_cons_N_unit,'(I12,I2,8E24.16)') myIter, stage,
+        WRITE(DAR_cons_N_unit,'(I12,I2,9E24.16)') myIter, stage,
      &     tmptotN, tmptotN/voltot, tmptotNfix, -tmptotNdenit,
-     &     -tmpBotSnkN, tmpFSN, tmpEPRN, tmprunoffN
-        WRITE(DAR_cons_P_unit,'(I12,I2,6E24.16)') myIter, stage,
+     &     -tmpBotSnkN, tmpFSN, tmpEPRN, tmprunoffN, tmpsedflxN
+        WRITE(DAR_cons_P_unit,'(I12,I2,7E24.16)') myIter, stage,
      &     tmptotP, tmptotP/voltot, -tmpBotSnkP, tmpFSP,tmpEPRP,
-     &     tmprunoffP
+     &     tmprunoffP, tmpsedflxP
         WRITE(DAR_cons_Fe_unit,'(I12,I2,11E24.16)') myIter, stage,
      &     tmptotFe, tmptotFe/voltot, -tmpminFeLoss, -tmptotscavFe,
      &     tmpsfcflxFe, tmpsedflxFe, tmpventflxFe, -tmpBotSnkFe,
