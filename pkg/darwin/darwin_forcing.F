@@ -950,11 +950,6 @@ C       Accumulate for conservation check
         flxplnkC(i,j) = 0. _d 0
         flxplnkN(i,j) = 0. _d 0
         flxplnkP(i,j) = 0. _d 0
-        radiFluxC(i,j,bi,bj) = 0. _d 0
-        radiFluxA(i,j,bi,bj) = 0. _d 0
-        radiFluxO(i,j,bi,bj) = 0. _d 0
-        radiFluxP(i,j,bi,bj) = 0. _d 0
-        radiFluxN(i,j,bi,bj) = 0. _d 0
 
        ENDIF
       ENDDO
