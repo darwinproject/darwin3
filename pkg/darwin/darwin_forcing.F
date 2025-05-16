@@ -1059,7 +1059,7 @@ C === diagnostics ======================================================
           ENDDO
          ENDDO
         ENDDO
-        DO l=1,nlam
+        DO l=1,nPhoto
          DO k=1,Nr
           DO j=1,sNy
            DO i=1,sNx
