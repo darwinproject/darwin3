@@ -20,6 +20,7 @@ ecosystem model is split over a number of pages:
    darwin_spectral
    darwin_uptake
    darwin_chl
+   darwin_macromol
    darwin_remin
    darwin_denit
    darwin_cdom
