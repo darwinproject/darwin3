@@ -36,6 +36,8 @@ DARWIN_TEMP_VERSION 1
 where the exponential is only present with :varlink:`DARWIN_TEMP_RANGE`.
 
 
+.. _darwin-temp-version-2:
+
 DARWIN_TEMP_VERSION 2
 '''''''''''''''''''''
 
@@ -60,7 +62,17 @@ DARWIN_TEMP_VERSION 2
        \right]_{\ge 10^{-10}}\end{gathered}
 
 where the second exponential in :math:`f^{{{\text{phy}}}}` again is only
-present with :varlink:`DARWIN_TEMP_RANGE`.
+present with :varlink:`DARWIN_TEMP_RANGE`.  The temperature dependence of the
+macromolecular growth model is controlled by a separate parameter,
+:varlink:`phytoAeArrMacromol`,
+
+.. math::
+
+   f^{\text{mm}}_j(T) = \left[
+         {\mathrm{e}}^{A^{\text{Arr,mm}}_{\text{e}}
+              \bigl( (T+273.15)^{-1} - {T^{\text{Arr}}_{\text{ref}}}^{-1} \bigr)}
+       \right]_{\ge 10^{-10}}
+   \;.
 
 
 DARWIN_TEMP_VERSION 3
@@ -167,6 +179,8 @@ The parameters of all temperature functions are summarized in
    +-----------------------------+-------------------------------+----------------------------------------------------------------------+
    |                             | :varlink:`TempAeArr`          | :math:`A^{\text{Arr}}_{{\text{e}}}=-4000\,{\rm K}` [#AeArr]_         |
    +-----------------------------+-------------------------------+----------------------------------------------------------------------+
+   |                             | :varlink:`TempAeArrMacromol`  | :math:`A^{\text{Arr,mm}}_{{\text{e}}}=-8420\,{\rm K}` [#AeArrMM]_    |
+   +-----------------------------+-------------------------------+----------------------------------------------------------------------+
    |                             | :varlink:`TempRefArr`         | :math:`T^{\text{Arr}}_{\text{ref}}=293.15\,{\rm K}`                  |
    +-----------------------------+-------------------------------+----------------------------------------------------------------------+
    | **for version 4:**          |                               |                                                                      |
@@ -209,8 +223,9 @@ The parameters of all temperature functions are summarized in
 With random trait generation, :math:`T^{\text{opt}}_j` is drawn from
 a range [:varlink:`tempmax`--:varlink:`temprange`, :varlink:`tempmax`].
 
-.. [#Ae]     Corresponds to an activation energy of 35.725 kJ mol\ :sup:`--1` at 20°C.
-.. [#Exp1]   Corresponds to an activation energy of 28.023 kJ mol\ :sup:`--1` at 20°C.
-.. [#AeArr]  Corresponds to an activation energy of 33.257 kJ mol\ :sup:`--1` at 20°C.
-.. [#Ae4]    Corresponds to an activation energy of 31.314 kJ mol\ :sup:`--1` at 20°C.
+.. [#Ae]       Corresponds to an activation energy of 35.725 kJ mol\ :sup:`--1` at 20°C.
+.. [#Exp1]     Corresponds to an activation energy of 28.023 kJ mol\ :sup:`--1` at 20°C.
+.. [#AeArr]    Corresponds to an activation energy of 33.257 kJ mol\ :sup:`--1` at 20°C.
+.. [#AeArrMM]  Corresponds to an activation energy of 70.008 kJ mol\ :sup:`--1` at 20°C.
+.. [#Ae4]      Corresponds to an activation energy of 31.314 kJ mol\ :sup:`--1` at 20°C.
 
