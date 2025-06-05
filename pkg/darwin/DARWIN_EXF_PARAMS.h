@@ -375,6 +375,114 @@ C DINrunoff forcing parameters for exf
       _RL  DINrunoff_lat_inc(MAX_LAT_INC)
 #endif
 
+C NO3runoff forcing parameters for exf
+
+      _RL NO3runoffStartTime
+
+      COMMON/darwin_forcing_NO3runoff_c/
+     &    NO3runoffmask
+      COMMON/darwin_forcing_NO3runoff_i/
+     &    NO3runoffstartdate1, NO3runoffstartdate2
+      COMMON/darwin_forcing_NO3runoff_r/
+     &    NO3runoffStartTime,
+     &    NO3runoffperiod, NO3runoffRepCycle, NO3runoffconst,
+     &    NO3runoff_exfremo_intercept, NO3runoff_exfremo_slope,
+     &    darwin_inscal_NO3runoff
+      CHARACTER*1 NO3runoffmask
+      INTEGER NO3runoffstartdate1
+      INTEGER NO3runoffstartdate2
+      _RL NO3runoffperiod
+      _RL NO3runoffRepCycle
+      _RL NO3runoffconst
+      _RL NO3runoff_exfremo_intercept
+      _RL NO3runoff_exfremo_slope
+      _RL darwin_inscal_NO3runoff
+
+#ifdef USE_EXF_INTERPOLATION
+      COMMON/darwin_interp_NO3runoff_i/
+     &    NO3runoff_nlon, NO3runoff_nlat, NO3runoff_interpMethod
+      COMMON/darwin_interp_NO3runoff_r/
+     &    NO3runoff_lon0, NO3runoff_lat0, NO3runoff_lon_inc,
+     &    NO3runoff_lat_inc
+      INTEGER NO3runoff_interpMethod, NO3runoff_nlon, NO3runoff_nlat
+      _RL  NO3runoff_lon0
+      _RL  NO3runoff_lat0
+      _RL  NO3runoff_lon_inc
+      _RL  NO3runoff_lat_inc(MAX_LAT_INC)
+#endif
+
+C NO2runoff forcing parameters for exf
+
+      _RL NO2runoffStartTime
+
+      COMMON/darwin_forcing_NO2runoff_c/
+     &    NO2runoffmask
+      COMMON/darwin_forcing_NO2runoff_i/
+     &    NO2runoffstartdate1, NO2runoffstartdate2
+      COMMON/darwin_forcing_NO2runoff_r/
+     &    NO2runoffStartTime,
+     &    NO2runoffperiod, NO2runoffRepCycle, NO2runoffconst,
+     &    NO2runoff_exfremo_intercept, NO2runoff_exfremo_slope,
+     &    darwin_inscal_NO2runoff
+      CHARACTER*1 NO2runoffmask
+      INTEGER NO2runoffstartdate1
+      INTEGER NO2runoffstartdate2
+      _RL NO2runoffperiod
+      _RL NO2runoffRepCycle
+      _RL NO2runoffconst
+      _RL NO2runoff_exfremo_intercept
+      _RL NO2runoff_exfremo_slope
+      _RL darwin_inscal_NO2runoff
+
+#ifdef USE_EXF_INTERPOLATION
+      COMMON/darwin_interp_NO2runoff_i/
+     &    NO2runoff_nlon, NO2runoff_nlat, NO2runoff_interpMethod
+      COMMON/darwin_interp_NO2runoff_r/
+     &    NO2runoff_lon0, NO2runoff_lat0, NO2runoff_lon_inc,
+     &    NO2runoff_lat_inc
+      INTEGER NO2runoff_interpMethod, NO2runoff_nlon, NO2runoff_nlat
+      _RL  NO2runoff_lon0
+      _RL  NO2runoff_lat0
+      _RL  NO2runoff_lon_inc
+      _RL  NO2runoff_lat_inc(MAX_LAT_INC)
+#endif
+
+C NH4runoff forcing parameters for exf
+
+      _RL NH4runoffStartTime
+
+      COMMON/darwin_forcing_NH4runoff_c/
+     &    NH4runoffmask
+      COMMON/darwin_forcing_NH4runoff_i/
+     &    NH4runoffstartdate1, NH4runoffstartdate2
+      COMMON/darwin_forcing_NH4runoff_r/
+     &    NH4runoffStartTime,
+     &    NH4runoffperiod, NH4runoffRepCycle, NH4runoffconst,
+     &    NH4runoff_exfremo_intercept, NH4runoff_exfremo_slope,
+     &    darwin_inscal_NH4runoff
+      CHARACTER*1 NH4runoffmask
+      INTEGER NH4runoffstartdate1
+      INTEGER NH4runoffstartdate2
+      _RL NH4runoffperiod
+      _RL NH4runoffRepCycle
+      _RL NH4runoffconst
+      _RL NH4runoff_exfremo_intercept
+      _RL NH4runoff_exfremo_slope
+      _RL darwin_inscal_NH4runoff
+
+#ifdef USE_EXF_INTERPOLATION
+      COMMON/darwin_interp_NH4runoff_i/
+     &    NH4runoff_nlon, NH4runoff_nlat, NH4runoff_interpMethod
+      COMMON/darwin_interp_NH4runoff_r/
+     &    NH4runoff_lon0, NH4runoff_lat0, NH4runoff_lon_inc,
+     &    NH4runoff_lat_inc
+      INTEGER NH4runoff_interpMethod, NH4runoff_nlon, NH4runoff_nlat
+      _RL  NH4runoff_lon0
+      _RL  NH4runoff_lat0
+      _RL  NH4runoff_lon_inc
+      _RL  NH4runoff_lat_inc(MAX_LAT_INC)
+#endif
+
 C IPrunoff forcing parameters for exf
 
       _RL IPrunoffStartTime

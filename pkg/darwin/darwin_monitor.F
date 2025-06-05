@@ -136,6 +136,15 @@ C       Print some statistics about input forcing fields
         CALL MON_WRITESTATS_RL( 1, DINrunoff, 'DINrunoff',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 
+        CALL MON_WRITESTATS_RL( 1, NO3runoff, 'NO3runoff',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+
+        CALL MON_WRITESTATS_RL( 1, NO2runoff, 'NO2runoff',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+
+        CALL MON_WRITESTATS_RL( 1, NH4runoff, 'NH4runoff',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+
         CALL MON_WRITESTATS_RL( 1, IPrunoff, 'IPrunoff',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 

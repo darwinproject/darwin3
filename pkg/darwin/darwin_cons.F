@@ -492,6 +492,12 @@ C 2-d conservation corrections
      &                   *PTRACERS_dtLev(ks)*area
         tilerunoffN(bi,bj) = tilerunoffN(bi,bj) + DINrunoff(i,j,bi,bj)
      &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffN(bi,bj) = tilerunoffN(bi,bj) + NO3runoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffN(bi,bj) = tilerunoffN(bi,bj) + NO2runoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
+        tilerunoffN(bi,bj) = tilerunoffN(bi,bj) + NH4runoff(i,j,bi,bj)
+     &                   *PTRACERS_dtLev(ks)*area
         tilerunoffP(bi,bj) = tilerunoffP(bi,bj) + IPrunoff(i,j,bi,bj)
      &                   *PTRACERS_dtLev(ks)*area*R_DIP_IP_runoff
         tilerunoffSi(bi,bj)= tilerunoffSi(bi,bj)+ DSirunoff(i,j,bi,bj)
