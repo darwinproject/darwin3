@@ -1340,6 +1340,117 @@ C--   DINrunoff
       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
 
+C--   NO3runoff
+      IF ( NO3runofffile.NE.' ' ) THEN
+       CALL EXF_FLD_SUMMARY( 'NO3runoff forcing',
+     I      NO3runofffile, NO3runoffRepCycle, NO3runoffperiod,
+     I      NO3runoffStartTime, useExfYearlyFields, addBlkLn, myThid )
+#ifdef USE_EXF_INTERPOLATION
+       CALL EXF_PRINT_INTERP( 'NO3runoff',
+     &  NO3runoff_lon0, NO3runoff_lon_inc, NO3runoff_lat0, NO3runoff_lat
+     &_inc,
+     &  NO3runoff_nlon, NO3runoff_nlat, NO3runoff_interpMethod, myThid )
+#endif
+       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       CALL WRITE_0D_RL(NO3runoff_exfremo_intercept,INDEX_NONE,
+     &   'NO3runoff_exfremo_intercept =',
+     &   ' /* intercept for NO3runoff forcing mean removal */')
+       CALL WRITE_0D_RL(NO3runoff_exfremo_slope,INDEX_NONE,
+     &   'NO3runoff_exfremo_slope =',
+     &   ' /* slope for NO3runoff forcing trend removal */')
+       CALL WRITE_0D_RL(darwin_inscal_NO3runoff,INDEX_NONE,
+     &   'darwin_inscal_NO3runoff =',
+     &   ' /* scaling factor for NO3runoff fields */')
+      ELSE
+       CALL WRITE_0D_RL(NO3runoffconst,INDEX_NONE,
+     &   'NO3runoffconst =',
+     &   ' /* constant NO3runoff forcing */')
+      ENDIF
+
+      IF ( NO3runofffile.NE.' ' .OR. NO3runoffconst.NE.0 _d 0 ) THEN
+       CALL WRITE_0D_C(NO3runoffmask,-1,INDEX_NONE,
+     &   'NO3runoffmask =',
+     &   ' /* mask for NO3runoff forcing */')
+      ENDIF
+
+      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+
+C--   NO2runoff
+      IF ( NO2runofffile.NE.' ' ) THEN
+       CALL EXF_FLD_SUMMARY( 'NO2runoff forcing',
+     I      NO2runofffile, NO2runoffRepCycle, NO2runoffperiod,
+     I      NO2runoffStartTime, useExfYearlyFields, addBlkLn, myThid )
+#ifdef USE_EXF_INTERPOLATION
+       CALL EXF_PRINT_INTERP( 'NO2runoff',
+     &  NO2runoff_lon0, NO2runoff_lon_inc, NO2runoff_lat0, NO2runoff_lat
+     &_inc,
+     &  NO2runoff_nlon, NO2runoff_nlat, NO2runoff_interpMethod, myThid )
+#endif
+       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       CALL WRITE_0D_RL(NO2runoff_exfremo_intercept,INDEX_NONE,
+     &   'NO2runoff_exfremo_intercept =',
+     &   ' /* intercept for NO2runoff forcing mean removal */')
+       CALL WRITE_0D_RL(NO2runoff_exfremo_slope,INDEX_NONE,
+     &   'NO2runoff_exfremo_slope =',
+     &   ' /* slope for NO2runoff forcing trend removal */')
+       CALL WRITE_0D_RL(darwin_inscal_NO2runoff,INDEX_NONE,
+     &   'darwin_inscal_NO2runoff =',
+     &   ' /* scaling factor for NO2runoff fields */')
+      ELSE
+       CALL WRITE_0D_RL(NO2runoffconst,INDEX_NONE,
+     &   'NO2runoffconst =',
+     &   ' /* constant NO2runoff forcing */')
+      ENDIF
+
+      IF ( NO2runofffile.NE.' ' .OR. NO2runoffconst.NE.0 _d 0 ) THEN
+       CALL WRITE_0D_C(NO2runoffmask,-1,INDEX_NONE,
+     &   'NO2runoffmask =',
+     &   ' /* mask for NO2runoff forcing */')
+      ENDIF
+
+      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+
+C--   NH4runoff
+      IF ( NH4runofffile.NE.' ' ) THEN
+       CALL EXF_FLD_SUMMARY( 'NH4runoff forcing',
+     I      NH4runofffile, NH4runoffRepCycle, NH4runoffperiod,
+     I      NH4runoffStartTime, useExfYearlyFields, addBlkLn, myThid )
+#ifdef USE_EXF_INTERPOLATION
+       CALL EXF_PRINT_INTERP( 'NH4runoff',
+     &  NH4runoff_lon0, NH4runoff_lon_inc, NH4runoff_lat0, NH4runoff_lat
+     &_inc,
+     &  NH4runoff_nlon, NH4runoff_nlat, NH4runoff_interpMethod, myThid )
+#endif
+       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       CALL WRITE_0D_RL(NH4runoff_exfremo_intercept,INDEX_NONE,
+     &   'NH4runoff_exfremo_intercept =',
+     &   ' /* intercept for NH4runoff forcing mean removal */')
+       CALL WRITE_0D_RL(NH4runoff_exfremo_slope,INDEX_NONE,
+     &   'NH4runoff_exfremo_slope =',
+     &   ' /* slope for NH4runoff forcing trend removal */')
+       CALL WRITE_0D_RL(darwin_inscal_NH4runoff,INDEX_NONE,
+     &   'darwin_inscal_NH4runoff =',
+     &   ' /* scaling factor for NH4runoff fields */')
+      ELSE
+       CALL WRITE_0D_RL(NH4runoffconst,INDEX_NONE,
+     &   'NH4runoffconst =',
+     &   ' /* constant NH4runoff forcing */')
+      ENDIF
+
+      IF ( NH4runofffile.NE.' ' .OR. NH4runoffconst.NE.0 _d 0 ) THEN
+       CALL WRITE_0D_C(NH4runoffmask,-1,INDEX_NONE,
+     &   'NH4runoffmask =',
+     &   ' /* mask for NH4runoff forcing */')
+      ENDIF
+
+      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+
 C--   IPrunoff
       IF ( IPrunofffile.NE.' ' ) THEN
        CALL EXF_FLD_SUMMARY( 'IPrunoff forcing',

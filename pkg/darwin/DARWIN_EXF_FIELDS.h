@@ -23,6 +23,9 @@ C     ventHe3file   :: file with He3 flux from hydrothermal vents (mmol He/m2/s)
      &    DONrunofffile,
      &    DOPrunofffile,
      &    DINrunofffile,
+     &    NO3runofffile,
+     &    NO2runofffile,
+     &    NH4runofffile,
      &    IPrunofffile,
      &    DSirunofffile,
      &    POCrunofffile,
@@ -40,6 +43,9 @@ C     ventHe3file   :: file with He3 flux from hydrothermal vents (mmol He/m2/s)
       CHARACTER*128 DONrunofffile
       CHARACTER*128 DOPrunofffile
       CHARACTER*128 DINrunofffile
+      CHARACTER*128 NO3runofffile
+      CHARACTER*128 NO2runofffile
+      CHARACTER*128 NH4runofffile
       CHARACTER*128 IPrunofffile
       CHARACTER*128 DSirunofffile
       CHARACTER*128 POCrunofffile
@@ -60,6 +66,9 @@ C     ventHe3   :: He3 flux from hydrothermal vents (mmol He/m2/s)
      &    DONrunoff0, DONrunoff1, DONrunoff,
      &    DOPrunoff0, DOPrunoff1, DOPrunoff,
      &    DINrunoff0, DINrunoff1, DINrunoff,
+     &    NO3runoff0, NO3runoff1, NO3runoff,
+     &    NO2runoff0, NO2runoff1, NO2runoff,
+     &    NH4runoff0, NH4runoff1, NH4runoff,
      &    IPrunoff0, IPrunoff1, IPrunoff,
      &    DSirunoff0, DSirunoff1, DSirunoff,
      &    POCrunoff0, POCrunoff1, POCrunoff,
@@ -106,6 +115,18 @@ C     ventHe3   :: He3 flux from hydrothermal vents (mmol He/m2/s)
       _RL DINrunoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL DINrunoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL DINrunoff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      _RL NO3runoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NO3runoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NO3runoff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      _RL NO2runoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NO2runoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NO2runoff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      _RL NH4runoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NH4runoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NH4runoff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL IPrunoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL IPrunoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
