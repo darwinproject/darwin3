@@ -158,6 +158,42 @@ C     these load constant forcing fields
      &     mythid )
 
       call exf_init_fld (
+     &     'NO3runoff', NO3runofffile, NO3runoffmask,
+     &     NO3runoffperiod, darwin_inscal_NO3runoff, NO3runoffconst,
+     &     NO3runoff, NO3runoff0, NO3runoff1,
+#ifdef USE_EXF_INTERPOLATION
+     &     NO3runoff_lon0, NO3runoff_lon_inc,
+     &     NO3runoff_lat0, NO3runoff_lat_inc,
+     &     NO3runoff_nlon, NO3runoff_nlat, xC, yC,
+     &     NO3runoff_interpMethod,
+#endif
+     &     mythid )
+
+      call exf_init_fld (
+     &     'NO2runoff', NO2runofffile, NO2runoffmask,
+     &     NO2runoffperiod, darwin_inscal_NO2runoff, NO2runoffconst,
+     &     NO2runoff, NO2runoff0, NO2runoff1,
+#ifdef USE_EXF_INTERPOLATION
+     &     NO2runoff_lon0, NO2runoff_lon_inc,
+     &     NO2runoff_lat0, NO2runoff_lat_inc,
+     &     NO2runoff_nlon, NO2runoff_nlat, xC, yC,
+     &     NO2runoff_interpMethod,
+#endif
+     &     mythid )
+
+      call exf_init_fld (
+     &     'NH4runoff', NH4runofffile, NH4runoffmask,
+     &     NH4runoffperiod, darwin_inscal_NH4runoff, NH4runoffconst,
+     &     NH4runoff, NH4runoff0, NH4runoff1,
+#ifdef USE_EXF_INTERPOLATION
+     &     NH4runoff_lon0, NH4runoff_lon_inc,
+     &     NH4runoff_lat0, NH4runoff_lat_inc,
+     &     NH4runoff_nlon, NH4runoff_nlat, xC, yC,
+     &     NH4runoff_interpMethod,
+#endif
+     &     mythid )
+
+      call exf_init_fld (
      &     'IPrunoff', IPrunofffile, IPrunoffmask,
      &     IPrunoffperiod, darwin_inscal_IPrunoff, IPrunoffconst,
      &     IPrunoff, IPrunoff0, IPrunoff1,
@@ -374,6 +410,48 @@ C       (usually done in darwin_fields_load, but may be needed for chl)
      &     starttime, nIter0, mythid )
 
         call exf_set_fld(
+     &     'NO3runoff', NO3runofffile, NO3runoffmask,
+     &     NO3runoffStartTime, NO3runoffperiod, NO3runoffRepCycle,
+     &     darwin_inscal_NO3runoff,
+     &     NO3runoff_exfremo_intercept, NO3runoff_exfremo_slope,
+     &     NO3runoff, NO3runoff0, NO3runoff1,
+#ifdef USE_EXF_INTERPOLATION
+     &     NO3runoff_lon0, NO3runoff_lon_inc,
+     &     NO3runoff_lat0, NO3runoff_lat_inc,
+     &     NO3runoff_nlon, NO3runoff_nlat, xC, yC,
+     &     NO3runoff_interpMethod,
+#endif
+     &     starttime, nIter0, mythid )
+
+        call exf_set_fld(
+     &     'NO2runoff', NO2runofffile, NO2runoffmask,
+     &     NO2runoffStartTime, NO2runoffperiod, NO2runoffRepCycle,
+     &     darwin_inscal_NO2runoff,
+     &     NO2runoff_exfremo_intercept, NO2runoff_exfremo_slope,
+     &     NO2runoff, NO2runoff0, NO2runoff1,
+#ifdef USE_EXF_INTERPOLATION
+     &     NO2runoff_lon0, NO2runoff_lon_inc,
+     &     NO2runoff_lat0, NO2runoff_lat_inc,
+     &     NO2runoff_nlon, NO2runoff_nlat, xC, yC,
+     &     NO2runoff_interpMethod,
+#endif
+     &     starttime, nIter0, mythid )
+
+        call exf_set_fld(
+     &     'NH4runoff', NH4runofffile, NH4runoffmask,
+     &     NH4runoffStartTime, NH4runoffperiod, NH4runoffRepCycle,
+     &     darwin_inscal_NH4runoff,
+     &     NH4runoff_exfremo_intercept, NH4runoff_exfremo_slope,
+     &     NH4runoff, NH4runoff0, NH4runoff1,
+#ifdef USE_EXF_INTERPOLATION
+     &     NH4runoff_lon0, NH4runoff_lon_inc,
+     &     NH4runoff_lat0, NH4runoff_lat_inc,
+     &     NH4runoff_nlon, NH4runoff_nlat, xC, yC,
+     &     NH4runoff_interpMethod,
+#endif
+     &     starttime, nIter0, mythid )
+
+        call exf_set_fld(
      &     'IPrunoff', IPrunofffile, IPrunoffmask,
      &     IPrunoffStartTime, IPrunoffperiod, IPrunoffRepCycle,
      &     darwin_inscal_IPrunoff,
@@ -467,6 +545,9 @@ C       (usually done in darwin_fields_load, but may be needed for chl)
         _EXCH_XY_RL( DONrunoff, myThid )
         _EXCH_XY_RL( DOPrunoff, myThid )
         _EXCH_XY_RL( DINrunoff, myThid )
+        _EXCH_XY_RL( NO3runoff, myThid )
+        _EXCH_XY_RL( NO2runoff, myThid )
+        _EXCH_XY_RL( NH4runoff, myThid )
         _EXCH_XY_RL( IPrunoff, myThid )
         _EXCH_XY_RL( DSirunoff, myThid )
         _EXCH_XY_RL( POCrunoff, myThid )
