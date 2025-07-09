@@ -585,8 +585,8 @@ C     but base on prey volume, so assumed 10:1 predator:prey radius ratio
       b_ksatDVM = 0.0 _d 0        ! assume not size dependent
       a_ksatPARDVM = 0.46 _d 0    ! K_irr in Bianchi etal 2013
       b_ksatPARDVM = 0.0 _d 0     ! assume no size dependence
-      a_fracPARmort = 0.9         ! from Bianchi et al.
-      b_fracPARmort = 0.0         ! assume no size dependence
+      a_fracPARmort = 0.9 _d 0    ! from Bianchi et al.
+      b_fracPARmort = 0.0 _d 0    ! assume no size dependence
       a_ExportFracDVM = 0.5 _d 0  ! no size dependence
 
       READ(UNIT=iUnit, NML=DARWIN_TRAIT_PARAMS)
