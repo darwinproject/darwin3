@@ -33,6 +33,7 @@ ecosystem model is split over a number of pages:
    darwin_bacteria
    darwin_temperature
    darwin_sink
+   darwin_dvm
    darwin_cons
    darwin_changes
 
