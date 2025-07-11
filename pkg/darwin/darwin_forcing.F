@@ -143,6 +143,13 @@ C     Dependent variables for sediment flux for validation
       _RL ptr(nDarwin), gtr(nDarwin), PARl(nlam)
       _RL chlout(nPhoto)
       _RL diagsl(darwin_nDiag)
+      _RL sumpreyl(nplank)
+      _RL sumprey(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nplank)
+      _RL bioswimDVMup(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nplank)
+      _RL bioswimDVMdn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nplank)
+      _RL SwDr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nplank)
+      INTEGER max_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nplank)
+      _RL sumPAR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL photoTempFunc(nplank)
       _RL hetTempFunc(nplank)
       _RL grazTempFunc(nplank)
@@ -662,7 +669,7 @@ C-      default (face fit into global-IO-array)
         CALL DARWIN_PLANKTON(
      I                 ptr,
      U                 gtr,
-     O                 chlout, diagsl,
+     O                 chlout, diagsl, sumpreyl,
      I                 PARl, photoTempFunc,
      I                 hetTempFunc,
      I                 grazTempFunc,
@@ -675,6 +682,9 @@ C-      default (face fit into global-IO-array)
         DO l=1,darwin_nDiag
          diags(i, j, k, l) = diagsl(l)
         ENDDO
+
+        sumprey(i,j,k,:) = sumpreyl
+
 #ifdef DARWIN_ALLOW_CONS
         DARWIN_Nfix(i,j,k,bi,bj)   = DARWIN_Nfix(i,j,k,bi,bj)
      &                             + dTsub(k)*diagsl(iNfix)
@@ -707,7 +717,109 @@ C-      default (face fit into global-IO-array)
        enddo
       enddo
       enddo
+
       CALL TIMER_STOP('DARWIN_PLANKTON [DARWIN_FORCING]',myThid)
+
+C === DVM ==============================================================
+
+      CALL TIMER_START('DARWIN_DVM [DARWIN_FORCING]',myThid)
+
+#ifdef DARWIN_ALLOW_DVM
+C Find DVM swim direction to go to max food availablity
+      max_loc = MAXLOC(sumprey, DIM=3)
+      DO iTr=1,nplank
+       DO k=1,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          IF (k.LT.max_loc(i,j,iTr)) THEN
+           SwDr(i,j,k,iTr) = -1 _d 0
+          ELSEIF (k.GT.max_loc(i,j,iTr)) THEN
+           SwDr(i,j,k,iTr) = 1 _d 0
+          ELSE
+           SwDr(i,j,k,iTr) = 0 _d 0
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+C Find DVM swim direction based on light and max food availability
+C Day
+C If PAR at top >0 (or above some level in future),
+C swim down (toward PARpref)
+C If PAR at top >0 and PARtot < PARpref, swim up
+C If PAR at top >0 and PARtot = PARpref, no swim
+
+C Night--see logic in SwDr above
+C If PAR at top 0 (or below some light level in future),
+C and prey available at that depth < food max, swim toward food max
+C If PAR at top 0 (or below some light level in future),
+C and prey available at that depth = food max, don't swim; stay put
+
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         sumPAR(i,j,k) = 0 _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+      DO l=1,nlam
+       DO k=1,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          sumPAR(i,j,k) = sumPAR(i,j,k) + PAR(i,j,k,l)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      DO iTr=1,nplank
+       DO k=1,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          IF (sumPAR(i,j,1) .GT. 0) THEN
+C          day
+           IF (sumPAR(i,j,k) .GT. PARpref(iTr)) THEN
+              bioswimDVMup(i,j,k,iTr) = 0 _d 0
+              bioswimDVMdn(i,j,k,iTr) = bioswimDVM(iTr)
+           ELSEIF (sumPAR(i,j,k). LT. PARpref(iTr)) THEN
+              bioswimDVMup(i,j,k,iTr) = bioswimDVM(iTr)
+              bioswimDVMdn(i,j,k,iTr) = 0 _d 0
+           ELSEIF (sumPAR(i,j,k) .EQ. PARpref(iTr)) THEN
+              bioswimDVMup(i,j,k,iTr) = 0 _d 0
+              bioswimDVMdn(i,j,k,iTr) = 0 _d 0
+           ENDIF
+          ELSE
+C          night
+           IF (SwDr(i,j,k,iTr) .GT. 0.0) THEN
+               bioswimDVMup(i,j,k,iTr) = bioswimDVM(iTr)
+               bioswimDVMdn(i,j,k,iTr) = 0 _d 0
+           ELSEIF (SwDr(i,j,k,iTr) .EQ. 0.0) THEN
+               bioswimDVMup(i,j,k,iTr) = 0 _d 0
+               bioswimDVMdn(i,j,k,iTr) = 0 _d 0
+           ELSE
+               bioswimDVMup(i,j,k,iTr) = 0 _d 0
+               bioswimDVMdn(i,j,k,iTr) = bioswimDVM(iTr)
+           ENDIF
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#else /* DARWIN_ALLOW_DVM */
+      DO iTr=1,nplank
+       DO k=1,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          bioswimDVMup(i,j,k,iTr) = 0 _d 0
+          bioswimDVMdn(i,j,k,iTr) = 0 _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* DARWIN_ALLOW_DVM */
+
+      CALL TIMER_STOP('DARWIN_DVM [DARWIN_FORCING]',myThid)
 
 C === pre-sinking diags ================================================
 #ifdef ALLOW_DIAGNOSTICS
@@ -1015,8 +1127,9 @@ C     and rescale for nonlinear free surface if appropriate
 
 C === sinking ==========================================================
       CALL TIMER_START('DARWIN_SINKING [DARWIN_FORCING]',myThid)
-      CALL DARWIN_SINKING( Ptracer,gPtr,dTsub,bi,bj,iMin,iMax,jMin,jMax,
-     &                  subTime,myIter,myThid )
+      CALL DARWIN_SINKING( Ptracer,bioswimDVMup,bioswimDVMdn,
+     &                     gPtr,dTsub,bi,bj,
+     &                     iMin,iMax,jMin,jMax,subTime,myIter,myThid )
       CALL TIMER_STOP ('DARWIN_SINKING [DARWIN_FORCING]',myThid)
 
 C === apply tendencies to tracers ======================================

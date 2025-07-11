@@ -6,7 +6,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE DARWIN_PLANKTON(
      I     Ptr,
      U     gTr,
-     O     chlout, diags,
+     O     chlout, diags, sumprey,
      I     PAR, photoTempFunc, hetTempFunc, grazTempFunc, reminTempFunc,
      I     mortTempFunc, mort2TempFunc, uptakeTempFunc,
      I     omegaCl,
@@ -52,9 +52,12 @@ C  gTr    :: accumulates computed tendencies
       _RL gTr(nDarwin)
 
 C !OUTPUT PARAMETERS: ==================================================
-C  chlout :: computed acclimated chlorophyll if not dynamic
+C  chlout  :: computed acclimated chlorophyll if not dynamic
+C  diags   :: pass diagnostics back to darwin_forcing
+C  sumprey :: pass total prey per zoo back for DVM
       _RL chlout(nPhoto)
       _RL diags(darwin_nDiag)
+      _RL sumprey(nplank)
 CEOP
 
 #ifdef ALLOW_DARWIN
@@ -252,7 +255,7 @@ c !LOCAL VARIABLES: ====================================================
 
 C for grazing
 
-      _RL sumprey, sumpref, grazphy
+      _RL sumpref, grazphy
 
       _RL preygraz   (nplank)
       _RL preygrazexp(nplank)
@@ -303,6 +306,17 @@ C for grazing
 #ifdef DARWIN_ALLOW_CDOM
       _RL graz2CDOM, exude_CDOM
 #endif
+
+      _RL mortDVM_c
+      _RL mortDVM_DOC
+      _RL mortDVM_DON
+      _RL mortDVM_DOP
+      _RL mortDVM_DOFe
+      _RL mortDVM_POC
+      _RL mortDVM_PON
+      _RL mortDVM_POP
+      _RL mortDVM_POFe
+      _RL mortDVM_POSi
 
       _RL DARWIN_EPS
       PARAMETER(DARWIN_EPS=1 _d -38)
@@ -439,6 +453,7 @@ C==== Initialize accumulators ==========================================
       prodNO2 = 0.0
       prodNO3 = 0.0
       respir = 0.0 _d 0
+
 #ifdef DARWIN_ALLOW_CSTORE
       excC = 0.0
 #endif
@@ -1267,6 +1282,7 @@ C==== Grazing ==========================================================
        preygrazexp(j) = 0.0
        grazrate(j)  = 0.0
        predgrazc(j)  = 0.0
+       sumprey(j) = 0.0
 #ifdef DARWIN_ALLOW_NQUOTA
        predgrazn(j)  = 0.0
 #endif
@@ -1319,11 +1335,10 @@ C       regulate grazing near full quota
 #endif
         regQc = regQc**hillnumGraz
 
-        sumprey = 0.0
         sumpref = 0.0
         DO jp = 1, nplank
         IF (palat(jp,jz).NE.0 _d 0) THEN
-         sumprey = sumprey + palat(jp,jz)*X(jp)
+         sumprey(jz) = sumprey(jz) + palat(jp,jz)*X(jp)
 #ifdef DARWIN_GRAZING_SWITCH
          sumpref = sumpref + palat(jp,jz)*palat(jp,jz)*X(jp)*X(jp)
 #else
@@ -1331,11 +1346,12 @@ C       regulate grazing near full quota
 #endif
         ENDIF
         ENDDO
-        sumprey = MAX(0 _d 0, sumprey - phygrazmin)
+        sumprey(jz) = MAX(0 _d 0, sumprey(jz) - phygrazmin)
         sumpref = MAX(phygrazmin, sumpref)
         tmp = grazemax(jz)*grazTempFunc(jz)**tempGraz(jz)*
-     &    (sumprey**hollexp/(sumprey**hollexp+kgrazesat(jz)**hollexp))*
-     &    (1.0 - EXP(-inhib_graz*sumprey))**inhib_graz_exp
+     &    (sumprey(jz)**hollexp/
+     &     (sumprey(jz)**hollexp + kgrazesat(jz)**hollexp))*
+     &    (1.0 - EXP(-inhib_graz*sumprey(jz)))**inhib_graz_exp
 
         predexpc  = 0.0 _d 0
         predexpn  = 0.0 _d 0
@@ -1535,6 +1551,15 @@ C==== Mortality and parameterized exudation ============================
       respirP    = 0.0 _d 0
       respirFe   = 0.0 _d 0
       respirSi   = 0.0 _d 0
+      mortDVM_DOC = 0.0 _d 0
+      mortDVM_DON = 0.0 _d 0
+      mortDVM_DOP = 0.0 _d 0
+      mortDVM_DOFe = 0.0 _d 0
+      mortDVM_POC = 0.0 _d 0
+      mortDVM_PON = 0.0 _d 0
+      mortDVM_POP = 0.0 _d 0
+      mortDVM_POFe = 0.0 _d 0
+      mortDVM_POSi = 0.0 _d 0
 
       DO jp = 1, nplank
         Xe = MAX(0 _d 0, X(jp) - Xmin(jp))
@@ -1651,6 +1676,53 @@ C to DIC as if it had never been synthesized.
         gTr(ife+jp-1)=gTr(ife+jp-1) - kexcfe(jp)*Xe*Qfe(jp)
 #endif
 #endif
+
+C====== Light-dependent mortality from DVM ====
+
+#ifdef DARWIN_ALLOW_DVM
+       IF (isPred(jp) .EQ. 1) THEN
+        mortDVM_c = mortmaxDVM(jp)*Xe/(ksatDVM(jp)+Xe)*
+     &      ( 1 _d 0 - fracPARmort(jp) +
+     &        fracPARmort(jp)
+     &        *(PARtot/
+     &          ((ksatDVM(jp)/(ksatDVM(jp)+Xe))*ksatPARDVM(jp) + PARtot)
+     &         )
+     &      )*Xe
+
+        gTr(ic+jp-1)=gTr(ic+jp-1) - mortDVM_c
+# ifdef DARWIN_ALLOW_NQUOTA
+        gTr(in+jp-1)=gTr(in+jp-1) - mortDVM_c*Qn(jp)
+# endif
+# ifdef DARWIN_ALLOW_PQUOTA
+        gTr(ip+jp-1)=gTr(ip+jp-1) - mortDVM_c*Qp(jp)
+# endif
+# ifdef DARWIN_ALLOW_SIQUOTA
+        gTr(isi+jp-1)=gTr(isi+jp-1) - mortDVM_c*Qsi(jp)
+# endif
+# ifdef DARWIN_ALLOW_FEQUOTA
+        gTr(ife+jp-1)=gTr(ife+jp-1) - mortDVM_c*Qfe(jp)
+# endif
+
+        mortDVM_DOC = mortDVM_DOC + (1.-ExportFracDVM(jp))*mortDVM_c
+        mortDVM_POC = mortDVM_POC + ExportFracDVM(jp)*mortDVM_c
+
+        mortDVM_DON =
+     &  mortDVM_DON + (1.-ExportFracDVM(jp))*mortDVM_c*Qn(jp)
+        mortDVM_PON =
+     &  mortDVM_PON + ExportFracDVM(jp)*mortDVM_c*Qn(jp)
+        mortDVM_DOP =
+     &  mortDVM_DOP + (1.-ExportFracDVM(jp))*mortDVM_c*Qp(jp)
+        mortDVM_POP =
+     &  mortDVM_POP + ExportFracDVM(jp)*mortDVM_c*Qp(jp)
+        mortDVM_DOFe =
+     &  mortDVM_DOFe + (1.-ExportFracDVM(jp))*mortDVM_c*Qfe(jp)
+        mortDVM_POFe =
+     &  mortDVM_POFe + ExportFracDVM(jp)*mortDVM_c*Qfe(jp)
+        mortDVM_POSi =
+     &  mortDVM_POSi + mortDVM_c*Qsi(jp)
+       ENDIF
+#endif /* DARWIN_ALLOW_DVM */
+
       ENDDO
 
 #ifdef DARWIN_ALLOW_CHLQUOTA
@@ -1680,17 +1752,17 @@ C to DIC as if it had never been synthesized.
 
       diags(iRespirDIC) = respir
 
-      gTr(iDOC )=gTr(iDOC ) + exude_DOC
-      gTr(iDON )=gTr(iDON ) + exude_DON
-      gTr(iDOP )=gTr(iDOP ) + exude_DOP
-      gTr(iDOFe)=gTr(iDOFe) + exude_DOFe
+      gTr(iDOC )=gTr(iDOC ) + exude_DOC + mortDVM_DOC
+      gTr(iDON )=gTr(iDON ) + exude_DON + mortDVM_DON
+      gTr(iDOP )=gTr(iDOP ) + exude_DOP + mortDVM_DOP
+      gTr(iDOFe)=gTr(iDOFe) + exude_DOFe + mortDVM_DOFe
 
       gTr(iPIC )=gTr(iPIC ) + exude_PIC
-      gTr(iPOC )=gTr(iPOC ) + exude_POC
-      gTr(iPON )=gTr(iPON ) + exude_PON
-      gTr(iPOP )=gTr(iPOP ) + exude_POP
-      gTr(iPOSi)=gTr(iPOSi) + exude_POSi
-      gTr(iPOFe)=gTr(iPOFe) + exude_POFe
+      gTr(iPOC )=gTr(iPOC ) + exude_POC + mortDVM_POC
+      gTr(iPON )=gTr(iPON ) + exude_PON + mortDVM_PON
+      gTr(iPOP )=gTr(iPOP ) + exude_POP + mortDVM_POP
+      gTr(iPOSi)=gTr(iPOSi) + exude_POSi + mortDVM_POSi
+      gTr(iPOFe)=gTr(iPOFe) + exude_POFe + mortDVM_POFe
 #ifdef DARWIN_ALLOW_CDOM
 # ifdef DARWIN_CDOM_UNITS_CARBON
       exude_CDOM = fracCDOM*exude_DOC

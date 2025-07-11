@@ -376,6 +376,8 @@ C
      &    a_bioswim,
      &    a_bioswim_denom,
      &    b_bioswim,
+     &    a_bioswimDVM,
+     &    b_bioswimDVM,
      &    a_ppSig,
      &    a_ppOpt,
      &    b_ppOpt,
@@ -450,7 +452,18 @@ C
      &    a_kexcFe,
      &    b_kexcFe,
      &    grp_ExportFracPreyPred,
-     &    grp_ass_eff
+     &    grp_ass_eff,
+     &    a_PARpref,
+     &    b_PARpref,
+     &    a_mortmaxDVM,
+     &    b_mortmaxDVM,
+     &    a_ksatDVM,
+     &    b_ksatDVM,
+     &    a_ksatPARDVM,
+     &    b_ksatPARDVM,
+     &    a_fracPARmort,
+     &    b_fracPARmort,
+     &    a_ExportFracDVM
       _RL logvolbase
       _RL logvolinc
       _RL biovol0(nGroup)
@@ -508,6 +521,8 @@ C
       _RL a_bioswim(nGroup)
       _RL a_bioswim_denom(nGroup)
       _RL b_bioswim(nGroup)
+      _RL a_bioswimDVM(nGroup)
+      _RL b_bioswimDVM(nGroup)
       _RL a_ppSig(nGroup)
       _RL a_ppOpt(nGroup)
       _RL b_ppOpt(nGroup)
@@ -583,6 +598,17 @@ C
       _RL b_kexcFe(nGroup)
       _RL grp_ExportFracPreyPred(nGroup,nGroup)
       _RL grp_ass_eff(nGroup,nGroup)
+      _RL a_PARpref(nGroup)
+      _RL b_PARpref(nGroup)
+      _RL a_mortmaxDVM(nGroup)
+      _RL b_mortmaxDVM(nGroup)
+      _RL a_ksatDVM(nGroup)
+      _RL b_ksatDVM(nGroup)
+      _RL a_ksatPARDVM(nGroup)
+      _RL b_ksatPARDVM(nGroup)
+      _RL a_fracPARmort(nGroup)
+      _RL b_fracPARmort(nGroup)
+      _RL a_ExportFracDVM(nGroup)
 
 #endif /* ALLOW_DARWIN */
 

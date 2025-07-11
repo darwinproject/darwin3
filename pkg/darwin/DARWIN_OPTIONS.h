@@ -84,6 +84,9 @@ C CDOM is in carbon units and follows POC
 C include code for reading nutrient runoff from files
 #undef  DARWIN_NUTRIENT_RUNOFF
 
+C include diel vertical migration code
+#undef  DARWIN_ALLOW_DVM
+
 
 C light
 
