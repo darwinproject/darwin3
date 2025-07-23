@@ -5,6 +5,8 @@
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
 #ifdef ALLOW_RADTRANS
 #include "RADTRANS_SIZE.h"
 #endif
@@ -441,7 +443,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       darwin_linFSConserve = .FALSE.
       darwin_read_phos = .FALSE.
       darwin_chlInitBalanced = .FALSE.
-      darwin_chlIter0 = 0
+      darwin_chlIter0 = UNSET_I
       katten_w = 4. _d -2
       katten_chl = 4. _d -2
       parfrac = 0.4 _d 0
@@ -671,6 +673,8 @@ C-    set parameter default values
       IF ( selectK1K2const.EQ.UNSET_I ) selectK1K2const = 1
       IF ( selectPHsolver .EQ.UNSET_I ) selectPHsolver  = 0
 #endif
+
+      IF ( darwin_chlIter0.EQ.UNSET_I ) darwin_chlIter0 = PTRACERS_Iter0
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Print out parameter values :
