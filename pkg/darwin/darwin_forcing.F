@@ -157,6 +157,7 @@ C     Dependent variables for sediment flux for validation
       _RL mortTempFunc
       _RL mort2TempFunc
       _RL uptakeTempFunc
+      _RL macromolTempFunc
       _RL omegaCl
       _RL tmp, tmpFac
       _RL sedFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -515,7 +516,7 @@ C     iron sediment source (in bottom grid cell above kMaxFeSed)
         IF (k .GE. kMinFeSed .AND. k .LE. kMaxFeSed) THEN
 #ifdef DARWIN_IRON_SED_SOURCE_VARIABLE
 # ifdef DARWIN_IRON_SED_SOURCE_POP
-C         mask is needed to make sure k-1 isn't an ice shelf
+C         mask is needed to make sure k-1 is not an ice shelf
           flx = fesedflux_pcm*wp_sink*R_CP_fesed*
      &            MAX(0 _d 0, Ptracer(i,j,k-1,bi,bj,iPOP))
      &            *maskC(i,j,k-1,bi,bj)
@@ -653,7 +654,7 @@ C-      default (face fit into global-IO-array)
         CALL DARWIN_TEMPFUNC(Theta(i,j,k,bi,bj),
      &         photoTempFunc, hetTempFunc, grazTempFunc,
      &         reminTempFunc, mortTempFunc, mort2TempFunc,
-     &         uptakeTempFunc, myThid)
+     &         uptakeTempFunc, macromolTempFunc, myThid)
         DO iTr=1,nDarwin
          ptr(iTr) = Ptracer(i, j, k, bi, bj, iTr)
          gtr(iTr) = gPtr(i, j, k, iTr)
@@ -675,7 +676,7 @@ C-      default (face fit into global-IO-array)
      I                 grazTempFunc,
      I                 reminTempFunc,
      I                 mortTempFunc, mort2TempFunc,
-     I                 uptakeTempFunc,
+     I                 uptakeTempFunc, macromolTempFunc,
      I                 omegaCl,
      I                 k_debug,
      I                 subTime, myIter, myThid )
@@ -1371,6 +1372,91 @@ C      diags(iCons*) for convenience
         CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,ilimS+iTr-1),
      &        diagname,0,Nr,2,bi,bj,myThid)
        ENDDO
+# ifdef DARWIN_MACROMOLECULAR_GROWTH
+       DO iTr=1,nPhoto
+        WRITE(diagname, '(A,I4.4)') 'PChl', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPChl+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'VN', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iVN+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'VP', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iVP+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'MODE', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iMODE+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'Fe_C', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iFe_C+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'exQc', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iexQc+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'CChl', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iCChl+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'NChl', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iNChl+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'NPho', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iNPho+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'NSyn', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iNSyn+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'NPrn', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iNPrn+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'NRNA', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iNRNA+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'NDNA', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iNDNA+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'NSTO', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iNSTO+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'NEXC', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iNEXC+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'PRNA', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPRNA+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'PDNA', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPDNA+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'PTHY', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPTHY+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'PCON', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPCON+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'PSTO', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPSTO+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'PEXC', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iPEXC+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'FPHO', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iFPHO+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'FSTO', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iFSTO+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'FEXC', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iFEXC+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'Y_RQ', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iY_RQ+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'limC', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,ilimC+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+        WRITE(diagname, '(A,I4.4)') 'limL', iTr
+        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,ilimL+iTr-1),diagname,
+     &          0,Nr,2,bi,bj,myThid)
+       ENDDO
+# endif
 #endif
 #ifdef DARWIN_ALLOW_CSTORE
 #ifdef DARWIN_ALLOW_CSTORE_DIAGS
