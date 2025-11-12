@@ -151,6 +151,10 @@ c !LOCAL VARIABLES: ====================================================
       _RL consumPO4
       _RL consumSiO2
       _RL consumFeT
+      _RL fIph_sum
+      _RL fTph_sum
+      _RL fnut_sum
+      _RL X_photo
 
       _RL uptakePON
       _RL uptakePOP
@@ -453,6 +457,10 @@ C==== Initialize accumulators ==========================================
       prodNO2 = 0.0
       prodNO3 = 0.0
       respir = 0.0 _d 0
+      fIph_sum = 0.0 _d 0
+      fTph_sum = 0.0 _d 0
+      fnut_sum = 0.0 _d 0
+      X_photo = 0.0 _d 0
 
 #ifdef DARWIN_ALLOW_CSTORE
       excC = 0.0
@@ -834,8 +842,11 @@ C  which nutrient is limiting growth?
         IF (limitnut==limitsi) diags(ilimS+j-1) = 1 _d 0
 C factors that go into growth equation
         diags(ifIph+j-1) = limitI
+        fIph_sum = fIph_sum + limitI * X(j)
         diags(ifTph+j-1) = photoTempFunc(j)
+        fTph_sum = fTph_sum + photoTempFunc(j) * X(j)
         diags(ifnut+j-1) = limitnut
+        fnut_sum = fnut_sum + limitnut * X(j)
 #endif
         IF (diazo(j) .GT. 0.0 _d 0) THEN
          diags(iNfix)=diags(iNfix)+uptakeN-uptakeNH4-uptakeNO2-uptakeNO3
@@ -895,11 +906,25 @@ C==== Apply phototrophy tendencies =====================================
         ENDIF
 #endif
 
+        X_photo = X_photo + X(j)
+
 C      isPhoto(j)
        ENDIF
 C     j
       ENDDO
 
+      IF (X_photo .GT. 0 _d 0) THEN
+       fIph_sum = fIph_sum / X_photo
+       fTph_sum = fTph_sum / X_photo
+       fnut_sum = fnut_sum / X_photo
+      ELSE
+       fIph_sum = 0 _d 0
+       fTph_sum = 0 _d 0
+       fnut_sum = 0 _d 0
+      ENDIF
+      diags(ifIphavg) = fIph_sum
+      diags(ifTphavg) = fTph_sum
+      diags(ifnutavg) = fnut_sum
 C=======================================================================
 C==== Bacteria =========================================================
 
