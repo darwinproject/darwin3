@@ -48,6 +48,7 @@ C     msgBuf   :: Informational/error meesage buffer
       _RL bmean, bbmean
       _RL bbbratiomeas, bbbratioac
 
+
 C ======================================================================
 C compute cell volumes in micrometer^3
 C
@@ -266,11 +267,6 @@ C light-dependent mortality for DVM
         fracPARmort(jp) = a_fracPARmort(g)*biovol(jp)**b_fracPARmort(g)
         ExportFracDVM(jp) = a_ExportFracDVM(g)
 
-        hillnumDIN(jp) = a_hillnumDIN(g)
-        hillnumPO4(jp) = a_hillnumPO4(g)
-        hillnumFeT(jp) = a_hillnumFeT(g)
-        hillnumSiO2(jp) = a_hillnumSiO2(g)
-
 C respRate rate is given in terms of carbon content
         qcarbon(jp) = a_qcarbon(g) * biovol(jp)**b_qcarbon(g)
         respRate(jp) = a_respRate_c(g)
@@ -378,50 +374,14 @@ C real parameters
         ksatDOP(jp)  = ksatDON(jp)/R_NC(jp)*R_PC(jp)
         ksatDOFe(jp) = ksatDON(jp)/R_NC(jp)*R_FeC(jp)
 
-C ----------------------------------------------------------------------
-#ifdef DARWIN_MACROMOLECULAR_GROWTH
-        Y_CP_Plip(jp)    = a_Y_CP_Plip(g)
-        Y_CN_protein(jp) = a_Y_CN_protein(g)
-        Y_NC_chl(jp)     = a_Y_NC_chl(g)
-        Y_CN_cyano(jp)   = a_Y_CN_cyano(g)
-        Y_PN_nucacid(jp) = a_Y_PN_nucacid(g)
-        Y_CN_DNA(jp)     = a_Y_CN_DNA(g)
-        Y_CN_RNA(jp)     = a_Y_CN_RNA(g)
-        Y_THY_P(jp)      = a_Y_THY_P(g)
-        Y_FeN_photo(jp)  = a_Y_FeN_photo(g)
-
-        ECo2Prod(jp)     = a_ECo2Prod(g)
-        maintConsum(jp)  = a_maintConsum(g)
-        A_I(jp)          = a_A_I(g)
-        A_pho(jp)        = a_A_pho(g)
-        A_bio(jp)        = a_A_bio(g)
-
-        QC_other(jp)     = a_QC_other(g)
-        QC_pro_other(jp) = a_QC_pro_other(g)
-        QP_other(jp)     = a_QP_other(g)
-        QP_RNA_min(jp)   = a_QP_RNA_min(g)
-        QC_DNA(jp)       = a_QC_DNA(g)
-        AP_RNA(jp)       = a_AP_RNA(g)
-
-        VI_max(jp)       = a_VI_max(g) * biovol(jp)**b_VI_max(g)
-        QN_sto_max(jp)   = a_QN_sto_max(g) * biovol(jp)**b_QN_sto_max(g)
-        Qp_max(jp)       = a_Qp_max(g) * biovol(jp)**b_Qp_max(g)
-        Qfe_max(jp)      = a_Qfe_max(g) * biovol(jp)**b_Qfe_max(g)
-
-        Sf(jp) = 1.0 _d 0
-
-#else /* DARWIN_MACROMOLECULAR_GROWTH */
-
-# ifdef DARWIN_ALLOW_GEIDER
+#ifdef DARWIN_ALLOW_GEIDER
         mQyield(jp) = a_mQyield(g)
         chl2cmax(jp) = a_chl2cmax(g)
         inhibGeider(jp) = a_inhibGeider(g)
-# else
+#else
         ksatPAR(jp) = a_ksatPAR(g)
         kinhPAR(jp) = a_kinhPAR(g)
-# endif /* DARWIN_ALLOW_GEIDER */
-
-#endif /* DARWIN_MACROMOLECULAR_GROWTH */
+#endif /* DARWIN_ALLOW_GEIDER */
 
 #ifdef ALLOW_RADTRANS
         aptype(jp) = grp_aptype(g)

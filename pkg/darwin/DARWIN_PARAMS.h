@@ -335,7 +335,6 @@ C     tempnorm          :: []               set temperature function (was 1.0)
 C     TempAeArr         :: [K]              slope for pseudo-Arrhenius (TEMP_VERSION 2)
 C     TemprefArr        :: [K]              reference temp for pseudo-Arrhenius (TEMP_VERSION 2)
 C     TempCoeffArr      :: []               pre-factor for pseudo-Arrhenius (TEMP_VERSION 2)
-C     TempAeArrMacromol :: [K]              slope for pseudo-Arrhenius for macromolecular (TEMP_VERSION 2)
 C     reminTempAe       :: [1/K]            temperature coefficient for remineralization (TEMP_VERSION 4)
 C     mortTempAe        :: [1/K]            temperature coefficient for linear mortality (TEMP_VERSION 4)
 C     mort2TempAe       :: [1/K]            temperature coefficient for quadr. mortality (TEMP_VERSION 4)
@@ -378,7 +377,6 @@ C     KPON              :: [1/s]  PON remineralization rate
 C     KPOP              :: [1/s]  POP remineralization rate
 C     KPOFe             :: [1/s]  POFe remineralization rate
 C     KPOSi             :: [1/s]  POSi remineralization rate
-C     ksatO2remin       :: [mmol O2/m3]  half-saturation conc. of O2 for remineralization
 C
 C     wC_sink           :: [m/s]  sinking velocity for POC
 C     wN_sink           :: [m/s]  sinking velocity for PON
@@ -434,6 +432,7 @@ C     chl2nmax          :: [mg Chl / mmol N]  max Chl:N ratio for Chl synthesis 
 C     synthcost         :: [mmol C / mmol N]  cost of biosynthesis
 C     inhib_graz        :: [(mmol C m-3)-1]   inverse decay scale for grazing inhibition
 C     inhib_graz_exp    :: []                 exponent for grazing inhibition (0 to turn off inhibition)
+C     hillnumUptake     :: []                 exponent for limiting quota uptake in nutrient uptake
 C     hillnumGraz       :: []                 exponent for limiting quota uptake in grazing
 C     hollexp           :: []                 grazing exponential 1= "Holling 2", 2= "Holling 3"
 C     phygrazmin        :: [mmol C m-3]       minimum total prey conc for grazing to occur
@@ -465,7 +464,6 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    TempAeArr,
      &    TemprefArr,
      &    TempCoeffArr,
-     &    TempAeArrMacromol,
      &    reminTempAe,
      &    mortTempAe,
      &    mort2TempAe,
@@ -510,7 +508,6 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    KPOP,
      &    KPOFe,
      &    KPOSi,
-     &    ksatO2remin,
      &    wC_sink,
      &    wN_sink,
      &    wP_sink,
@@ -560,6 +557,7 @@ C     depthdenit        :: [m]             not implemented (depth for denitrific
      &    synthcost,
      &    inhib_graz,
      &    inhib_graz_exp,
+     &    hillnumUptake,
      &    hillnumGraz,
      &    hollexp,
      &    phygrazmin,
@@ -586,7 +584,6 @@ C     &    yono2,
       _RL TempAeArr
       _RL TemprefArr
       _RL TempCoeffArr
-      _RL TempAeArrMacromol
       _RL reminTempAe
       _RL mortTempAe
       _RL mort2TempAe
@@ -631,7 +628,6 @@ C     &    yono2,
       _RL KPOP
       _RL KPOFe
       _RL KPOSi
-      _RL ksatO2remin
       _RL wC_sink
       _RL wN_sink
       _RL wP_sink
@@ -681,6 +677,7 @@ C     &    yono2,
       _RL synthcost
       _RL inhib_graz
       _RL inhib_graz_exp
+      _RL hillnumUptake
       _RL hillnumGraz
       _RL hollexp
       _RL phygrazmin

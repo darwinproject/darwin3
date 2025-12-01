@@ -8,8 +8,7 @@ C !INTERFACE: ==========================================================
      U     gTr,
      O     chlout, diags, sumprey,
      I     PAR, photoTempFunc, hetTempFunc, grazTempFunc, reminTempFunc,
-     I     mortTempFunc, mort2TempFunc,
-     I     uptakeTempFunc, macromolTempFunc,
+     I     mortTempFunc, mort2TempFunc, uptakeTempFunc,
      I     omegaCl,
      I     k_debug,myTime,myIter,myThid)
 
@@ -43,7 +42,6 @@ C  myThid :: thread number
       _RL grazTempFunc(nplank)
       _RL mortTempFunc
       _RL mort2TempFunc
-      _RL macromolTempFunc
       _RL omegaCl
       _RL myTime
       INTEGER k_debug
@@ -231,99 +229,6 @@ c !LOCAL VARIABLES: ====================================================
       _RL PARtot
 
       _RL tmp
-
-#ifdef DARWIN_MACROMOLECULAR_GROWTH
-      _RL mmX, mmQn, mmQp, mmQfe
-      _RL PChl
-      _RL QC_chl_D0
-      _RL QC_chl_D1
-      _RL QN_chl_D0
-      _RL QN_chl_D1
-      _RL QN_photo_D0
-      _RL QN_photo_D1
-      _RL QN_bio_D1
-      _RL QN_pro_D0
-      _RL QN_pro_D1
-      _RL QN_rna_D1
-      _RL QN_rna_D2
-      _RL Qn_D0
-      _RL Qn_D1
-      _RL Qn_D2
-      _RL Qn_exc
-      _RL QC_chl
-      _RL QN_chl
-      _RL QN_pro_photo
-      _RL QN_pro_bio
-      _RL QN_pro_tot
-      _RL QN_RNA
-      _RL QnExc
-      _RL exQn
-      _RL QC_thy_D0
-      _RL QC_thy_D1
-      _RL QC_pro_D0
-      _RL QC_pro_D1
-      _RL QC_rna_D1
-      _RL QC_rna_D2
-      _RL Qc_D0
-      _RL Qc_D1
-      _RL Qc_D2
-      _RL Qc_exc
-C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-      _RL QP_thy_D0
-      _RL QP_thy_D1
-      _RL QP_rna_D1
-      _RL QP_rna_D2
-      _RL Qp_D0
-      _RL Qp_D1
-      _RL Qp_D2
-      _RL PC_n
-      _RL Qp_exc
-      _RL PC_p
-      _RL QP_thy
-      _RL QP_RNA
-      _RL QN_essential
-      _RL QP_essential
-      _RL QN_max
-      _RL QC_essential
-      _RL PC_c
-      _RL QP_store
-      _RL QP_excess
-      _RL QN_store
-      _RL QN_excess
-      _RL QpExc
-      _RL exQp
-      _RL VN,VP,VFe,VSi
-C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-      _RL exQc
-C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-      _RL Qfe_D1
-      _RL Qfe_D0
-      _RL Qfe_exc
-      _RL PC_fe
-      _RL Qfe_pro_photo
-      _RL Qfe_essential
-      _RL Qfe_Store
-      _RL Qfe_excess
-      _RL exQfe
-      _RL QfeExc
-      _RL MODE
-      _RL limN
-      _RL limP
-      _RL limF
-      _RL limC
-      _RL limL
-C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-      _RL QC_chlN
-      _RL QC_chlP
-      _RL QC_chlF
-      _RL Scal_coeff
-      _RL QC_store
-      _RL RQ
-      _RL QN_DNA_actl
-      _RL QP_other_actl
-      _RL QP_DNA_actl
-C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#endif /* DARWIN_MACROMOLECULAR_GROWTH */
 
 #ifdef DARWIN_ALLOW_CDOM
       _RL CDOM
@@ -575,305 +480,6 @@ C==== Phototrophy ======================================================
       DO j = 1, nPhoto
        IF (isPhoto(j) .NE. 0) THEN
 
-#ifdef DARWIN_MACROMOLECULAR_GROWTH
-
-        IF (X(j) .GT. DARWIN_EPS) THEN
-         mmQn  = Qn(j)
-         mmQp  = Qp(j)
-         mmQfe = Qfe(j)
-         mmX   = X(j)
-        ELSE
-         mmQn = 0 _d 0
-         mmQp = 0 _d 0
-         mmQfe = 0 _d 0
-         mmX = 0 _d 0
-        ENDIF
-
-        limP = 0 _d 0
-        limN = 0 _d 0
-        limF = 0 _d 0
-        limC = 0 _d 0
-        limL = 0 _d 0
-
-C       set up Chl and N requirements as a function of growth rate PC
-C       then solve for PC
-
-C       Carbohydrate fixation rate per chlorophyll
-C       (molC (mol C in chl s)-1)
-        PChl = Sf(j)*VI_max(j)*(1 - EXP(-A_I(j)*PARtot))
-
-C       Case 1: Enought light, growth rate is a function of macromol
-C       allocation
-        IF ( PChl .GT. VI_min(j) ) THEN
-
-C        chlorophyll quota (mol C cell-1)
-C        Chl = ((1 _d 0 + E)*ls + m)/PChl
-C        where ls = D*Qc               (molC s-1) Biomass synthesis rate
-         QC_chl_D0 = maintConsum(j)/PChl
-         QC_chl_D1 = (1 + ECo2Prod(j))/PChl
-
-C        nitrogen pools in mol N (mol C)-1
-         QN_chl_D0 = QC_chl_D0*Y_NC_chl(j)
-         QN_chl_D1 = QC_chl_D1*Y_NC_chl(j)
-
-C        photosynthesis related protein
-         QN_photo_D0 = QC_chl_D0*A_pho(j)/Y_CN_protein(j)
-         QN_photo_D1 = QC_chl_D1*A_pho(j)/Y_CN_protein(j)
-
-C        biosynthesis related protein
-         QN_bio_D1 = A_bio(j)/Y_CN_protein(j)/macromolTempFunc
-
-C        total protein
-         QN_pro_D0 = QN_photo_D0 + QN_pro_other(j)
-         QN_pro_D1 = QN_photo_D1 + QN_bio_D1
-
-C        nitrogen in RNA
-         QN_rna_D1 = QN_pro_D0*AN_RNA(j)/macromolTempFunc
-         QN_rna_D2 = QN_pro_D1*AN_RNA(j)/macromolTempFunc
-
-C        Total nitrogen
-         Qn_D0 = QN_chl_D0 + QN_pro_D0 + QN_RNA_min(j) + QN_DNA(j)
-         Qn_D1 = QN_chl_D1 + QN_pro_D1 + QN_rna_D1
-         Qn_D2 = QN_rna_D2
-
-
-C        Phosphate restriction on growth rate
-         QP_rna_D1 = QN_rna_D1*Y_PN_nucacid(j)
-         QP_rna_D2 = QN_rna_D2*Y_PN_nucacid(j)
-         QP_thy_D0 = QC_chl_D0*Y_THY_P(j)
-         QP_thy_D1 = QC_chl_D1*Y_THY_P(j)
-
-         Qp_D0 = QP_thy_D0 + QP_RNA_min(j) + QP_DNA(j) + QP_other(j)
-         Qp_D1 = QP_thy_D1 + QP_rna_D1
-         Qp_D2 = QP_rna_D2
-
-
-C        Iron restriction on growth
-         Qfe_D0 = QN_photo_D0*Y_FeN_photo(j)
-         Qfe_D1 = QN_photo_D1*Y_FeN_photo(j)
-
-
-C        carbon restriction on growth rate
-         QC_thy_D0 = QP_thy_D0*Y_CP_Plip(j)
-         QC_thy_D1 = QP_thy_D1*Y_CP_Plip(j)
-         QC_pro_D0 = QN_pro_D0*Y_CN_protein(j)
-         QC_pro_D1 = QN_pro_D1*Y_CN_protein(j)
-         QC_rna_D1 = QN_rna_D1*Y_CN_RNA(j)
-         QC_rna_D2 = QN_rna_D2*Y_CN_RNA(j)
-
-         Qc_D0 = QC_chl_D0 + QC_pro_D0 + QC_RNA_min(j) + QC_thy_D0
-     &         + QC_DNA(j) + QC_other(j)
-         Qc_D1 = QC_chl_D1 + QC_pro_D1 + QC_thy_D1 + QC_rna_D1
-         Qc_D2 = QC_rna_D2
-
-
-C        Determine what is limiting
-         Qn_exc = MAX(0 _d 0, mmQn - Qn_D0)
-         PC_n = 2*Qn_exc/(Qn_D1 + SQRT(Qn_D1*Qn_D1 + 4*Qn_D2*Qn_exc))
-         Qp_exc = MAX(0 _d 0, mmQp - Qp_D0)
-         PC_p = 2*Qp_exc/(Qp_D1 + SQRT(Qp_D1*Qp_D1 + 4*Qp_D2*Qp_exc))
-         Qfe_exc = MAX(0 _d 0, mmQfe - Qfe_D0)
-         PC_fe = Qfe_exc/Qfe_D1
-         Qc_exc = MAX(0 _d 0, Qc(j) - Qc_D0)
-         PC_c = 2*Qc_exc/(Qc_D1 + SQRT(Qc_D1*Qc_D1 + 4*Qc_D2*Qc_exc))
-
-         PC = MIN(PC_n,PC_p,PC_fe,PC_c)
-         IF (PC_p.EQ.PC) THEN
-          MODE = 1 _d 0
-          limP = 1 _d 0
-         ELSEIF (PC_n.EQ.PC) THEN
-          MODE = 2 _d 0
-          limN = 1 _d 0
-         ELSEIF (PC_fe.EQ.PC) THEN
-          MODE = 3 _d 0
-          limF = 1 _d 0
-         ELSEIF (PC_c.EQ.PC) THEN
-          MODE = 4 _d 0
-          limC = 1 _d 0
-         ELSE
-          MODE = 0 _d 0
-         ENDIF
-
-         QC_chl = QC_chl_D0 + QC_chl_D1*PC
-
-C       Case 2: Light limitation, growth rate is zero, QC_chl is
-C       calculated based on cellular mass balance
-        ELSE
-         MODE = 4 _d 0
-         limL = 1 _d 0
-         PC = 0. _d 0
-        ENDIF
-
-C       If growth rate is zero, recompute maximum QC_chl possible with
-C       given quotas
-        IF (PC .EQ. 0. _d 0) THEN
-         QC_chlN = (mmQn - QnNoChl(j))
-     &         /(Y_NC_chl(j) + A_pho(j)/Y_CN_protein(j))
-         QC_chlP = (mmQp - QpNoChl(j))/Y_THY_P(j)
-         QC_chlF = (mmQfe - QfeNoChl(j))
-     &         /(A_pho(j)/Y_CN_protein(j)*Y_FeN_photo(j))
-         QC_chl = MAX(0 _d 0, MIN(QC_chlN,QC_chlP,QC_chlF,QC_chlMax(j)))
-        ENDIF
-
-C       convert to mg Chl m-3
-        chlout(j) = 893.49 _d 0*X(j)*QC_chl/55 _d 0
-
-C       Calculate diagnostics and essentials
-        QN_chl       = QC_chl*Y_NC_chl(j)
-        QN_pro_photo = QC_chl*A_pho(j)/Y_CN_protein(j)
-        QN_pro_bio   = A_bio(j)/Y_CN_protein(j)*PC/macromolTempFunc
-        QN_pro_tot   = QN_pro_other(j) + QN_pro_photo + QN_pro_bio
-        QN_RNA       = QN_RNA_min(j)
-     &               + QN_pro_tot*AN_RNA(j)*PC/macromolTempFunc
-
-        QP_thy = QC_chl*Y_THY_P(j)
-        QP_RNA = QN_RNA*Y_PN_nucacid(j)
-
-        Qfe_pro_photo = QN_pro_photo*Y_FeN_photo(j)
-
-C       Case 3: if Qn, Qp are lower then the minimum requirement for Chl
-C       the remaining pools are scaled down to not exceed quotas
-        IF (QC_chl.EQ.0 _d 0) THEN
-         Scal_coeff  = MIN(mmQp/QpNoChl(j),mmQn/QnNoChl(j),1 _d 0)
-         QN_RNA      = QN_RNA_min(j)*Scal_coeff
-         QN_DNA_actl = QN_DNA(j)*Scal_coeff
-         QP_RNA      = QP_RNA_min(j)*Scal_coeff
-         QP_DNA_actl = QP_DNA(j)*Scal_coeff
-C        excess N (if Qp.LT.QpNoChl) goes here
-         QN_pro_tot  = MIN(mmQn - QN_RNA - QN_DNA_actl, QN_pro_other(j))
-C        excess P (if Qn.LT.QnNoChl) goes here
-         QP_other_actl = MIN(mmQp - QP_RNA - QP_DNA_actl, QP_other(j))
-        ELSE
-         QN_DNA_actl   = QN_DNA(j)
-         QP_DNA_actl   = QP_DNA(j)
-         QP_other_actl = QP_other(j)
-        ENDIF
-
-C       total pools required for functioning (or scaled down)
-        QN_essential  = QN_chl + QN_pro_tot + QN_RNA + QN_DNA_actl
-        QN_max        = QN_essential + QN_sto_max(j)
-        QP_essential  = QP_thy + QP_RNA + QP_DNA_actl +  QP_other_actl
-        Qfe_essential = Qfe_pro_photo
-        QC_essential  = QC_chl + QN_pro_tot*Y_CN_protein(j)
-     &                + QP_thy*Y_CP_Plip(j) + QN_RNA*Y_CN_RNA(j)
-     &                + QN_DNA_actl*Y_CN_DNA(j) + QC_other(j)
-
-C Storage calculation -----------------
-
-C       N quota above QN_essential is store, but not more than
-C       QN_sto_max(j) and make sure enough C for store
-        QN_store = MIN(mmQn - QN_essential,
-     &                 (Qc(j) - QC_essential)/Y_CN_cyano(j),
-     &                 QN_sto_max(j))
-        QN_store = MAX(0 _d 0, QN_store)
-        QN_excess = MAX(0 _d 0, mmQn - QN_essential - QN_store)
-
-C       P quota above QP_essential is store, but keep total P under
-C       Qp_max(j)
-        QP_store = MAX(0 _d 0, MIN(mmQp, Qp_max(j)) - QP_essential)
-        QP_excess = MAX(0 _d 0, mmQp - QP_essential - QP_store)
-
-C       Fe quota above Qfe_essential is store, but keep total iron under
-C       Qfe_max(j)
-        Qfe_store = MAX(0 _d 0, MIN(mmQfe, Qfe_max(j)) - Qfe_essential)
-        Qfe_excess = MAX(0 _d 0, mmQfe - Qfe_essential - Qfe_store)
-
-C       deduce carbon store
-        QC_store = MAX(0 _d 0,
-     &                 1 _d 0 - QC_essential - QN_store*Y_CN_cyano(j))
-
-C shlomit: new nutrient-uptake regulation terms:
-C when store is full, phytoplankton reduce their nutrient-uptake:
-
-C       Nitrogen:
-        IF ((QN_essential + QN_store) .GT. 0 _d 0) THEN
-         regQn = (1.1 _d 0*(QN_essential + QN_store) - mmQn)/
-     &             (0.1 _d 0*(QN_essential + QN_store))
-         regQn = MAX(0 _d 0, MIN(1 _d 0, regQn))
-        ELSE
-         regQn = 1 _d 0
-        ENDIF
-        MM_NO3 = NO3/(NO3 + ksatNO3(j))
-C       Carbon-specific NO3 uptake rate
-        VN = vmaxNO3(j)*MM_NO3*regQn*uptakeTempFunc
-        uptakeN = VN*mmX
-        uptakeNO3 = VN*mmX
-        uptakeNO2 = 0 _d 0
-        uptakeNH4 = 0 _d 0
-
-C       Phosphorous:
-        IF ((QP_essential+QP_store) .GT. 0 _d 0) THEN
-         regQp = (1.1 _d 0*(QP_essential+QP_store) - mmQp)/
-     &             (0.1 _d 0*(QP_essential+QP_store))
-         regQp = MAX(0 _d 0, MIN(1 _d 0, regQp))
-        ELSE
-         regQp = 1 _d 0
-        ENDIF
-        MM_PO4 = PO4/(PO4 + ksatPO4(j))
-C       Carbon-specific PO4 uptake rate
-        VP = vmaxPO4(j)*MM_PO4*regQp*uptakeTempFunc
-        uptakePO4 = VP*mmX
-
-C       Iron:
-        IF ((Qfe_essential + Qfe_Store) .GT. 0 _d 0) THEN
-         regQFe = (1.1 _d 0*(Qfe_essential + Qfe_Store) - mmQfe)/
-     &              (0.1 _d 0*(Qfe_essential + Qfe_Store))
-         regQFe = MAX(0 _d 0, MIN(1 _d 0, regQFe))
-        ELSE
-         regQFe = 1 _d 0
-        ENDIF
-        MM_FeT = FeT/(FeT + ksatFeT(j))
-C       Carbon-specific FeT uptake rate
-        Vfe = vmaxFeT(j)*MM_FeT*regQFe*uptakeTempFunc
-        uptakeFeT = Vfe*mmX
-
-        exQc = 0 _d 0
-
-C       shlomit: Calclate the O2:C ratio
-        RQ = ( QN_pro_tot*Y_CN_protein(j))* 1.56 _d 0
-     &     + ( QC_other(j)/2  + QC_store/2) * 1.34 _d 0
-     &     + ( Y_CP_Plip(j) * QP_thy)* 1.30 _d 0
-     &     + ( QC_other(j)/2 + QC_store/2) * 1.0 _d 0
-     &     + ( QC_chl) * 1.39 _d 0
-     &     + ( QN_DNA_actl*Y_CN_DNA(j)) * 1.62 _d 0
-     &     + ( QN_RNA*Y_CN_RNA(j)) *  1.57 _d 0
-     &     + ( QN_store*Y_CN_cyano(j)) * 1.85 _d 0
-
-# ifdef DARWIN_DIAG_PERTYPE
-        diags(iPChl+j-1) = PChl
-        diags(iVN  +j-1) = VN
-        diags(iVP  +j-1) = VP
-        diags(iMODE+j-1) = MODE
-        diags(iFe_C+j-1) = mmQfe
-        diags(iexQc+j-1) = exQc
-        diags(iCChl+j-1) = QC_chl
-        diags(iNChl+j-1) = QN_chl
-        diags(iNPho+j-1) = QN_pro_photo
-        diags(iNSyn+j-1) = QN_pro_bio
-        diags(iNPrn+j-1) = QN_pro_tot
-        diags(iNRNA+j-1) = QN_RNA
-        diags(iNDNA+j-1) = QN_DNA_actl
-        diags(iNSTO+j-1) = QN_store
-        diags(iNEXC+j-1) = QN_excess
-        diags(iPRNA+j-1) = QP_RNA
-        diags(iPDNA+j-1) = QP_DNA_actl
-        diags(iPTHY+j-1) = QP_thy
-        diags(iPCON+j-1) = QP_other_actl
-        diags(iPSTO+j-1) = QP_store
-        diags(iPEXC+j-1) = QP_excess
-        diags(iFPHO+j-1) = Qfe_pro_photo
-        diags(iFSTO+j-1) = Qfe_Store
-        diags(iFEXC+j-1) = Qfe_excess
-        diags(iY_RQ+j-1) = RQ
-        diags(ilimN+j-1) = limN
-        diags(ilimP+j-1) = limP
-        diags(ilimF+j-1) = limF
-        diags(ilimC+j-1) = limC
-        diags(ilimL+j-1) = limL
-# endif
-
-#else /* DARWIN_MACROMOLECULAR_GROWTH */
-
 C==== Uptake and nutrient limitation ===================================
 C       for quota elements, growth is limiteed by available quota,
 C       for non-quota elements, by available nutrients in medium
@@ -901,7 +507,7 @@ c phosphorus
 #ifdef DARWIN_ALLOW_PQUOTA
         regQp = MAX(0 _d 0, MIN(1 _d 0, (Qpmax(j)-Qp(j))/
      &                                  (Qpmax(j)-Qpmin(j)) ))
-        regQp = regQp**hillnumPO4(j)
+        regQp = regQp**hillnumUptake
 C       carbon-specific PO4 uptake rate
         uptakePO4 = vmaxPO4(j)*MM_PO4*regQp*uptakeTempFunc*X(j)
 c       normalized Droop limitation
@@ -930,7 +536,7 @@ c silica
 #ifdef DARWIN_ALLOW_SIQUOTA
         regQsi = MAX(0 _d 0, MIN(1 _d 0, (Qsimax(j) - Qsi(j))/
      &                                   (Qsimax(j) - Qsimin(j)) ))
-        regQsi = regQsi**hillnumSiO2(j)
+        regQsi = regQsi**hillnumUptake
         uptakeSiO2 = vmaxSiO2(j)*MM_SiO2*regQsi*uptakeTempFunc*X(j)
 c       linear limitation
         limitsi = MAX(0 _d 0, MIN(1 _d 0, (Qsi(j) - Qsimin(j))/
@@ -957,7 +563,7 @@ c iron
 #ifdef DARWIN_ALLOW_FEQUOTA
         regQfe = MAX(0 _d 0, MIN(1 _d 0, (Qfemax(j)-Qfe(j))/
      &                                   (Qfemax(j)-Qfemin(j)) ))
-        regQfe = regQfe**hillnumFeT(j)
+        regQfe = regQfe**hillnumUptake
         uptakeFeT = vmaxFeT(j)*MM_FeT*regQfe*uptakeTempFunc*X(j)
 c       normalized Droop limitation
         limitfe = MIN(1 _d 0, (1.0-Qfemin(j)/MAX(Qfemin(j), Qfe(j)))/
@@ -985,7 +591,7 @@ c       have nitrogen quota
         MM_NO3 = NO3/(NO3 + ksatNO3(j))*inhibNH4
         regQn = MAX(0 _d 0, MIN(1 _d 0, (Qnmax(j)-Qn(j))/
      &                                  (Qnmax(j)-Qnmin(j)) ))
-        regQn = regQn**hillnumDIN(j)
+        regQn = regQn**hillnumUptake
         uptakeNH4 = vmaxNH4(j)*MM_NH4*regQn*uptakeTempFunc*X(j)
         uptakeNO2 = vmaxNO2(j)*MM_NO2*regQn*uptakeTempFunc*X(j)
         uptakeNO3 = vmaxNO3(j)*MM_NO3*regQn*uptakeTempFunc*X(j)
@@ -1117,23 +723,6 @@ C         only 1 waveband without DARWIN_ALLOW_GEIDER
 
 #endif /* DARWIN_ALLOW_GEIDER */
 
-#ifdef DARWIN_DIAG_PERTYPE
-C  which nutrient is limiting growth?
-        IF (limitnut==limitn) diags(ilimN+j-1) = 1 _d 0
-        IF (limitnut==limitp) diags(ilimP+j-1) = 1 _d 0
-        IF (limitnut==limitfe) diags(ilimF+j-1) = 1 _d 0
-        IF (limitnut==limitsi) diags(ilimS+j-1) = 1 _d 0
-C factors that go into growth equation
-        diags(ifIph+j-1) = limitI
-        fIph_sum = fIph_sum + limitI * X(j)
-        diags(ifTph+j-1) = photoTempFunc(j)
-        fTph_sum = fTph_sum + photoTempFunc(j) * X(j)
-        diags(ifnut+j-1) = limitnut
-        fnut_sum = fnut_sum + limitnut * X(j)
-#endif
-
-#endif /* DARWIN_MACROMOLECULAR_GROWTH */
-
         photoSyn = PC*X(j)
 
 C==== Respiration ======================================================
@@ -1246,6 +835,18 @@ C==== Nutrient consumption =============================================
 #ifdef DARWIN_DIAG_PERTYPE
         diags(iPPplank+j-1) = diags(iPPplank+j-1) + uptakeDIC
         diags(iPCplank+j-1) = diags(iPCplank+j-1) + PC
+C  which nutrient is limiting growth?
+        IF (limitnut==limitn) diags(ilimN+j-1) = 1 _d 0
+        IF (limitnut==limitp) diags(ilimP+j-1) = 1 _d 0
+        IF (limitnut==limitfe) diags(ilimF+j-1) = 1 _d 0
+        IF (limitnut==limitsi) diags(ilimS+j-1) = 1 _d 0
+C factors that go into growth equation
+        diags(ifIph+j-1) = limitI
+        fIph_sum = fIph_sum + limitI * X(j)
+        diags(ifTph+j-1) = photoTempFunc(j)
+        fTph_sum = fTph_sum + photoTempFunc(j) * X(j)
+        diags(ifnut+j-1) = limitnut
+        fnut_sum = fnut_sum + limitnut * X(j)
 #endif
         IF (diazo(j) .GT. 0.0 _d 0) THEN
          diags(iNfix)=diags(iNfix)+uptakeN-uptakeNH4-uptakeNO2-uptakeNO3
@@ -1272,10 +873,6 @@ C==== Nutrient consumption =============================================
 C==== Apply phototrophy tendencies =====================================
 
         gTr(ic+j-1)=gTr(ic+j-1)  + growth
-#ifdef DARWIN_MACROMOLECULAR_GROWTH
-        gTr(ic+j-1)=gTr(ic+j-1)  - mmX*exQc
-        gTr(iDOC) = gTr(iDOC) + mmX*exQc
-#endif
 #ifdef DARWIN_ALLOW_CSTORE
         gTr(ich+j-1)=gTr(ich+j-1)  + storeC
 #endif
@@ -1328,7 +925,6 @@ C     j
       diags(ifIphavg) = fIph_sum
       diags(ifTphavg) = fTph_sum
       diags(ifnutavg) = fnut_sum
-
 C=======================================================================
 C==== Bacteria =========================================================
 
@@ -1499,23 +1095,17 @@ C==== Add parameterized remineralization ===============================
 #else
       IF (.TRUE.) THEN
 #endif
-      IF (ksatO2remin .GT. 0 _d 0) THEN
-       tmp = O2/(O2 + ksatO2remin)
-      ELSE
-       tmp = 1 _d 0
-      ENDIF
 C parameterized remineralization; want to set all K except KPOSi to zero
 C if running with bacteria
-C shlomit: add O2-dependece respiration
-      respDOC  = reminTempFunc*KDOC *DOC*tmp
-      respDON  = reminTempFunc*KDON *DON*tmp
-      respDOP  = reminTempFunc*KDOP *DOP*tmp
-      respDOFe = reminTempFunc*KDOFe*DOFe*tmp
-      respPOC  = reminTempFunc*KPOC *POC*tmp
-      respPON  = reminTempFunc*KPON *PON*tmp
-      respPOP  = reminTempFunc*KPOP *POP*tmp
-      respPOSi = reminTempFunc*KPOSi*POSi*tmp
-      respPOFe = reminTempFunc*KPOFe*POFe*tmp
+      respDOC  = reminTempFunc*KDOC *DOC
+      respDON  = reminTempFunc*KDON *DON
+      respDOP  = reminTempFunc*KDOP *DOP
+      respDOFe = reminTempFunc*KDOFe*DOFe
+      respPOC  = reminTempFunc*KPOC *POC
+      respPON  = reminTempFunc*KPON *PON
+      respPOP  = reminTempFunc*KPOP *POP
+      respPOSi = reminTempFunc*KPOSi*POSi
+      respPOFe = reminTempFunc*KPOFe*POFe
 
       consumDOC  = consumDOC  + respDOC
       consumDON  = consumDON  + respDON
@@ -2219,3 +1809,4 @@ C====== Light-dependent mortality from DVM ====
 
       RETURN
       END SUBROUTINE
+

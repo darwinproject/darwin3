@@ -66,7 +66,7 @@ C     !LOCAL VARIABLES:
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*80 gname
-      INTEGER j,iPtr,oUnit,g,l,errCount
+      INTEGER j,jz,iPtr,oUnit,g,l
       _RL dm
 CCOG[[[cog
 CCOGcog.out('\n'.join('''
@@ -422,42 +422,6 @@ C Carbon store is only implemented without quotas
        WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
      &  'darwin_disscSelect.NE.0 requires DARWIN_ALLOW_CARBON'
        CALL PRINT_ERROR( msgBuf , 1)
-       STOP 'ABNORMAL END: S/R DARWIN_CHECK'
-      ENDIF
-#endif
-
-      errCount = 0
-#ifdef DARWIN_MACROMOLECULAR_GROWTH
-# ifndef DARWIN_ALLOW_NQUOTA
-      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
-     & 'DARWIN_MACROMOLECULAR_GROWTH requires DARWIN_ALLOW_NQUOTA'
-      CALL PRINT_ERROR( msgBuf , 1)
-      errCount = errCount + 1
-# endif
-# ifndef DARWIN_ALLOW_PQUOTA
-      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
-     & 'DARWIN_MACROMOLECULAR_GROWTH requires DARWIN_ALLOW_PQUOTA'
-      CALL PRINT_ERROR( msgBuf , 1)
-      errCount = errCount + 1
-# endif
-# ifndef DARWIN_ALLOW_FEQUOTA
-      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ERROR: ',
-     & 'DARWIN_MACROMOLECULAR_GROWTH requires DARWIN_ALLOW_FEQUOTA'
-      CALL PRINT_ERROR( msgBuf , 1)
-      errCount = errCount + 1
-# endif
-# ifdef DARWIN_ALLOW_SIQUOTA
-      WRITE(msgBuf,'(3A)') 'DARWIN_CHECK: ERROR: ',
-     & 'DARWIN_MACROMOLECULAR_GROWTH does not support ',
-     & 'DARWIN_ALLOW_SIQUOTA'
-      CALL PRINT_ERROR( msgBuf , 1)
-      errCount = errCount + 1
-# endif
-      IF (errCount .GT. 0) THEN
-       WRITE(msgBuf,'(A,I3,A)')
-     &       'DARWIN_CHECK: detected', errCount,' fatal error(s)'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R DARWIN_CHECK'
       ENDIF
 #endif
@@ -1868,9 +1832,6 @@ C--   Print parameters from DARWIN_PARAMS.h
       CALL WRITE_0D_RL(TempCoeffArr,INDEX_NONE,
      &'TempCoeffArr =',
      &' /* pre-factor for pseudo-Arrhenius (TEMP_VERSION 2) */')
-      CALL WRITE_0D_RL(TempAeArrMacromol,INDEX_NONE,
-     &'TempAeArrMacromol =',
-     &' /* temp effect on protein biosyn (MACROMOL GROWTH) (K) */')
       CALL WRITE_0D_RL(reminTempAe,INDEX_NONE,
      &'reminTempAe =',
      &' /* temperature coefficient for remineralization (TEMP_VERSION 4)
@@ -2004,9 +1965,6 @@ C--   Print parameters from DARWIN_PARAMS.h
       CALL WRITE_0D_RL(KPOSi,INDEX_NONE,
      &'KPOSi =',
      &' /* POSi remineralization rate (1/s) */')
-      CALL WRITE_0D_RL(ksatO2remin,INDEX_NONE,
-     &'ksatO2remin =',
-     &' /* O2 half saturation for remineralization (mmol O2 m^-3) */')
       CALL WRITE_0D_RL(wC_sink,INDEX_NONE,
      &'wC_sink =',
      &' /* sinking velocity for POC (m/s) */')
@@ -2178,6 +2136,9 @@ C--   Print parameters from DARWIN_PARAMS.h
      &'inhib_graz_exp =',
      &' /* exponent for grazing inhibition (0 to turn off inhibition) */
      &')
+      CALL WRITE_0D_RL(hillnumUptake,INDEX_NONE,
+     &'hillnumUptake =',
+     &' /* exponent for limiting quota uptake in nutrient uptake */')
       CALL WRITE_0D_RL(hillnumGraz,INDEX_NONE,
      &'hillnumGraz =',
      &' /* exponent for limiting quota uptake in grazing */')
@@ -2518,18 +2479,6 @@ C--   Print traits from DARWIN_TRAITS.h
      &'ksatFeT =',
      &' /* half-saturation conc. for iron uptake/limitation (mmol Fe m^-
      &3) */')
-      CALL WRITE_1D_RL(hillnumDIN,nphoto,INDEX_NONE,
-     &'hillnumDIN =',
-     &' /* exponent for limiting quota uptake in DIN uptake */')
-      CALL WRITE_1D_RL(hillnumPO4,nphoto,INDEX_NONE,
-     &'hillnumPO4 =',
-     &' /* exponent for limiting quota uptake in PO4 uptake */')
-      CALL WRITE_1D_RL(hillnumFeT,nphoto,INDEX_NONE,
-     &'hillnumFeT =',
-     &' /* exponent for limiting quota uptake in FeT uptake */')
-      CALL WRITE_1D_RL(hillnumSiO2,nphoto,INDEX_NONE,
-     &'hillnumSiO2 =',
-     &' /* exponent for limiting quota uptake in SiO2 uptake */')
       CALL WRITE_1D_RL(kexcc,nplank,INDEX_NONE,
      &'kexcc =',
      &' /* exudation rate for carbon (s^-1) */')
@@ -2655,130 +2604,6 @@ C--   Print traits from DARWIN_TRAITS.h
      &'normI =',
      &' /* normalization factor for non-Geider light curve */')
 #endif
-#ifdef DARWIN_MACROMOLECULAR_GROWTH
-      CALL WRITE_1D_RL(Y_CP_Plip,nplank,INDEX_NONE,
-     &'Y_CP_Plip = ',
-     &' /* C/P molar ratio of PG: Phosphatidyl glycerol (molC molP^-1) *
-     &/')
-      CALL WRITE_1D_RL(Y_CN_protein,nplank,INDEX_NONE,
-     &'Y_CN_protein = ',
-     &' /* C/N molar ratio in protein (molC molN^-1) */')
-      CALL WRITE_1D_RL(Y_NC_chl,nplank,INDEX_NONE,
-     &'Y_NC_chl = ',
-     &' /* N/C molar ratio in chlorophyll (molN molC^-1) */')
-      CALL WRITE_1D_RL(Y_CN_cyano,nplank,INDEX_NONE,
-     &'Y_CN_cyano = ',
-     &' /* C/N molar ratio of cyanophycin (molC molN^-1) */')
-      CALL WRITE_1D_RL(Y_PN_nucacid,nplank,INDEX_NONE,
-     &'Y_PN_nucacid = ',
-     &' /* P/N molar ratio of RNA (molP molN^-1) */')
-      CALL WRITE_1D_RL(Y_CN_DNA,nplank,INDEX_NONE,
-     &'Y_CN_DNA = ',
-     &' /* C/N molar ratio of DNA (molC molN^-1) */')
-      CALL WRITE_1D_RL(Y_CN_RNA,nplank,INDEX_NONE,
-     &'Y_CN_RNA = ',
-     &' /* C/N molar ratio of RNA (molC molN^-1) */')
-      CALL WRITE_1D_RL(Y_THY_P,nplank,INDEX_NONE,
-     &'Y_THY_P = ',
-     &' /* the stoichiometric ratio for cell phosphorus in thylakoid mem
-     &brane to chlorophyll ((molP)/(molC in chl)^-1) */')
-      CALL WRITE_1D_RL(Y_FeN_photo,nplank,INDEX_NONE,
-     &'Y_FeN_photo = ',
-     &' /* Fe/N ratio in photosystem iron (molFe mol N^-1) */')
-      CALL WRITE_1D_RL(ECo2Prod,nplank,INDEX_NONE,
-     &'ECo2Prod = ',
-     &' /* CO2 production ratio (dimensionless) */')
-      CALL WRITE_1D_RL(maintConsum,nplank,INDEX_NONE,
-     &'maintConsum = ',
-     &' /* maintenance carbohydrate consumption (s^-1) */')
-      CALL WRITE_1D_RL(VI_max,nplank,INDEX_NONE,
-     &'VI_max = ',
-     &' /* carbon fixing rate (molC (molC in Chl)^-1 s^-1) */')
-      CALL WRITE_1D_RL(A_I,nplank,INDEX_NONE,
-     &'A_I = ',
-     &' /* coefficient characterizing the absorption cross section (umol
-     &^-1 m2 s) */')
-      CALL WRITE_1D_RL(QC_other,nplank,INDEX_NONE,
-     &'QC_other = ',
-     &' /* essential carbon (lipid membrane, etc.) (molC molC^-1) */')
-      CALL WRITE_1D_RL(QC_pro_other,nplank,INDEX_NONE,
-     &'QC_pro_other = ',
-     &' /*  (molC molC^-1) */')
-      CALL WRITE_1D_RL(QP_other,nplank,INDEX_NONE,
-     &'QP_other = ',
-     &' /* constant part of phosphorus (molP molC^-1) */')
-      CALL WRITE_1D_RL(QP_RNA_min,nplank,INDEX_NONE,
-     &'QP_RNA_min = ',
-     &' /*  (molP molC^-1) */')
-      CALL WRITE_1D_RL(QC_DNA,nplank,INDEX_NONE,
-     &'QC_DNA = ',
-     &' /* constant part of DNA in carbon (molC molC^-1) */')
-      CALL WRITE_1D_RL(QN_pro_other,nplank,INDEX_NONE,
-     &'QN_pro_other = ',
-     &' /*  (molN molC^-1) */')
-      CALL WRITE_1D_RL(QN_RNA_min,nplank,INDEX_NONE,
-     &'QN_RNA_min = ',
-     &' /* constant part of RNA in nitrogen (molN molC^-1) */')
-      CALL WRITE_1D_RL(QC_RNA_min,nplank,INDEX_NONE,
-     &'QC_RNA_min = ',
-     &' /* constant part of RNA in carbon (molN molC^-1) */')
-      CALL WRITE_1D_RL(QN_DNA,nplank,INDEX_NONE,
-     &'QN_DNA = ',
-     &' /* DNA in nitrogen (molN molC^-1) */')
-      CALL WRITE_1D_RL(QP_DNA,nplank,INDEX_NONE,
-     &'QP_DNA = ',
-     &' /* DNA in phosphorous (molP molC^-1) */')
-      CALL WRITE_1D_RL(QN_sto_max,nplank,INDEX_NONE,
-     &'QN_sto_max = ',
-     &' /* maximum nitrogen storage (molN molC^-1) */')
-      CALL WRITE_1D_RL(Qp_max,nplank,INDEX_NONE,
-     &'Qp_max = ',
-     &' /* maximum phosphorus quota (molP molC^-1) */')
-      CALL WRITE_1D_RL(Qfe_max,nplank,INDEX_NONE,
-     &'Qfe_max = ',
-     &' /* maximum iron quota (molFe molC^-1) */')
-      CALL WRITE_1D_RL(A_pho,nplank,INDEX_NONE,
-     &'A_pho = ',
-     &' /* A constant of proportionalty ((molC)/(molC in chl)^-1) */')
-      CALL WRITE_1D_RL(A_bio,nplank,INDEX_NONE,
-     &'A_bio = ',
-     &' /* constant for variable part of biosynthesis protein (molC molC
-     &^-1 s) */')
-      CALL WRITE_1D_RL(AP_RNA,nplank,INDEX_NONE,
-     &'AP_RNA = ',
-     &' /* constant for Variable part of RNA (molP molC^-1 s) */')
-      CALL WRITE_1D_RL(AN_RNA,nplank,INDEX_NONE,
-     &'AN_RNA = ',
-     &' /* constant for Variable part of RNA (molN molN^-1 s) */')
-      CALL WRITE_1D_RL(A_thy,nplank,INDEX_NONE,
-     &'A_thy = ',
-     &' /*  (molC (molC in chl)^-1) */')
-      CALL WRITE_1D_RL(Sf,nplank,INDEX_NONE,
-     &'Sf = ',
-     &' /* enhancement of photosynthesis due to size */')
-      CALL WRITE_1D_RL(VI_min,nplank,INDEX_NONE,
-     &'VI_min = ',
-     &' /* minimum photosynthesis rate (molC (molC in Chl)^-1 s^-1) */')
-      CALL WRITE_1D_RL(QC_chlMax,nplank,INDEX_NONE,
-     &'QC_chlMax = ',
-     &' /* maximum chlorophyll concentration at minimum light (molC molC
-     &^-1) */')
-      CALL WRITE_1D_RL(QnNoChl,nplank,INDEX_NONE,
-     &'QnNoChl = ',
-     &' /* minimum QN at zero growth rate (molN molC^-1) */')
-      CALL WRITE_1D_RL(QpNoChl,nplank,INDEX_NONE,
-     &'QpNoChl = ',
-     &' /* minimum QP at zero growth rate (molP molC^-1) */')
-      CALL WRITE_1D_RL(QfeNoChl,nplank,INDEX_NONE,
-     &'QfeNoChl = ',
-     &' /* minimum QFe at zero growth rate (molFe molC^-1) */')
-      CALL WRITE_1D_RL(QC_const,nplank,INDEX_NONE,
-     &'QC_const =',
-     &' /* constant portion of the cell (molC molC^-1) */')
-#endif
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--   Print dependent traits
       CALL WRITE_1D_RL(alpha_mean,nplank,INDEX_NONE,
      &'alpha_mean =',
      &' /* mean initial slope of light curve (over wavebands) (mmol C s-

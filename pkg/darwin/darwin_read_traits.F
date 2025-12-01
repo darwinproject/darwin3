@@ -99,10 +99,6 @@
      &    ksatPO4,
      &    ksatSiO2,
      &    ksatFeT,
-     &    hillnumDIN,
-     &    hillnumPO4,
-     &    hillnumFeT,
-     &    hillnumSiO2,
      &    kexcc,
      &    kexcn,
      &    kexcp,
@@ -138,33 +134,6 @@
      &    ksatPARDVM,
      &    fracPARmort,
      &    ExportFracDVM
-#ifdef DARWIN_MACROMOLECULAR_GROWTH
-     &   ,Y_CP_Plip,
-     &    Y_CN_protein,
-     &    Y_NC_chl,
-     &    Y_CN_cyano,
-     &    Y_PN_nucacid,
-     &    Y_CN_DNA,
-     &    Y_CN_RNA,
-     &    Y_THY_P,
-     &    Y_FeN_photo,
-     &    ECo2Prod,
-     &    maintConsum,
-     &    VI_max,
-     &    A_I,
-     &    QC_other,
-     &    QC_pro_other,
-     &    QP_other,
-     &    QP_RNA_min,
-     &    QC_DNA,
-     &    QN_sto_max,
-     &    Qp_max,
-     &    Qfe_max,
-     &    A_pho,
-     &    A_bio,
-     &    AP_RNA,
-     &    Sf
-#endif
 
       NAMELIST/DARWIN_DEPENDENT_TRAITS/
 #ifndef DARWIN_ALLOW_GEIDER
@@ -180,21 +149,6 @@
      &    biovol_bygroup,
      &    alpha_mean,
      &    chl2cmin
-#ifdef DARWIN_MACROMOLECULAR_GROWTH
-     &   ,QN_pro_other
-     &   ,QN_RNA_min
-     &   ,QC_RNA_min
-     &   ,QN_DNA
-     &   ,QP_DNA
-     &   ,A_thy
-     &   ,AN_RNA
-     &   ,VI_min
-     &   ,QC_chlMax
-     &   ,QnNoChl
-     &   ,QpNoChl
-     &   ,QfeNoChl
-     &   ,QC_const
-#endif
 
 
 #ifdef ALLOW_RADTRANS
@@ -294,29 +248,6 @@ C       only Coccolithophores have PIC
        ELSE
         normI(jp) = 1.0
        ENDIF
-      ENDDO
-#endif
-
-#ifdef DARWIN_MACROMOLECULAR_GROWTH
-      DO jp = 1,nplank
-        QN_pro_other(jp) = QC_pro_other(jp)/Y_CN_protein(jp)
-        QN_RNA_min(jp)   = QP_RNA_min(jp)/Y_PN_nucacid(jp)
-        QC_RNA_min(jp)   = QN_RNA_min(jp)*Y_CN_RNA(jp)
-        QN_DNA(jp)       = QC_DNA(jp)/Y_CN_DNA(jp)
-        QP_DNA(jp)       = QN_DNA(jp)*Y_PN_nucacid(jp)
-        A_thy(jp)        = Y_THY_P(jp)*Y_CP_Plip(jp)
-        AN_RNA(jp)       = AP_RNA(jp)*Y_CN_protein(jp)/Y_PN_nucacid(jp)
-
-        QC_const(jp) = QC_pro_other(jp) + QN_RNA_min(jp)*Y_CN_RNA(jp) +
-     &    QC_DNA(jp) + QC_other(jp)
-        VI_min(jp) = maintConsum(jp)*
-     &    (1. + A_thy(jp) + A_pho(jp))/(1 - QC_const(jp))
-        QC_chlMax(jp) = maintConsum(jp)/VI_min(jp)
-
-        QnNoChl(jp) = QN_DNA(jp) + QN_RNA_min(jp) + QN_pro_other(jp)
-        QpNoChl(jp) = QP_RNA_min(jp) + QN_DNA(jp)*Y_PN_nucacid(jp)
-     &              + QP_other(jp)
-        QfeNoChl(jp) = 0.0 _d 0
       ENDDO
 #endif
 
@@ -507,11 +438,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
         ksatPO4(jp) = DARWIN_UNUSED
         ksatSiO2(jp) = DARWIN_UNUSED
         ksatFeT(jp) = DARWIN_UNUSED
-
-        hillnumDIN(jp) = DARWIN_UNUSED
-        hillnumPO4(jp) = DARWIN_UNUSED
-        hillnumFeT(jp) = DARWIN_UNUSED
-        hillnumSiO2(jp) = DARWIN_UNUSED
 
 #ifdef DARWIN_ALLOW_GEIDER
         inhibGeider(jp) = DARWIN_UNUSED
