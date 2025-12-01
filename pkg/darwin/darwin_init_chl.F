@@ -108,7 +108,7 @@ C!!!!!  do not take ice into account for backwards compatibility
 
 #else /* not DARWIN_CHL_INIT_LEGACY */
 
-C      compute PAR from current Chl
+C      compute PAR from current Chl 
 C      (usually initialized to 0 if darwin_chlInitBalanced)
 C      do not fill diagnostics,
 C      do not take ice into account for backwards compatibility
