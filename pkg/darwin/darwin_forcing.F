@@ -1258,6 +1258,12 @@ C      nutrient consumption diagnostics
      &           'rDIC_POC',0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iDisscDIC_PIC),
      &           'dDIC_PIC',0,Nr,2,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,ifIphavg),'fIph_avg ',
+     &       0,Nr,2,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,ifTphavg),'fTph_avg ',
+     &       0,Nr,2,bi,bj,myThid)
+      CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,ifnutavg),'fnut_avg ',
+     &       0,Nr,2,bi,bj,myThid)
 #ifdef DARWIN_ALLOW_CARBON
        CALL DIAGNOSTICS_FILL(diags(1-OLx,1-OLy,1,iConsALK),'C_ALK   ',
      &       0,Nr,2,bi,bj,myThid)
