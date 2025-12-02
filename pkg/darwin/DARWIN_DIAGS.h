@@ -49,6 +49,15 @@ C Contains indices into diagnostics array
       integer ifnut
       integer ifIph
       integer ifTph
+# ifdef DARWIN_MACROMOLECULAR_GROWTH
+      integer iPChl, iVN, iVP
+      integer iCChl, iNChl, iNPho, iNSyn, iNPrn, iNRNA
+      integer iNDNA, iNSTO, iNEXC
+      integer iPRNA, iPDNA, iPTHY, iPCON, iPSTO, iPEXC
+      integer iFPHO, iFSTO, iFEXC, iY_RQ
+      integer iMODE, iFe_C, iexQc
+      integer ilimC, ilimL
+# endif
 #endif
 #ifdef DARWIN_ALLOW_CSTORE
       integer iEX
@@ -133,7 +142,38 @@ C Contains indices into diagnostics array
       PARAMETER(ifnut=ilimS+nplank)
       PARAMETER(ifIph=ifnut+nplank)
       PARAMETER(ifTph=ifIph+nplank)
+# ifdef DARWIN_MACROMOLECULAR_GROWTH
+      PARAMETER(iPChl=ifTph+nplank)
+      PARAMETER(iVN=  iPChl+nPhoto)
+      PARAMETER(iVP=  iVN  +nPhoto)
+      PARAMETER(iMODE=iVP  +nPhoto)
+      PARAMETER(iFe_C=iMODE+nPhoto)
+      PARAMETER(iexQc=iFe_C+nPhoto)
+      PARAMETER(iCChl=iexQc+nPhoto)
+      PARAMETER(iNChl=iCChl+nPhoto)
+      PARAMETER(iNPho=iNChl+nPhoto)
+      PARAMETER(iNSyn=iNPho+nPhoto)
+      PARAMETER(iNPrn=iNSyn+nPhoto)
+      PARAMETER(iNRNA=iNPrn+nPhoto)
+      PARAMETER(iNDNA=iNRNA+nPhoto)
+      PARAMETER(iNSTO=iNDNA+nPhoto)
+      PARAMETER(iNEXC=iNSTO+nPhoto)
+      PARAMETER(iPRNA=iNEXC+nPhoto)
+      PARAMETER(iPDNA=iPRNA+nPhoto)
+      PARAMETER(iPTHY=iPDNA+nPhoto)
+      PARAMETER(iPCON=iPTHY+nPhoto)
+      PARAMETER(iPSTO=iPCON+nPhoto)
+      PARAMETER(iPEXC=iPSTO+nPhoto)
+      PARAMETER(iFPHO=iPEXC+nPhoto)
+      PARAMETER(iFSTO=iFPHO+nPhoto)
+      PARAMETER(iFEXC=iFSTO+nPhoto)
+      PARAMETER(iY_RQ=iFEXC+nPhoto)
+      PARAMETER(ilimC=iY_RQ+nPhoto)
+      PARAMETER(ilimL=ilimC+nPhoto)
+      PARAMETER(darwin_nDiag=ilimL+nPhoto-1)
+# else
       PARAMETER(darwin_nDiag=ifTph+nplank-1)
+# endif
 #else
       PARAMETER(iPCplank=iPPplank)
       PARAMETER(iGRplank=iPPplank)
