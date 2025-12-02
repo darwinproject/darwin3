@@ -473,7 +473,6 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`synthcost`              & 0.0                   & mmol C / mmol N                  & cost of biosynthesis
    :varlink:`inhib_graz`             & 1.0                   & (mmol C m\ :sup:`-3`)\ :sup:`-1` & inverse decay scale for grazing inhibition
    :varlink:`inhib_graz_exp`         & 0.0                   &                                  & exponent for grazing inhibition (0 to turn off inhibition)
-   :varlink:`hillnumUptake`          & 1.0                   &                                  & exponent for limiting quota uptake in nutrient uptake
    :varlink:`hillnumGraz`            & 1.0                   &                                  & exponent for limiting quota uptake in grazing
    :varlink:`hollexp`                & 1.0                   &                                  & grazing exponential 1= "Holling 2", 2= "Holling 3"
    :varlink:`phygrazmin`             & 120D-10               & mmol C m\ :sup:`-3`              & minimum total prey conc for grazing to occur
@@ -546,7 +545,7 @@ Traits are generated from the parameters in ``&DARWIN_TRAIT_PARAMS``
 
 .. csv-table:: Namelist DARWIN_TRAITS
    :delim: &
-   :widths: auto
+   :widths: 24,14,20,42
    :class: longtable
    :header: Trait, Symbol, Units, Description
 
@@ -642,6 +641,10 @@ Traits are generated from the parameters in ``&DARWIN_TRAIT_PARAMS``
    :varlink:`ksatDOC`          & :math:`{k^{\op{DOC}}}`                 & mmol C m\ :sup:`-3`                           & half-saturation of DOC for bacterial growth
    :varlink:`ksatDOP`          & :math:`{k^{\op{DOP}}}`                 & mmol P m\ :sup:`-3`                           & half-saturation of DOP for bacterial growth
    :varlink:`ksatDOFe`         & :math:`{k^{\op{DOFe}}}`                & mmol Fe m\ :sup:`-3`                          & half-saturation of DOFe for bacterial growth
+   :varlink:`hillnumDIN`       & :math:`h_{\mathrm{DIN}}`               &                                               & exponent for limiting quota in DIN uptake
+   :varlink:`hillnumPO4`       & :math:`h_{\mathrm{PO4}}`               &                                               & exponent for limiting quota in PO4 uptake
+   :varlink:`hillnumFeT`       & :math:`h_{\mathrm{PO4}}`               &                                               & exponent for limiting quota in FeT uptake
+   :varlink:`hillnumSiO2`      & :math:`h_{\mathrm{SiO2}}`              &                                               & exponent for limiting quota in SiO2 uptake
 
 
 .. csv-table:: Trait matrices for grazing; indices (prey, pred)
@@ -820,6 +823,10 @@ particularly useful for specifying a rate in ‘per-day’ units, i.e.,
    :varlink:`Qfemin`             & :varlink:`a_Qfemin`               & 1.50D-6       & :varlink:`b_Qfemin`                & 0.00
    :varlink:`Qfemax`             & :varlink:`a_Qfemax`               & 80D-6         & :varlink:`b_Qfemax`                & 0.00
    :varlink:`kexcfe`             & :varlink:`a_kexcFe`               & 0.00  / day   & :varlink:`b_kexcFe`                & 0.00
+   :varlink:`hillnumDIN`         & :varlink:`a_hillnumDIN`           & 1.0           &                                    &
+   :varlink:`hillnumPO4`         & :varlink:`a_hillnumPO4`           & 1.0           &                                    &
+   :varlink:`hillnumFeT`         & :varlink:`a_hillnumFeT`           & 1.0           &                                    &
+   :varlink:`hillnumSiO2`        & :varlink:`a_hillnumSiO2`          & 1.0           &                                    &
    :varlink:`ExportFracPreyPred` & :varlink:`grp_ExportFracPreyPred` & 0.5           & *(nGroup* :math:`\times` *nGroup)*
    :varlink:`asseff`             & :varlink:`grp_ass_eff`            & 0.7           & *(nGroup* :math:`\times` *nGroup)*
    :varlink:`aphy_chl`           & :varlink:`aphy_chl_type`          & *read*        & *via* :varlink:`grp_aptype`
