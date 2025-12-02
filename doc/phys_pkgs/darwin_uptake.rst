@@ -33,7 +33,7 @@ Without P quota:
 
 Monod limitation
 
-.. math:: \gamma^{\mathrm{P}}_j = \frac{\mathrm{PO}_4}{\mathrm{PO}_4 + k^{\op{PO4}}_j}
+.. math:: \gamma^{\mathrm{P}}_j = \frac{\mathrm{PO}_4}{\mathrm{PO}_4 + k^{\mathrm{PO4}}_j}
 
 .. math:: U^{\mathrm{P}}_j = R^{{\mathrm{P}}:{\mathrm{C}}}_j U^{\op{DIC}}_j
 
@@ -50,7 +50,7 @@ normalized Droop limitation
 
 .. math::
 
-   U^{\mathrm{P}}_j = V^{{\mathrm{P}}\max}_j \frac{\mathrm{PO}_4}{\mathrm{PO}_4 + k^{\op{PO4}}_j}
+   U^{\mathrm{P}}_j = V^{{\mathrm{P}}\max}_j \frac{\mathrm{PO}_4}{\mathrm{PO}_4 + k^{\mathrm{PO4}}_j}
               {{\text{reg}}}^{Q{\mathrm{P}}}_j \cdot f^{{\text{up}}}_j(T) \cdot {c}_j
 
 where
@@ -59,9 +59,10 @@ where
 
      {{\text{reg}}}^{Q{\mathrm{P}}}_j = \left( \left[ \frac{Q^{{\mathrm{P}}\max}_j - Q^{{\mathrm{P}}}_j}
                                 {Q^{{\mathrm{P}}\max}_j - Q^{{\mathrm{P}}\min}_j}
-                    \right]_0^1 \right)^{h_{\op{U}}}
+                    \right]_0^1 \right)^{h_{\mathrm{PO4}}}
 
-and the exponent, :math:`h_{\op{U}}`, is the Hill number for uptake (default 1).
+and the exponent, :math:`h_{\mathrm{PO4}}`, is the Hill number for PO\ :sub:`4`
+uptake (default 1).
 
 Si:
 '''
@@ -180,7 +181,7 @@ where
 
    {{\text{reg}}}^{Q{\mathrm{N}}}_j = \left( \left[ \frac{Q^{{\mathrm{N}}\max}_j - Q^{{\mathrm{N}}}_j}
                                 {Q^{{\mathrm{N}}\max}_j - Q^{{\mathrm{N}}\min}_j}
-                    \right]_0^1 \right)^{h_{\op{U}}}
+                    \right]_0^1 \right)^{h_{\mathrm{DIN}}}
 
 diazotroph:
 """""""""""
@@ -247,7 +248,7 @@ where
 
    {{\text{reg}}}^{Q\op{Fe}}_j = \left( \left[ \frac{Q^{\op{Fe}\max}_j - Q^{\op{Fe}}_j}
                                  {Q^{\op{Fe}\max}_j - Q^{\op{Fe}\min}_j}
-                    \right]_0^1 \right)^{h_{\op{U}}}
+                    \right]_0^1 \right)^{h_{\mathrm{FeT}}}
 
 
 Effective half saturation constants
@@ -289,7 +290,7 @@ Uptake and limitation parameters
 
 .. csv-table:: Uptake parameters
    :delim: &
-   :widths: 13,20,17,15,15,20
+   :widths: 16,18,14,15,15,22
    :class: longtable
    :header: Trait, Param, Symbol, Default, Units, Description
    :name: tab_phys_pkg_darwin_uptake
@@ -313,13 +314,13 @@ Uptake and limitation parameters
    :varlink:`vmaxNO2`  & :varlink:`a <a_vmaxNO2>`,\ :varlink:`b_vmaxNO2`    & :math:`V^{\op{NO2}\op{max}}_j`  & (0.51/day)  V\ :sup:`--0.27` & mmol N / (mmol C s)  & maximum nitrite uptake rate
    :varlink:`vmaxNH4`  & :varlink:`a <a_vmaxNH4>`,\ :varlink:`b_vmaxNH4`    & :math:`V^{\op{NH4}\op{max}}_j`  & (0.51/day)  V\ :sup:`--0.27` & mmol N / (mmol C s)  & maximum ammonia uptake rate
    :varlink:`vmaxN`    & :varlink:`a <a_vmaxN>`,\ :varlink:`b_vmaxN`      & :math:`V^{\op{N}\op{max}}_j`    & (1.28/day)  V\ :sup:`--0.27` & mmol N / (mmol C s)  & maximum nitrogen uptake rate for diazotrophs
-   :varlink:`vmaxPO4`  & :varlink:`a <a_vmaxPO4>`,\ :varlink:`b_vmaxPO4`    & :math:`V^{\op{PO4}\op{max}}_j`  & (0.077/day) V\ :sup:`--0.27` & mmol P / (mmol C s)  & maximum phosphate uptake rate
+   :varlink:`vmaxPO4`  & :varlink:`a <a_vmaxPO4>`,\ :varlink:`b_vmaxPO4`    & :math:`V^{\mathrm{PO4}\op{max}}_j`  & (0.077/day) V\ :sup:`--0.27` & mmol P / (mmol C s)  & maximum phosphate uptake rate
    :varlink:`vmaxSiO2` & :varlink:`a <a_vmaxSiO2>`,\ :varlink:`b_vmaxSiO2`   & :math:`V^{\op{SiO2}\op{max}}_j` & (0.077/day) V\ :sup:`--0.27` & mmol Si / (mmol C s) & maximum silica uptake rate
    :varlink:`vmaxFeT`  & :varlink:`a <a_vmaxFeT>`,\ :varlink:`b_vmaxFeT`    & :math:`V^{\op{Fe}\op{max}}_j`   & (14E-6/day) V\ :sup:`--0.27` & mmol Fe / (mmol C s) & maximum iron uptake rate
    :varlink:`ksatNO3`  & :varlink:`a <a_ksatNO3>`,\ :varlink:`b_ksatNO3`    & :math:`k^{\op{NO3}}_j`          & 0.085 V\ :sup:`0.27`         & mmol N m\ :sup:`-3`  & half-saturation conc. for nitrate uptake/limitation
    :varlink:`ksatNO2`  & :varlink:`a <a_ksatNO2>`,\ :varlink:`b_ksatNO2`    & :math:`k^{\op{NO2}}_j`          & 0.17  V\ :sup:`0.27`         & mmol N m\ :sup:`-3`  & half-saturation conc. for nitrite uptake/limitation
    :varlink:`ksatNH4`  & :varlink:`a <a_ksatNH4>`,\ :varlink:`b_ksatNH4`    & :math:`k^{\op{NH4}}_j`          & 0.17  V\ :sup:`0.27`         & mmol N m\ :sup:`-3`  & half-saturation conc. for ammonia uptake/limitation
-   :varlink:`ksatPO4`  & :varlink:`a <a_ksatPO4>`,\ :varlink:`b_ksatPO4`    & :math:`k^{\op{PO4}}_j`          & 0.026 V\ :sup:`0.27`         & mmol P m\ :sup:`-3`  & half-saturation conc. for phosphate uptake/limitation
+   :varlink:`ksatPO4`  & :varlink:`a <a_ksatPO4>`,\ :varlink:`b_ksatPO4`    & :math:`k^{\mathrm{PO4}}_j`          & 0.026 V\ :sup:`0.27`         & mmol P m\ :sup:`-3`  & half-saturation conc. for phosphate uptake/limitation
    :varlink:`ksatSiO2` & :varlink:`a <a_ksatSiO2>`,\ :varlink:`b_ksatSiO2`   & :math:`k^{\op{SiO2}}_j`         & 0.024 V\ :sup:`0.27`         & mmol Si m\ :sup:`-3` & half-saturation conc. for silica uptake/limitation
    :varlink:`ksatFeT`  & :varlink:`a <a_ksatFeT>`,\ :varlink:`b_ksatFeT`    & :math:`k^{\op{Fe}}_j`           & 80E-6 V\ :sup:`0.27`         & mmol Fe m\ :sup:`-3` & half-saturation conc. for iron uptake/limitation
                        & :varlink:`a_ksatNO2fac`     &                                 & 1                            &                      & *used for eff.ksat*
@@ -330,5 +331,8 @@ Uptake and limitation parameters
    :varlink:`R_FeC`    & :varlink:`a_R_FeC`          & :math:`R^{\op{Fe}:\op{C}}_j`    & 1E-3/120                     & mmol Fe / mmol C     & iron-carbon ratio
    :varlink:`R_ChlC`   & :varlink:`a_R_ChlC`         & :math:`R^{\op{chl}c}_j`         & 16/120                       & mg Chl / mmol C      & chlorophyll-carbon ratio
    :varlink:`amminhib` & :varlink:`a_amminhib`       & :math:`\sigma^{\op{amm}}_j`     & 4.6                          & m\ :sup:`3` / mmol N & coefficient for NH4 inhibition of NO uptake
-                       & :varlink:`hillnumUptake`    & :math:`h^{\op{U}}`              & 1.0                          &                      & exponent for limiting quota uptake in nutrient uptake
+   :varlink:`hillnumDIN` & :varlink:`a_hillnumDIN`   & :math:`h_{\mathrm{DIN}}`        & 1.0                          &                      & exponent for limiting quota in DIN uptake
+   :varlink:`hillnumPO4` & :varlink:`a_hillnumPO4`   & :math:`h_{\mathrm{PO4}}`        & 1.0                          &                      & exponent for limiting quota in PO4 uptake
+   :varlink:`hillnumFeT` & :varlink:`a_hillnumFeT`   & :math:`h_{\mathrm{FeT}}`        & 1.0                          &                      & exponent for limiting quota in FeT uptake
+   :varlink:`hillnumSiO2` & :varlink:`a_hillnumSiO2` & :math:`h_{\mathrm{SiO2}}`       & 1.0                          &                      & exponent for limiting quota in SiO2 uptake
 
