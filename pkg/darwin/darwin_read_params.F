@@ -99,6 +99,7 @@ C----
      &    TempAeArr,
      &    TemprefArr,
      &    TempCoeffArr,
+     &    TempAeArrMacromol,
      &    reminTempAe,
      &    mortTempAe,
      &    mort2TempAe,
@@ -143,6 +144,7 @@ C----
      &    KPON,
      &    KPOFe,
      &    KPOSi,
+     &    ksatO2remin,
      &    wC_sink,
      &    wP_sink,
      &    wN_sink,
@@ -230,7 +232,6 @@ C----
      &    synthcost,
      &    inhib_graz,
      &    inhib_graz_exp,
-     &    hillnumUptake,
      &    hillnumGraz,
      &    hollexp,
      &    phygrazmin,
@@ -452,6 +453,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       TempAeArr = -4000.0 _d 0
       TemprefArr = 293.15 _d 0
       TempCoeffArr = 0.5882 _d 0
+      TempAeArrMacromol = -8420.0 _d 0
       reminTempAe = 0.0438 _d 0
       mortTempAe = 0.0438 _d 0
       mort2TempAe = 0.0438 _d 0
@@ -498,6 +500,7 @@ C
       KPON = KPOC
       KPOFe = KPOC
       KPOSi = 1 _d 0/(300 _d 0*pday)
+      ksatO2remin = 0 _d 0
       wC_sink = 10 _d 0/pday
       wP_sink = wC_sink
       wN_sink = wC_sink
@@ -554,7 +557,6 @@ C     O2crit from Lipschultz et al 1990, DSR 37, 1513-1541:
       synthcost = 0.0 _d 0
       inhib_graz = 1.0 _d 0
       inhib_graz_exp = 0.0 _d 0
-      hillnumUptake = 1.0 _d 0
       hillnumGraz = 1.0 _d 0
       hollexp = 1.0 _d 0
       phygrazmin = 120 _d -10
