@@ -81,10 +81,10 @@ C CDOM is in carbon units and follows POC
 C include code for reading nutrient runoff from files
 #undef  DARWIN_NUTRIENT_RUNOFF
 
-C enable RADI sediment metamodel v1
+C enable RADI sediment metamodel v1 (requires DARWIN_BOTTOM_SINK)
 #undef DARWIN_ALLOW_RADIv1
 
-C enable RADI sediment metamodel v2
+C enable RADI sediment metamodel v2 (requires DARWIN_BOTTOM_SINK)
 #undef DARWIN_ALLOW_RADIv2
 
 C include diel vertical migration code
