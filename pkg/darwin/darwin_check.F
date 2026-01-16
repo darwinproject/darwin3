@@ -346,6 +346,20 @@ C check exf is compiled and used
       STOP 'ABNORMAL END: S/R DARWIN_CHECK'
 #endif
 
+#if defined DARWIN_ALLOW_RADIv1 && ! defined DARWIN_BOTTOM_SINK
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'DARWIN_ALLOW_RADIv1 requires DARWIN_BOTTOM_SINK.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: DARWIN_CHECK: RADIv1 without BOTTOM_SINK'
+#endif
+
+#if defined DARWIN_ALLOW_RADIv2 && ! defined DARWIN_BOTTOM_SINK
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'DARWIN_ALLOW_RADIv2 requires DARWIN_BOTTOM_SINK.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: DARWIN_CHECK: RADIv2 without BOTTOM_SINK'
+#endif
+
 C check we are not using hollexp and also inhib_graz or DARWIN_GRAZING_SWITCH
       IF (hollexp .NE. 1.0 _d 0) THEN
         IF (inhib_graz_exp .NE. 0) THEN
