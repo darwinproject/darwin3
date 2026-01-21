@@ -104,7 +104,7 @@ Flow diagrams for the various chemical elements:
    :alt: Flow of phosphorus schematic
    :name: figdarwinPCDOM
 
-   The flow of phosphorus wich CDOM.
+   The flow of phosphorus with CDOM.
 
 .. figure:: figs/darwin_P_graz.*
    :width: 75%
