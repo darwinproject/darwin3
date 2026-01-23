@@ -1475,7 +1475,7 @@ C       add B consum and accumulating remin, and prod:
         reminDOFe = reminDOFe + respDOFe
 
        ENDIF
-C     j loop end
+C     bacteria j loop end
       ENDDO
 
 C=======================================================================
