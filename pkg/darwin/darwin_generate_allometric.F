@@ -53,6 +53,7 @@ C compute cell volumes in micrometer^3
 C
 C in decreasing precedence (if bold quantity is set):
 C
+C   V = 10**(logvolbase + (grp_logvolind(j,g)-1)*logvolinc)
 C   V = GRP_BIOVOL(j,g)
 C   V = 10**(logvolbase+(GRP_BIOVOLIND(j,g)-1)*logvolinc)
 C   V = 10**(logvolbase+(LOGVOL0IND(g)+j-2)*logvolinc)
