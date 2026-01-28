@@ -1118,11 +1118,18 @@ C         only 1 waveband without DARWIN_ALLOW_GEIDER
 #endif /* DARWIN_ALLOW_GEIDER */
 
 #ifdef DARWIN_DIAG_PERTYPE
+# ifdef DARWIN_ALLOW_CSTORE
+        IF (Dmd_min==Dmd_NC) diags(ilimN+j-1) = 1 _d 0
+        IF (Dmd_min==Dmd_PC) diags(ilimP+j-1) = 1 _d 0
+        IF (Dmd_min==Dmd_FeC) diags(ilimF+j-1) = 1 _d 0
+        IF (Dmd_min==Dmd_SiC) diags(ilimS+j-1) = 1 _d 0
+# else
 C  which nutrient is limiting growth?
         IF (limitnut==limitn) diags(ilimN+j-1) = 1 _d 0
         IF (limitnut==limitp) diags(ilimP+j-1) = 1 _d 0
         IF (limitnut==limitfe) diags(ilimF+j-1) = 1 _d 0
         IF (limitnut==limitsi) diags(ilimS+j-1) = 1 _d 0
+# endif
 C factors that go into growth equation
         diags(ifIph+j-1) = limitI
         fIph_sum = fIph_sum + limitI * X(j)
