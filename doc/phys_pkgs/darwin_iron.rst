@@ -31,6 +31,8 @@ set it to 1 if the deposition rate in :varlink:`ironfile` is already of
 soluble iron.  :varlink:`darwin_inscal_iron` can be used to convert units on the fly.
 
 
+.. _ssub_phys_pkgs_darwin_iron_sedimentation:
+
 Sedimentation
 '''''''''''''
 

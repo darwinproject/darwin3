@@ -33,7 +33,7 @@ according to Follows et al. (2006) :cite:`follows:06`.  In this case,
 :varlink:`DARWIN_TOTALPHSCALE` can be defined to ensure all computations
 consistently use the total pH scale.  :varlink:`DARWIN_ALLOW_RADIv1` activates
 version 1 of the RADI sediment model following :cite:`sulpis:22`.  Version 2
-is activated by :varlink:`DARWIN_ALLOW_RADIv2`.
+:cite:`van_der_zant:2026` is activated by :varlink:`DARWIN_ALLOW_RADIv2`.
 
 The run-time parameter :varlink:`selectPHsolver` decides which pH solver to use:
 

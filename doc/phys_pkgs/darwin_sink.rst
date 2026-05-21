@@ -10,8 +10,9 @@ downward flux from a grid cell to the cell below (in mmol m\ :sup:`--2` s\
 :sup:`--1`) is
 
 .. math::
+   :label: eq_darwin_sink
 
-   F_{k,k+1} = w_{\mathrm{sink}} p_k
+   F^{\mathrm{sink}}_{k,k+1} = w_{\mathrm{sink}} p_k
 
 where :math:`w_{\mathrm{sink}}` is one of the sinking velocities in
 :numref:`tab_phys_pkg_darwin_sink_param` and :math:`p_k` is the corresponding
