@@ -13,3 +13,11 @@ span.eqno a.headerlink {
 div.math:hover a.headerlink {
     visibility: visible;
 }
+
+table.right-align-right-col td:last-child {
+    text-align: right
+}
+
+table.right-align-secondright-col td:nth-last-child(2) {
+    text-align: right
+}
