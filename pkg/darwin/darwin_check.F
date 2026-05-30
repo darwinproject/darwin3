@@ -609,6 +609,42 @@ C--   Print settings of some CPP flags.
      &                    SQUEEZE_RIGHT , myThid)
 #endif
 
+#ifdef DARWIN_SOLVESAPHE
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_SOLVESAPHE:                    defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#else
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_SOLVESAPHE:                NOT defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
+#ifdef DARWIN_USE_PLOAD
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_USE_PLOAD:                     defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#else
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_USE_PLOAD:                 NOT defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
+#ifdef DARWIN_MACROMOLECULAR_GROWTH
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_MACROMOLECULAR_GROWTH:         defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#else
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_MACROMOLECULAR_GROWTH:     NOT defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
 #ifdef DARWIN_ALLOW_DENIT
       WRITE(msgBuf,'(A)')
      &'// DARWIN_ALLOW_DENIT:                   defined'
@@ -689,6 +725,42 @@ C--   Print settings of some CPP flags.
 #else
       WRITE(msgBuf,'(A)')
      &'// DARWIN_NUTRIENT_RUNOFF:           NOT defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
+#ifdef DARWIN_ALLOW_RADIv1
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_ALLOW_RADIv1:                  defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#else
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_ALLOW_RADIv1:              NOT defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
+#ifdef DARWIN_ALLOW_RADIv2
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_ALLOW_RADIv2:                  defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#else
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_ALLOW_RADIv2:              NOT defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
+#ifdef DARWIN_ALLOW_DVM
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_ALLOW_DVM:                     defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#else
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_ALLOW_DVM:                 NOT defined'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
 #endif
@@ -874,6 +946,18 @@ C--   Print settings of some CPP flags.
 #else
       WRITE(msgBuf,'(A)')
      &'// DARWIN_IRON_SED_SOURCE_POP:       NOT defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
+#ifdef DARWIN_HYDROTHERMAL_VENTS
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_HYDROTHERMAL_VENTS:            defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#else
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_HYDROTHERMAL_VENTS:        NOT defined'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
 #endif
