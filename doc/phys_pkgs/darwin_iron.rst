@@ -168,14 +168,14 @@ and after each biogeochemical subtimestep.
    :varlink:`depthFeVent`   & :math:`d_{\op{vents}}`               & 750         & m                      & depth below which iron from hydrothermal vents is added
    :varlink:`solFeVent`     & :math:`\alpha_{\op{Fe}}^{\op{vents}}` & 0.002      &                        & solubility of iron from hydrothermal vents
    :varlink:`R_FeHe3_vent`  & :math:`R^{\op{Fe:^3He}}_{\op{vents}}` & 4.5E8      & mol Fe / mol :sup:`3`\ He & Fe:\ :sup:`3`\ He ratio for hydrothermal vents
-   :varlink:`scav`          & scav                                 & 0.4/year    & 1/s                    & fixed iron scavenging rate
+   :varlink:`scav`          & scav                                 & 0.4/year    & 1/s                    & fixed iron scavenging rate (#undef :varlink:`DARWIN_PART_SCAV`)
    :varlink:`scav_tau`      & :math:`\tau_{\op{scav}}`             & 0.2         &                        & factor for converting Th scavenging rates to iron ones
    :varlink:`scav_inter`    & :math:`I_{\op{scav}}`                & 0.079 / day & L\ :sup:`e` mg\ :sup:`-e` s\ :sup:`-1` & intercept of scavenging power law (e=e\ :sub:`scav`)
    :varlink:`scav_exp`      & :math:`e_{\op{scav}}`                & 0.58        &                        & exponent of scavenging power law
    :varlink:`scav_POC_wgt`  & :math:`w^{\op{scav}}_{\op{POC}}`     & 0.12728     & g/mmol |nbsp| C        & weight POC contributes to POM
    :varlink:`scav_PSi_wgt`  & :math:`w^{\op{scav}}_{\op{PSi}}`     & 0.0         & g/mmol |nbsp| Si       & weight PSi contributes to POM
    :varlink:`scav_PIC_wgt`  & :math:`w^{\op{scav}}_{\op{PIC}}`     & 0.0         & g/mmol |nbsp| C        & weight PIC contributes to POM
-   :varlink:`scav_rPOM`     & :math:`\op{rPOM}`                    & 0.0         & g/m\ :sup:`3`          & concentration of non-labile POM for scavenging
+   :varlink:`scav_degrPOM`  & :math:`\op{rPOM}`                    & 0.0         & g/m\ :sup:`3`          & concentration of non-labile POM for scavenging
    :varlink:`ligand_tot`    & :math:`L_{\op{T}}`                   & 1E-3        & mmol/m\ :sup:`3`       & total ligand concentration
    :varlink:`ligand_stab`   & :math:`\beta_{\op{stab}}`            & 0.2E6       & m\ :sup:`3`/mmol       & ligand stability rate ratio
    :varlink:`freefemax`     & :math:`\op{Fe}'_{\op{max}}`          & 0.4E-3      & mmol/m\ :sup:`3`       & max concentration of free iron

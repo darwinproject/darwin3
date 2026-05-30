@@ -167,6 +167,7 @@ To use spectral light, compile the radtrans package, see
    :varlink:`DARWIN_USE_PLOAD`                  & take atmospheric pressure from coupled atmospheric model
    :varlink:`DARWIN_ALLOW_RADIv1`               & enable RADI sediment metamodel version 1
    :varlink:`DARWIN_ALLOW_RADIv2`               & enable RADI sediment metamodel version 2
+   :varlink:`DARWIN_ALLOW_DVM`                  & include diel vertical migration code
    :varlink:`DARWIN_ALLOW_DENIT`                & enable denitrification code
    :varlink:`DARWIN_ALLOW_EXUDE`                & enable exudation of individual quotas
    :varlink:`ALLOW_OLD_VIRTUALFLUX`             & enable old virtualflux code for DIC and ALK
@@ -371,120 +372,162 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
 
 .. csv-table:: Namelist DARWIN_PARAMS
    :delim: &
-   :widths: auto
+   :widths: 26,21,16,37
    :class: longtable
    :header: Name, Default, Units, Description
 
-   :varlink:`darwin_seed`            & 0                     &                                  & seed for random number generator (for :varlink:`DARWIN_RANDOM_TRAITS`)
-   :varlink:`darwin_strict_check`    & .FALSE.               &                                  & stop instead of issuing warnings
-   :varlink:`iDEBUG`                 & 1                     &                                  & index in x dimension for debug prints
-   :varlink:`jDEBUG`                 & 1                     &                                  & index in y dimension for debug prints
-   :varlink:`kDEBUG`                 & 1                     &                                  & index in z dimension for debug prints
-   :varlink:`darwin_pickupSuff`      & :varlink:`pickupSuff` &                                  & pickup suffix for darwin; set to ' ' to disable reading at :varlink:`PTRACERS_Iter0`
-   :varlink:`darwin_linFSConserve`   & .FALSE.               &                                  & correct non-conservation due to linear free surface (globally)
-   :varlink:`darwin_read_phos`       & .FALSE.               &                                  & initial conditions for plankton biomass are in mmol P/m3
-   :varlink:`darwin_chlInitBalanced` & .FALSE.               &                                  & Initialize Chlorophyll to a balanced value following Geider
-   :varlink:`darwin_chlIter0`        & 0                     &                                  & Iteration number when to initialize Chlorophyll
-   :varlink:`katten_w`               & 4D-2                  & 1/m                              & atten coefficient water
-   :varlink:`katten_chl`             & 4D-2                  & m\ :sup:`2`/mg Chl               & atten coefficient chl
-   :varlink:`parfrac`                & 0.4                   &                                  & fraction Qsw that is PAR
-   :varlink:`parconv`                & 1/0.2174              & μEin/s/W                         & conversion from W/m2 to μEin/m2/s
-   :varlink:`tempnorm`               & 0.3                   &                                  & set temperature function (was 1.0)
-   :varlink:`TempAeArr`              & -4000.0               & K                                & slope for pseudo-Arrhenius (TEMP_VERSION 2)
-   :varlink:`TemprefArr`             & 293.15                & K                                & reference temp for pseudo-Arrhenius (TEMP_VERSION 2)
-   :varlink:`TempCoeffArr`           & 0.5882                &                                  & pre-factor for pseudo-Arrhenius (TEMP_VERSION 2)
-   :varlink:`reminTempAe`            & 0.0438                & 1/K                              & temperature coefficient for remineralization (TEMP_VERSION 4)
-   :varlink:`mortTempAe`             & 0.0438                & 1/K                              & temperature coefficient for linear mortality (TEMP_VERSION 4)
-   :varlink:`mort2TempAe`            & 0.0438                & 1/K                              & temperature coefficient for quadr. mortality (TEMP_VERSION 4)
-   :varlink:`uptakeTempAe`           & 0.0                   & 1/K                              & temperature coefficient for uptake (TEMP_VERSION 4)
-   :varlink:`alpfe`                  & 0.04                  &                                  & solubility of Fe dust
-   :varlink:`scav`                   & 0.4/year              & 1/s                              & fixed iron scavenging rate
-   :varlink:`scav_tau`               & 0.2                   &                                  & factor for converting Th scavenging rates to iron ones
-   :varlink:`scav_inter`             & 0.079 / day           & L\ :sup:`e` mg\ :sup:`-e` s\ :sup:`-1` & intercept of scavenging power law (e=e\ :sub:`scav`)
-   :varlink:`scav_exp`               & 0.58                  &                                  & exponent of scavenging power law
-   :varlink:`scav_POC_wgt`           & 0.02173               & g/mmol |nbsp| C                  & weight POC contributes to POM
-   :varlink:`scav_POSi_wgt`          & 0.069                 & g/mmol |nbsp| Si                 & weight POSi contributes to POM
-   :varlink:`scav_PIC_wgt`           & 0.100                 & g/mmol |nbsp| C                  & weight PIC contributes to POM
-   :varlink:`ligand_tot`             & 1D-3                  & mol/m\ :sup:`3`                  & total ligand concentration
-   :varlink:`ligand_stab`            & 2D5                   & m\ :sup:`3`/mol                  & ligand stability rate ratio
-   :varlink:`freefemax`              & 0.4D-3                & mol/m\ :sup:`3`                  & max concentration of free iron
-   :varlink:`depthfesed`             & -1.0                  & m                                & depth above which to add sediment source (was -1000)
-   :varlink:`fesedflux`              & 1D-3 / day            & mmol Fe /m\ :sup:`2`/s           & fixed iron flux from sediment
-   :varlink:`fesedflux_pcm`          & 0.68D-3               & mmol Fe / mmol C                 & iron input per POC sinking into bottom for :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`
-   :varlink:`fesedflux_min`          & 0.5D-3 / day          & mmol Fe /s                       & min iron input rate subtracted from fesedflux_pcm*wc_sink*POC
-   :varlink:`R_CP_fesed`             & 106                   & mmol C / mmol P                  & POC:POP conversion for :varlink:`DARWIN_IRON_SED_SOURCE_POP`
-   :varlink:`depthFeVent`            & 750                   & m                                & depth below which iron from hydrothermal vents is added
-   :varlink:`solFeVent`              & 0.002                 &                                  & solubility of iron from hydrothermal vents
-   :varlink:`R_FeHe3_vent`           & 4.5E8                 & mol Fe / mol :sup:`3`\ He & Fe:\ :sup:`3`\ He ratio for hydrothermal vents
-
-   :varlink:`Knita`                  & 1/(0.5 days)          & 1/s                              & ammonia oxidation rate
-   :varlink:`Knitb`                  & 1/(10 days)           & 1/s                              & nitrite oxidation rate
-   :varlink:`PAR_oxi`                & 10                    & μEin/m\ :sup:`2`/s               & critical light level after which oxidation starts
-   :varlink:`Kdoc`                   & 1/(100 days)          & 1/s                              & DOC remineralization rate
-   :varlink:`Kdop`                   & 1/(100 days)          & 1/s                              & DON remineralization rate
-   :varlink:`Kdon`                   & 1/(100 days)          & 1/s                              & DOP remineralization rate
-   :varlink:`KdoFe`                  & 1/(100 days)          & 1/s                              & DOFe remineralization rate
-   :varlink:`KPOC`                   & 1/(50 days)           & 1/s                              & POC remineralization rate
-   :varlink:`KPOP`                   & :varlink:`KPOC`       & 1/s                              & POP remineralization rate
-   :varlink:`KPON`                   & :varlink:`KPOC`       & 1/s                              & PON remineralization rate
-   :varlink:`KPOFe`                  & :varlink:`KPOC`       & 1/s                              & POFe remineralization rate
-   :varlink:`KPOSi`                  & 1/(300 days)          & 1/s                              & POSi remineralization rate
-   :varlink:`wC_sink`                & 10/day                & m/s                              & sinking velocity for POC
-   :varlink:`wP_sink`                & :varlink:`wC_sink`    & m/s                              & sinking velocity for POP
-   :varlink:`wN_sink`                & :varlink:`wC_sink`    & m/s                              & sinking velocity for PON
-   :varlink:`wFe_sink`               & :varlink:`wC_sink`    & m/s                              & sinking velocity for POFe
-   :varlink:`wSi_sink`               & :varlink:`wC_sink`    & m/s                              & sinking velocity for POSi
-   :varlink:`wPIC_sink`              & 15/day                & m/s                              & sinking velocity for PIC
-   :varlink:`Kdissc`                 & 1/(300 days)          & 1/s                              & dissolution rate for PIC
-   :varlink:`R_OP`                   & 170                   & mmol O\ :sub:`2` / mmol P        & O:P ratio for respiration and consumption
-   :varlink:`R_OC`                   & 170/120.0             & mmol O\ :sub:`2` / mmol C        & NOT USED
-   :varlink:`m3perkg`                & 1 / 1024.5            & m\ :sup:`3`/kg                   & constant for converting per kg to per m^3
-   :varlink:`surfSaltMinInit`        & 4.0                   & ppt                              & limits for carbon solver input at initialization
-   :varlink:`surfSaltMaxInit`        & 50.0                  & ppt                              & ...
-   :varlink:`surfTempMinInit`        & -4.0                  & °C                               &
-   :varlink:`surfTempMaxInit`        & 39.0                  & °C                               &
-   :varlink:`surfDICMinInit`         & 10.0                  & mmol C m\ :sup:`-3`              &
-   :varlink:`surfDICMaxInit`         & 4000.0                & mmol C m\ :sup:`-3`              &
-   :varlink:`surfALKMinInit`         & 10.0                  & meq m\ :sup:`-3`                 &
-   :varlink:`surfALKMaxInit`         & 4000.0                & meq m\ :sup:`-3`                 &
-   :varlink:`surfPO4MinInit`         & 1D-10                 & mmol P m\ :sup:`-3`              &
-   :varlink:`surfPO4MaxInit`         & 10.0                  & mmol P m\ :sup:`-3`              &
-   :varlink:`surfSiMinInit`          & 1D-8                  & mmol Si m\ :sup:`-3`             &
-   :varlink:`surfSiMaxInit`          & 500.0                 & mmol Si m\ :sup:`-3`             &
-   :varlink:`surfSaltMin`            & 4.0                   & ppt                              & limits for carbon solver input during run
-   :varlink:`surfSaltMax`            & 50.0                  & ppt                              & ...
-   :varlink:`surfTempMin`            & -4.0                  & °C                               &
-   :varlink:`surfTempMax`            & 39.0                  & °C                               &
-   :varlink:`surfDICMin`             & 400.0                 & mmol C m\ :sup:`-3`              &
-   :varlink:`surfDICMax`             & 4000.0                & mmol C m\ :sup:`-3`              &
-   :varlink:`surfALKMin`             & 400.0                 & meq m\ :sup:`-3`                 &
-   :varlink:`surfALKMax`             & 4000.0                & meq m\ :sup:`-3`                 &
-   :varlink:`surfPO4Min`             & 1D-10                 & mmol P m\ :sup:`-3`              &
-   :varlink:`surfPO4Max`             & 10.0                  & mmol P m\ :sup:`-3`              &
-   :varlink:`surfSiMin`              & 1D-8                  & mmol Si m\ :sup:`-3`             &
-   :varlink:`surfSiMax`              & 500.0                 & mmol Si m\ :sup:`-3`             &
-   :varlink:`diaz_ini_fac`           & 1                     &                                  & reduce tracer concentrations by this factor on initialization
-   :varlink:`O2crit`                 & 6.0                   & mmol O\ :sub:`2` m\ :sup:`-3`    & critical oxygen for O2/NO3 remineralization
-   :varlink:`denit_NP`               & 120.0                 & mmol N / mmol P                  & ratio of n to p in denitrification process
-   :varlink:`denit_NO3`              & 104.0                 & mmol N / mmol P                  & ratio of NO3 uptake to phos remineralization in denitrification
-   :varlink:`NO3crit`                & 1D-2                  & mmol N m\ :sup:`-3`              & critical nitrate below which no denit (or remin) happens
-   :varlink:`PARmin`                 & 0.1                   & μEin/m\ :sup:`2`/s               & minimum light for photosynthesis; for non-Geider: 1.0
-   :varlink:`aphy_chl_ave`           & 0.02                  & m\ :sup:`2`/mg Chl               & Chl-specific absorption coefficient
-   :varlink:`chl2nmax`               & 3.00                  & mg Chl / mmol N                  & max Chl:N ratio for Chl synthesis following Moore 2002
-   :varlink:`synthcost`              & 0.0                   & mmol C / mmol N                  & cost of biosynthesis
-   :varlink:`inhib_graz`             & 1.0                   & (mmol C m\ :sup:`-3`)\ :sup:`-1` & inverse decay scale for grazing inhibition
-   :varlink:`inhib_graz_exp`         & 0.0                   &                                  & exponent for grazing inhibition (0 to turn off inhibition)
-   :varlink:`hillnumGraz`            & 1.0                   &                                  & exponent for limiting quota uptake in grazing
-   :varlink:`hollexp`                & 1.0                   &                                  & grazing exponential 1= "Holling 2", 2= "Holling 3"
-   :varlink:`phygrazmin`             & 120D-10               & mmol C m\ :sup:`-3`              & minimum total prey conc for grazing to occur
-   :varlink:`pmaxDIN`                & 20/day                & 1/s                              & max DIN uptake rate for denitrifying bacteria
-   :varlink:`pcoefO2`                & 290.82/day            & m\ :sup:`3`/mmol O\ :sub:`2`/s   & max O2-specific O2 uptake rate for aerobic bacteria
-   :varlink:`ksatDIN`                & 0.01                  & mmol N m\ :sup:`-3`              & half-saturation conc of dissolved inorganic nitrogen
-   :varlink:`alpha_hydrol`           & 2.0                   &                                  & increase in POM needed due to hydrolysis
-   :varlink:`yod`                    & 0.2                   &                                  & organic matter yield of aerobic bacteria
-   :varlink:`yoe`                    & yod/467*4/(1-yod)*106 &                                  & energy yield of aerobic bacteria
-   :varlink:`ynd`                    & 0.16                  &                                  & organic matter yield of denitrifying bacteria
-   :varlink:`yne`                    & ynd/467*5/(1-ynd)*106 &                                  & energy yield of denitrifying bacteria
+   :varlink:`darwin_seed`            & 0                     &                                        & seed for random number generator (for :varlink:`DARWIN_RANDOM_TRAITS`)
+   :varlink:`darwin_strict_check`    & .FALSE.               &                                        & stop instead of issuing warnings
+   :varlink:`iDEBUG`                 & 1                     &                                        & index in x dimension for debug prints
+   :varlink:`jDEBUG`                 & 1                     &                                        & index in y dimension for debug prints
+   :varlink:`kDEBUG`                 & 1                     &                                        & index in z dimension for debug prints
+   :varlink:`darwin_pickupSuff`      & :varlink:`pickupSuff` &                                        & pickup suffix for darwin; set to ' ' to disable reading at :varlink:`PTRACERS_Iter0`
+   :varlink:`darwin_linFSConserve`   & .FALSE.               &                                        & correct non-conservation due to linear free surface (globally)
+   :varlink:`darwin_read_phos`       & .FALSE.               &                                        & initial conditions for plankton biomass are in mmol P/m3
+   :varlink:`darwin_chlInitBalanced` & .FALSE.               &                                        & Initialize Chlorophyll to a balanced value following Geider
+   :varlink:`darwin_chlIter0`        & :varlink:`PTRACERS_Iter0` &                                    & Iteration number when to initialize Chlorophyll
+   :varlink:`katten_w`               & 4E-2                  & 1/m                                    & atten coefficient water
+   :varlink:`katten_chl`             & 4E-2                  & m\ :sup:`2`/mg Chl                     & atten coefficient chl
+   :varlink:`parfrac`                & 0.4                   &                                        & fraction Qsw that is PAR
+   :varlink:`parconv`                & 1/0.2174              & μEin/s/W                               & conversion from W/m2 to μEin/m2/s
+   :varlink:`tempnorm`               & 0.3                   &                                        & set temperature function (was 1.0)
+   :varlink:`TempAeArr`              & --4000.0              & K                                      & slope for pseudo-Arrhenius (TEMP_VERSION 2)
+   :varlink:`TemprefArr`             & 293.15                & K                                      & reference temp for pseudo-Arrhenius (TEMP_VERSION 2)
+   :varlink:`TempCoeffArr`           & 0.5882                &                                        & pre-factor for pseudo-Arrhenius (TEMP_VERSION 2)
+   :varlink:`TempAeArrMacromol`      & -8420.0               & K                                      & slope for pseudo-Arrhenius for macromolecular (TEMP_VERSION 2)
+   :varlink:`reminTempAe`            & 0.0438                & 1/K                                    & temperature coefficient for remineralization (TEMP_VERSION 4)
+   :varlink:`mortTempAe`             & 0.0438                & 1/K                                    & temperature coefficient for linear mortality (TEMP_VERSION 4)
+   :varlink:`mort2TempAe`            & 0.0438                & 1/K                                    & temperature coefficient for quadr. mortality (TEMP_VERSION 4)
+   :varlink:`uptakeTempAe`           & 0.0                   & 1/K                                    & temperature coefficient for uptake (TEMP_VERSION 4)
+   :varlink:`alpfe`                  & 0.04                  &                                        & solubility of Fe dust
+   :varlink:`ligand_tot`             & 1E-3                  & mol/m\ :sup:`3`                        & total ligand concentration
+   :varlink:`ligand_stab`            & 2E5                   & m\ :sup:`3`/mol                        & ligand stability rate ratio
+   :varlink:`freefemax`              & 0.4E-3                & mol/m\ :sup:`3`                        & max concentration of free iron
+   :varlink:`scav`                   & 0.4/year              & 1/s                                    & fixed iron scavenging rate (#undef :varlink:`DARWIN_PART_SCAV`)
+   :varlink:`scav_tau`               & 0.2                   & 1                                      & factor to go from Th scavenging rate to iron
+   :varlink:`scav_inter`             & 0.079 / day           & L\ :sup:`e` mg\ :sup:`-e` s\ :sup:`-1` & intercept of scavenging power law (e=scav_exp)
+   :varlink:`scav_exp`               & 0.58                  & 1                                      & exponent of scavenging power law
+   :varlink:`scav_POC_wgt`           & 0.12728               & g / mmol C                             & weight POC contributes to POM for scavenging
+   :varlink:`scav_PSi_wgt`           & 0                     & g / mmol Si                            & weight PSi contributes to POM for scavenging
+   :varlink:`scav_PIC_wgt`           & 0                     & g / mmol C                             & weight PIC contributes to POM for scavenging
+   :varlink:`scav_degrPOM`           & 0                     & g/m\ :sup:`3`                          & concentration of non-labile POM for scavenging
+   :varlink:`depthfesed`             & --1.0                 & m                                      & depth above which to add sediment source (was -1000)
+   :varlink:`fesedflux`              & 1E-3 / day            & mmol Fe /m\ :sup:`2`/s                 & fixed iron flux from sediment
+   :varlink:`fesedflux_pcm`          & 0.68E-3               & mmol Fe / mmol C                       & iron input per POC sinking into bottom for :varlink:`DARWIN_IRON_SED_SOURCE_VARIABLE`
+   :varlink:`fesedflux_min`          & 0.5E-3 / day          & mmol Fe /s                             & min iron input rate subtracted from fesedflux_pcm*wc_sink*POC
+   :varlink:`R_CP_fesed`             & 106                   & mmol C / mmol P                        & POC:POP conversion for :varlink:`DARWIN_IRON_SED_SOURCE_POP`
+   :varlink:`depthFeVent`            & 750                   & m                                      & depth below which iron from hydrothermal vents is added
+   :varlink:`solFeVent`              & 0.002                 &                                        & solubility of iron from hydrothermal vents
+   :varlink:`R_FeHe3_vent`           & 4.5E8                 & mol Fe / mol :sup:`3`\ He              & Fe:\ :sup:`3`\ He ratio for hydrothermal vents
+   :varlink:`Knita`                  & 1/(0.5 days)          & 1/s                                    & ammonia oxidation rate
+   :varlink:`Knitb`                  & 1/(10 days)           & 1/s                                    & nitrite oxidation rate
+   :varlink:`PAR_oxi`                & 10                    & μEin/m\ :sup:`2`/s                     & critical light level after which oxidation starts
+   :varlink:`Kdoc`                   & 1/(100 days)          & 1/s                                    & DOC remineralization rate
+   :varlink:`Kdop`                   & 1/(100 days)          & 1/s                                    & DON remineralization rate
+   :varlink:`Kdon`                   & 1/(100 days)          & 1/s                                    & DOP remineralization rate
+   :varlink:`KdoFe`                  & 1/(100 days)          & 1/s                                    & DOFe remineralization rate
+   :varlink:`KPOC`                   & 1/(50 days)           & 1/s                                    & POC remineralization rate
+   :varlink:`KPOP`                   & :varlink:`KPOC`       & 1/s                                    & POP remineralization rate
+   :varlink:`KPON`                   & :varlink:`KPOC`       & 1/s                                    & PON remineralization rate
+   :varlink:`KPOFe`                  & :varlink:`KPOC`       & 1/s                                    & POFe remineralization rate
+   :varlink:`KPOSi`                  & 1/(300 days)          & 1/s                                    & POSi remineralization rate
+   :varlink:`ksatO2remin`            & 0                     & mmol O\ :sub:`2`/m\ :sup:`3`           & half-saturation conc. of O2 for remineralization
+   :varlink:`wC_sink`                & 10/day                & m/s                                    & sinking velocity for POC
+   :varlink:`wP_sink`                & :varlink:`wC_sink`    & m/s                                    & sinking velocity for POP
+   :varlink:`wN_sink`                & :varlink:`wC_sink`    & m/s                                    & sinking velocity for PON
+   :varlink:`wFe_sink`               & :varlink:`wC_sink`    & m/s                                    & sinking velocity for POFe
+   :varlink:`wSi_sink`               & :varlink:`wC_sink`    & m/s                                    & sinking velocity for POSi
+   :varlink:`wPIC_sink`              & 15/day                & m/s                                    & sinking velocity for PIC
+   :varlink:`darwin_disscSelect`     & 0                     &                                        & Switch for PIC dissolution rate formulation
+   :varlink:`Kdissc`                 & 1/(300 days)          & 1/s                                    & dissolution rate for PIC
+   :varlink:`darwin_KeirCoeff`       & e\ :sup:`7.177`/100/day & 1/s                                    & Keir PIC dissolution rate coefficient
+   :varlink:`darwin_KeirExp`         & 4.54                  & 1                                      & Keir PIC dissolution rate exponent
+   :varlink:`R_OP`                   & 170                   & mmol O\ :sub:`2` / mmol P              & O:P ratio for respiration and consumption
+   :varlink:`R_OC`                   & 170/120.0             & mmol O\ :sub:`2` / mmol C              & NOT USED
+   :varlink:`m3perkg`                & 1 / 1024.5            & m\ :sup:`3`/kg                         & constant for converting per kg to per m^3
+   :varlink:`surfSaltMinInit`        & 4.0                   & ppt                                    & minimum salt for carbon solver at initialization
+   :varlink:`surfSaltMaxInit`        & 50.0                  & ppt                                    & maximum salt for carbon solver at initialization
+   :varlink:`surfTempMinInit`        & --4.0                 & °C                                     & minimum temp for carbon solver at initialization
+   :varlink:`surfTempMaxInit`        & 39.0                  & °C                                     & maximum temp for carbon solver at initialization
+   :varlink:`surfDICMinInit`         & 10.0                  & mmol C m\ :sup:`-3`                    & minimum DIC for carbon solver at initialization
+   :varlink:`surfDICMaxInit`         & 4000.0                & mmol C m\ :sup:`-3`                    & maximum DIC for carbon solver at initialization
+   :varlink:`surfALKMinInit`         & 10.0                  & meq m\ :sup:`-3`                       & minimum alkalinity for carbon solver at initialization
+   :varlink:`surfALKMaxInit`         & 4000.0                & meq m\ :sup:`-3`                       & maximum alkalinity for carbon solver at initialization
+   :varlink:`surfPO4MinInit`         & 1E-10                 & mmol P m\ :sup:`-3`                    & minimum PO4 for carbon solver at initialization
+   :varlink:`surfPO4MaxInit`         & 10.0                  & mmol P m\ :sup:`-3`                    & maximum PO4 for carbon solver at initialization
+   :varlink:`surfSiMinInit`          & 1E-8                  & mmol Si m\ :sup:`-3`                   & minimum SiO2 for carbon solver at initialization
+   :varlink:`surfSiMaxInit`          & 500.0                 & mmol Si m\ :sup:`-3`                   & maximum SiO2 for carbon solver at initialization
+   :varlink:`surfSaltMin`            & 4.0                   & ppt                                    & minimum salt for carbon solver during run
+   :varlink:`surfSaltMax`            & 50.0                  & ppt                                    & maximum salt for carbon solver during run
+   :varlink:`surfTempMin`            & --4.0                 & °C                                     & minimum temp for carbon solver during run
+   :varlink:`surfTempMax`            & 39.0                  & °C                                     & maximum temp for carbon solver during run
+   :varlink:`surfDICMin`             & 400.0                 & mmol C m\ :sup:`-3`                    & minimum DIC for carbon solver during run
+   :varlink:`surfDICMax`             & 4000.0                & mmol C m\ :sup:`-3`                    & maximum DIC for carbon solver during run
+   :varlink:`surfALKMin`             & 400.0                 & meq m\ :sup:`-3`                       & minimum alkalinity for carbon solver during run
+   :varlink:`surfALKMax`             & 4000.0                & meq m\ :sup:`-3`                       & maximum alkalinity for carbon solver during run
+   :varlink:`surfPO4Min`             & 1E-10                 & mmol P m\ :sup:`-3`                    & minimum PO4 for carbon solver during run
+   :varlink:`surfPO4Max`             & 10.0                  & mmol P m\ :sup:`-3`                    & maximum PO4 for carbon solver during run
+   :varlink:`surfSiMin`              & 1E-8                  & mmol Si m\ :sup:`-3`                   & minimum SiO2 for carbon solver during run
+   :varlink:`surfSiMax`              & 500.0                 & mmol Si m\ :sup:`-3`                   & maximum SiO2 for carbon solver during run
+   :varlink:`selectBTconst`          & 1                     &                                        & estimates borate concentration from salinity (see carbon chem)
+   :varlink:`selectFTconst`          & 1                     &                                        & estimates fluoride concentration from salinity (see carbon chem)
+   :varlink:`selectHFconst`          & 1                     &                                        & sets the first dissociation constant for hydrogen fluoride (see carbon chem)
+   :varlink:`selectK1K2const`        & 1                     &                                        & sets the 1rst and 2nd dissociation constants of carbonic acid (see carbon chem)
+   :varlink:`selectPHsolver`         & 0                     &                                        & sets the pH solver to use (see carbon chem)
+   :varlink:`sed_globala1`           & 2.07E-5               &                                        & coefficient for sediment model
+   :varlink:`sed_globalb1`           & --5.64E-7             &                                        & coefficient for sediment model
+   :varlink:`sed_globalc1`           & --5.42E-6             &                                        & coefficient for sediment model
+   :varlink:`sed_globald1`           & 1.45                  &                                        & coefficient for sediment model
+   :varlink:`sed_globale1`           & 4.19E-1               &                                        & coefficient for sediment model
+   :varlink:`sed_globala2`           & 1.55E-5               &                                        & coefficient for sediment model
+   :varlink:`sed_globalb2`           & --2.94E-7             &                                        & coefficient for sediment model
+   :varlink:`sed_globalc2`           & --6.55E-6             &                                        & coefficient for sediment model
+   :varlink:`sed_globald2`           & 5.83E-1               &                                        & coefficient for sediment model
+   :varlink:`sed_globale2`           & 1.38E-1               &                                        & coefficient for sediment model
+   :varlink:`sed_globala3`           & --1.35E-5             &                                        & coefficient for sediment model
+   :varlink:`sed_globalb3`           & 5.08E-8               &                                        & coefficient for sediment model
+   :varlink:`sed_globalc3`           & 1.79E-6               &                                        & coefficient for sediment model
+   :varlink:`sed_globald3`           & --1.07                &                                        & coefficient for sediment model
+   :varlink:`sed_globale3`           & --4.47E-1             &                                        & coefficient for sediment model
+   :varlink:`sed_globala4`           & 3E-6                  &                                        & coefficient for sediment model
+   :varlink:`sed_globalb4`           & --7.14E-1             &                                        & coefficient for sediment model
+   :varlink:`sed_globalc4`           & 1.94E-1               &                                        & coefficient for sediment model
+   :varlink:`sed_globald4`           & 2.81E-1               &                                        & coefficient for sediment model
+   :varlink:`sed_globale4`           & --2.21E-2             &                                        & coefficient for sediment model
+   :varlink:`sed_globalf4`           & --2.97E-2             &                                        & coefficient for sediment model
+   :varlink:`sed_globalg4`           & --3.20E2              &                                        & coefficient for sediment model
+   :varlink:`sed_globala5`           & --2.42E-7             &                                        & coefficient for sediment model
+   :varlink:`sed_globalb5`           & 1.54E-8               &                                        & coefficient for sediment model
+   :varlink:`sed_globalc5`           & --4.77E-8             &                                        & coefficient for sediment model
+   :varlink:`sed_globald5`           & 1.64                  &                                        & coefficient for sediment model
+   :varlink:`sed_globale5`           & 1.20E-2               &                                        & coefficient for sediment model
+   :varlink:`sed_globala6`           & --3.87E-6             &                                        & coefficient for sediment model
+   :varlink:`sed_globalb6`           & 9.15E-8               &                                        & coefficient for sediment model
+   :varlink:`sed_globalc6`           & --7.26E-7             &                                        & coefficient for sediment model
+   :varlink:`sed_globald6`           & 1.73                  &                                        & coefficient for sediment model
+   :varlink:`sed_globale6`           & 1.51E-1               &                                        & coefficient for sediment model
+   :varlink:`diaz_ini_fac`           & 1                     &                                        & reduce tracer concentrations by this factor on initialization
+   :varlink:`O2crit`                 & 6.0                   & mmol O\ :sub:`2` m\ :sup:`-3`          & critical oxygen for O2/NO3 remineralization
+   :varlink:`denit_NP`               & 120.0                 & mmol N / mmol P                        & ratio of n to p in denitrification process
+   :varlink:`denit_NO3`              & 104.0                 & mmol N / mmol P                        & ratio of NO3 uptake to phos remineralization in denitrification
+   :varlink:`NO3crit`                & 1E-2                  & mmol N m\ :sup:`-3`                    & critical nitrate below which no denit (or remin) happens
+   :varlink:`PARmin`                 & 0.1                   & μEin/m\ :sup:`2`/s                     & minimum light for photosynthesis; for non-Geider: 1.0
+   :varlink:`aphy_chl_ave`           & 0.02                  & m\ :sup:`2`/mg Chl                     & Chl-specific absorption coefficient
+   :varlink:`Chl2Nmax`               & 3.00                  & mg Chl / mmol N                        & max Chl:N ratio for Chl synthesis following Moore 2002
+   :varlink:`synthcost`              & 0.0                   & mmol C / mmol N                        & cost of biosynthesis
+   :varlink:`inhib_graz`             & 1.0                   & (mmol C m\ :sup:`-3`)\ :sup:`-1`       & inverse decay scale for grazing inhibition
+   :varlink:`inhib_graz_exp`         & 0.0                   &                                        & exponent for grazing inhibition (0 to turn off inhibition)
+   :varlink:`hillnumGraz`            & 1.0                   &                                        & exponent for limiting quota uptake in grazing
+   :varlink:`hollexp`                & 1.0                   &                                        & grazing exponential 1= "Holling 2", 2= "Holling 3"
+   :varlink:`phygrazmin`             & 120E-10               & mmol C m\ :sup:`-3`                    & minimum total prey conc for grazing to occur
+   :varlink:`pmaxDIN`                & 20/day                & 1/s                                    & max DIN uptake rate for denitrifying bacteria
+   :varlink:`pcoefO2`                & 290.82/day            & m\ :sup:`3`/mmol O\ :sub:`2`/s         & max O2-specific O2 uptake rate for aerobic bacteria
+   :varlink:`ksatDIN`                & 0.01                  & mmol N m\ :sup:`-3`                    & half-saturation conc of dissolved inorganic nitrogen
+   :varlink:`alpha_hydrol`           & 2.0                   &                                        & increase in POM needed due to hydrolysis
+   :varlink:`yod`                    & 0.2                   &                                        & organic matter yield of aerobic bacteria
+   :varlink:`yoe`                    & yod/467*4/(1-yod)*106 &                                        & energy yield of aerobic bacteria
+   :varlink:`ynd`                    & 0.16                  &                                        & organic matter yield of denitrifying bacteria
+   :varlink:`yne`                    & ynd/467*5/(1-ynd)*106 &                                        & energy yield of denitrifying bacteria
 
 
 .. csv-table:: Namelist DARWIN_CDOM_PARAMS
@@ -497,11 +540,11 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`CDOMbleach` & 1 / (15 days)  & 1/s                  & CDOM bleaching rate
    :varlink:`PARCDOM`    & 20             & μEin/m\ :sup:`2`/s   & PAR where CDOM bleaching becomes maximal
    :varlink:`R_NP_CDOM`  & 16             & mmol N / mmol P      & CDOM N:P ratio (with #undef DARWIN_CDOM_UNITS_CARBON)
-   :varlink:`R_FeP_CDOM` & 1D-3           & mmol Fe / mmol P     & CDOM Fe:P ratio (with #undef DARWIN_CDOM_UNITS_CARBON)
+   :varlink:`R_FeP_CDOM` & 1E-3           & mmol Fe / mmol P     & CDOM Fe:P ratio (with #undef DARWIN_CDOM_UNITS_CARBON)
    :varlink:`R_CP_CDOM`  & 120            & mmol C / mmol P      & CDOM C:P ratio (with #undef DARWIN_CDOM_UNITS_CARBON)
    :varlink:`R_NC_CDOM`  & 16/120         & mmol N / mmol C      & CDOM N:C ratio (with #define DARWIN_CDOM_UNITS_CARBON)
    :varlink:`R_PC_CDOM`  & 1/120          & mmol P / mmol C      & CDOM P:C ratio (with #define DARWIN_CDOM_UNITS_CARBON)
-   :varlink:`R_FeC_CDOM` & 1D-3/120       & mmol Fe / mmol C     & CDOM Fe:C ratio (with #define DARWIN_CDOM_UNITS_CARBON)
+   :varlink:`R_FeC_CDOM` & 1E-3/120       & mmol Fe / mmol C     & CDOM Fe:C ratio (with #define DARWIN_CDOM_UNITS_CARBON)
    :varlink:`CDOMcoeff`  & 100.0          & m\ :sup:`2` / mmol P & P-specific absorption coefficient of CDOM at :math:`\lambda_{\op{CDOM}}`
                          & 100/120        & m\ :sup:`2` / mmol C & - if #define DARWIN_CDOM_UNITS_CARBON
 
@@ -516,7 +559,7 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
    :varlink:`darwin_waterAbsorbFile`    & ' '      &                    & filename for reading water absorption and scattering spectra
    :varlink:`darwin_phytoAbsorbFile`    & ' '      &                    & filename for reading plankton absorption and scattering spectra
    :varlink:`darwin_particleAbsorbFile` & ' '      &                    & filename for reading particle absorption and scattering spectra
-   :varlink:`darwin_part_size_P`        & 1D-15    & mmol P/particle    & conversion factor for particle absorption and scattering spectra
+   :varlink:`darwin_part_size_P`        & 1E-15    & mmol P/particle    & conversion factor for particle absorption and scattering spectra
    :varlink:`darwin_bbmin`              & 0.0002   & 1/m                & minimum backscattering ratio
    :varlink:`darwin_bbw`                & 0.5      &                    & backscattering ratio of water
    :varlink:`darwin_lambda_aCDOM`       & 450.0    & nm                 & reference wavelength for CDOM absorption spectra
@@ -526,7 +569,7 @@ General parameters are set in namelist :varlink:`DARWIN_PARAMS`:
                                         & 0.0      & mmol C/m\ :sup:`3` & - if #define DARWIN_CDOM_UNITS_CARBON
    :varlink:`darwin_RPOC`               & 0.0      & mmol C/m\ :sup:`3` & recalcitrant POC concentration
    :varlink:`darwin_allomSpectra`       & .FALSE.  &                    & enable/disable allometric scaling of plankton absorption and scattering spectra
-   :varlink:`darwin_aCarCell`           & 0.109D-9 & mg C/cell          & coefficient coefficient for scaling plankton spectra
+   :varlink:`darwin_aCarCell`           & 0.109E-9 & mg C/cell          & coefficient coefficient for scaling plankton spectra
    :varlink:`darwin_bCarCell`           & 0.991    &                    & coefficient coefficient for scaling plankton spectra
    :varlink:`darwin_absorpSlope`        & -0.075   &                    & slope for scaled absorption spectra
    :varlink:`darwin_bbbSlope`           & -1.458   &                    & slope for scaled backscattering ratio spectra
@@ -574,6 +617,7 @@ Traits are generated from the parameters in ``&DARWIN_TRAIT_PARAMS``
    :varlink:`ExportFracMort`   & :math:`f^{\op{exp}\op{mort}}_j`        &                                               & fraction of linear mortality to POM
    :varlink:`ExportFracMort2`  & :math:`f^{\op{exp}\op{mort2}}_j`       &                                               & fraction of quadratic mortality to POM
    :varlink:`ExportFracExude`  & :math:`f^{\op{exp}\op{exude}}_j`       &                                               & fraction of exudation to POM
+   :varlink:`FracExudeC`       & :math:`f^{\op{exude}}_j`               &                                               & excess carbon exudation fraction for C store
    :varlink:`phytoTempCoeff`   & :math:`c_j`                            &                                               & see :numref:`tab_phys_pkg_darwin_tempparams`
    :varlink:`phytoTempExp1`    & :math:`e_{1j}`                         & exp(1/°C)                                     & see :numref:`tab_phys_pkg_darwin_tempparams`
    :varlink:`phytoTempAe`      & :math:`A^{\op{phy}}_{\op{e}j}`         & 1/°C                                          & see :numref:`tab_phys_pkg_darwin_tempparams`
@@ -596,6 +640,7 @@ Traits are generated from the parameters in ``&DARWIN_TRAIT_PARAMS``
    :varlink:`R_PICPOC`         & :math:`R^{\op{PICPOC}}_j`              & mmol PIC (mmol POC)\ :sup:`-1`                & inorganic-organic carbon ratio
    :varlink:`biosink`          & :math:`w^{\op{sink}}_j`                & m s\ :sup:`-1`                                & sinking velocity (positive downwards)
    :varlink:`bioswim`          & :math:`w^{\op{swim}}_j`                & m s\ :sup:`-1`                                & upward swimming velocity (positive upwards)
+   :varlink:`bioswimDVM`       & :math:`w^{\op{swim}\op{DVM}}_j`           & m s\ :sup:`-1`                                & swimming speed for diel vertically migrating plankton (pos. upwards)
    :varlink:`respRate`         & :math:`r^{\op{resp}}_j`                & s\ :sup:`-1`                                  & respiration rate
    :varlink:`PCmax`            & :math:`P^{\op{max}}_{\op{C},j}`        & s\ :sup:`-1`                                  & maximum carbon-specific growth rate
    :varlink:`Qnmax`            & :math:`Q^{\op{N}\op{max}}_j`           & mmol N (mmol C)\ :sup:`-1`                    & maximum nitrogen quota (only with DARWIN_ALLOW_NQUOTA)
@@ -646,6 +691,37 @@ Traits are generated from the parameters in ``&DARWIN_TRAIT_PARAMS``
    :varlink:`hillnumPO4`       & :math:`h_{\mathrm{PO4}}`               &                                               & exponent for limiting quota in PO4 uptake
    :varlink:`hillnumFeT`       & :math:`h_{\mathrm{PO4}}`               &                                               & exponent for limiting quota in FeT uptake
    :varlink:`hillnumSiO2`      & :math:`h_{\mathrm{SiO2}}`              &                                               & exponent for limiting quota in SiO2 uptake
+   :varlink:`PARpref`          & :math:`\op{PAR}_{\op{DVM}}`            & μEin m\ :sup:`-2` s\ :sup:`-1`                & preferred PAR isolume for determining DVM
+   :varlink:`mortmaxDVM`       & :math:`m^{\text{DVM-max}}_j`           & s\ :sup:`-1`                                  & maximum mortality rate related to PAR for DVM
+   :varlink:`ksatDVM`          & :math:`k^{\text{DVM}}_j`               & mmol C m\ :sup:`-3`                           & half saturation for DVM mortality
+   :varlink:`ksatPARDVM`       & :math:`k^{\text{PAR-DVM}}_j`           & μEin m\ :sup:`-2` s\ :sup:`-1`                & half sat for light limitation for DVM
+   :varlink:`fracPARmort`      & :math:`f^{\text{mort}}_{\text{PAR}\,j}` &                                              & fraction of mortality from light-dependent mortality
+   :varlink:`ExportFracDVM`    & :math:`f^{\op{exp}\op{DVM}}_{j}`       &                                               & fraction of light-dep mortality from DVM to POM
+   :varlink:`ECo2Prod`         & :math:`E`                                         & dimensionless                      & respiratory cost of biosynthesis
+   :varlink:`maintConsum`      & :math:`m`                                         & 1/s                                & maintenance respiration rate
+   :varlink:`VI_max`           & :math:`V^{\max}_{\mathrm{I}}`                     & molC/s / (molC in Chl)             & per-chlorophyll maximum photosynthesis rate
+   :varlink:`A_I`              & :math:`A_{\mathrm{I}}`                            & m\ :sup:`2`\ s/μmol                & coefficient characterizing the absorption cross section
+   :varlink:`Sf`               & :math:`S_{\mathrm{f}}`                            & unitless                           & enhancement of photosynthesis due to size
+   :varlink:`A_pho`            & :math:`A_{\mathrm{Pho}}`                          & molC / (molC in Chl)               & A constant of proportionality
+   :varlink:`A_bio`            & :math:`A_{\mathrm{Bio}}`                          & molC / (molC/s)                    & constant for variable part of biosynthesis protein
+   :varlink:`AP_RNA`           & :math:`A^{\mathrm{P}}_{\mathrm{RNA}}`             & molP / (molC/s)                    & constant for variable part of RNA
+   :varlink:`QC_other`         & :math:`Q_{\mathrm{C}}^{\mathrm{Other}}`           & molC / molC                        & constant pool of structural lipids and carbs
+   :varlink:`QC_pro_other`     & :math:`Q_{\mathrm{C}}^{\mathrm{Pro\_Other}}`      & molC / molC                        & constant pool of essential proteins
+   :varlink:`QP_other`         & :math:`Q_{\mathrm{P}}^{\mathrm{Other}}`           & molP / molC                        & constant part of phosphorus
+   :varlink:`QP_RNA_min`       & :math:`Q_{\mathrm{P,min}}^{\mathrm{RNA}}`         & molP / molC                        & minimum RNA in the cell
+   :varlink:`QC_DNA`           & :math:`Q_{\mathrm{C}}^{\mathrm{DNA}}`             & molC / molC                        & constant part of DNA
+   :varlink:`QN_sto_max`       & :math:`Q_{\mathrm{N,max}}^{\mathrm{Sto}}`         & molN / molC                        & maximum nitrogen storage
+   :varlink:`Qp_max`           & :math:`Q_{\mathrm{P}}^{\mathrm{max}}`             & molP / molC                        & maximum phosphorus quota
+   :varlink:`Qfe_max`          & :math:`Q_{\mathrm{Fe}}^{\mathrm{max}}`            & molFe / molC                       & maximum iron quota
+   :varlink:`Y_CP_Plip`        & :math:`Y^{\mathrm{C}:\mathrm{P}}_{\mathrm{Plip}}` & molC / molP                        & C/P molar ratio of thylakoid membrane
+   :varlink:`Y_CN_protein`     & :math:`Y^{\mathrm{C}:\mathrm{N}}_{\mathrm{Pro}}`  & molC / molN                        & C/N molar ratio in protein
+   :varlink:`Y_NC_chl`         & :math:`Y^{\mathrm{N}:\mathrm{C}}_{\mathrm{Chl}}`  & molN / molC                        & N/C molar ratio in chlorophyll
+   :varlink:`Y_CN_cyano`       & :math:`Y^{\mathrm{C}:\mathrm{N}}_{\mathrm{Nsto}}` & molC / molN                        & C/N molar ratio of cyanophycin
+   :varlink:`Y_PN_nucacid`     & :math:`Y^{\mathrm{P}:\mathrm{N}}_{\mathrm{RNA}}`  & molP / molN                        & P/N molar ratio of RNA
+   :varlink:`Y_CN_DNA`         & :math:`Y^{\mathrm{C}:\mathrm{N}}_{\mathrm{DNA}}`  & molC / molN                        & C/N molar ratio of DNA
+   :varlink:`Y_CN_RNA`         & :math:`Y^{\mathrm{C}:\mathrm{N}}_{\mathrm{RNA}}`  & molC / molN                        & C/N molar ratio of RNA
+   :varlink:`Y_THY_P`          & :math:`Y^{\mathrm{P}}_{\mathrm{Thy}}`             & molP / (molC in Chl)               & phosphorus in thylakoid membrane to chlorophyll
+   :varlink:`Y_FeN_photo`      & :math:`Y^{\mathrm{Fe}:\mathrm{N}}_{\mathrm{Pho}}` & molFe / molN                       & Fe/N ratio in photosystem iron
 
 
 .. csv-table:: Trait matrices for grazing; indices (prey, pred)
@@ -748,6 +824,7 @@ particularly useful for specifying a rate in ‘per-day’ units, i.e.,
    :varlink:`ExportFracMort`     & :varlink:`a_ExportFracMort`       & 0.5           &                                    &
    :varlink:`ExportFracMort2`    & :varlink:`a_ExportFracMort2`      & 0.5           &                                    &
    :varlink:`ExportFracExude`    & :varlink:`a_ExportFracExude`      & UNINIT        &                                    &
+   :varlink:`FracExudeC`         & :varlink:`a_FracExudeC`           & 0.3           &                                    &
    :varlink:`mort`               & :varlink:`a_mort`                 & 0.02 / day    &                                    &
    :varlink:`mort2`              & :varlink:`a_mort2`                & 0             &                                    &
    :varlink:`phytoTempCoeff`     & :varlink:`a_phytoTempCoeff`       & 1/3           &                                    &
@@ -764,6 +841,30 @@ particularly useful for specifying a rate in ‘per-day’ units, i.e.,
    :varlink:`grazTempExp2`       & :varlink:`a_grazTempExp2`         & 0.001         &                                    &
    :varlink:`grazTempOptimum`    & :varlink:`a_grazTempOptimum`      & 2             &                                    &
    :varlink:`grazDecayPower`     & :varlink:`a_grazDecayPower`       & 4             &                                    &
+   :varlink:`ECo2Prod`           & :varlink:`a_ECo2Prod`             & 0.774         &
+   :varlink:`maintConsum`        & :varlink:`a_maintConsum`          & 0.393/day     &
+   :varlink:`VI_max`             & :varlink:`a_VI_max`               & 277/day       & :varlink:`b_VI_max`                & 0
+   :varlink:`A_I`                & :varlink:`a_A_I`                  & 0.008633641   &
+   :varlink:`A_pho`              & :varlink:`a_A_pho`                & 16.0          &
+   :varlink:`A_bio`              & :varlink:`a_A_bio`                & 0.2711*day    &
+   :varlink:`AP_RNA`             & :varlink:`a_AP_RNA`               & 0.00423*day   &
+   :varlink:`QC_other`           & :varlink:`a_QC_other`             & 0.0182        &
+   :varlink:`QC_pro_other`       & :varlink:`a_QC_pro_other`         & 0.24          &
+   :varlink:`QP_other`           & :varlink:`a_QP_other`             & 6.5344E-4     &
+   :varlink:`QP_RNA_min`         & :varlink:`a_QP_RNA_min`           & 2.23E-4       &
+   :varlink:`QC_DNA`             & :varlink:`a_QC_DNA`               & 9.41E-4       &
+   :varlink:`QN_sto_max`         & :varlink:`a_QN_sto_max`           & 0.035         & :varlink:`b_QN_sto_max`            & 0
+   :varlink:`Qp_max`             & :varlink:`a_Qp_max`               & 0.0052        & :varlink:`b_Qp_max`                & 0
+   :varlink:`Qfe_max`            & :varlink:`a_Qfe_max`              & 2.436E-4      & :varlink:`b_Qfe_max`               & 0
+   :varlink:`Y_CP_Plip`          & :varlink:`a_Y_CP_Plip`            & 40.0          &
+   :varlink:`Y_CN_protein`       & :varlink:`a_Y_CN_protein`         & 5.3/1.4       &
+   :varlink:`Y_NC_chl`           & :varlink:`a_Y_NC_chl`             & 4.0/55.0      &
+   :varlink:`Y_CN_cyano`         & :varlink:`a_Y_CN_cyano`           & 2.0           &
+   :varlink:`Y_PN_nucacid`       & :varlink:`a_Y_PN_nucacid`         & 1/3.75        &
+   :varlink:`Y_CN_DNA`           & :varlink:`a_Y_CN_DNA`             & 9.75/3.75     &
+   :varlink:`Y_CN_RNA`           & :varlink:`a_Y_CN_RNA`             & 9.50/3.75     &
+   :varlink:`Y_THY_P`            & :varlink:`a_Y_THY_P`              & 0.028163      &
+   :varlink:`Y_FeN_photo`        & :varlink:`a_Y_FeN_photo`          & 0.00163       &
    :varlink:`mQyield`            & :varlink:`a_mQyield`              & 75D-6         &                                    &
    :varlink:`chl2cmax`           & :varlink:`a_chl2cmax`             & .3            &                                    &
    :varlink:`inhibGeider`        & :varlink:`a_inhibGeider`          & 0             &                                    &
@@ -774,6 +875,10 @@ particularly useful for specifying a rate in ‘per-day’ units, i.e.,
                                  & :varlink:`a_acclimtimescl_denom`  & 1             &                                    &
    :varlink:`ksatPON`            & :varlink:`a_ksatPON`              & 1             &                                    &
    :varlink:`ksatDON`            & :varlink:`a_ksatDON`              & 1             &                                    &
+   :varlink:`hillnumDIN`         & :varlink:`a_hillnumDIN`           & 1             &                                    &
+   :varlink:`hillnumPO4`         & :varlink:`a_hillnumPO4`           & 1             &                                    &
+   :varlink:`hillnumFeT`         & :varlink:`a_hillnumFeT`           & 1             &                                    &
+   :varlink:`hillnumSiO2`        & :varlink:`a_hillnumSiO2`          & 1             &                                    &
    :varlink:`grazemax`           & :varlink:`a_grazemax`             & 21.9 / day    & :varlink:`b_grazemax`              & -0.16
                                  & :varlink:`a_grazemax_denom`       & 1             &                                    &
    :varlink:`kgrazesat`          & :varlink:`a_kgrazesat`            & 1.00          & :varlink:`b_kgrazesat`             & 0.00
@@ -781,6 +886,7 @@ particularly useful for specifying a rate in ‘per-day’ units, i.e.,
                                  & :varlink:`a_biosink_denom`        & 1             &                                    &
    :varlink:`bioswim`            & :varlink:`a_bioswim`              & 0.00 / day    & :varlink:`b_bioswim`               & 0.18
                                  & :varlink:`a_bioswim_denom`        & 1             &                                    &
+   :varlink:`bioswimDVM`         & :varlink:`a_bioswimDVM`           & 0             & :varlink:`b_bioswimDVM`            & 0
    :varlink:`palat`              & :varlink:`a_ppSig`                & 1             & *see note* [#palat]_
    :varlink:`palat`              & :varlink:`a_ppOpt`                & 1024          & :varlink:`b_ppOpt`                 & 0.00
    :varlink:`palat`              & :varlink:`palat_min`              & 0             &                                    &
@@ -830,6 +936,12 @@ particularly useful for specifying a rate in ‘per-day’ units, i.e.,
    :varlink:`hillnumSiO2`        & :varlink:`a_hillnumSiO2`          & 1.0           &                                    &
    :varlink:`ExportFracPreyPred` & :varlink:`grp_ExportFracPreyPred` & 0.5           & *(nGroup* :math:`\times` *nGroup)*
    :varlink:`asseff`             & :varlink:`grp_ass_eff`            & 0.7           & *(nGroup* :math:`\times` *nGroup)*
+   :varlink:`PARpref`            & :varlink:`a_PARpref`              & 0.0046        & :varlink:`b_PARpref`               & 0.00
+   :varlink:`mortmaxDVM`         & :varlink:`a_mortmaxDVM`           & 8.389D-5      & :varlink:`b_mortmaxDVM`            & -0.16
+   :varlink:`ksatDVM`            & :varlink:`a_ksatDVM`              & 1/a_R_NC      & :varlink:`b_ksatDVM`               & 0
+   :varlink:`ksatPARDVM`         & :varlink:`a_ksatPARDVM`           & 0.46          & :varlink:`b_ksatPARDVM`            & 0
+                                 & :varlink:`a_fracPARmort`          & 0.9           & :varlink:`b_fracPARmort`           & 0
+   :varlink:`ExportFracDVM`      & :varlink:`a_ExportFracDVM`        & 0.5           &                                    &
    :varlink:`aphy_chl`           & :varlink:`aphy_chl_type`          & *read*        & *via* :varlink:`grp_aptype`
    :varlink:`aphy_chl_ps`        & :varlink:`aphy_chl_ps_type`       & *read*        & *via* :varlink:`grp_aptype`
    :varlink:`aphy_mgC`           & :varlink:`aphy_mgC_type`          & *read*        & *via* :varlink:`grp_aptype`
