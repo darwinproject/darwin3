@@ -48,7 +48,6 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER      ilnb
       CHARACTER*7  trcUnits
       CHARACTER*30 locName
-      CHARACTER*4  diagSufx
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -1108,13 +1107,6 @@ C-      use units & names from data.ptracers :
       WRITE(diagName,'(A)')'TcorrDIC'
       WRITE(diagTitle,'(A)')
      &      'Temperature correction factor for diffusive DIC flux'
-      diagUnits = '1               '
-      diagCode  = 'SM P    M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'OmegCbot'
-      WRITE(diagTitle,'(A)')'Calcite saturation ratio above the seabed'
       diagUnits = '1               '
       diagCode  = 'SM P    M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
