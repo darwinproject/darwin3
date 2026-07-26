@@ -95,7 +95,7 @@ C     Sediment fluxes
       _RL radiFluxA(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL radiFluxO(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 # endif
-# ifdef DARWIN_ALLOW_RADIv2
+# ifdef DARWIN_ALLOW_RADIv2_REGR
 C     Sediment fluxes
       COMMON /DARWIN_CONS_RADI/
      &      radiFLuxC, radiFLuxA, radiFLuxO, radiFluxP, radiFluxN

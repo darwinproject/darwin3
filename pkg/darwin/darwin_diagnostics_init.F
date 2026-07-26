@@ -1113,7 +1113,7 @@ C-      use units & names from data.ptracers :
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 # endif /* DARWIN_ALLOW_RADIv1 */
 
-# ifdef DARWIN_ALLOW_RADIv2
+# ifdef DARWIN_ALLOW_RADIv2_REGR
       WRITE(diagName,'(A)')'DICFsed '
       WRITE(diagTitle,'(A)')'DIC sediment flux'
       diagUnits = 'mmol C/m2/s     '
@@ -1205,7 +1205,7 @@ C-      use units & names from data.ptracers :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-# endif /* DARWIN_ALLOW_RADIv2 */
+# endif /* DARWIN_ALLOW_RADIv2_REGR */
 #endif /* DARWIN_ALLOW_CARBON */
 
 #ifdef DARWIN_DIAG_TENDENCIES

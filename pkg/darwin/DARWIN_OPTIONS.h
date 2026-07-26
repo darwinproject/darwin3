@@ -85,7 +85,7 @@ C enable RADI sediment metamodel v1 (requires DARWIN_BOTTOM_SINK)
 #undef DARWIN_ALLOW_RADIv1
 
 C enable RADI sediment metamodel v2 (requires DARWIN_BOTTOM_SINK)
-#undef DARWIN_ALLOW_RADIv2
+#undef DARWIN_ALLOW_RADIv2_REGR
 
 C include diel vertical migration code
 #undef  DARWIN_ALLOW_DVM

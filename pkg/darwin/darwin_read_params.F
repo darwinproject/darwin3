@@ -186,7 +186,7 @@ C----
      &    selectBTconst, selectFTconst,
      &    selectHFconst, selectK1K2const,
      &    selectPHsolver,
-#ifdef DARWIN_ALLOW_RADIv2
+#ifdef DARWIN_ALLOW_RADIv2_REGR
      &    sed_globala1,
      &    sed_globalb1,
      &    sed_globalc1,
@@ -394,7 +394,7 @@ C for sediment model
       sed_c = 3.17 _d -5
 #endif
 
-#ifdef DARWIN_ALLOW_RADIv2
+#ifdef DARWIN_ALLOW_RADIv2_REGR
 C for sediment model
       sed_globala1 = 2.07 _d -5
       sed_globalb1 = -5.64 _d -7

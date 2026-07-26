@@ -332,13 +332,13 @@ C check exf is compiled and used
      &  'DARWIN_ALLOW_RADI has been retired.  Define either ',
       CALL PRINT_ERROR( msgBuf, myThid )
       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
-     &  'DARWIN_ALLOW_RADIv1 or DARWIN_ALLOW_RADIv2.'
+     &  'DARWIN_ALLOW_RADIv1 or DARWIN_ALLOW_RADIv2_REGR.'
       CALL PRINT_ERROR( msgBuf, myThid )
       STOP 'ABNORMAL END: DARWIN_CHECK: DARWIN_ALLOW_RADI'
 #endif
-#if defined(DARWIN_ALLOW_RADIv1) && defined(DARWIN_ALLOW_RADIv2)
+#if defined(DARWIN_ALLOW_RADIv1) && defined(DARWIN_ALLOW_RADIv2_REGR)
       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
-     &  'Only one of DARWIN_ALLOW_RADIv1 and DARWIN_ALOW_RADIv2 '
+     &  'Only one of DARWIN_ALLOW_RADIv1 and DARWIN_ALOW_RADIv2_REGR '
       CALL PRINT_ERROR( msgBuf, myThid )
       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
      &  'can be defined at a time.'

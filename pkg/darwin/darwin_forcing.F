@@ -116,7 +116,7 @@ C     Dependent variables for sediment flux for validation
       _RL fluxPOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL absT
 #endif
-#ifdef DARWIN_ALLOW_RADIv2
+#ifdef DARWIN_ALLOW_RADIv2_REGR
       _RL DICFsediment(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ALKFsediment(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL O2Fsediment(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -953,7 +953,7 @@ C     and rescale for nonlinear free surface if appropriate
 
 #endif
 
-#ifdef DARWIN_ALLOW_RADIv2
+#ifdef DARWIN_ALLOW_RADIv2_REGR
       DO j=jMin,jMax
       DO i=iMin,iMax
 C      grid cell just above sea floor
@@ -1522,7 +1522,7 @@ C      diags(iCons*) for convenience
        CALL DIAGNOSTICS_FILL(TcorrDIC,    'TcorrDIC',0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(TcorrALK,    'TcorrALK',0,1,2,bi,bj,myThid)
 #endif
-#ifdef DARWIN_ALLOW_RADIv2
+#ifdef DARWIN_ALLOW_RADIv2_REGR
        CALL DIAGNOSTICS_FILL(DICFsediment,'DICFsed ',0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(ALKFsediment,'ALKFsed ',0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(O2Fsediment, 'O2Fsed  ',0,1,2,bi,bj,myThid)

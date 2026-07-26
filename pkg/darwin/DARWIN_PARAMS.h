@@ -184,7 +184,7 @@ C     sed_c :: coefficient for sediment model
       _RL sed_c
 # endif
 
-# ifdef DARWIN_ALLOW_RADIv2
+# ifdef DARWIN_ALLOW_RADIv2_REGR
 C--   COMMON /DARWIN_SED_CONSTANTS_r/ Coefficients for sediment model
 C     sed_depth_threshold :: depth threshold for deep/coast equations
 C     sed_globala1        :: coefficient for sediment model
