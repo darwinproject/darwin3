@@ -54,6 +54,9 @@ C this needs to be defined for coupling to atmospheric model:
 C enable macromolecular growth code; requires N, P and Fe quotas
 #undef DARWIN_MACROMOLECULAR_GROWTH
 
+C enable RADI sediment metamodel v2
+#undef DARWIN_ALLOW_RADIv2_EMUL
+
 
 C optional bits
 
@@ -81,11 +84,15 @@ C CDOM is in carbon units and follows POC
 C include code for reading nutrient runoff from files
 #undef  DARWIN_NUTRIENT_RUNOFF
 
-C enable RADI sediment metamodel v1 (requires DARWIN_BOTTOM_SINK)
+C Note: all RADI models require DARWIN_BOTTOM_SINK
+C enable RADI sediment metamodel v1
 #undef DARWIN_ALLOW_RADIv1
 
-C enable RADI sediment metamodel v2 (requires DARWIN_BOTTOM_SINK)
+C enable RADI sediment metamodel v2 (old regression-based version)
 #undef DARWIN_ALLOW_RADIv2_REGR
+
+C enable RADI sediment metamodel v2 (with benthic emulator)
+#undef DARWIN_ALLOW_RADIv2_EMUL
 
 C include diel vertical migration code
 #undef  DARWIN_ALLOW_DVM

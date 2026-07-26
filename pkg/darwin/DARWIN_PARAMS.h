@@ -286,6 +286,106 @@ C     sed_globale6        :: coefficient for sediment model
       _RL sed_globald6
       _RL sed_globale6
 # endif
+
+# ifdef DARWIN_ALLOW_RADIv2_EMUL
+C--   COMMON /DARWIN_BENTHIC_EMULATOR_r/
+C     Coefficients for benthic emulator:
+C
+C     Carbonate / DIC / TA branch:
+C       a_omega_emul       :: low-omega carbonate background amplitude
+C       m_omega_emul       :: low-omega carbonate exponent
+C       a_fpoc_carb_emul   :: OM-enhanced carbonate amplitude
+C       b_fpoc_carb_emul   :: OM-enhanced carbonate exponent
+C       omega_c_emul       :: omega damping midpoint
+C       s_omega_emul       :: omega damping slope
+C       a_om_emul          :: residual DIC amplitude
+C       b_om_emul          :: residual DIC exponent
+C       y_max_emul         :: max residual TA:DIC ratio
+C       K_F_emul           :: half-saturation for residual TA:DIC ratio
+C       omega_carb_cutoff  :: cutoff below which carbonate flux is disabled
+C
+C     Nutrient / O2 branch:
+C       a_o2_emul,  b_o2_emul    :: O2 emulator coefficients
+C       a_nh4_emul, b_nh4_emul   :: NH4 emulator coefficients
+C       a_po4_emul, b_po4_emul   :: PO4 emulator coefficients
+C       a_rel_emul, b_rel_emul   :: NO3 release amplitude/exponent
+C       m_rel_emul               :: NO3 release oxic exponent
+C       a_upt_emul, b_upt_emul   :: NO3 uptake amplitude/exponent
+C       m_upt_emul               :: NO3 uptake reducing exponent
+C       K_ox_emul                :: NO3 oxic proxy half-saturation
+C       K_no3_emul               :: NO3 availability half-saturation
+C
+C--   COMMON /DARWIN_BENTHIC_EMULATOR_l/
+C     Logical switches for benthic emulator
+C       useBenthicCarbEmul       :: enable DIC/TA emulator
+C       useBenthicNutrEmul       :: enable nutrient emulator
+C       disable_carb_below_omega_emul
+C                                :: disable carbonate branch below cutoff
+
+      COMMON /DARWIN_BENTHIC_EMULATOR_r/
+     &    a_omega_emul,
+     &    m_omega_emul,
+     &    a_fpoc_carb_emul,
+     &    b_fpoc_carb_emul,
+     &    omega_c_emul,
+     &    s_omega_emul,
+     &    a_om_emul,
+     &    b_om_emul,
+     &    y_max_emul,
+     &    K_F_emul,
+     &    omega_carb_cutoff_emul,
+     &    a_o2_emul,
+     &    b_o2_emul,
+     &    a_nh4_emul,
+     &    b_nh4_emul,
+     &    a_po4_emul,
+     &    b_po4_emul,
+     &    a_rel_emul,
+     &    b_rel_emul,
+     &    m_rel_emul,
+     &    a_upt_emul,
+     &    b_upt_emul,
+     &    m_upt_emul,
+     &    K_ox_emul,
+     &    K_no3_emul
+
+      _RL a_omega_emul
+      _RL m_omega_emul
+      _RL a_fpoc_carb_emul
+      _RL b_fpoc_carb_emul
+      _RL omega_c_emul
+      _RL s_omega_emul
+      _RL a_om_emul
+      _RL b_om_emul
+      _RL y_max_emul
+      _RL K_F_emul
+      _RL omega_carb_cutoff_emul
+
+      _RL a_o2_emul
+      _RL b_o2_emul
+      _RL a_nh4_emul
+      _RL b_nh4_emul
+      _RL a_po4_emul
+      _RL b_po4_emul
+
+      _RL a_rel_emul
+      _RL b_rel_emul
+      _RL m_rel_emul
+      _RL a_upt_emul
+      _RL b_upt_emul
+      _RL m_upt_emul
+      _RL K_ox_emul
+      _RL K_no3_emul
+
+      COMMON /DARWIN_BENTHIC_EMULATOR_l/
+     &    useBenthicCarbEmul,
+     &    useBenthicNutrEmul,
+     &    disable_carb_below_omega_emul
+
+      LOGICAL useBenthicCarbEmul
+      LOGICAL useBenthicNutrEmul
+      LOGICAL disable_carb_below_omega_emul
+# endif
 #endif
 
 C     COMMON /DARWIN_PARAMS_c/ General parameters (same for all plankton)

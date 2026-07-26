@@ -64,7 +64,7 @@ C     !LOCAL VARIABLES:
           radiFluxA(i,j,bi,bj) = 0 _d 0
           radiFluxO(i,j,bi,bj) = 0 _d 0
 #endif
-#ifdef DARWIN_ALLOW_RADIv2_REGR
+#if defined(DARWIN_ALLOW_RADIv2_REGR) || defined(DARWIN_ALLOW_RADIv2_EMUL)
           radiFluxC(i,j,bi,bj) = 0 _d 0
           radiFluxA(i,j,bi,bj) = 0 _d 0
           radiFluxO(i,j,bi,bj) = 0 _d 0

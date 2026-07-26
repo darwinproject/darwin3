@@ -465,7 +465,7 @@ C 2-d conservation corrections
         tilesedflxA(bi,bj)=tilesedflxA(bi,bj)+radiFluxA(i,j,bi,bj)*area
         tilesedflxO(bi,bj)=tilesedflxO(bi,bj)+radiFLuxO(i,j,bi,bj)*area
 # endif
-# ifdef DARWIN_ALLOW_RADIv2_REGR
+# if defined(DARWIN_ALLOW_RADIv2_REGR) || defined(DARWIN_ALLOW_RADIv2_EMUL)
         tilesedflxC(bi,bj)=tilesedflxC(bi,bj)+radiFluxC(i,j,bi,bj)*area
         tilesedflxA(bi,bj)=tilesedflxA(bi,bj)+radiFluxA(i,j,bi,bj)*area
         tilesedflxO(bi,bj)=tilesedflxO(bi,bj)+radiFLuxO(i,j,bi,bj)*area

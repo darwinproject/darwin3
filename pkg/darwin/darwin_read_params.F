@@ -220,6 +220,36 @@ C----
      &    sed_globald6,
      &    sed_globale6,
 #endif
+#ifdef DARWIN_ALLOW_RADIv2_EMUL
+     &    useBenthicCarbEmul,
+     &    useBenthicNutrEmul,
+     &    disable_carb_below_omega_emul,
+     &    a_omega_emul,
+     &    m_omega_emul,
+     &    a_fpoc_carb_emul,
+     &    b_fpoc_carb_emul,
+     &    omega_c_emul,
+     &    s_omega_emul,
+     &    a_om_emul,
+     &    b_om_emul,
+     &    y_max_emul,
+     &    K_F_emul,
+     &    omega_carb_cutoff_emul,
+     &    a_o2_emul,
+     &    b_o2_emul,
+     &    a_nh4_emul,
+     &    b_nh4_emul,
+     &    a_po4_emul,
+     &    b_po4_emul,
+     &    a_rel_emul,
+     &    b_rel_emul,
+     &    m_rel_emul,
+     &    a_upt_emul,
+     &    b_upt_emul,
+     &    m_upt_emul,
+     &    K_ox_emul,
+     &    K_no3_emul,
+#endif
 #endif
      &    diaz_ini_fac,
      &    O2crit,
@@ -428,6 +458,45 @@ C for sediment model
       sed_globalc6 = -7.26 _d -7
       sed_globald6 = 1.73 _d 0
       sed_globale6 = 1.51 _d -1
+#endif
+
+#ifdef DARWIN_ALLOW_RADIv2_EMUL
+      useBenthicCarbEmul = .TRUE.
+      useBenthicNutrEmul = .TRUE.
+      disable_carb_below_omega_emul = .TRUE.
+
+      a_omega_emul = 1.14977 _d -05
+      m_omega_emul = 9.06144 _d -01
+      a_fpoc_carb_emul = 3.37238 _d -01
+      b_fpoc_carb_emul = 1.01618 _d 0
+      omega_c_emul = 2.14209 _d 0
+      s_omega_emul = 6.47735 _d -01
+
+      a_om_emul = 2.4637 _d 0
+      b_om_emul = 1.0998 _d 0
+      y_max_emul = 1.55574 _d -01
+      K_F_emul = 3.90217 _d -06
+      omega_carb_cutoff_emul = 8. _d -01
+
+      a_o2_emul = 1.25293 _d -01
+      b_o2_emul = 8.23182 _d -01
+
+      a_nh4_emul = 4.628803378861619 _d 0
+      b_nh4_emul = 1.1442327109390382 _d 0
+
+      a_po4_emul = 9.2733 _d -01
+      b_po4_emul = 9.78 _d -01
+
+      a_rel_emul = 8.73271 _d -02
+      b_rel_emul = 8.2085 _d -01
+      m_rel_emul = 1.13361 _d 0
+
+      a_upt_emul = 1.03302 _d 0
+      b_upt_emul = 1.17522 _d 0
+      m_upt_emul = 1.30298 _d 0
+
+      K_ox_emul = 13.8395 _d 0
+      K_no3_emul = 49.3342 _d 0
 #endif
 #endif
 

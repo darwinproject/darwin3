@@ -66,7 +66,7 @@ C     !LOCAL VARIABLES:
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*80 gname
-      INTEGER j,iPtr,oUnit,g,l,errCount
+      INTEGER j,iPtr,oUnit,g,l,errCount,cnt
       _RL dm
 CCOG[[[cog
 CCOGcog.out('\n'.join('''
@@ -332,32 +332,50 @@ C check exf is compiled and used
      &  'DARWIN_ALLOW_RADI has been retired.  Define either ',
       CALL PRINT_ERROR( msgBuf, myThid )
       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
-     &  'DARWIN_ALLOW_RADIv1 or DARWIN_ALLOW_RADIv2_REGR.'
+     &  'DARWIN_ALLOW_RADIv1, DARWIN_ALLOW_RADIv2_REGR or '
+     &  'DARWIN_ALLOW_RADIv2_EMUL.'
       CALL PRINT_ERROR( msgBuf, myThid )
       STOP 'ABNORMAL END: DARWIN_CHECK: DARWIN_ALLOW_RADI'
 #endif
-#if defined(DARWIN_ALLOW_RADIv1) && defined(DARWIN_ALLOW_RADIv2_REGR)
-      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
-     &  'Only one of DARWIN_ALLOW_RADIv1 and DARWIN_ALOW_RADIv2_REGR '
-      CALL PRINT_ERROR( msgBuf, myThid )
-      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
-     &  'can be defined at a time.'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+      cnt = 0
+#ifdef DARWIN_ALLOW_RADIv1
+      cnt = cnt + 1
 #endif
+#ifdef DARWIN_ALLOW_RADIv2_REGR
+      cnt = cnt + 1
+#endif
+#ifdef DARWIN_ALLOW_RADIv2_EMUL
+      cnt = cnt + 1
+#endif
+      IF (cnt .GT. 1) THEN
+       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'Only one of DARWIN_ALLOW_RADIv1, DARWIN_ALOW_RADIv2 and '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'DARWIN_ALLOW_RADIv2_REGR may be defined at a time.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R DARWIN_CHECK'
+      ENDIF
 
 #if defined DARWIN_ALLOW_RADIv1 && ! defined DARWIN_BOTTOM_SINK
       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
      &  'DARWIN_ALLOW_RADIv1 requires DARWIN_BOTTOM_SINK.'
       CALL PRINT_ERROR( msgBuf, myThid )
-      STOP 'ABNORMAL END: DARWIN_CHECK: RADIv1 without BOTTOM_SINK'
+      STOP 'ABNORMAL END: DARWIN_CHECK: RADI without BOTTOM_SINK'
 #endif
 
-#if defined DARWIN_ALLOW_RADIv2 && ! defined DARWIN_BOTTOM_SINK
+#if defined DARWIN_ALLOW_RADIv2_REGR && ! defined DARWIN_BOTTOM_SINK
       WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
-     &  'DARWIN_ALLOW_RADIv2 requires DARWIN_BOTTOM_SINK.'
+     &  'DARWIN_ALLOW_RADIv2_REGR requires DARWIN_BOTTOM_SINK.'
       CALL PRINT_ERROR( msgBuf, myThid )
-      STOP 'ABNORMAL END: DARWIN_CHECK: RADIv2 without BOTTOM_SINK'
+      STOP 'ABNORMAL END: DARWIN_CHECK: RADI without BOTTOM_SINK'
+#endif
+
+#if defined DARWIN_ALLOW_RADIv2_EMUL && ! defined DARWIN_BOTTOM_SINK
+      WRITE(msgBuf,'(2A)') 'DARWIN_CHECK: ',
+     &  'DARWIN_ALLOW_RADIv2_EMUL requires DARWIN_BOTTOM_SINK.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: DARWIN_CHECK: RADI without BOTTOM_SINK'
 #endif
 
 C check we are not using hollexp and also inhib_graz or DARWIN_GRAZING_SWITCH
@@ -741,14 +759,26 @@ C--   Print settings of some CPP flags.
      &                    SQUEEZE_RIGHT , myThid)
 #endif
 
-#ifdef DARWIN_ALLOW_RADIv2
+#ifdef DARWIN_ALLOW_RADIv2_REGR
       WRITE(msgBuf,'(A)')
-     &'// DARWIN_ALLOW_RADIv2:                  defined'
+     &'// DARWIN_ALLOW_RADIv2_REGR:             defined'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
 #else
       WRITE(msgBuf,'(A)')
-     &'// DARWIN_ALLOW_RADIv2:              NOT defined'
+     &'// DARWIN_ALLOW_RADIv2_REGR:         NOT defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
+#ifdef DARWIN_ALLOW_RADIv2_EMUL
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_ALLOW_RADIv2_EMUL:             defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+#else
+      WRITE(msgBuf,'(A)')
+     &'// DARWIN_ALLOW_RADIv2_EMUL:         NOT defined'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
 #endif
