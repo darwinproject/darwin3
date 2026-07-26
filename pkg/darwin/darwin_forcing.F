@@ -974,8 +974,18 @@ C       Reset flux to zero before accumulation
         DO l = 1, nplank
          flx = biosink(l)*MAX(0 _d 0, Ptracer(i,j,k,bi,bj,ic+l-1))
          flxplnkC(i,j) = flxplnkC(i,j) + flx
+#ifdef DARWIN_ALLOW_PQUOTA
+         flxplnkP(i,j) = flxplnkP(i,j) + biosink(l)*MAX(0 _d 0,
+     &                                Ptracers(i,j,k,bi,bj,ip+l+1))
+#else
          flxplnkP(i,j) = flxplnkP(i,j) + flx*R_PC(l)
+#endif
+#ifdef DARWIN_ALLOW_NQUOTA
+         flxplnkN(i,j) = flxplnkN(i,j) + biosink(l)*MAX(0 _d 0,
+     &                                Ptracers(i,j,k,bi,bj,in+l+1))
+#else
          flxplnkN(i,j) = flxplnkN(i,j) + flx*R_NC(l)
+#endif
         ENDDO
 
         sed_a1 = sed_globala1
