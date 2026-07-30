@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''preprocessptracers [-mods <codedir>] [-d <digits>] [-u] data.ptracers.in
 
 Call this in the directory where DARWIN_OPTIONS.h, DARWIN_SIZE.h and optionally

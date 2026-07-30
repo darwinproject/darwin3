@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 Call this in the build directory (or in any directory with current DARWIN_SIZE.h
 and DARWIN_INDICES.h), and it will print a part of data.ptracers with tracer
