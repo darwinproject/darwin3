@@ -281,6 +281,8 @@ C     errCount  :: error counter
 
       CALL DARWIN_EXF_SUMMARY( myThid )
 
+      CALL DARWIN_EXF_CHECK( myThid )
+
 #endif /* ALLOW_EXF */
 #endif /* ALLOW_DARWIN */
 
