@@ -279,6 +279,8 @@ C     errCount  :: error counter
       _END_MASTER( myThid )
       _BARRIER
 
+      CALL DARWIN_EXF_SUMMARY( myThid )
+
 #endif /* ALLOW_EXF */
 #endif /* ALLOW_DARWIN */
 
