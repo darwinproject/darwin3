@@ -50,6 +50,7 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(8) fldName
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL StopFlag
 CEOP
 
       _BARRIER
@@ -138,6 +139,17 @@ C---    read DARWIN 3-D fields for restart
      &                         nj, fp, Nr, myIter, myThid )
 #endif
 #endif
+
+C---    read 2-D fields:
+        nj = nj*Nr
+
+#ifdef DARWIN_ALLOW_CARBON
+        CALL READ_MFLDS_3D_RL( 'pHsurf  ', pHsurf,
+     &                                  nj, fp, 1, myIter, myThid )
+        _BEGIN_MASTER( myThid )
+        pHsurf_isLoaded = .TRUE.
+        _END_MASTER( myThid )
+#endif
 C--    end: new way to read pickup file
        ENDIF
 
@@ -151,29 +163,52 @@ C--    Check for missing fields:
          WRITE(msgBuf,'(2A,I4)') 'DARWIN_READ_PICKUP: ',
      &     'missing fields list has been truncated to', missFldDim
          CALL PRINT_ERROR( msgBuf, myThid )
+         CALL ALL_PROC_DIE( myThid )
          STOP 'ABNORMAL END: S/R DARWIN_READ_PICKUP (list-size Pb)'
        ENDIF
+       StopFlag = .FALSE.
        IF ( nMissing.GE.1 ) THEN
-        ioUnit = errorMessageUnit
         DO j=1,nMissing
-         WRITE(msgBuf,'(4A)') 'DARWIN_READ_PICKUP: ',
-     &       'cannot restart without field "',missFldList(nj),'"'
-         CALL PRINT_ERROR( msgBuf, myThid )
+#ifdef DARWIN_ALLOW_CARBON
+         IF ( missFldList(j) .EQ. 'pHsurf' ) THEN
+           _BEGIN_MASTER( myThid )
+           pHsurf_isLoaded = .FALSE.
+           _END_MASTER( myThid )
+         ELSE
+#else
+         IF (.TRUE.) THEN
+#endif
+          StopFlag = .TRUE.
+          WRITE(msgBuf,'(4A)') 'DARWIN_READ_PICKUP: ',
+     &       'cannot restart without field "',missFldList(j),'"'
+          CALL PRINT_ERROR( msgBuf, myThid )
+         ENDIF
         ENDDO
+        IF ( pickupStrictlyMatch .AND. .NOT.StopFlag ) THEN
+         StopFlag = .TRUE.
+         WRITE(msgBuf,'(4A)') 'DARWIN_READ_PICKUP: ',
+     &     'try with " pickupStrictlyMatch=.FALSE.,"',
+     &     ' in file: "data", NameList: "PARM03"'
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+       ENDIF
+       IF ( StopFlag ) THEN
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R DARWIN_READ_PICKUP'
        ENDIF
 
 C--    Update overlap regions:
 #ifdef DARWIN_ALLOW_CARBON
-        CALL EXCH_3D_RL( pH, 1, myThid )
+       CALL EXCH_3D_RL( pH, Nr, myThid )
+       CALL EXCH_XY_RL( pHsurf, myThid )
 #endif
 #if defined(DARWIN_ALLOW_GEIDER) && !defined(DARWIN_ALLOW_CHLQUOTA)
 #ifdef ALLOW_RADTRANS
-        DO np = 1, nPhoto
-         CALL EXCH_3D_RL( ChlPrev(1-OLx,1-OLy,1,1,1,np), Nr, myThid )
-        ENDDO
+       DO np = 1, nPhoto
+        CALL EXCH_3D_RL( ChlPrev(1-OLx,1-OLy,1,1,1,np), Nr, myThid )
+       ENDDO
 #else
-        CALL EXCH_3D_RL( ChlPrev, Nr, myThid )
+       CALL EXCH_3D_RL( ChlPrev, Nr, myThid )
 #endif
 #endif
 

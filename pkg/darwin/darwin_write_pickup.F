@@ -43,9 +43,9 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       LOGICAL glf
       _RL     timList(1)
-      INTEGER prec, irec, ifld, np
+      INTEGER prec, irec, ifld, np, nlev
       INTEGER listDim, nWrFlds
-      PARAMETER( listDim = 1+nPhoto )
+      PARAMETER( listDim = 2+nPhoto )
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -87,6 +87,19 @@ c     IF ( DARWIN_pickup_write_mdsio ) THEN
 #endif
 #endif
 
+C---  Write 2-D fields
+
+C records are now counted in 2-D slices
+        irec = irec*Nr
+
+C--   write DIC 2-D fields for restart
+#ifdef DARWIN_ALLOW_CARBON
+        ifld = ifld + 1
+        irec = irec - 1
+        CALL WRITE_REC_3D_RL(fn, prec, 1, pHsurf, irec, myIter, myThid)
+        IF (ifld.LE.listDim) wrFldList(ifld) = 'pHsurf'
+#endif
+
 C--------------------------
         nWrFlds = ifld
         IF ( nWrFlds.GT.listDim ) THEN
@@ -102,11 +115,17 @@ C--------------------------
 #ifdef ALLOW_MDSIO
 C     uses this specific S/R to write (with more informations) only meta
 C     files
+        nlev  = 1
+        irec = ABS(irec)
+C     write 3rd dimension if only 3-D fields in pickup
+        IF ( nWrFlds*Nr .EQ. irec ) THEN
+          nlev = Nr
+          irec = nWrFlds
+        ENDIF
         glf  = globalFiles
         timList(1) = myTime
-        irec = ABS(irec)
         CALL MDS_WR_METAFILES( fn, prec, glf, .FALSE.,
-     &                         0, 0, nR, ' ',
+     &                         0, 0, nlev, ' ',
      &                         nWrFlds, wrFldList,
      &                         1, timList, oneRL,
      &                         irec, myIter, myThid )
