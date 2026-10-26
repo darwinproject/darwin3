@@ -58,7 +58,7 @@ C  gO2  :: O2 tendency due to air-sea exchange
 #ifdef DARWIN_ALLOW_CARBON
 
 C !LOCAL VARIABLES: ====================================================
-      INTEGER i,j,k,ks
+      INTEGER i,j,ks
       LOGICAL debugPrt
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
@@ -94,7 +94,6 @@ C local variables for carbon chem
       _RL ttemp
       _RL stemp
       _RL oCnew
-      _RL calcium
 CEOP
 
       ks = 1
@@ -223,17 +222,15 @@ C Determine flux, inc. correction for local atmos surface pressure
       ENDDO
 
 C ======================================================================
-      DO k=1,Nr
-C ======================================================================
 
 C determine inorganic carbon chem coefficients
        DO j=jmin,jmax
         DO i=imin,imax
 c put bounds on tracers so pH solver doesn't blow up
          surfsalt(i,j) = MAX(surfSaltMin,
-     &                   MIN(surfSaltMax, salt(i,j,k,bi,bj)))
+     &                   MIN(surfSaltMax, salt(i,j,ks,bi,bj)))
          surftemp(i,j) = MAX(surfTempMin,
-     &                   MIN(surfTempMax, theta(i,j,k,bi,bj)))
+     &                   MIN(surfTempMax, theta(i,j,ks,bi,bj)))
         ENDDO
        ENDDO
 
@@ -246,20 +243,20 @@ C Calculate carbon coefficients
        CALL DARWIN_COEFFS_SURF(
      I                          surftemp, surfsalt,
      I                          bi,bj,iMin,iMax,jMin,jMax,
-     I                          k,myThid)
+     I                          ks,myThid)
 
 C Now correct the coefficients for pressure dependence
        CALL DARWIN_COEFFS_DEEP(
      I                          surftemp, surfsalt,
      I                          bi,bj,iMin,iMax,jMin,jMax,
-     I                          k,myThid)
+     I                          ks,myThid)
 #else
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('DARWIN_CARBON_COEFFS',myThid)
 #endif
        CALL DARWIN_CARBON_COEFFS(
      I                            surftemp,surfsalt,
-     I                            bi,bj,iMin,iMax,jMin,jMax,k,myThid)
+     I                            bi,bj,iMin,iMax,jMin,jMax,ks,myThid)
 #endif /* DARWIN_SOLVESAPHE */
 
 C====================================================================
@@ -267,21 +264,21 @@ C====================================================================
 c pCO2 solver...
        DO j=jmin,jmax
         DO i=imin,imax
-         IF ( maskC(i,j,k,bi,bj).NE.0. _d 0 ) THEN
+         IF ( maskC(i,j,ks,bi,bj).NE.0. _d 0 ) THEN
 
 c put bounds on tracers so pH solver doesn't blow up
           surfdic  = ptr2mol * MAX(surfDICMin,
-     &               MIN(surfDICMax, Ptracer(i,j,k,bi,bj,iDIC)))
-     &               * maskC(i,j,k,bi,bj)
+     &               MIN(surfDICMax, Ptracer(i,j,ks,bi,bj,iDIC)))
+     &               * maskC(i,j,ks,bi,bj)
           surfalk  = ptr2mol * MAX(surfALKMin,
-     &               MIN(surfALKMax, Ptracer(i,j,k,bi,bj,iALK)))
-     &               * maskC(i,j,k,bi,bj)
+     &               MIN(surfALKMax, Ptracer(i,j,ks,bi,bj,iALK)))
+     &               * maskC(i,j,ks,bi,bj)
           surfphos = ptr2mol * MAX(surfPO4Min,
-     &               MIN(surfPO4Max, Ptracer(i,j,k,bi,bj,iPO4)))
-     &               * maskC(i,j,k,bi,bj)
+     &               MIN(surfPO4Max, Ptracer(i,j,ks,bi,bj,iPO4)))
+     &               * maskC(i,j,ks,bi,bj)
           surfsi   = ptr2mol * MAX(surfSiMin,
-     &               MIN(surfSiMax, Ptracer(i,j,k,bi,bj,iSiO2)))
-     &               * maskC(i,j,k,bi,bj)
+     &               MIN(surfSiMax, Ptracer(i,j,ks,bi,bj,iSiO2)))
+     &               * maskC(i,j,ks,bi,bj)
 
 #ifdef DARWIN_SOLVESAPHE
           IF ( selectPHsolver.GT.0 ) THEN
@@ -292,9 +289,9 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
             CALL CALC_PCO2_SOLVESAPHE(
      I          surftemp(i,j), surfsalt(i,j),
      I          surfdic, surfphos, surfsi, surfalk,
-     U          pH(i,j,k,bi,bj),
+     U          pHsurf(i,j,bi,bj),
      O          pCO2(i,j), CO3(i,j),
-     I          i,j,k,bi,bj, debugPrt,myIter,myThid )
+     I          i,j,ks,bi,bj, debugPrt,myIter,myThid )
             debugPrt = .FALSE.
           ELSE
 C Use the original Follows et al. (2006) solver
@@ -313,37 +310,20 @@ C Use the original Follows et al. (2006) solver
      I        ak0(i,j,bi,bj),  fugf(i,j,bi,bj),
      I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj), st(i,j,bi,bj), ft(i,j,bi,bj),
-     U        pH(i,j,k,bi,bj),
+     U        pHsurf(i,j,bi,bj),
      O        pCO2(i,j), CO3(i,j),
-     I        i,j,k,bi,bj,myIter,myThid )
+     I        i,j,ks,bi,bj,myIter,myThid )
 #ifdef DARWIN_SOLVESAPHE
           ENDIF
 #endif /* DARWIN_SOLVESAPHE */
 
-C Compute calcite saturation ratio omegaC
-#ifdef DARWIN_SOLVESAPHE
-          calcium = cat(i,j,bi,bj)
-#else
-C         calcium concentration in mol/kg-SW
-          calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
-#endif
-C         [calcium] = mol/kg
-C         [CO3] = mol/kg
-C         [Ksp_TP_Calc] = mol^2/kg^2
-          omegaC(i,j,k,bi,bj) = MAX(0 _d 0, calcium * CO3(i,j)) /
-     &                          Ksp_TP_Calc(i,j,bi,bj)
-
          ELSE
           pCO2(i,j)=0. _d 0
-          CO3(i,j) = 0. _d 0
-          omegaC(i,j,k,bi,bj) = 0 _d 0
          ENDIF
 
 C      enddo i,j
         ENDDO
        ENDDO
-
-       IF (k .EQ. ks) THEN
 
         DO j=jmin,jmax
          DO i=imin,imax
@@ -438,28 +418,6 @@ C update tendency
          CALL DIAGNOSTICS_FILL(VFluxAlk,'VfluxAlk',0,1,2,bi,bj,myThid)
 #endif
         ENDIF
-#endif
-
-C      k is at surface
-       ENDIF
-
-#ifdef ALLOW_DIAGNOSTICS
-       IF (useDiagnostics) THEN
-        CALL DIAGNOSTICS_FILL(pCO2,       'pCO2    ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(CO3,        'CO3     ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(Ksp_TP_Calc,'KspTPClc',k,1,1,bi,bj,myThid)
-       ENDIF
-#endif
-
-C === k ================================================================
-      ENDDO
-C ======================================================================
-
-#ifdef ALLOW_DIAGNOSTICS
-      IF (useDiagnostics) THEN
-       CALL DIAGNOSTICS_FILL(pH,    'pH      ',0,Nr,1,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(omegaC,'OmegaC  ',0,Nr,1,bi,bj,myThid)
-      ENDIF
 #endif
 
 #endif /* DARWIN_ALLOW_CARBON */

@@ -258,6 +258,13 @@ C carbon air-sea interaction
       ENDDO
       ENDDO
 
+C carbon chemistry at depth for calcite saturation
+      CALL TIMER_START('DARWIN_DEEP_CARBON [DARWIN_FORCING]',myThid)
+      CALL DARWIN_DEEP_CARBON(
+     I                    bi,bj,iMin,iMax,jMin,jMax,
+     I                    subTime,myIter,myThid)
+      CALL TIMER_STOP ('DARWIN_DEEP_CARBON [DARWIN_FORCING]',myThid)
+
 #ifdef NONLIN_FRSURF
 C-    Account for change in level thickness
 C     Other contributions to gPtr must come after these calls!

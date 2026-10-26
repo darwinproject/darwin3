@@ -168,6 +168,7 @@ C     !LOCAL VARIABLES:
 
 #ifdef DARWIN_ALLOW_CARBON
       CALL DARWIN_SURFFORCING_INIT( myThid )
+      CALL DARWIN_DEEP_CARBON_INIT( myThid )
 #endif
 
       IF (nIter0 .EQ. darwin_chlIter0) THEN
