@@ -38,7 +38,7 @@ C  myThid               :: thread number
 
 C !LOCAL VARIABLES: ====================================================
        LOGICAL debugPrt
-       INTEGER i,j,k,it
+       INTEGER i,j,ks,it
        _RL pco2dummy
        _RL co3dummy
 C Number of iterations for pCO2 solvers...
@@ -55,13 +55,7 @@ CEOP
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-#ifdef ALLOW_OFFLINE
-      IF ( useOffLine ) THEN
-        CALL OFFLINE_FIELDS_LOAD( startTime, nIter0, myThid )
-      ENDIF
-#endif
-
-C =================================================================
+      ks = 1
 
       jMin=1
       jMax=sNy
@@ -74,15 +68,13 @@ C set guess of pH for first step here
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
-         DO k=1,Nr
-
 C determine inorganic carbon chem coefficients
           DO j=jMin,jMax
            DO i=iMin,iMax
             surfsalt(i,j) = MAX(surfSaltMinInit,
-     &                      MIN(surfSaltMaxInit, salt(i,j,k,bi,bj)))
+     &                      MIN(surfSaltMaxInit, salt(i,j,ks,bi,bj)))
             surftemp(i,j) = MAX(surfTempMinInit,
-     &                      MIN(surfTempMaxInit, theta(i,j,k,bi,bj)))
+     &                      MIN(surfTempMaxInit, theta(i,j,ks,bi,bj)))
            ENDDO
           ENDDO
 
@@ -113,50 +105,47 @@ C determine inorganic carbon chem coefficients
           CALL DARWIN_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
-     I                       k,myThid)
+     I                       ks,myThid)
 
 C Now correct the coefficients for pressure dependence
           CALL DARWIN_COEFFS_DEEP(
      I                       surftemp, surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
-     I                       k,myThid)
+     I                       ks,myThid)
 #else /* DARWIN_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
 #endif
           CALL DARWIN_CARBON_COEFFS(
      I                       surftemp,surfsalt,
-     I                       bi,bj,iMin,iMax,jMin,jMax,k,myThid)
+     I                       bi,bj,iMin,iMax,jMin,jMax,ks,myThid)
 #endif /* DARWIN_SOLVESAPHE */
 
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            pH(i,j,k,bi,bj) = 8. _d 0
+            pHsurf(i,j,bi,bj) = 8. _d 0
            ENDDO
           ENDDO
 
           debugPrt = debugMode
 
 c first approximation
-C$TAF LOOP = parallel
           DO j=jMin,jMax
-C$TAF LOOP = parallel
            DO i=iMin,iMax
-            IF ( maskC(i,j,k,bi,bj) .NE. 0. _d 0) THEN
+            IF ( maskC(i,j,ks,bi,bj) .NE. 0. _d 0) THEN
 c put bounds on tracers so pH solver doesn't blow up
              surfdic  = ptr2mol * MAX(surfDICMinInit,
-     &                  MIN(surfDICMaxInit, Ptracer(i,j,k,bi,bj,iDIC)))
-     &                  * maskC(i,j,k,bi,bj)
+     &                  MIN(surfDICMaxInit, Ptracer(i,j,ks,bi,bj,iDIC)))
+     &                  * maskC(i,j,ks,bi,bj)
              surfalk  = ptr2mol * MAX(surfALKMinInit,
-     &                  MIN(surfALKMaxInit, Ptracer(i,j,k,bi,bj,iALK)))
-     &                  * maskC(i,j,k,bi,bj)
+     &                  MIN(surfALKMaxInit, Ptracer(i,j,ks,bi,bj,iALK)))
+     &                  * maskC(i,j,ks,bi,bj)
              surfphos = ptr2mol * MAX(surfPO4MinInit,
-     &                  MIN(surfPO4MaxInit, Ptracer(i,j,k,bi,bj,iPO4)))
-     &                  * maskC(i,j,k,bi,bj)
+     &                  MIN(surfPO4MaxInit, Ptracer(i,j,ks,bi,bj,iPO4)))
+     &                  * maskC(i,j,ks,bi,bj)
              surfsi   = ptr2mol * MAX(surfSiMinInit,
-     &                  MIN(surfSiMaxInit, Ptracer(i,j,k,bi,bj,iSiO2)))
-     &                  * maskC(i,j,k,bi,bj)
-C$TAF init dic_surf = static, 10
+     &                  MIN(surfSiMaxInit, Ptracer(i,j,ks,bi,bj,iSiO2)))
+     &                  * maskC(i,j,ks,bi,bj)
 #ifdef DARWIN_SOLVESAPHE
              IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to initialize pH
@@ -168,11 +157,8 @@ C call AHINI_FOR_AT to get better initial guess of pH
      I           surfalk*m3perkg,
      I           surfdic*m3perkg,
      I           bt(i,j,bi,bj),
-     U           pH(i,j,k,bi,bj),
-     I           i,j,k,bi,bj,nIter0,myThid )
-
-C$TAF STORE pH(i,j,k,bi,bj)                            = dic_surf
-C$TAF STORE surfalk, surfphos, surfsi                  = dic_surf
+     U           pHsurf(i,j,bi,bj),
+     I           i,j,ks,bi,bj,nIter0,myThid )
 
 #ifdef ALLOW_DEBUG
               IF (debugPrt)
@@ -182,9 +168,9 @@ C$TAF STORE surfalk, surfphos, surfsi                  = dic_surf
      I         surftemp(i,j),surfsalt(i,j),
      I         surfdic, surfphos,
      I         surfsi,surfalk,
-     U         pH(i,j,k,bi,bj),
+     U         pHsurf(i,j,bi,bj),
      O         pco2dummy,co3dummy,
-     I         i,j,k,bi,bj, debugPrt, nIter0, myThid )
+     I         i,j,ks,bi,bj, debugPrt, nIter0, myThid )
               debugPrt = .FALSE.
              ELSE
 C Use the original Follows et al. (2006) solver
@@ -196,8 +182,6 @@ C Use the original Follows et al. (2006) solver
               ENDIF
 #endif
              DO it=1,10
-C$TAF STORE pH(i,j,k,bi,bj)                            = dic_surf
-C$TAF STORE surfalk, surfphos, surfs                   = dic_surf
               CALL DARWIN_CALC_PCO2_APPROX(
      I        surftemp(i,j), surfsalt(i,j),
      I        surfdic, surfphos, surfsi, surfalk,
@@ -208,9 +192,9 @@ C$TAF STORE surfalk, surfphos, surfs                   = dic_surf
      I        ak0(i,j,bi,bj), fugf(i,j,bi,bj),
      I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj), st(i,j,bi,bj), ft(i,j,bi,bj),
-     U        pH(i,j,k,bi,bj),
+     U        pHsurf(i,j,bi,bj),
      O        pco2dummy, co3dummy,
-     I        i,j,k,bi,bj, it ,  myThid )
+     I        i,j,ks,bi,bj, it ,  myThid )
              ENDDO
 #ifdef DARWIN_SOLVESAPHE
              ENDIF
@@ -218,9 +202,6 @@ C$TAF STORE surfalk, surfphos, surfs                   = dic_surf
             ENDIF
            ENDDO
           ENDDO
-
-C        end k loop
-         ENDDO
 
 C      end bi,bj loops
         ENDDO
