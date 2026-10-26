@@ -37,6 +37,7 @@ C     !LOCAL VARIABLES:
       _RL dTsub(Nr)
       INTEGER i,j,k,l,bi,bj,jp
       CHARACTER*(MAX_LEN_FNAM) fnam
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       CALL DARWIN_EXF_INIT_VARIA(myThid)
 
@@ -142,6 +143,27 @@ C     !LOCAL VARIABLES:
      &    (nIter0.EQ.PTRACERS_Iter0 .AND. darwin_pickupSuff.NE.' ')
      &   ) THEN
        CALL DARWIN_READ_PICKUP(nIter0, myThid)
+#ifdef DARWIN_ALLOW_CARBON
+       IF (.NOT. pHsurf_isLoaded) THEN
+        DO bj=myByLo(mythid),myByHi(myThid)
+         DO bi=myBxLo(mythid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            pHsurf(i,j,bi,bj) = pH(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        WRITE(msgBuf,'(A,A)') '** WARNING ** DARWIN_INIT_VARIA: ',
+     &   'Surface pH missing from pickup.'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A,A)') '** WARNING ** DARWIN_INIT_VARIA: ',
+     &   'Copying surface layer from 3-D pH.'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+#endif
       ENDIF
 
 #ifdef DARWIN_ALLOW_CARBON

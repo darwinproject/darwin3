@@ -150,10 +150,14 @@ C Carbon Variables
 C-     COMMON /CARBON_NEEDS/ main carbon chem arrays
 C  omegaC           :: Local saturation state with respect to calcite
        COMMON /CARBON_NEEDS/
-     &   pH, omegaC, Atmosp
+     &   pH, omegaC, Atmosp, pHsurf
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  pHsurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+       COMMON /CARBON_NEEDS_L/ pHsurf_isLoaded
+      LOGICAL pHsurf_isLoaded
 
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
