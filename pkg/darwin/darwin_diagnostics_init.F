@@ -841,8 +841,22 @@ C-      use units & names from data.ptracers :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      WRITE(diagName,'(A)')'pCO2surf'
+      WRITE(diagTitle,'(A)')'Partial Pressure of CO2 at ocean surface'
+      diagUnits = 'atm             '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'pHsurf'
+      WRITE(diagTitle,'(A)')'surface pH'
+      diagUnits = '1               '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       WRITE(diagName,'(A)')'pH'
-      WRITE(diagTitle,'(A)')'pH'
+      WRITE(diagTitle,'(A)')'pH at tracer point'
       diagUnits = '1               '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
