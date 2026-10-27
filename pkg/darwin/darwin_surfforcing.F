@@ -407,6 +407,8 @@ C update tendency
 
 #ifdef ALLOW_DIAGNOSTICS
         IF (useDiagnostics) THEN
+         CALL DIAGNOSTICS_FILL(pHsurf,   'pHsurf  ',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(pCO2,     'pCO2surf',0,1,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(atmospCO2,'apCO2   ',0,1,1,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(apCO2sat, 'apCO2sat',0,1,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(fugf,     'fugfCO2 ',0,1,1,bi,bj,myThid)
