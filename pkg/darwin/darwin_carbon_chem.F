@@ -614,7 +614,9 @@ c for surface exchange coeffs
 
 C Following Ingle (1975), zdum must be depth converted to pressure units
 C pAppl could be actual applied pressure (check?) but use depth for now
-        IF (kLevel .EQ. 1) THEN
+        k = kLevel
+        IF (kLevel .LT. 1) THEN
+          k = 1
 C Only zdum is used in this case.  All coefficients are computed for the
 C surface, so we compute the calcite coefficients also for zero depth
           pSurf = 1.01325 _d 0
@@ -629,7 +631,7 @@ C Compute at layer center for non-surface layers
 
         do i=imin,imax
          do j=jmin,jmax
-          IF ( maskC(i,j,kLevel,bi,bj).EQ.oneRS ) THEN
+          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
            t = ttemp(i,j)
            s = stemp(i,j)
 C terms used more than once for:
@@ -690,7 +692,7 @@ C
 C NOW PRESSURE DEPENDENCE:
 c Following Takahashi (1981) GEOSECS report - quoting Culberson and
 c Pytkowicz (1968)
-           if (kLevel.gt.1) then
+           if (kLevel.GE.1) then
 c pAppl = applied pressure in bars (p - p_atm)
            ak1(i,j,bi,bj) = ak1(i,j,bi,bj)*
      &             exp( (24.2 _d 0-0.085 _d 0*t)
@@ -713,7 +715,7 @@ C On total pH scale
      &          (148.0248 _d 0 + 137.1942 _d 0*sqrts + 1.62142 _d 0*s) +
      &          (-24.4344 _d 0 - 25.085 _d 0*sqrts - 0.2474 _d 0*s) *
      &          dlogtk + 0.053105 _d 0*sqrts*tk)
-           if (kLevel.gt.1) then
+           if (kLevel.GE.1) then
 #ifdef DARWIN_TOTALPHSCALE
 C JML Not yet, need to account for pH scale conversions
 C    (pressure correct on the seawater scale, not the total scale)
@@ -840,7 +842,7 @@ C Info about pH conversions from Munhoven (2013) and Orr and Epitalon (2015)
            total2sw_surf = total2free_surf * free2sw_surf
 
 C------------------------------------------------------------------------
-      IF (kLevel.GT.1) THEN
+      IF (kLevel.GE.1) THEN
 C Pressure correct aks on native free pH scale
            dv=-18.03 _d 0 + 0.0466 _d 0*t + 0.316 _d -3 *t*t
            dk=-4.53 _d -3 + 0.09 _d -3 *t
@@ -861,7 +863,7 @@ C free2sw has an additional component from fluoride
            aks(i,j,bi,bj) = aks(i,j,bi,bj)*free2total
 
 C------------------------------------------------------------------------
-      IF (kLevel.GT.1) THEN
+      IF (kLevel.GE.1) THEN
 C Pressure correct akf on the free scale before converting back to total
            akf(i,j,bi,bj) = akf(i,j,bi,bj) * total2free_surf
            dv  =  -9.78 _d 0 -0.0090 _d 0 *t -0.942 _d -3 *t*t
@@ -891,7 +893,7 @@ C Convert pressure corrected ak1 and ak2 from the seawater pH scale to the total
            ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)*sw2total
            ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)*sw2total
 
-      IF (kLevel.GT.1) THEN
+      IF (kLevel.GE.1) THEN
 C------------------------------------------------------------------------
 C Pressure correct akb on the seawater scale before converting back to total scale
             dv = -29.48 _d 0 + 0.1622 _d 0*t + 2.608 _d -3*t*t

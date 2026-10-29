@@ -256,7 +256,7 @@ C Now correct the coefficients for pressure dependence
 #endif
        CALL DARWIN_CARBON_COEFFS(
      I                            surftemp,surfsalt,
-     I                            bi,bj,iMin,iMax,jMin,jMax,ks,myThid)
+     I                            bi,bj,iMin,iMax,jMin,jMax,0,myThid)
 #endif /* DARWIN_SOLVESAPHE */
 
 C====================================================================
