@@ -244,12 +244,6 @@ C Calculate carbon coefficients
      I                          surftemp, surfsalt,
      I                          bi,bj,iMin,iMax,jMin,jMax,
      I                          ks,myThid)
-
-C Now correct the coefficients for pressure dependence
-       CALL DARWIN_COEFFS_DEEP(
-     I                          surftemp, surfsalt,
-     I                          bi,bj,iMin,iMax,jMin,jMax,
-     I                          ks,myThid)
 #else
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('DARWIN_CARBON_COEFFS',myThid)
