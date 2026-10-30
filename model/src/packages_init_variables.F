@@ -98,8 +98,6 @@ C       |-- THSICE_INI_VARS
 C       |
 C       |-- LAND_INI_VARS
 C       |
-C       |-- ATM2D_INIT_VARS
-C       |
 C       |-- ATM_PHYS_INIT_VARIA
 C       |
 C       |-- FIZHI_INI_VARS
@@ -485,15 +483,6 @@ C     compiling pkg/autodiff (with "If useSEAICE" inside seaice_init_varia.F)
         CALL LAND_INI_VARS( myThid )
       ENDIF
 #endif /* ALLOW_LAND */
-
-#ifdef ALLOW_ATM2D
-      IF (useAtm2d) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('ATM2D_INIT_VARS',myThid)
-# endif
-        CALL ATM2D_INIT_VARS( myThid )
-      ENDIF
-#endif /* ALLOW_ATM2D */
 
 #ifdef ALLOW_ATM_PHYS
       IF (useAtm_Phys) THEN
