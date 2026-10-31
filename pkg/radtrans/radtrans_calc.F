@@ -148,7 +148,8 @@ C     not useOASIM
 
 C ======================================================================
       DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO i=iMin,iMax
+       IF (maskC(i,j,1,bi,bj) .NE. zeroRS) THEN
 C ----------------------------------------------------------------------
         DO k=1,Nr
          dz_k(k) = drF(k)*HFacC(i,j,k,bi,bj)
@@ -258,8 +259,38 @@ C convert to scalar irradiance in quanta
 C       l
         ENDDO
 
-C      i,j
-       ENDDO
+       ELSE
+
+        DO l = 1,nlam
+         DO k=1,Nr
+          Ed(i,j,k,l) = 0 _d 0
+          Es(i,j,k,l) = 0 _d 0
+          Eu(i,j,k,l) = 0 _d 0
+#ifdef ALLOW_DIAGNOSTICS
+         Rirr(i,j,l) = 0 _d 0
+#ifdef RADTRANS_DIAG_SOLUTION
+          Eub(i,j,k,l) = 0 _d 0
+          Est(i,j,k,l) = 0 _d 0
+          amp1(i,j,k,l) = 0 _d 0
+          amp2(i,j,k,l) = 0 _d 0
+          x3d(i,j,k,l) = 0 _d 0
+          y3d(i,j,k,l) = 0 _d 0
+          r1(i,j,k,l) = 0 _d 0
+          r2(i,j,k,l) = 0 _d 0
+          kap1(i,j,k,l) = 0 _d 0
+          kap2(i,j,k,l) = 0 _d 0
+#endif
+#endif
+         ENDDO
+         DO k=1,Nr+1
+          E0F(i,j,k,l) = 0 _d 0
+         ENDDO
+        ENDDO
+
+       ENDIF
+
+C     i,j
+      ENDDO
       ENDDO
 C ======================================================================
 
