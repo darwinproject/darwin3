@@ -366,6 +366,27 @@ c additional source terms of nutrients
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      WRITE(diagName,'(A)')'fIph_avg'
+      WRITE(diagTitle,'(A)')'Community-averaged light growth factor'
+      diagUnits = '1      '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'fTph_avg'
+      WRITE(diagTitle,'(A)')'Community-averaged temp growth factor'
+      diagUnits = '1      '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      WRITE(diagName,'(A)')'fnut_avg'
+      WRITE(diagTitle,'(A)')'Community-averaged nutrients growth factor'
+      diagUnits = '1      '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       DO j = 1, nDarwin
         WRITE(diagName, '(2A)') 'gDAR', PTRACERS_ioLabel(j)
 C--     Set default name & tracer Units:
@@ -1028,27 +1049,6 @@ C-      use units & names from data.ptracers :
       WRITE(diagTitle,'(A)')'Calcite saturation ratio above the seabed'
       diagUnits = '1               '
       diagCode  = 'SM P    M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'fIph_avg'
-      WRITE(diagTitle,'(A)')'Community-averaged light growth factor'
-      diagUnits = '1      '
-      diagCode  = 'SMR     MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'fTph_avg'
-      WRITE(diagTitle,'(A)')'Community-averaged temp growth factor'
-      diagUnits = '1      '
-      diagCode  = 'SMR     MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      WRITE(diagName,'(A)')'fnut_avg'
-      WRITE(diagTitle,'(A)')'Community-averaged nutrients growth factor'
-      diagUnits = '1      '
-      diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 

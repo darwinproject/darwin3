@@ -1132,12 +1132,12 @@ C  which nutrient is limiting growth?
 # endif
 C factors that go into growth equation
         diags(ifIph+j-1) = limitI
-        fIph_sum = fIph_sum + limitI * X(j)
         diags(ifTph+j-1) = photoTempFunc(j)
-        fTph_sum = fTph_sum + photoTempFunc(j) * X(j)
         diags(ifnut+j-1) = limitnut
-        fnut_sum = fnut_sum + limitnut * X(j)
 #endif
+        fIph_sum = fIph_sum + limitI * X(j)
+        fTph_sum = fTph_sum + photoTempFunc(j) * X(j)
+        fnut_sum = fnut_sum + limitnut * X(j)
 
 #endif /* DARWIN_MACROMOLECULAR_GROWTH */
 
