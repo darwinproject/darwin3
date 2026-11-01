@@ -216,11 +216,14 @@ Diagnostics available with :varlink:`DARWIN_ALLOW_CARBON`:
 
    apCO2      & ``SM_P____L1`` & atm                             & atmospheric pCO\ :sub:`2`
    apCO2sat   & ``SM_P____L1`` & atm                             & atmospheric pCO\ :sub:`2` sat
-   pH         & ``SMR_____MR`` & 1                               & pH
+   pHsurf     & ``SM______L1`` & 1                               & surface pH
+   pCO2surf   & ``SMR_____L1`` & atm                             & Partial Pressure of CO\ :sub:`2` at ocean surface
+   pH         & ``SMR_____MR`` & 1                               & pH at tracer point
    pCO2       & ``SMRP____MR`` & atm                             & Partial Pressure of CO\ :sub:`2` in the ocean
    CO3        & ``SMR_____MR`` & mol/kg                          & Concentration of carbonate
    KspTPClc   & ``SMR_____MR`` & mol\ :sup:`2`/kg\ :sup:`2`      & Solubility product for calcite
    OmegaC     & ``SMR_____MR`` & 1                               & Calcite saturation ratio
+   OmegCbot   & ``SM_P____M1`` & 1                               & Calcite saturation ratio above the seabed
    fugfCO2    & ``SM_P____L1`` & 1                               & Fugacity factor of CO\ :sub:`2` at surface
    fCO2       & ``SM_P____L1`` & atm                             & Fugacity of CO\ :sub:`2` (atm)
    fluxCO2    & ``SM______L1`` & mmol C/m\ :sup:`2`/s            & Flux of CO\ :sub:`2` - air-sea exch
@@ -267,7 +270,6 @@ Diagnostics available with :varlink:`DARWIN_ALLOW_RADIv1`:
    TcorrO2    & ``SM_P____M1`` & 1                               & Temperature correction factor for diffusive O\ :sub:`2` flux
    TcorrALK   & ``SM_P____M1`` & 1                               & Temperature correction factor for diffusive ALK flux
    TcorrDIC   & ``SM_P____M1`` & 1                               & Temperature correction factor for diffusive DIC flux
-   OmegCbot   & ``SM_P____M1`` & 1                               & Calcite saturation ratio above the seabed
 
 Diagnostics available with :varlink:`DARWIN_ALLOW_RADIv2`:
 
@@ -292,5 +294,4 @@ Diagnostics available with :varlink:`DARWIN_ALLOW_RADIv2`:
    sedFplkC   & ``SM_P____U1`` & mmol C/m\ :sup:`2`/s            & C flux from bottom sink plankton to sed
    sedFplkN   & ``SM_P____U1`` & mmol N/m\ :sup:`2`/s            & N flux from bottom sink plankton to sed
    sedFplkP   & ``SM_P____U1`` & mmol P/m\ :sup:`2`/s            & P flux from bottom sink plankton to sed
-   OmegCbot   & ``SM_P____M1`` & 1                               & Calcite saturation ratio above the seabed
 
